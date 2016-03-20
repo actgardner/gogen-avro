@@ -17,19 +17,19 @@ Type Conversion
 
 Go types mostly map neatly onto Avro types:
 
-| Avro Type     | Go Type           | Notes                                                                                                             |   |   |
-|---------------|-------------------|-------------------------------------------------------------------------------------------------------------------|---|---|
-| null          | interface{}       | This is just a placeholder, nothing is encoded/decoded                                                            |   |   |
-| boolean       | bool              |                                                                                                                   |   |   |
-| int, long     | int32,int64       |                                                                                                                   |   |   |
-| float, double | float32, float64  |                                                                                                                   |   |   |
-| bytes         | []byte            |                                                                                                                   |   |   |
-| string        | string            |                                                                                                                   |   |   |
-| enum          | custom type       | Enumerations aren't supported yet                                                                                 |   |   |
-| array<type>   | []<type>          |                                                                                                                   |   |   |
-| map<type>     | map[string]<type> |                                                                                                                   |   |   |
-| fixed         | []byte            | Fixed fields aren't supported yet                                                                                 |   |   |
-| union         | custom type       | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read |   |   |
+| Avro Type     | Go Type           | Notes                                                                                                                |
+|---------------|-------------------|----------------------------------------------------------------------------------------------------------------------|
+| null          | interface{}       | This is just a placeholder, nothing is encoded/decoded                                                               |
+| boolean       | bool              |                                                                                                                      |
+| int, long     | int32,int64       |                                                                                                                      |
+| float, double | float32, float64  |                                                                                                                      |
+| bytes         | []byte            |                                                                                                                      |
+| string        | string            |                                                                                                                      |
+| enum          | custom type       | Enumerations aren't supported yet                                                                                    |
+| array<type>   | []<type>          |                                                                                                                      |
+| map<type>     | map[string]<type> |                                                                                                                      |
+| fixed         | []byte            | Fixed fields aren't supported yet                                                                                    |
+| union         | custom type       | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
 
 `union` is the exception. To avoid a round-trip through `interface{}`, we generate a struct and enumeration whose name is uniquely determined by the types in the union. This can get pretty hairy - for a field whose type is `["int", "string", "float", "double", "long", "bool", "null"]` we generate the following:
 
