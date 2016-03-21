@@ -3,14 +3,14 @@ package generator
 const writeIntMethod = `
 func writeInt(r int32, w io.Writer) error {
 	downShift := uint32(31)
-	encoded := int64((r << 1) ^ (r >> downShift))
+	encoded := uint64((uint32(r) << 1) ^ uint32(r >> downShift))
 	const maxByteSize = 5
 	return encodeInt(w, maxByteSize, encoded)
 }
 `
 
 const encodeIntMethod = `
-func encodeInt(w io.Writer, byteCount int, encoded int64) error {
+func encodeInt(w io.Writer, byteCount int, encoded uint64) error {
 	var err error
 	var bb []byte
 	bw, ok := w.(ByteWriter)

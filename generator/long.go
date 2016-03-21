@@ -3,7 +3,7 @@ package generator
 const writeLongMethod = `
 func writeLong(r int64, w io.Writer) error {
 	downShift := uint64(63)
-	encoded := int64((r << 1) ^ (r >> downShift))
+	encoded := uint64((r << 1) ^ (r >> downShift))
 	const maxByteSize = 10
 	return encodeInt(w, maxByteSize, encoded)
 }
