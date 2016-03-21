@@ -37,8 +37,8 @@ func (s *arrayField) GoType() string {
 	return fmt.Sprintf("[]%v", s.itemType.GoType())
 }
 
-func (s *arrayField) AuxStructs(aux map[string]string, imports map[string]string) {
-	s.itemType.AuxStructs(aux, imports)
+func (s *arrayField) SerializerNs(imports, aux map[string]string) {
+	s.itemType.SerializerNs(imports, aux)
 	itemMethodName := s.itemType.SerializerMethod()
 	methodName := s.SerializerMethod()
 	if _, ok := aux[methodName]; ok {

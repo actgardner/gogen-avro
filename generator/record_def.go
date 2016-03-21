@@ -4,6 +4,15 @@ import (
 	"fmt"
 )
 
+const recordStructDefTemplate = `type %v struct {
+%v
+}
+
+func (r %v) Serialize(w io.Writer) error {
+	return write%v(r, w)
+}
+`
+
 type recordDefinition struct {
 	name   string
 	fields []field
@@ -21,16 +30,13 @@ func (r *recordDefinition) structFields() string {
 	return fieldDefinitions
 }
 
-func (r *recordDefinition) auxStructs() string {
-	auxDefs := make(map[string]string)
-	imports := make(map[string]string)
+/* Get the import and namespace maps for this record */
+func (r *recordDefinition) namespaceMap(imports map[string]string, ns map[string]string) {
 	imports["io"] = "import \"io\""
+	ns[r.serializerMethod()] = r.serializerMethodDef()
 	for _, f := range r.fields {
-		f.AuxStructs(auxDefs, imports)
+		f.SerializerNs(imports, ns)
 	}
-	importStr := concatSortedMap(imports, "\n")
-	auxDefStr := concatSortedMap(auxDefs, "\n")
-	return importStr + auxDefStr
 }
 
 func (r *recordDefinition) fieldSerializers() string {
@@ -42,9 +48,13 @@ func (r *recordDefinition) fieldSerializers() string {
 }
 
 func (r *recordDefinition) structDefinition() string {
-	return fmt.Sprintf("type %v struct {\n%v}\n", r.goName(), r.structFields())
+	return fmt.Sprintf(recordStructDefTemplate, r.goName(), r.structFields(), r.goName(), r.goName())
+}
+
+func (r *recordDefinition) serializerMethodDef() string {
+	return fmt.Sprintf("func %v(r %v, w io.Writer) error {\n%v\nreturn nil\n}", r.serializerMethod(), r.goName(), r.fieldSerializers())
 }
 
 func (r *recordDefinition) serializerMethod() string {
-	return fmt.Sprintf("func (r *%v) Serialize(w io.Writer) error {\n%v\nreturn nil\n}", r.goName(), r.fieldSerializers())
+	return fmt.Sprintf("write%v", r.goName())
 }

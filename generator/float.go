@@ -55,7 +55,7 @@ func (s *floatField) GoType() string {
 	return "float32"
 }
 
-func (s *floatField) AuxStructs(aux map[string]string, imports map[string]string) {
+func (s *floatField) SerializerNs(imports, aux map[string]string) {
 	imports["math"] = "import \"math\""
 	aux["writeFloat"] = writeFloatMethod
 	aux["encodeFloat"] = encodeFloatMethod

@@ -48,7 +48,7 @@ func (s *boolField) GoType() string {
 	return "bool"
 }
 
-func (s *boolField) AuxStructs(aux map[string]string, _ map[string]string) {
+func (s *boolField) SerializerNs(imports, aux map[string]string) {
 	aux["ByteWriter"] = byteWriterInterface
 	aux["writeBool"] = writeBoolMethod
 }

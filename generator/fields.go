@@ -7,8 +7,8 @@ type field interface {
 	FieldType() string
 	// The corresponding Go type
 	GoType() string
-	// Auxillary types (enums, structs) and imports to be created
-	AuxStructs(types map[string]string, imports map[string]string)
 	// A method which writes this field onto the wire
 	SerializerMethod() string
+	// All the imports, methods and structs required for the serializer
+	SerializerNs(imports, ns map[string]string)
 }

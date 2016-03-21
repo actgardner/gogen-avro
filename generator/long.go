@@ -27,7 +27,7 @@ func (s *longField) GoType() string {
 	return "int64"
 }
 
-func (s *longField) AuxStructs(aux map[string]string, _ map[string]string) {
+func (s *longField) SerializerNs(imports, aux map[string]string) {
 	aux["writeLong"] = writeLongMethod
 	aux["encodeInt"] = encodeIntMethod
 	aux["ByteWriter"] = byteWriterInterface

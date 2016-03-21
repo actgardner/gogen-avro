@@ -41,8 +41,8 @@ func (s *mapField) GoType() string {
 	return fmt.Sprintf("map[string]%v", s.itemType.GoType())
 }
 
-func (s *mapField) AuxStructs(aux map[string]string, imports map[string]string) {
-	s.itemType.AuxStructs(aux, imports)
+func (s *mapField) SerializerNs(imports, aux map[string]string) {
+	s.itemType.SerializerNs(imports, aux)
 	itemMethodName := s.itemType.SerializerMethod()
 	methodName := s.SerializerMethod()
 	if _, ok := aux[methodName]; ok {

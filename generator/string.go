@@ -39,7 +39,7 @@ func (s *stringField) GoType() string {
 	return "string"
 }
 
-func (s *stringField) AuxStructs(aux map[string]string, _ map[string]string) {
+func (s *stringField) SerializerNs(imports, aux map[string]string) {
 	aux["writeLong"] = writeLongMethod
 	aux["writeString"] = writeStringMethod
 	aux["encodeInt"] = encodeIntMethod

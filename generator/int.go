@@ -75,7 +75,7 @@ func (s *intField) GoType() string {
 	return "int32"
 }
 
-func (s *intField) AuxStructs(aux map[string]string, imports map[string]string) {
+func (s *intField) SerializerNs(imports, aux map[string]string) {
 	aux[s.SerializerMethod()] = writeIntMethod
 	aux["encodeInt"] = encodeIntMethod
 	aux["ByteWriter"] = byteWriterInterface

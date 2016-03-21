@@ -68,7 +68,7 @@ func (s *unionField) unionSerializer() string {
 	return fmt.Sprintf(unionSerializerTemplate, s.SerializerMethod(), s.GoType(), switchCase, s.GoType())
 }
 
-func (s *unionField) AuxStructs(aux map[string]string, imports map[string]string) {
+func (s *unionField) SerializerNs(imports, aux map[string]string) {
 	if _, ok := aux[s.unionEnumType()]; ok {
 		return
 	}
@@ -77,7 +77,7 @@ func (s *unionField) AuxStructs(aux map[string]string, imports map[string]string
 	aux[s.SerializerMethod()] = s.unionSerializer()
 	aux[s.FieldType()] = s.unionTypeDef()
 	for _, f := range s.itemType {
-		f.AuxStructs(aux, imports)
+		f.SerializerNs(imports, aux)
 	}
 }
 

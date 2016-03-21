@@ -6,15 +6,21 @@ import (
 	"go/format"
 )
 
+/*
+	Given a JSON Avro schema, produce a struct and serializer/deserializer pair
+	TODO: Figure out how this should handle multiple record definitions
+*/
 func GenerateForSchema(schemaJson []byte) (string, error) {
 	r, err := decodeSchema(schemaJson)
 	if err != nil {
 		return "", fmt.Errorf("Error decoding schema JSON: %v", err)
 	}
+	imports := make(map[string]string)
+	ns := make(map[string]string)
 	structDef := r.structDefinition()
-	serializerDef := r.serializerMethod()
-	auxStructDef := r.auxStructs()
-	fmtSrc, err := format.Source([]byte(fmt.Sprintf("package avro\n%v\n%v\n%v", auxStructDef, structDef, serializerDef)))
+	r.namespaceMap(imports, ns)
+	src := fmt.Sprintf("package avro\n%v\n%v\n%v", concatSortedMap(imports, "\n"), structDef, concatSortedMap(ns, "\n"))
+	fmtSrc, err := format.Source([]byte(src))
 	return string(fmtSrc), err
 }
 

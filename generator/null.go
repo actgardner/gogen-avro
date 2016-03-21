@@ -23,7 +23,7 @@ func (s *nullField) GoType() string {
 	return "interface{}"
 }
 
-func (s *nullField) AuxStructs(aux map[string]string, _ map[string]string) {
+func (s *nullField) SerializerNs(imports, aux map[string]string) {
 	aux["writeNull"] = writeNullMethod
 }
 

@@ -29,7 +29,11 @@ func TestRecordStructDef(t *testing.T) {
 	FloatField        float32
 	DoubleField       float64
 	BoolField         bool
-	NestedRecordField *NestedRecord
+	NestedRecordField NestedRecord
+}
+
+func (r PrimitiveStruct) Serialize(w io.Writer) error {
+	return writePrimitiveStruct(r, w)
 }
 `
 	fmtSrc, err := format.Source([]byte(primitiveRecord.structDefinition()))
@@ -43,7 +47,7 @@ func TestRecordSerializerMethod(t *testing.T) {
 		fields: []field{testInt, testString, testLong, testFloat, testDouble, testBool, testRecord},
 	}
 
-	expectedSerializer := `func (r *PrimitiveStruct) Serialize(w io.Writer) error {
+	expectedSerializer := `func writePrimitiveStruct(r PrimitiveStruct, w io.Writer) error {
 	var err error
 	err = writeInt(r.IntField, w)
 	if err != nil {
@@ -76,163 +80,40 @@ func TestRecordSerializerMethod(t *testing.T) {
 
 	return nil
 }`
+	imports := make(map[string]string)
+	ns := make(map[string]string)
 
-	fmtSrc, err := format.Source([]byte(primitiveRecord.serializerMethod()))
-	assert.Nil(t, err)
-	assert.Equal(t, string(fmtSrc), expectedSerializer)
-}
+	primitiveRecord.namespaceMap(imports, ns)
+	// Verify we import the correct packages
+	_, ok := imports["io"]
+	assert.Equal(t, ok, true)
+	_, ok = imports["math"]
+	assert.Equal(t, ok, true)
+	assert.Equal(t, len(imports), 2)
 
-func TestRecordAuxStructs(t *testing.T) {
-	primitiveRecord := &recordDefinition{
-		name:   "PrimitiveStruct",
-		fields: []field{testInt, testString, testLong, testFloat, testDouble, testBool, testRecord},
-	}
-	expectedSerializer := `import "io"
-import "math"
+	assert.Equal(t, len(ns), 11)
+	_, ok = ns["writeBool"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeDouble"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeLong"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeInt"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeString"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeFloat"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["encodeInt"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["encodeFloat"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["StringWriter"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["ByteWriter"]
+	assert.Equal(t, ok, true)
 
-type ByteWriter interface {
-	Grow(int)
-	WriteByte(byte) error
-}
-
-type StringWriter interface {
-	WriteString(string) (int, error)
-}
-
-func encodeFloat(w io.Writer, byteCount int, bits uint64) error {
-	var err error
-	var bb []byte
-	bw, ok := w.(ByteWriter)
-	if ok {
-		bw.Grow(byteCount)
-	} else {
-		bb = make([]byte, 0, byteCount)
-	}
-	for i := 0; i < byteCount; i++ {
-		if bw != nil {
-			err = bw.WriteByte(byte(bits & 255))
-			if err != nil {
-				return err
-			}
-		} else {
-			bb = append(bb, byte(bits&255))
-		}
-		bits = bits >> 8
-	}
-	if bw == nil {
-		_, err = w.Write(bb)
-		return err
-	}
-	return nil
-}
-
-func encodeInt(w io.Writer, byteCount int, encoded int64) error {
-	var err error
-	var bb []byte
-	bw, ok := w.(ByteWriter)
-	// To avoid reallocations, grow capacity to the largest possible size
-	// for this integer
-	if ok {
-		bw.Grow(byteCount)
-	} else {
-		bb = make([]byte, 0, byteCount)
-	}
-
-	if encoded == 0 {
-		if bw != nil {
-			err = bw.WriteByte(0)
-			if err != nil {
-				return err
-			}
-		} else {
-			bb = append(bb, byte(0))
-		}
-	} else {
-		for encoded > 0 {
-			b := byte(encoded & 127)
-			encoded = encoded >> 7
-			if !(encoded == 0) {
-				b |= 128
-			}
-			if bw != nil {
-				err = bw.WriteByte(b)
-				if err != nil {
-					return err
-				}
-			} else {
-				bb = append(bb, b)
-			}
-		}
-	}
-	if bw == nil {
-		_, err := w.Write(bb)
-		return err
-	}
-	return nil
-
-}
-
-func writeBool(r bool, w io.Writer) error {
-	var b byte
-	if r {
-		b = byte(1)
-	}
-
-	var err error
-	if bw, ok := w.(ByteWriter); ok {
-		err = bw.WriteByte(b)
-	} else {
-		bb := make([]byte, 1)
-		bb[0] = b
-		_, err = w.Write(bb)
-	}
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func writeDouble(r float64, w io.Writer) error {
-	bits := uint64(math.Float64bits(r))
-	const byteCount = 8
-	return encodeFloat(w, byteCount, bits)
-}
-
-func writeFloat(r float32, w io.Writer) error {
-	bits := uint64(math.Float32bits(r))
-	const byteCount = 4
-	return encodeFloat(w, byteCount, bits)
-}
-
-func writeInt(r int32, w io.Writer) error {
-	downShift := uint32(31)
-	encoded := int64((r << 1) ^ (r >> downShift))
-	const maxByteSize = 5
-	return encodeInt(w, maxByteSize, encoded)
-}
-
-func writeLong(r int64, w io.Writer) error {
-	downShift := uint64(63)
-	encoded := int64((r << 1) ^ (r >> downShift))
-	const maxByteSize = 10
-	return encodeInt(w, maxByteSize, encoded)
-}
-
-func writeString(r string, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	if sw, ok := w.(StringWriter); ok {
-		_, err = sw.WriteString(r)
-	} else {
-		_, err = w.Write([]byte(r))
-	}
-	return err
-}
-
-`
-	fmtSrc, err := format.Source([]byte(primitiveRecord.auxStructs()))
+	fmtSrc, err := format.Source([]byte(ns["writePrimitiveStruct"]))
 	assert.Nil(t, err)
 	assert.Equal(t, string(fmtSrc), expectedSerializer)
 }
@@ -249,7 +130,11 @@ func TestArrayStructDef(t *testing.T) {
 	DoubleArray []float64
 	LongArray   []int64
 	BoolArray   []bool
-	RecordArray []*NestedRecord
+	RecordArray []NestedRecord
+}
+
+func (r ArrayStruct) Serialize(w io.Writer) error {
+	return writeArrayStruct(r, w)
 }
 `
 	fmtSrc, err := format.Source([]byte(arrayRecord.structDefinition()))
@@ -262,7 +147,7 @@ func TestArrayStructSerializer(t *testing.T) {
 		name:   "ArrayStruct",
 		fields: []field{&arrayField{"IntArray", testInt}, &arrayField{"StringArray", testString}, &arrayField{"FloatArray", testFloat}, &arrayField{"DoubleArray", testDouble}, &arrayField{"LongArray", testLong}, &arrayField{"BoolArray", testBool}, &arrayField{"RecordArray", testRecord}},
 	}
-	expectedSerializer := `func (r *ArrayStruct) Serialize(w io.Writer) error {
+	expectedSerializer := `func writeArrayStruct(r ArrayStruct, w io.Writer) error {
 	var err error
 	err = writeArrayInt(r.IntArray, w)
 	if err != nil {
@@ -288,269 +173,64 @@ func TestArrayStructSerializer(t *testing.T) {
 	if err != nil {
 		return err
 	}
-	err = writeArrayNestedRecordRecord(r.RecordArray, w)
+	err = writeArrayNestedRecord(r.RecordArray, w)
 	if err != nil {
 		return err
 	}
 
 	return nil
 }`
-	fmtSrc, err := format.Source([]byte(arrayRecord.serializerMethod()))
+	imports := make(map[string]string)
+	ns := make(map[string]string)
+
+	arrayRecord.namespaceMap(imports, ns)
+	// Verify we import the correct packages
+	_, ok := imports["io"]
+	assert.Equal(t, ok, true)
+	_, ok = imports["math"]
+	assert.Equal(t, ok, true)
+	assert.Equal(t, len(imports), 2)
+
+	assert.Equal(t, len(ns), 18)
+	_, ok = ns["writeBool"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeDouble"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeLong"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeInt"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeString"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeFloat"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeArrayBool"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeArrayDouble"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeArrayLong"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeArrayInt"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeArrayString"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeArrayFloat"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeArrayNestedRecord"]
+	assert.Equal(t, ok, true)
+
+	_, ok = ns["encodeInt"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["encodeFloat"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["StringWriter"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["ByteWriter"]
+	assert.Equal(t, ok, true)
+
+	fmtSrc, err := format.Source([]byte(ns["writeArrayStruct"]))
 	assert.Nil(t, err)
 	assert.Equal(t, string(fmtSrc), expectedSerializer)
-}
-
-func TestArrayStructAuxStructs(t *testing.T) {
-	arrayRecord := &recordDefinition{
-		name:   "ArrayStruct",
-		fields: []field{&arrayField{"IntArray", testInt}, &arrayField{"StringArray", testString}, &arrayField{"FloatArray", testFloat}, &arrayField{"DoubleArray", testDouble}, &arrayField{"LongArray", testLong}, &arrayField{"BoolArray", testBool}, &arrayField{"RecordArray", testRecord}},
-	}
-	expectedStructDef := `import "io"
-import "math"
-
-type ByteWriter interface {
-	Grow(int)
-	WriteByte(byte) error
-}
-
-type StringWriter interface {
-	WriteString(string) (int, error)
-}
-
-func encodeFloat(w io.Writer, byteCount int, bits uint64) error {
-	var err error
-	var bb []byte
-	bw, ok := w.(ByteWriter)
-	if ok {
-		bw.Grow(byteCount)
-	} else {
-		bb = make([]byte, 0, byteCount)
-	}
-	for i := 0; i < byteCount; i++ {
-		if bw != nil {
-			err = bw.WriteByte(byte(bits & 255))
-			if err != nil {
-				return err
-			}
-		} else {
-			bb = append(bb, byte(bits&255))
-		}
-		bits = bits >> 8
-	}
-	if bw == nil {
-		_, err = w.Write(bb)
-		return err
-	}
-	return nil
-}
-
-func encodeInt(w io.Writer, byteCount int, encoded int64) error {
-	var err error
-	var bb []byte
-	bw, ok := w.(ByteWriter)
-	// To avoid reallocations, grow capacity to the largest possible size
-	// for this integer
-	if ok {
-		bw.Grow(byteCount)
-	} else {
-		bb = make([]byte, 0, byteCount)
-	}
-
-	if encoded == 0 {
-		if bw != nil {
-			err = bw.WriteByte(0)
-			if err != nil {
-				return err
-			}
-		} else {
-			bb = append(bb, byte(0))
-		}
-	} else {
-		for encoded > 0 {
-			b := byte(encoded & 127)
-			encoded = encoded >> 7
-			if !(encoded == 0) {
-				b |= 128
-			}
-			if bw != nil {
-				err = bw.WriteByte(b)
-				if err != nil {
-					return err
-				}
-			} else {
-				bb = append(bb, b)
-			}
-		}
-	}
-	if bw == nil {
-		_, err := w.Write(bb)
-		return err
-	}
-	return nil
-
-}
-
-func writeArrayBool(r []bool, w io.Writer) error {
-	err := writeLong(len(r), w)
-	if err != nil {
-		return err
-	}
-	for _, e := range r {
-		err = writeBool(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeArrayDouble(r []float64, w io.Writer) error {
-	err := writeLong(len(r), w)
-	if err != nil {
-		return err
-	}
-	for _, e := range r {
-		err = writeDouble(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeArrayFloat(r []float32, w io.Writer) error {
-	err := writeLong(len(r), w)
-	if err != nil {
-		return err
-	}
-	for _, e := range r {
-		err = writeFloat(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeArrayInt(r []int32, w io.Writer) error {
-	err := writeLong(len(r), w)
-	if err != nil {
-		return err
-	}
-	for _, e := range r {
-		err = writeInt(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeArrayLong(r []int64, w io.Writer) error {
-	err := writeLong(len(r), w)
-	if err != nil {
-		return err
-	}
-	for _, e := range r {
-		err = writeLong(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeArrayNestedRecordRecord(r []*NestedRecord, w io.Writer) error {
-	err := writeLong(len(r), w)
-	if err != nil {
-		return err
-	}
-	for _, e := range r {
-		err = writeNestedRecord(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeArrayString(r []string, w io.Writer) error {
-	err := writeLong(len(r), w)
-	if err != nil {
-		return err
-	}
-	for _, e := range r {
-		err = writeString(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeBool(r bool, w io.Writer) error {
-	var b byte
-	if r {
-		b = byte(1)
-	}
-
-	var err error
-	if bw, ok := w.(ByteWriter); ok {
-		err = bw.WriteByte(b)
-	} else {
-		bb := make([]byte, 1)
-		bb[0] = b
-		_, err = w.Write(bb)
-	}
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func writeDouble(r float64, w io.Writer) error {
-	bits := uint64(math.Float64bits(r))
-	const byteCount = 8
-	return encodeFloat(w, byteCount, bits)
-}
-
-func writeFloat(r float32, w io.Writer) error {
-	bits := uint64(math.Float32bits(r))
-	const byteCount = 4
-	return encodeFloat(w, byteCount, bits)
-}
-
-func writeInt(r int32, w io.Writer) error {
-	downShift := uint32(31)
-	encoded := int64((r << 1) ^ (r >> downShift))
-	const maxByteSize = 5
-	return encodeInt(w, maxByteSize, encoded)
-}
-
-func writeLong(r int64, w io.Writer) error {
-	downShift := uint64(63)
-	encoded := int64((r << 1) ^ (r >> downShift))
-	const maxByteSize = 10
-	return encodeInt(w, maxByteSize, encoded)
-}
-
-func writeString(r string, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	if sw, ok := w.(StringWriter); ok {
-		_, err = sw.WriteString(r)
-	} else {
-		_, err = w.Write([]byte(r))
-	}
-	return err
-}
-
-`
-	fmtSrc, err := format.Source([]byte(arrayRecord.auxStructs()))
-	assert.Nil(t, err)
-	assert.Equal(t, string(fmtSrc), expectedStructDef)
 }
 
 func TestMapStructDef(t *testing.T) {
@@ -565,7 +245,11 @@ func TestMapStructDef(t *testing.T) {
 	DoubleMap map[string]float64
 	LongMap   map[string]int64
 	BoolMap   map[string]bool
-	RecordMap map[string]*NestedRecord
+	RecordMap map[string]NestedRecord
+}
+
+func (r MapStruct) Serialize(w io.Writer) error {
+	return writeMapStruct(r, w)
 }
 `
 	fmtSrc, err := format.Source([]byte(mapRecord.structDefinition()))
@@ -578,7 +262,7 @@ func TestMapSerializer(t *testing.T) {
 		name:   "MapStruct",
 		fields: []field{&mapField{"IntMap", testInt}, &mapField{"StringMap", testString}, &mapField{"FloatMap", testFloat}, &mapField{"DoubleMap", testDouble}, &mapField{"LongMap", testLong}, &mapField{"BoolMap", testBool}, &mapField{"RecordMap", testRecord}},
 	}
-	expectedSerializer := `func (r *MapStruct) Serialize(w io.Writer) error {
+	expectedSerializer := `func writeMapStruct(r MapStruct, w io.Writer) error {
 	var err error
 	err = writeMapInt(r.IntMap, w)
 	if err != nil {
@@ -604,297 +288,64 @@ func TestMapSerializer(t *testing.T) {
 	if err != nil {
 		return err
 	}
-	err = writeMapNestedRecordRecord(r.RecordMap, w)
+	err = writeMapNestedRecord(r.RecordMap, w)
 	if err != nil {
 		return err
 	}
 
 	return nil
 }`
-	fmtSrc, err := format.Source([]byte(mapRecord.serializerMethod()))
+
+	imports := make(map[string]string)
+	ns := make(map[string]string)
+
+	mapRecord.namespaceMap(imports, ns)
+	// Verify we import the correct packages
+	_, ok := imports["io"]
+	assert.Equal(t, ok, true)
+	_, ok = imports["math"]
+	assert.Equal(t, ok, true)
+	assert.Equal(t, len(imports), 2)
+
+	assert.Equal(t, len(ns), 18)
+	_, ok = ns["writeBool"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeDouble"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeLong"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeInt"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeString"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeFloat"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeMapBool"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeMapDouble"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeMapLong"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeMapInt"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeMapString"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeMapFloat"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeMapNestedRecord"]
+	assert.Equal(t, ok, true)
+
+	_, ok = ns["encodeInt"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["encodeFloat"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["StringWriter"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["ByteWriter"]
+	assert.Equal(t, ok, true)
+	fmtSrc, err := format.Source([]byte(ns["writeMapStruct"]))
 	assert.Nil(t, err)
 	assert.Equal(t, string(fmtSrc), expectedSerializer)
-}
-
-func TestMapAuxStructs(t *testing.T) {
-	mapRecord := &recordDefinition{
-		name:   "MapStruct",
-		fields: []field{&mapField{"IntMap", testInt}, &mapField{"StringMap", testString}, &mapField{"FloatMap", testFloat}, &mapField{"DoubleMap", testDouble}, &mapField{"LongMap", testLong}, &mapField{"BoolMap", testBool}, &mapField{"RecordMap", testRecord}},
-	}
-	expectedStructDef := `import "io"
-import "math"
-
-type ByteWriter interface {
-	Grow(int)
-	WriteByte(byte) error
-}
-
-type StringWriter interface {
-	WriteString(string) (int, error)
-}
-
-func encodeFloat(w io.Writer, byteCount int, bits uint64) error {
-	var err error
-	var bb []byte
-	bw, ok := w.(ByteWriter)
-	if ok {
-		bw.Grow(byteCount)
-	} else {
-		bb = make([]byte, 0, byteCount)
-	}
-	for i := 0; i < byteCount; i++ {
-		if bw != nil {
-			err = bw.WriteByte(byte(bits & 255))
-			if err != nil {
-				return err
-			}
-		} else {
-			bb = append(bb, byte(bits&255))
-		}
-		bits = bits >> 8
-	}
-	if bw == nil {
-		_, err = w.Write(bb)
-		return err
-	}
-	return nil
-}
-
-func encodeInt(w io.Writer, byteCount int, encoded int64) error {
-	var err error
-	var bb []byte
-	bw, ok := w.(ByteWriter)
-	// To avoid reallocations, grow capacity to the largest possible size
-	// for this integer
-	if ok {
-		bw.Grow(byteCount)
-	} else {
-		bb = make([]byte, 0, byteCount)
-	}
-
-	if encoded == 0 {
-		if bw != nil {
-			err = bw.WriteByte(0)
-			if err != nil {
-				return err
-			}
-		} else {
-			bb = append(bb, byte(0))
-		}
-	} else {
-		for encoded > 0 {
-			b := byte(encoded & 127)
-			encoded = encoded >> 7
-			if !(encoded == 0) {
-				b |= 128
-			}
-			if bw != nil {
-				err = bw.WriteByte(b)
-				if err != nil {
-					return err
-				}
-			} else {
-				bb = append(bb, b)
-			}
-		}
-	}
-	if bw == nil {
-		_, err := w.Write(bb)
-		return err
-	}
-	return nil
-
-}
-
-func writeBool(r bool, w io.Writer) error {
-	var b byte
-	if r {
-		b = byte(1)
-	}
-
-	var err error
-	if bw, ok := w.(ByteWriter); ok {
-		err = bw.WriteByte(b)
-	} else {
-		bb := make([]byte, 1)
-		bb[0] = b
-		_, err = w.Write(bb)
-	}
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func writeDouble(r float64, w io.Writer) error {
-	bits := uint64(math.Float64bits(r))
-	const byteCount = 8
-	return encodeFloat(w, byteCount, bits)
-}
-
-func writeFloat(r float32, w io.Writer) error {
-	bits := uint64(math.Float32bits(r))
-	const byteCount = 4
-	return encodeFloat(w, byteCount, bits)
-}
-
-func writeInt(r int32, w io.Writer) error {
-	downShift := uint32(31)
-	encoded := int64((r << 1) ^ (r >> downShift))
-	const maxByteSize = 5
-	return encodeInt(w, maxByteSize, encoded)
-}
-
-func writeLong(r int64, w io.Writer) error {
-	downShift := uint64(63)
-	encoded := int64((r << 1) ^ (r >> downShift))
-	const maxByteSize = 10
-	return encodeInt(w, maxByteSize, encoded)
-}
-
-func writeMapBool(r map[string]bool, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	for k, e := range r {
-		err = writeString(k, w)
-		if err != nil {
-			return err
-		}
-		err = writeBool(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeMapDouble(r map[string]float64, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	for k, e := range r {
-		err = writeString(k, w)
-		if err != nil {
-			return err
-		}
-		err = writeDouble(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeMapFloat(r map[string]float32, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	for k, e := range r {
-		err = writeString(k, w)
-		if err != nil {
-			return err
-		}
-		err = writeFloat(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeMapInt(r map[string]int32, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	for k, e := range r {
-		err = writeString(k, w)
-		if err != nil {
-			return err
-		}
-		err = writeInt(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeMapLong(r map[string]int64, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	for k, e := range r {
-		err = writeString(k, w)
-		if err != nil {
-			return err
-		}
-		err = writeLong(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeMapNestedRecordRecord(r map[string]*NestedRecord, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	for k, e := range r {
-		err = writeString(k, w)
-		if err != nil {
-			return err
-		}
-		err = writeNestedRecord(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeMapString(r map[string]string, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	for k, e := range r {
-		err = writeString(k, w)
-		if err != nil {
-			return err
-		}
-		err = writeString(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0, w)
-}
-
-func writeString(r string, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	if sw, ok := w.(StringWriter); ok {
-		_, err = sw.WriteString(r)
-	} else {
-		_, err = w.Write([]byte(r))
-	}
-	return err
-}
-
-`
-	fmtSrc, err := format.Source([]byte(mapRecord.auxStructs()))
-	assert.Nil(t, err)
-	assert.Equal(t, string(fmtSrc), expectedStructDef)
 }
 
 func TestPrimitiveUnionStructDef(t *testing.T) {
@@ -903,7 +354,11 @@ func TestPrimitiveUnionStructDef(t *testing.T) {
 		fields: []field{&unionField{"UnionField", false, []field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
 	}
 	expectedStructDef := `type UnionStruct struct {
-	UnionField UnionIntStringFloatDoubleLongBoolNestedRecordRecordNull
+	UnionField UnionIntStringFloatDoubleLongBoolNestedRecordNull
+}
+
+func (r UnionStruct) Serialize(w io.Writer) error {
+	return writeUnionStruct(r, w)
 }
 `
 	fmtSrc, err := format.Source([]byte(record.structDefinition()))
@@ -917,230 +372,55 @@ func TestPrimitiveUnionSerializer(t *testing.T) {
 		name:   "UnionStruct",
 		fields: []field{&unionField{"UnionField", false, []field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
 	}
-	expectedSerializer := `func (r *UnionStruct) Serialize(w io.Writer) error {
+	expectedSerializer := `func writeUnionStruct(r UnionStruct, w io.Writer) error {
 	var err error
-	err = writeUnionIntStringFloatDoubleLongBoolNestedRecordRecordNull(r.UnionField, w)
+	err = writeUnionIntStringFloatDoubleLongBoolNestedRecordNull(r.UnionField, w)
 	if err != nil {
 		return err
 	}
 
 	return nil
 }`
-	fmtSrc, err := format.Source([]byte(record.serializerMethod()))
+	imports := make(map[string]string)
+	ns := make(map[string]string)
+
+	record.namespaceMap(imports, ns)
+	// Verify we import the correct packages
+	assert.Equal(t, len(imports), 3)
+	_, ok := imports["io"]
+	assert.Equal(t, ok, true)
+	_, ok = imports["math"]
+	assert.Equal(t, ok, true)
+	_, ok = imports["fmt"]
+	assert.Equal(t, ok, true)
+
+	assert.Equal(t, len(ns), 15)
+	_, ok = ns["writeBool"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeDouble"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeLong"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeInt"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeString"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeFloat"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeNull"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["writeUnionIntStringFloatDoubleLongBoolNestedRecordNull"]
+	assert.Equal(t, ok, true)
+
+	_, ok = ns["encodeInt"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["encodeFloat"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["StringWriter"]
+	assert.Equal(t, ok, true)
+	_, ok = ns["ByteWriter"]
+	assert.Equal(t, ok, true)
+	fmtSrc, err := format.Source([]byte(ns["writeUnionStruct"]))
 	assert.Nil(t, err)
 	assert.Equal(t, string(fmtSrc), expectedSerializer)
-
-}
-
-func TestPrimitiveUnionAuxStructs(t *testing.T) {
-	record := &recordDefinition{
-		name:   "UnionStruct",
-		fields: []field{&unionField{"UnionField", false, []field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
-	}
-	expectedStructDef := `import "fmt"
-import "io"
-import "math"
-
-type ByteWriter interface {
-	Grow(int)
-	WriteByte(byte) error
-}
-
-type StringWriter interface {
-	WriteString(string) (int, error)
-}
-
-type UnionIntStringFloatDoubleLongBoolNestedRecordRecordNull struct {
-	Int                int32
-	String             string
-	Float              float32
-	Double             float64
-	Long               int64
-	Bool               bool
-	NestedRecordRecord *NestedRecord
-	Null               interface{}
-	UnionType          UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnum
-}
-
-type UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnum int
-
-const (
-	UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumInt                UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnum = 0
-	UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumString             UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnum = 1
-	UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumFloat              UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnum = 2
-	UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumDouble             UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnum = 3
-	UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumLong               UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnum = 4
-	UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumBool               UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnum = 5
-	UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumNestedRecordRecord UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnum = 6
-	UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumNull               UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnum = 7
-)
-
-func encodeFloat(w io.Writer, byteCount int, bits uint64) error {
-	var err error
-	var bb []byte
-	bw, ok := w.(ByteWriter)
-	if ok {
-		bw.Grow(byteCount)
-	} else {
-		bb = make([]byte, 0, byteCount)
-	}
-	for i := 0; i < byteCount; i++ {
-		if bw != nil {
-			err = bw.WriteByte(byte(bits & 255))
-			if err != nil {
-				return err
-			}
-		} else {
-			bb = append(bb, byte(bits&255))
-		}
-		bits = bits >> 8
-	}
-	if bw == nil {
-		_, err = w.Write(bb)
-		return err
-	}
-	return nil
-}
-
-func encodeInt(w io.Writer, byteCount int, encoded int64) error {
-	var err error
-	var bb []byte
-	bw, ok := w.(ByteWriter)
-	// To avoid reallocations, grow capacity to the largest possible size
-	// for this integer
-	if ok {
-		bw.Grow(byteCount)
-	} else {
-		bb = make([]byte, 0, byteCount)
-	}
-
-	if encoded == 0 {
-		if bw != nil {
-			err = bw.WriteByte(0)
-			if err != nil {
-				return err
-			}
-		} else {
-			bb = append(bb, byte(0))
-		}
-	} else {
-		for encoded > 0 {
-			b := byte(encoded & 127)
-			encoded = encoded >> 7
-			if !(encoded == 0) {
-				b |= 128
-			}
-			if bw != nil {
-				err = bw.WriteByte(b)
-				if err != nil {
-					return err
-				}
-			} else {
-				bb = append(bb, b)
-			}
-		}
-	}
-	if bw == nil {
-		_, err := w.Write(bb)
-		return err
-	}
-	return nil
-
-}
-
-func writeBool(r bool, w io.Writer) error {
-	var b byte
-	if r {
-		b = byte(1)
-	}
-
-	var err error
-	if bw, ok := w.(ByteWriter); ok {
-		err = bw.WriteByte(b)
-	} else {
-		bb := make([]byte, 1)
-		bb[0] = b
-		_, err = w.Write(bb)
-	}
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func writeDouble(r float64, w io.Writer) error {
-	bits := uint64(math.Float64bits(r))
-	const byteCount = 8
-	return encodeFloat(w, byteCount, bits)
-}
-
-func writeFloat(r float32, w io.Writer) error {
-	bits := uint64(math.Float32bits(r))
-	const byteCount = 4
-	return encodeFloat(w, byteCount, bits)
-}
-
-func writeInt(r int32, w io.Writer) error {
-	downShift := uint32(31)
-	encoded := int64((r << 1) ^ (r >> downShift))
-	const maxByteSize = 5
-	return encodeInt(w, maxByteSize, encoded)
-}
-
-func writeLong(r int64, w io.Writer) error {
-	downShift := uint64(63)
-	encoded := int64((r << 1) ^ (r >> downShift))
-	const maxByteSize = 10
-	return encodeInt(w, maxByteSize, encoded)
-}
-
-func writeNull(_ interface{}, _ io.Writer) error {
-	return nil
-}
-
-func writeString(r string, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	if sw, ok := w.(StringWriter); ok {
-		_, err = sw.WriteString(r)
-	} else {
-		_, err = w.Write([]byte(r))
-	}
-	return err
-}
-
-func writeUnionIntStringFloatDoubleLongBoolNestedRecordRecordNull(r UnionIntStringFloatDoubleLongBoolNestedRecordRecordNull, w io.Writer) error {
-	err := writeLong(int64(r.UnionType), w)
-	if err != nil {
-		return err
-	}
-	switch r.UnionType {
-	case UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumInt:
-		return writeInt(r.Int, w)
-	case UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumString:
-		return writeString(r.String, w)
-	case UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumFloat:
-		return writeFloat(r.Float, w)
-	case UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumDouble:
-		return writeDouble(r.Double, w)
-	case UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumLong:
-		return writeLong(r.Long, w)
-	case UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumBool:
-		return writeBool(r.Bool, w)
-	case UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumNestedRecordRecord:
-		return writeNestedRecord(r.NestedRecordRecord, w)
-	case UnionIntStringFloatDoubleLongBoolNestedRecordRecordNullTypeEnumNull:
-		return writeNull(r.Null, w)
-
-	}
-	return fmt.Errorf("Invalid value for UnionIntStringFloatDoubleLongBoolNestedRecordRecordNull")
-}
-
-`
-	fmtSrc, err := format.Source([]byte(record.auxStructs()))
-	assert.Nil(t, err)
-	assert.Equal(t, string(fmtSrc), expectedStructDef)
-
 }

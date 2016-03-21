@@ -14,14 +14,14 @@ func (s *recordField) Name() string {
 }
 
 func (s *recordField) GoType() string {
-	return fmt.Sprintf("*%v", toPublicName(s.typeName))
+	return fmt.Sprintf("%v", toPublicName(s.typeName))
 }
 
 func (s *recordField) FieldType() string {
-	return s.typeName + "Record"
+	return s.typeName
 }
 
-func (s *recordField) AuxStructs(aux map[string]string, _ map[string]string) {
+func (s *recordField) SerializerNs(imports, aux map[string]string) {
 }
 
 func (s *recordField) SerializerMethod() string {

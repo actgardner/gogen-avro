@@ -29,7 +29,7 @@ func (s *bytesField) GoType() string {
 	return "[]byte"
 }
 
-func (s *bytesField) AuxStructs(aux map[string]string, imports map[string]string) {
+func (s *bytesField) SerializerNs(imports, aux map[string]string) {
 	aux["writeBytes"] = writeBytesMethod
 	aux["writeLong"] = writeLongMethod
 	aux["encodeInt"] = encodeIntMethod
