@@ -3,7 +3,6 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/linkedin/goavro"
 	"io/ioutil"
 	"reflect"
@@ -33,14 +32,12 @@ func TestMapFixture(t *testing.T) {
 		t.Fatal(err)
 	}
 	var buf bytes.Buffer
-	for i, f := range fixtures {
-		fmt.Printf("Serializing fixture %v\n", i)
+	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
 		if err != nil {
 			t.Fatal(err)
 		}
-		fmt.Printf("%v\n", buf.Bytes())
 		datum, err := codec.Decode(&buf)
 		if err != nil {
 			t.Fatal(err)
@@ -69,17 +66,19 @@ func TestMapFixture(t *testing.T) {
 	}
 }
 
-/*
-func BenchmarkPrimitiveRecord(b *testing.B) {
+func BenchmarkMapRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
-		record := PrimitiveTestRecord{1, 2, 3.4, 5.6, "789", true, []byte{1, 2, 3, 4}}
-		record.Serialize(buf)
+		record := MapTestRecord{map[string]int32{"value1": 1, "value2": 2, "value3": 3}, map[string]int64{"value1": 1, "value2": 2, "value3": 3}, map[string]float64{"value1": 1, "value2": 2, "value3": 3}, map[string]string{"value1": "12345", "value2": "67890", "value3": "abcdefg"}, map[string]float32{"value1": 1, "value2": 2, "value3": 3}, map[string]bool{"true": true, "false": false}, map[string][]byte{"value1": {1, 2, 3, 4}, "value2": {100, 200, 255}}}
+		err := record.Serialize(buf)
+		if err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
-func BenchmarkPrimitiveGoavro(b *testing.B) {
-	schemaJson, err := ioutil.ReadFile("primitives.avsc")
+func BenchmarkMapGoavro(b *testing.B) {
+	schemaJson, err := ioutil.ReadFile("maps.avsc")
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -93,16 +92,15 @@ func BenchmarkPrimitiveGoavro(b *testing.B) {
 	}
 	buf := new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
-		someRecord.Set("IntField", 1)
-		someRecord.Set("LongField", 2)
-		someRecord.Set("FloatField", 3.4)
-		someRecord.Set("DoubleField", 5.6)
-		someRecord.Set("StringField", "789")
-		someRecord.Set("BoolField", true)
-		someRecord.Set("BytesField", []byte{1, 2, 3, 4})
+		someRecord.Set("IntField", map[string]interface{}{"value1": int32(1), "value2": int32(2), "value3": int32(3)})
+		someRecord.Set("LongField", map[string]interface{}{"value1": int64(1), "value2": int32(2), "value3": int32(3)})
+		someRecord.Set("FloatField", map[string]interface{}{"value1": float32(1), "value2": float32(2), "value3": float32(3)})
+		someRecord.Set("DoubleField", map[string]interface{}{"value1": float32(1), "value2": float32(2), "value3": float32(3)})
+		someRecord.Set("StringField", map[string]interface{}{"value1": "12345", "value2": "67890", "value3": "abcdefg"})
+		someRecord.Set("BoolField", map[string]interface{}{"true": true, "false": false})
+		someRecord.Set("BytesField", map[string]interface{}{"value1": []byte{1, 2, 3, 4}, "value2": []byte{100, 200, 255}})
 
 		codec.Encode(buf, someRecord)
 	}
 
 }
-*/

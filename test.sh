@@ -8,6 +8,6 @@ $GOPATH/bin/gogen-avro test/maps/maps.avsc > test/maps/schema.go
 $GOPATH/bin/gogen-avro test/arrays/arrays.avsc > test/arrays/schema.go
 
 # Run the unit tests to round-trip data with this schema
-go test github.com/alanctgardner/gogen-avro/test/primitive
-go test github.com/alanctgardner/gogen-avro/test/maps
-go test github.com/alanctgardner/gogen-avro/test/arrays
+go test -bench=. github.com/alanctgardner/gogen-avro/test/primitive
+go test -bench=. github.com/alanctgardner/gogen-avro/test/maps
+go test -bench=. github.com/alanctgardner/gogen-avro/test/arrays

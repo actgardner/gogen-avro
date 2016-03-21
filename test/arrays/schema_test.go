@@ -3,7 +3,6 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/linkedin/goavro"
 	"io/ioutil"
 	"reflect"
@@ -33,14 +32,12 @@ func TestArrayFixture(t *testing.T) {
 		t.Fatal(err)
 	}
 	var buf bytes.Buffer
-	for i, f := range fixtures {
-		fmt.Printf("Serializing fixture %v\n", i)
+	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
 		if err != nil {
 			t.Fatal(err)
 		}
-		fmt.Printf("%v\n", buf.Bytes())
 		datum, err := codec.Decode(&buf)
 		if err != nil {
 			t.Fatal(err)
@@ -68,17 +65,19 @@ func TestArrayFixture(t *testing.T) {
 	}
 }
 
-/*
-func BenchmarkPrimitiveRecord(b *testing.B) {
+func BenchmarkArrayRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
-		record := PrimitiveTestRecord{1, 2, 3.4, 5.6, "789", true, []byte{1, 2, 3, 4}}
-		record.Serialize(buf)
+		record := ArrayTestRecord{[]int32{1, 2, 3}, []int64{4, 5, 6}, []float64{3.4, 5.6, 7.8}, []string{"abc", "def", "ghi"}, []float32{10.1, 10.2, 10.3}, []bool{true, false}, [][]byte{{1, 2, 3, 4}}}
+		err := record.Serialize(buf)
+		if err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
-func BenchmarkPrimitiveGoavro(b *testing.B) {
-	schemaJson, err := ioutil.ReadFile("primitives.avsc")
+func BenchmarkArrayGoavro(b *testing.B) {
+	schemaJson, err := ioutil.ReadFile("arrays.avsc")
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -92,16 +91,38 @@ func BenchmarkPrimitiveGoavro(b *testing.B) {
 	}
 	buf := new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
-		someRecord.Set("IntField", 1)
-		someRecord.Set("LongField", 2)
-		someRecord.Set("FloatField", 3.4)
-		someRecord.Set("DoubleField", 5.6)
-		someRecord.Set("StringField", "789")
-		someRecord.Set("BoolField", true)
-		someRecord.Set("BytesField", []byte{1, 2, 3, 4})
+		err := someRecord.Set("IntField", []interface{}{int32(1), int32(2), int32(3)})
+		if err != nil {
+			b.Fatal(err)
+		}
+		err = someRecord.Set("LongField", []interface{}{int64(4), int64(5), int64(6)})
+		if err != nil {
+			b.Fatal(err)
+		}
+		err = someRecord.Set("FloatField", []interface{}{float32(10.1), float32(10.2), float32(10.3)})
+		if err != nil {
+			b.Fatal(err)
+		}
+		err = someRecord.Set("DoubleField", []interface{}{float64(3.4), float64(5.6), float64(7.8)})
+		if err != nil {
+			b.Fatal(err)
+		}
+		err = someRecord.Set("StringField", []interface{}{"abc", "def", "ghi"})
+		if err != nil {
+			b.Fatal(err)
+		}
+		err = someRecord.Set("BoolField", []interface{}{true, false})
+		if err != nil {
+			b.Fatal(err)
+		}
+		err = someRecord.Set("BytesField", []interface{}{[]byte{1, 2, 3, 4}})
+		if err != nil {
+			b.Fatal(err)
+		}
 
-		codec.Encode(buf, someRecord)
+		err = codec.Encode(buf, someRecord)
+		if err != nil {
+			b.Fatal(err)
+		}
 	}
-
 }
-*/
