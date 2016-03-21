@@ -3,8 +3,8 @@ gogen-avro
 
 Generate Go structures and serializer / deserializer methods from Avro schemas. Based on LinkedIn's goavro package. _This package and the generated code have not been thoroughly tested. Please do not attempt to use it to run a nuclear reactor._
 
-Usage
-===
+### Usage
+
 
 ```
 gogen-avro <avro schema file>
@@ -12,8 +12,7 @@ gogen-avro <avro schema file>
 
 Produces a single Go output file on stdout. The output file will have a struct representing the Avro record, and `Serialize(io.Writer)`, `Deserialize(io.Writer)` methods (note - `Deserialize()` isn't implemented yet). There are no external dependencies outside the standard library - methods to read and write Avro primitives are in the output file. 
 
-Type Conversion
-===
+### Type Conversion
 
 Go types mostly map neatly onto Avro types:
 
@@ -61,12 +60,11 @@ const (
 )
 ``` 
 
-TODO / Caveats
-===
+### TODO / Caveats
 
 This package is woefully incomplete.
 
-- Add some encoding/decoding integration tests
+- Add more encoding/decoding integration tests
 - Support `fixed` and `enum` fields
 - Support decoding things
 - Support custom package names
