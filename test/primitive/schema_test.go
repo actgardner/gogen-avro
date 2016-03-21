@@ -62,3 +62,39 @@ func TestPrimitiveFixture(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkPrimitiveRecord(b *testing.B) {
+	buf := new(bytes.Buffer)
+	for i := 0; i < b.N; i++ {
+		record := PrimitiveTestRecord{1, 2, 3.4, 5.6, "789", true, []byte{1, 2, 3, 4}}
+		record.Serialize(buf)
+	}
+}
+
+func BenchmarkPrimitiveGoavro(b *testing.B) {
+	schemaJson, err := ioutil.ReadFile("primitives.avsc")
+	if err != nil {
+		b.Fatal(err)
+	}
+	codec, err := goavro.NewCodec(string(schemaJson))
+	if err != nil {
+		b.Fatal(err)
+	}
+	someRecord, err := goavro.NewRecord(goavro.RecordSchema(string(schemaJson)))
+	if err != nil {
+		b.Fatal(err)
+	}
+	buf := new(bytes.Buffer)
+	for i := 0; i < b.N; i++ {
+		someRecord.Set("IntField", 1)
+		someRecord.Set("LongField", 2)
+		someRecord.Set("FloatField", 3.4)
+		someRecord.Set("DoubleField", 5.6)
+		someRecord.Set("StringField", "789")
+		someRecord.Set("BoolField", true)
+		someRecord.Set("BytesField", []byte{1, 2, 3, 4})
+
+		codec.Encode(buf, someRecord)
+	}
+
+}
