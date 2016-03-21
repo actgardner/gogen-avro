@@ -70,3 +70,7 @@ This package is woefully incomplete.
 - Support custom package names
 - Figure out what Avro schemas we don't support
 - Maybe framing? Generate RPCs and container format readers/writers
+
+### Thanks
+
+Thanks to LinkedIn's [goavro library](https://github.com/linkedin/goavro), for providing the encoders for primitives and a great example of how to encode everything else.
