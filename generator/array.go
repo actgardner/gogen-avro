@@ -6,7 +6,7 @@ import (
 
 const arraySerializerTemplate = `
 func %v(r %v, w io.Writer) error {
-	err := writeLong(len(r),w)
+	err := writeLong(int64(len(r)),w)
 	if err != nil {
 		return err
 	}
