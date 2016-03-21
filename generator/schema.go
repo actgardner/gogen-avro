@@ -241,7 +241,7 @@ func createFieldStruct(nameStr, typeStr string, def interface{}, hasDef bool, fi
 			}
 		}
 		return &doubleField{nameStr, defFloat, hasDef}, nil
-	case "bool":
+	case "boolean":
 		var defBool bool
 		var ok bool
 		if hasDef {

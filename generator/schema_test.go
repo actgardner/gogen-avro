@@ -14,7 +14,7 @@ func TestParsePrimitiveSchema(t *testing.T) {
 			{"name":"StringField", "type":"string"},
 			{"name":"IntField", "type":"int"},
 			{"name":"LongField", "type":"long"},
-			{"name":"BoolField", "type":"bool"},
+			{"name":"BoolField", "type":"boolean"},
 			{"name":"FloatField", "type": "float"},
 			{"name":"DoubleField", "type": "double"},
 			{"name":"BytesField", "type": "bytes"},
@@ -53,7 +53,7 @@ func TestParsePrimitiveMapTypes(t *testing.T) {
 			{"name": "StringMapField", "type": {"type": "map", "values": "string"}},
 			{"name": "IntMapField", "type": {"type": "map", "values": "int"}},
 			{"name": "LongMapField", "type": {"type": "map", "values": "long"}},
-			{"name": "BoolMapField", "type": {"type": "map", "values": "bool"}},
+			{"name": "BoolMapField", "type": {"type": "map", "values": "boolean"}},
 			{"name": "FloatMapField", "type": {"type": "map", "values": "float"}},
 			{"name": "DoubleMapField", "type": {"type": "map", "values": "double"}},
 			{"name": "BytesMapField", "type": {"type": "map", "values": "bytes"}},
@@ -101,7 +101,7 @@ func TestParsePrimitiveArrayTypes(t *testing.T) {
 			{"name": "StringArrayField", "type": {"type": "array", "items": "string"}},
 			{"name": "IntArrayField", "type": {"type": "array", "items": "int"}},
 			{"name": "LongArrayField", "type": {"type": "array", "items": "long"}},
-			{"name": "BoolArrayField", "type": {"type": "array", "items": "bool"}},
+			{"name": "BoolArrayField", "type": {"type": "array", "items": "boolean"}},
 			{"name": "FloatArrayField", "type": {"type": "array", "items": "float"}},
 			{"name": "DoubleArrayField", "type": {"type": "array", "items": "double"}},
 			{"name": "BytesArrayField", "type": {"type": "array", "items": "bytes"}},
@@ -146,7 +146,7 @@ func TestParsePrimitiveUnion(t *testing.T) {
 		"type": "record",
 		"name": "UnionRecord",
 		"fields": [
-			{"name": "UnionField", "type": ["string", "int", "long", "bool", "float", "double", "bytes", "null", "NestedRecord"]}
+			{"name": "UnionField", "type": ["string", "int", "long", "boolean", "float", "double", "bytes", "null", "NestedRecord"]}
 		]
 	}
 `
