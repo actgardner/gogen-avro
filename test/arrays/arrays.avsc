@@ -1,0 +1,13 @@
+{
+	"type": "record",
+	"name": "ArrayTestRecord",
+	"fields": [
+		{"name": "IntField", "type": {"type": "array", "items": "int"}},
+		{"name": "LongField", "type": {"type": "array", "items": "long"}},
+		{"name": "DoubleField", "type": {"type": "array", "items": "double"}},
+		{"name": "StringField", "type": {"type": "array", "items": "string"}},
+		{"name": "FloatField", "type": {"type": "array", "items": "float"}},
+		{"name": "BoolField", "type": {"type": "array", "items": "boolean"}},
+		{"name": "BytesField", "type": {"type": "array", "items": "bytes"}}
+	]
+}
