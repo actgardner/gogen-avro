@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/alanctgardner/avro-generator/generator"
+	"github.com/alanctgardner/gogen-avro/generator"
 	"io/ioutil"
 	"os"
 )
