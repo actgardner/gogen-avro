@@ -1,0 +1,11 @@
+language: go
+
+go:
+  - 1.4
+  - 1.5
+  - 1.6
+  - tip
+
+script:
+  - go test github.com/gogen-avro/generator
+  - bash test.sh 
