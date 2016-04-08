@@ -1,6 +1,8 @@
 gogen-avro
 ===
 
+[![Build Status](https://travis-ci.org/alanctgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/alanctgardner/gogen-avro)
+
 Generate Go structures and serializer / deserializer methods from Avro schemas. Based on LinkedIn's goavro package. _This package and the generated code have not been thoroughly tested. Please do not attempt to use it to run a nuclear reactor._
 
 ### Usage
