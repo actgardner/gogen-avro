@@ -7,5 +7,5 @@ go:
   - tip
 
 script:
-  - go test github.com/gogen-avro/generator
+  - go test github.com/alanctgardner/gogen-avro/generator
   - bash test.sh 
