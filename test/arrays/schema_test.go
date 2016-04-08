@@ -12,7 +12,7 @@ import (
 /* Round-trip some primitive values through our serializer and goavro to verify */
 const fixtureJson = `
 [
-{"IntField": [1, -2147483647, 2147483647], "LongField": [2, 9223372036854775807, -9223372036854775807], "FloatField": [3.4, 3.402823e-38, 3.402823e+38], "DoubleField": [ 5.6, 2.2250738585072014e-308], "StringField": ["short", "789", "longer", "a slightly longer string"], "BoolField": [true, false], "BytesField": []}
+{"IntField": [1, -2147483647, 2147483647], "LongField": [2, 9223372036854775807, -9223372036854775807], "FloatField": [3.4, 3.402823e-38, 3.402823e+38], "DoubleField": [ 5.6, 2.2250738585072014e-308], "StringField": ["short", "789", "longer", "a slightly longer string"], "BoolField": [true, false], "BytesField": ["VGhpcyBpcyBhIHRlc3Qgc3RyaW5n"]}
 ]
 `
 

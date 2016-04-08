@@ -29,24 +29,51 @@ type StringWriter interface {
 func encodeFloat(w io.Writer, byteCount int, bits uint64) error {
 	var err error
 	var bb []byte
-	bb = make([]byte, 0, byteCount)
+	bw, ok := w.(ByteWriter)
+	if ok {
+		bw.Grow(byteCount)
+	} else {
+		bb = make([]byte, 0, byteCount)
+	}
 	for i := 0; i < byteCount; i++ {
-		bb = append(bb, byte(bits&255))
+		if bw != nil {
+			err = bw.WriteByte(byte(bits & 255))
+			if err != nil {
+				return err
+			}
+		} else {
+			bb = append(bb, byte(bits&255))
+		}
 		bits = bits >> 8
 	}
-	_, err = w.Write(bb)
-	return err
+	if bw == nil {
+		_, err = w.Write(bb)
+		return err
+	}
+	return nil
 }
 
 func encodeInt(w io.Writer, byteCount int, encoded uint64) error {
 	var err error
 	var bb []byte
+	bw, ok := w.(ByteWriter)
 	// To avoid reallocations, grow capacity to the largest possible size
 	// for this integer
-	bb = make([]byte, 0, byteCount)
+	if ok {
+		bw.Grow(byteCount)
+	} else {
+		bb = make([]byte, 0, byteCount)
+	}
 
 	if encoded == 0 {
-		bb = append(bb, byte(0))
+		if bw != nil {
+			err = bw.WriteByte(0)
+			if err != nil {
+				return err
+			}
+		} else {
+			bb = append(bb, byte(0))
+		}
 	} else {
 		for encoded > 0 {
 			b := byte(encoded & 127)
@@ -54,11 +81,22 @@ func encodeInt(w io.Writer, byteCount int, encoded uint64) error {
 			if !(encoded == 0) {
 				b |= 128
 			}
-			bb = append(bb, b)
+			if bw != nil {
+				err = bw.WriteByte(b)
+				if err != nil {
+					return err
+				}
+			} else {
+				bb = append(bb, b)
+			}
 		}
 	}
-	_, err = w.Write(bb)
-	return err
+	if bw == nil {
+		_, err := w.Write(bb)
+		return err
+	}
+	return nil
+
 }
 
 func writeArrayBool(r []bool, w io.Writer) error {
