@@ -1,7 +1,0 @@
-{
-	"type": "record",
-	"name": "PrimitiveEnumTestRecord",
-	"fields": [
-		{"name": "EnumField", "type": ["int", "long", "float", "double", "string", "boolean", "bytes", "null"]}
-	]
-}

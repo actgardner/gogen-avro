@@ -4,12 +4,12 @@ import "fmt"
 import "io"
 import "math"
 
-type PrimitiveEnumTestRecord struct {
-	EnumField UnionIntLongFloatDoubleStringBoolBytesNull
+type PrimitiveUnionTestRecord struct {
+	UnionField UnionIntLongFloatDoubleStringBoolBytesNull
 }
 
-func (r PrimitiveEnumTestRecord) Serialize(w io.Writer) error {
-	return writePrimitiveEnumTestRecord(r, w)
+func (r PrimitiveUnionTestRecord) Serialize(w io.Writer) error {
+	return writePrimitiveUnionTestRecord(r, w)
 }
 
 type ByteWriter interface {
@@ -178,9 +178,9 @@ func writeNull(_ interface{}, _ io.Writer) error {
 	return nil
 }
 
-func writePrimitiveEnumTestRecord(r PrimitiveEnumTestRecord, w io.Writer) error {
+func writePrimitiveUnionTestRecord(r PrimitiveUnionTestRecord, w io.Writer) error {
 	var err error
-	err = writeUnionIntLongFloatDoubleStringBoolBytesNull(r.EnumField, w)
+	err = writeUnionIntLongFloatDoubleStringBoolBytesNull(r.UnionField, w)
 	if err != nil {
 		return err
 	}
