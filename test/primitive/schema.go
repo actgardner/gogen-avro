@@ -14,7 +14,7 @@ type PrimitiveTestRecord struct {
 }
 
 func (r PrimitiveTestRecord) Serialize(w io.Writer) error {
-	return writePrimitiveTestRecord(r, w)
+	return writePrimitiveTestRecord(&r, w)
 }
 
 type ByteWriter interface {
@@ -154,7 +154,7 @@ func writeLong(r int64, w io.Writer) error {
 	return encodeInt(w, maxByteSize, encoded)
 }
 
-func writePrimitiveTestRecord(r PrimitiveTestRecord, w io.Writer) error {
+func writePrimitiveTestRecord(r *PrimitiveTestRecord, w io.Writer) error {
 	var err error
 	err = writeInt(r.IntField, w)
 	if err != nil {

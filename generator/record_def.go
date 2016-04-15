@@ -9,7 +9,7 @@ const recordStructDefTemplate = `type %v struct {
 }
 
 func (r %v) Serialize(w io.Writer) error {
-	return write%v(r, w)
+	return write%v(&r, w)
 }
 `
 
@@ -55,7 +55,7 @@ func (r *recordDefinition) structDefinition() string {
 }
 
 func (r *recordDefinition) serializerMethodDef() string {
-	return fmt.Sprintf("func %v(r %v, w io.Writer) error {\n%v\nreturn nil\n}", r.serializerMethod(), r.goName(), r.fieldSerializers())
+	return fmt.Sprintf("func %v(r *%v, w io.Writer) error {\n%v\nreturn nil\n}", r.serializerMethod(), r.goName(), r.fieldSerializers())
 }
 
 func (r *recordDefinition) serializerMethod() string {

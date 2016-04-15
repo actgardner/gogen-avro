@@ -14,7 +14,7 @@ type ArrayTestRecord struct {
 }
 
 func (r ArrayTestRecord) Serialize(w io.Writer) error {
-	return writeArrayTestRecord(r, w)
+	return writeArrayTestRecord(&r, w)
 }
 
 type ByteWriter interface {
@@ -197,7 +197,7 @@ func writeArrayString(r []string, w io.Writer) error {
 	return writeLong(0, w)
 }
 
-func writeArrayTestRecord(r ArrayTestRecord, w io.Writer) error {
+func writeArrayTestRecord(r *ArrayTestRecord, w io.Writer) error {
 	var err error
 	err = writeArrayInt(r.IntField, w)
 	if err != nil {

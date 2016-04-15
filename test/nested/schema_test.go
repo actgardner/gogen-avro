@@ -85,7 +85,7 @@ func TestNestedFixture(t *testing.T) {
 		value := reflect.ValueOf(f)
 		for i := 0; i < value.NumField(); i++ {
 			fieldName := value.Type().Field(i).Name
-			structVal := value.Field(i)
+			structVal := reflect.Indirect(value.Field(i))
 			for j := 0; j < structVal.NumField(); j++ {
 				nestedFieldName := structVal.Type().Field(j).Name
 				avroVal, err := record.Get(fieldName)

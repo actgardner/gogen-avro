@@ -14,7 +14,7 @@ type MapTestRecord struct {
 }
 
 func (r MapTestRecord) Serialize(w io.Writer) error {
-	return writeMapTestRecord(r, w)
+	return writeMapTestRecord(&r, w)
 }
 
 type ByteWriter interface {
@@ -280,7 +280,7 @@ func writeMapString(r map[string]string, w io.Writer) error {
 	return writeLong(0, w)
 }
 
-func writeMapTestRecord(r MapTestRecord, w io.Writer) error {
+func writeMapTestRecord(r *MapTestRecord, w io.Writer) error {
 	var err error
 	err = writeMapInt(r.IntField, w)
 	if err != nil {

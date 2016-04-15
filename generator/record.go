@@ -15,7 +15,7 @@ func (s *recordField) Name() string {
 }
 
 func (s *recordField) GoType() string {
-	return fmt.Sprintf("%v", toPublicName(s.typeName))
+	return fmt.Sprintf("*%v", toPublicName(s.typeName))
 }
 
 func (s *recordField) FieldType() string {

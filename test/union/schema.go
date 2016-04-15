@@ -9,7 +9,7 @@ type PrimitiveUnionTestRecord struct {
 }
 
 func (r PrimitiveUnionTestRecord) Serialize(w io.Writer) error {
-	return writePrimitiveUnionTestRecord(r, w)
+	return writePrimitiveUnionTestRecord(&r, w)
 }
 
 type ByteWriter interface {
@@ -178,7 +178,7 @@ func writeNull(_ interface{}, _ io.Writer) error {
 	return nil
 }
 
-func writePrimitiveUnionTestRecord(r PrimitiveUnionTestRecord, w io.Writer) error {
+func writePrimitiveUnionTestRecord(r *PrimitiveUnionTestRecord, w io.Writer) error {
 	var err error
 	err = writeUnionIntLongFloatDoubleStringBoolBytesNull(r.UnionField, w)
 	if err != nil {

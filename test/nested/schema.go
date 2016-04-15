@@ -4,12 +4,12 @@ import "io"
 import "math"
 
 type NestedTestRecord struct {
-	NumberField NumberRecord
-	OtherField  NestedRecord
+	NumberField *NumberRecord
+	OtherField  *NestedRecord
 }
 
 func (r NestedTestRecord) Serialize(w io.Writer) error {
-	return writeNestedTestRecord(r, w)
+	return writeNestedTestRecord(&r, w)
 }
 
 type ByteWriter interface {
@@ -24,7 +24,7 @@ type NestedRecord struct {
 }
 
 func (r NestedRecord) Serialize(w io.Writer) error {
-	return writeNestedRecord(r, w)
+	return writeNestedRecord(&r, w)
 }
 
 type NumberRecord struct {
@@ -35,7 +35,7 @@ type NumberRecord struct {
 }
 
 func (r NumberRecord) Serialize(w io.Writer) error {
-	return writeNumberRecord(r, w)
+	return writeNumberRecord(&r, w)
 }
 
 type StringWriter interface {
@@ -170,7 +170,7 @@ func writeLong(r int64, w io.Writer) error {
 	return encodeInt(w, maxByteSize, encoded)
 }
 
-func writeNestedRecord(r NestedRecord, w io.Writer) error {
+func writeNestedRecord(r *NestedRecord, w io.Writer) error {
 	var err error
 	err = writeString(r.StringField, w)
 	if err != nil {
@@ -187,7 +187,7 @@ func writeNestedRecord(r NestedRecord, w io.Writer) error {
 
 	return nil
 }
-func writeNestedTestRecord(r NestedTestRecord, w io.Writer) error {
+func writeNestedTestRecord(r *NestedTestRecord, w io.Writer) error {
 	var err error
 	err = writeNumberRecord(r.NumberField, w)
 	if err != nil {
@@ -200,7 +200,7 @@ func writeNestedTestRecord(r NestedTestRecord, w io.Writer) error {
 
 	return nil
 }
-func writeNumberRecord(r NumberRecord, w io.Writer) error {
+func writeNumberRecord(r *NumberRecord, w io.Writer) error {
 	var err error
 	err = writeInt(r.IntField, w)
 	if err != nil {
