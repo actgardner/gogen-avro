@@ -34,6 +34,10 @@ func decodeSchema(schemaJson []byte) (*recordDefinition, error) {
 	if !ok {
 		return nil, fmt.Errorf("Invalid or unsupported schema - expected map")
 	}
+	return decodeSchemaMap(schemaMap)
+}
+
+func decodeSchemaMap(schemaMap map[string]interface{}) (*recordDefinition, error) {
 	t, ok := schemaMap["type"]
 	if !ok {
 		return nil, fmt.Errorf("Schema is missing required field 'type'")
@@ -182,6 +186,12 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (fi
 			return nil, fmt.Errorf("Array %v item definition is invalid - %v", err)
 		}
 		return &mapField{nameStr, fieldType}, nil
+	case "record":
+		def, err := decodeSchemaMap(typeMap)
+		if err != nil {
+			return nil, err
+		}
+		return &recordField{nameStr, def.goName(), def}, nil
 	default:
 		return nil, fmt.Errorf("Unknown complex type %v", typeStr)
 	}
@@ -265,6 +275,6 @@ func createFieldStruct(nameStr, typeStr string, def interface{}, hasDef bool, fi
 	case "null":
 		return &nullField{nameStr, hasDef}, nil
 	default:
-		return &recordField{nameStr, typeStr}, nil
+		return &recordField{nameStr, typeStr, nil}, nil
 	}
 }

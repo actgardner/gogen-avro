@@ -7,6 +7,7 @@ import (
 type recordField struct {
 	name     string
 	typeName string
+	def      *recordDefinition
 }
 
 func (s *recordField) Name() string {
@@ -22,6 +23,11 @@ func (s *recordField) FieldType() string {
 }
 
 func (s *recordField) SerializerNs(imports, aux map[string]string) {
+	// Records can just be a record name referencing a different schema file, or a whole nested record definition
+	if s.def != nil {
+		s.def.namespaceMap(imports, aux)
+		aux[s.def.goName()] = s.def.structDefinition()
+	}
 }
 
 func (s *recordField) SerializerMethod() string {

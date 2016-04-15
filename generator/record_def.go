@@ -32,10 +32,13 @@ func (r *recordDefinition) structFields() string {
 
 /* Get the import and namespace maps for this record */
 func (r *recordDefinition) namespaceMap(imports map[string]string, ns map[string]string) {
-	imports["io"] = "import \"io\""
-	ns[r.serializerMethod()] = r.serializerMethodDef()
-	for _, f := range r.fields {
-		f.SerializerNs(imports, ns)
+	// Import guard, to avoid circular dependencies
+	if _, ok := ns[r.serializerMethod()]; !ok {
+		imports["io"] = "import \"io\""
+		ns[r.serializerMethod()] = r.serializerMethodDef()
+		for _, f := range r.fields {
+			f.SerializerNs(imports, ns)
+		}
 	}
 }
 
