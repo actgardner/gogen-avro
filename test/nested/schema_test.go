@@ -3,7 +3,6 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/linkedin/goavro"
 	"io/ioutil"
 	"reflect"
@@ -97,7 +96,6 @@ func TestNestedFixture(t *testing.T) {
 					t.Fatal(err)
 				}
 				nestedStructVal := structVal.Field(j).Interface()
-				fmt.Printf("Compare %v: %v %v\n", fieldName+"."+nestedFieldName, nestedStructVal, nestedAvroVal)
 				if !reflect.DeepEqual(nestedStructVal, nestedAvroVal) {
 					t.Fatalf("Field %v not equal: %v != %v", fieldName+"."+nestedFieldName, nestedStructVal, nestedAvroVal)
 				}
