@@ -13,7 +13,7 @@ var (
 	testDouble = &doubleField{"DoubleField", 1, true}
 	testLong   = &longField{"LongField", 1, true}
 	testBool   = &boolField{"BoolField", true, true}
-	testRecord = &recordField{"NestedRecordField", "NestedRecord"}
+	testRecord = &recordField{"NestedRecordField", "NestedRecord", nil}
 )
 
 func TestRecordStructDef(t *testing.T) {
@@ -29,11 +29,11 @@ func TestRecordStructDef(t *testing.T) {
 	FloatField        float32
 	DoubleField       float64
 	BoolField         bool
-	NestedRecordField NestedRecord
+	NestedRecordField *NestedRecord
 }
 
 func (r PrimitiveStruct) Serialize(w io.Writer) error {
-	return writePrimitiveStruct(r, w)
+	return writePrimitiveStruct(&r, w)
 }
 `
 	fmtSrc, err := format.Source([]byte(primitiveRecord.structDefinition()))
@@ -47,7 +47,7 @@ func TestRecordSerializerMethod(t *testing.T) {
 		fields: []field{testInt, testString, testLong, testFloat, testDouble, testBool, testRecord},
 	}
 
-	expectedSerializer := `func writePrimitiveStruct(r PrimitiveStruct, w io.Writer) error {
+	expectedSerializer := `func writePrimitiveStruct(r *PrimitiveStruct, w io.Writer) error {
 	var err error
 	err = writeInt(r.IntField, w)
 	if err != nil {
@@ -130,11 +130,11 @@ func TestArrayStructDef(t *testing.T) {
 	DoubleArray []float64
 	LongArray   []int64
 	BoolArray   []bool
-	RecordArray []NestedRecord
+	RecordArray []*NestedRecord
 }
 
 func (r ArrayStruct) Serialize(w io.Writer) error {
-	return writeArrayStruct(r, w)
+	return writeArrayStruct(&r, w)
 }
 `
 	fmtSrc, err := format.Source([]byte(arrayRecord.structDefinition()))
@@ -147,7 +147,7 @@ func TestArrayStructSerializer(t *testing.T) {
 		name:   "ArrayStruct",
 		fields: []field{&arrayField{"IntArray", testInt}, &arrayField{"StringArray", testString}, &arrayField{"FloatArray", testFloat}, &arrayField{"DoubleArray", testDouble}, &arrayField{"LongArray", testLong}, &arrayField{"BoolArray", testBool}, &arrayField{"RecordArray", testRecord}},
 	}
-	expectedSerializer := `func writeArrayStruct(r ArrayStruct, w io.Writer) error {
+	expectedSerializer := `func writeArrayStruct(r *ArrayStruct, w io.Writer) error {
 	var err error
 	err = writeArrayInt(r.IntArray, w)
 	if err != nil {
@@ -245,11 +245,11 @@ func TestMapStructDef(t *testing.T) {
 	DoubleMap map[string]float64
 	LongMap   map[string]int64
 	BoolMap   map[string]bool
-	RecordMap map[string]NestedRecord
+	RecordMap map[string]*NestedRecord
 }
 
 func (r MapStruct) Serialize(w io.Writer) error {
-	return writeMapStruct(r, w)
+	return writeMapStruct(&r, w)
 }
 `
 	fmtSrc, err := format.Source([]byte(mapRecord.structDefinition()))
@@ -262,7 +262,7 @@ func TestMapSerializer(t *testing.T) {
 		name:   "MapStruct",
 		fields: []field{&mapField{"IntMap", testInt}, &mapField{"StringMap", testString}, &mapField{"FloatMap", testFloat}, &mapField{"DoubleMap", testDouble}, &mapField{"LongMap", testLong}, &mapField{"BoolMap", testBool}, &mapField{"RecordMap", testRecord}},
 	}
-	expectedSerializer := `func writeMapStruct(r MapStruct, w io.Writer) error {
+	expectedSerializer := `func writeMapStruct(r *MapStruct, w io.Writer) error {
 	var err error
 	err = writeMapInt(r.IntMap, w)
 	if err != nil {
@@ -358,7 +358,7 @@ func TestPrimitiveUnionStructDef(t *testing.T) {
 }
 
 func (r UnionStruct) Serialize(w io.Writer) error {
-	return writeUnionStruct(r, w)
+	return writeUnionStruct(&r, w)
 }
 `
 	fmtSrc, err := format.Source([]byte(record.structDefinition()))
@@ -372,7 +372,7 @@ func TestPrimitiveUnionSerializer(t *testing.T) {
 		name:   "UnionStruct",
 		fields: []field{&unionField{"UnionField", false, []field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
 	}
-	expectedSerializer := `func writeUnionStruct(r UnionStruct, w io.Writer) error {
+	expectedSerializer := `func writeUnionStruct(r *UnionStruct, w io.Writer) error {
 	var err error
 	err = writeUnionIntStringFloatDoubleLongBoolNestedRecordNull(r.UnionField, w)
 	if err != nil {
