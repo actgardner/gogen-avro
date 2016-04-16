@@ -29,7 +29,7 @@ Go types mostly map neatly onto Avro types:
 | enum          | custom type       | Generates a type with a constant for each symbol                                                                     |
 | array<type>   | []<type>          |                                                                                                                      |
 | map<type>     | map[string]<type> |                                                                                                                      |
-| fixed         | []byte            | Fixed fields aren't supported yet                                                                                    |
+| fixed         | [<n>]byte         | Fixed fields are given a custom type, which is an alias for an appropriately sized byte array                        |
 | union         | custom type       | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
 
 `union` is the exception. To avoid a round-trip through `interface{}`, we generate a struct and enumeration whose name is uniquely determined by the types in the union. This can get pretty hairy - for a field whose type is `["int", "string", "float", "double", "long", "bool", "null"]` we generate the following:
@@ -64,11 +64,9 @@ const (
 
 ### TODO / Caveats
 
-This package doesn't implement the entire Avro 1.7.7 specification:
+This package doesn't implement the entire Avro 1.7.7 specification, specifically:
 
-- `fixed` fields
 - Decoding things
-- Custom package names
 - Schema resolution
 - Framing - generate RPCs and container format readers/writers
 
