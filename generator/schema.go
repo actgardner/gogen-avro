@@ -186,6 +186,28 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (fi
 			return nil, fmt.Errorf("Array %v item definition is invalid - %v", err)
 		}
 		return &mapField{nameStr, fieldType}, nil
+	case "enum":
+		symbols, ok := typeMap["symbols"]
+		if !ok {
+			return nil, fmt.Errorf("Field %q must have a 'symbols' field", nameStr)
+		}
+		symbolSlice, ok := symbols.([]interface{})
+		if !ok {
+			return nil, fmt.Errorf("Field %q 'symbols' must be an array", nameStr)
+		}
+		symbolStr, ok := interfaceSliceToStringSlice(symbolSlice)
+		if !ok {
+			return nil, fmt.Errorf("Field %q 'symbols' must be an array of strings", nameStr)
+		}
+		typeName, ok := typeMap["name"]
+		if !ok {
+			return nil, fmt.Errorf("Field %q must have a 'name' field", nameStr)
+		}
+		typeNameStr, ok := typeName.(string)
+		if !ok {
+			return nil, fmt.Errorf("Field %q 'name' must be a string", nameStr)
+		}
+		return &enumField{nameStr, typeNameStr, "", false, symbolStr}, nil
 	case "record":
 		def, err := decodeSchemaMap(typeMap)
 		if err != nil {
