@@ -26,7 +26,7 @@ Go types mostly map neatly onto Avro types:
 | float, double | float32, float64  |                                                                                                                      |
 | bytes         | []byte            |                                                                                                                      |
 | string        | string            |                                                                                                                      |
-| enum          | custom type       | Enumerations aren't supported yet                                                                                    |
+| enum          | custom type       | Generates a type with a constant for each symbol                                                                     |
 | array<type>   | []<type>          |                                                                                                                      |
 | map<type>     | map[string]<type> |                                                                                                                      |
 | fixed         | []byte            | Fixed fields aren't supported yet                                                                                    |
@@ -64,14 +64,13 @@ const (
 
 ### TODO / Caveats
 
-This package is woefully incomplete.
+This package doesn't implement the entire Avro 1.7.7 specification:
 
-- Add more encoding/decoding integration tests
-- Support `fixed` and `enum` fields
-- Support decoding things
-- Support custom package names
-- Figure out what Avro schemas we don't support
-- Maybe framing? Generate RPCs and container format readers/writers
+- `fixed` fields
+- Decoding things
+- Custom package names
+- Schema resolution
+- Framing - generate RPCs and container format readers/writers
 
 ### Thanks
 
