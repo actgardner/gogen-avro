@@ -34,7 +34,6 @@ func (s *bytesField) SerializerNs(imports, aux map[string]string) {
 	aux["writeLong"] = writeLongMethod
 	aux["encodeInt"] = encodeIntMethod
 	aux["ByteWriter"] = byteWriterInterface
-
 }
 
 func (s *bytesField) SerializerMethod() string {

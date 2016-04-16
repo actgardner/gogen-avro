@@ -208,6 +208,24 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (fi
 			return nil, fmt.Errorf("Field %q 'name' must be a string", nameStr)
 		}
 		return &enumField{nameStr, typeNameStr, "", false, symbolStr}, nil
+	case "fixed":
+		size, ok := typeMap["size"]
+		if !ok {
+			return nil, fmt.Errorf("Field %q must have a 'size' field", nameStr)
+		}
+		sizeInt, ok := size.(float64)
+		if !ok {
+			return nil, fmt.Errorf("Field %q 'size' must be an integer", nameStr)
+		}
+		typeName, ok := typeMap["name"]
+		if !ok {
+			return nil, fmt.Errorf("Field %q must have a 'name' field", nameStr)
+		}
+		typeNameStr, ok := typeName.(string)
+		if !ok {
+			return nil, fmt.Errorf("Field %q 'name' must be a string", nameStr)
+		}
+		return &fixedField{nameStr, typeNameStr, nil, false, int(sizeInt)}, nil
 	case "record":
 		def, err := decodeSchemaMap(typeMap)
 		if err != nil {
