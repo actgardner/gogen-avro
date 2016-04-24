@@ -51,9 +51,10 @@ func (s *mapField) SerializerNs(imports, aux map[string]string) {
 	mapSerializer := fmt.Sprintf(mapSerializerTemplate, s.SerializerMethod(), s.GoType(), itemMethodName)
 	aux[methodName] = mapSerializer
 	aux["writeLong"] = writeLongMethod
+	aux["writeString"] = writeStringMethod
 	aux["encodeInt"] = encodeIntMethod
 	aux["ByteWriter"] = byteWriterInterface
-
+	aux["StringWriter"] = stringWriterInterface
 }
 
 func (s *mapField) SerializerMethod() string {
