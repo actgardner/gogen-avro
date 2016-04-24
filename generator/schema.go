@@ -99,31 +99,31 @@ func decodeFieldDefinition(nameStr string, fieldMap map[string]interface{}) (fie
 		return nil, fmt.Errorf("Field %q is missing required 'type' field", nameStr)
 	}
 	def, hasDef := fieldMap["default"]
+	return decodeFieldDefinitionType(nameStr, t, def, hasDef)
+}
+
+func decodeFieldDefinitionType(nameStr string, t, def interface{}, hasDef bool) (field, error) {
 	switch t.(type) {
 	case string:
 		typeStr := t.(string)
-		return createFieldStruct(nameStr, typeStr, def, hasDef, fieldMap)
+		return createFieldStruct(nameStr, typeStr, def, hasDef)
 	case []interface{}:
 		return decodeUnionDefinition(nameStr, def, hasDef, t.([]interface{}))
 	case map[string]interface{}:
 		return decodeComplexDefinition(nameStr, t.(map[string]interface{}))
 	}
-	return nil, fmt.Errorf("")
+	return nil, fmt.Errorf("Field %v has invalid type - must be a JSON string, array or map", nameStr)
 }
 
 func decodeUnionDefinition(nameStr string, def interface{}, hasDef bool, fieldList []interface{}) (field, error) {
 	unionFields := make([]field, 0)
 	for i, f := range fieldList {
-		typeStr, ok := f.(string)
-		if !ok {
-			return nil, fmt.Errorf("Union members for %v is not of type strings", nameStr)
-		}
 		var fieldDef field
 		var err error
 		if i == 0 {
-			fieldDef, err = createFieldStruct("", typeStr, def, hasDef, nil)
+			fieldDef, err = decodeFieldDefinitionType("", f, def, hasDef)
 		} else {
-			fieldDef, err = createFieldStruct("", typeStr, nil, false, nil)
+			fieldDef, err = decodeFieldDefinitionType("", f, nil, false)
 		}
 		if err != nil {
 			return nil, err
@@ -152,7 +152,7 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (fi
 		var err error
 		switch items.(type) {
 		case string:
-			fieldType, err = createFieldStruct("", items.(string), nil, false, nil)
+			fieldType, err = createFieldStruct("", items.(string), nil, false)
 		case map[string]interface{}:
 			fieldType, err = decodeFieldDefinition("", items.(map[string]interface{}))
 		case []interface{}:
@@ -174,7 +174,7 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (fi
 		var err error
 		switch items.(type) {
 		case string:
-			fieldType, err = createFieldStruct("", items.(string), nil, false, nil)
+			fieldType, err = createFieldStruct("", items.(string), nil, false)
 		case map[string]interface{}:
 			fieldType, err = decodeFieldDefinition("", items.(map[string]interface{}))
 		case []interface{}:
@@ -237,7 +237,7 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (fi
 	}
 }
 
-func createFieldStruct(nameStr, typeStr string, def interface{}, hasDef bool, fieldMap map[string]interface{}) (field, error) {
+func createFieldStruct(nameStr, typeStr string, def interface{}, hasDef bool) (field, error) {
 	switch typeStr {
 	case "string":
 		var defStr string

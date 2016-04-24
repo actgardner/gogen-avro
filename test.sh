@@ -10,6 +10,7 @@ $GOPATH/bin/gogen-avro test/union/union.avsc > test/union/schema.go
 $GOPATH/bin/gogen-avro test/nested/nested.avsc > test/nested/schema.go
 $GOPATH/bin/gogen-avro test/enum/enum.avsc > test/enum/schema.go
 $GOPATH/bin/gogen-avro test/fixed/fixed.avsc > test/fixed/schema.go
+$GOPATH/bin/gogen-avro test/complex-union/union.avsc > test/complex-union/schema.go
 
 # Run the unit tests to round-trip data with this schema
 go test  github.com/alanctgardner/gogen-avro/test/primitive
@@ -19,3 +20,4 @@ go test  github.com/alanctgardner/gogen-avro/test/union
 go test  github.com/alanctgardner/gogen-avro/test/nested
 go test  github.com/alanctgardner/gogen-avro/test/enum
 go test  github.com/alanctgardner/gogen-avro/test/fixed
+go test  -v github.com/alanctgardner/gogen-avro/test/complex-union
