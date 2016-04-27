@@ -69,14 +69,23 @@ func (e *enumField) serializerMethodDef() string {
 	return fmt.Sprintf(enumSerializerDef, e.SerializerMethod(), e.FieldType())
 }
 
-func (e *enumField) SerializerNs(imports, aux map[string]string) {
-	aux[e.SerializerMethod()] = e.serializerMethodDef()
-	aux[e.GoType()] = e.structDef()
-	aux["writeInt"] = writeIntMethod
-	aux["encodeInt"] = encodeIntMethod
-	aux["ByteWriter"] = byteWriterInterface
-}
-
 func (e *enumField) SerializerMethod() string {
 	return "write" + e.FieldType()
+}
+
+func (e *enumField) filename() string {
+	return toSnake(e.GoType()) + ".go"
+}
+
+func (e *enumField) AddStruct(p *Package) {
+	p.addStruct(e.filename(), e.GoType(), e.structDef())
+}
+
+func (e *enumField) AddSerializer(p *Package) {
+	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.addFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
+	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.addFunction(e.filename(), "", e.SerializerMethod(), e.serializerMethodDef())
+	p.addImport(UTIL_FILE, "io")
+	p.addImport(e.filename(), "io")
 }

@@ -48,11 +48,14 @@ func (s *boolField) GoType() string {
 	return "bool"
 }
 
-func (s *boolField) SerializerNs(imports, aux map[string]string) {
-	aux["ByteWriter"] = byteWriterInterface
-	aux["writeBool"] = writeBoolMethod
-}
-
 func (s *boolField) SerializerMethod() string {
 	return "writeBool"
+}
+
+func (s *boolField) AddStruct(*Package) {}
+
+func (s *boolField) AddSerializer(p *Package) {
+	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.addFunction(UTIL_FILE, "", "writeBool", writeBoolMethod)
+	p.addImport(UTIL_FILE, "io")
 }

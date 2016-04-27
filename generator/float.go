@@ -55,13 +55,16 @@ func (s *floatField) GoType() string {
 	return "float32"
 }
 
-func (s *floatField) SerializerNs(imports, aux map[string]string) {
-	imports["math"] = "import \"math\""
-	aux["writeFloat"] = writeFloatMethod
-	aux["encodeFloat"] = encodeFloatMethod
-	aux["ByteWriter"] = byteWriterInterface
-}
-
 func (s *floatField) SerializerMethod() string {
 	return "writeFloat"
+}
+
+func (e *floatField) AddStruct(p *Package) {}
+
+func (e *floatField) AddSerializer(p *Package) {
+	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.addFunction(UTIL_FILE, "", "writeFloat", writeFloatMethod)
+	p.addFunction(UTIL_FILE, "", "encodeFloat", encodeFloatMethod)
+	p.addImport(UTIL_FILE, "math")
+	p.addImport(UTIL_FILE, "io")
 }

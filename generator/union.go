@@ -68,19 +68,30 @@ func (s *unionField) unionSerializer() string {
 	return fmt.Sprintf(unionSerializerTemplate, s.SerializerMethod(), s.GoType(), switchCase, s.GoType())
 }
 
-func (s *unionField) SerializerNs(imports, aux map[string]string) {
-	if _, ok := aux[s.unionEnumType()]; ok {
-		return
-	}
-	imports["fmt"] = "import \"fmt\""
-	aux[s.unionEnumType()] = s.unionEnumDef()
-	aux[s.SerializerMethod()] = s.unionSerializer()
-	aux[s.FieldType()] = s.unionTypeDef()
-	for _, f := range s.itemType {
-		f.SerializerNs(imports, aux)
-	}
+func (s *unionField) filename() string {
+	return toSnake(s.GoType()) + ".go"
 }
 
 func (s *unionField) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.FieldType())
+}
+
+func (s *unionField) AddStruct(p *Package) {
+	p.addStruct(s.filename(), s.unionEnumType(), s.unionEnumDef())
+	p.addStruct(s.filename(), s.FieldType(), s.unionTypeDef())
+	for _, f := range s.itemType {
+		f.AddStruct(p)
+	}
+}
+
+func (s *unionField) AddSerializer(p *Package) {
+	p.addImport(UTIL_FILE, "fmt")
+	p.addFunction(UTIL_FILE, "", s.SerializerMethod(), s.unionSerializer())
+	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.addFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
+	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.addImport(UTIL_FILE, "io")
+	for _, f := range s.itemType {
+		f.AddSerializer(p)
+	}
 }

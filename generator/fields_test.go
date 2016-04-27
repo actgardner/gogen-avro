@@ -3,6 +3,7 @@ package generator
 import (
 	"github.com/stretchr/testify/assert"
 	"go/format"
+	"sort"
 	"testing"
 )
 
@@ -31,10 +32,6 @@ func TestRecordStructDef(t *testing.T) {
 	BoolField         bool
 	NestedRecordField *NestedRecord
 }
-
-func (r PrimitiveStruct) Serialize(w io.Writer) error {
-	return writePrimitiveStruct(&r, w)
-}
 `
 	fmtSrc, err := format.Source([]byte(primitiveRecord.structDefinition()))
 	assert.Nil(t, err)
@@ -47,75 +44,20 @@ func TestRecordSerializerMethod(t *testing.T) {
 		fields: []field{testInt, testString, testLong, testFloat, testDouble, testBool, testRecord},
 	}
 
-	expectedSerializer := `func writePrimitiveStruct(r *PrimitiveStruct, w io.Writer) error {
-	var err error
-	err = writeInt(r.IntField, w)
-	if err != nil {
-		return err
-	}
-	err = writeString(r.StringField, w)
-	if err != nil {
-		return err
-	}
-	err = writeLong(r.LongField, w)
-	if err != nil {
-		return err
-	}
-	err = writeFloat(r.FloatField, w)
-	if err != nil {
-		return err
-	}
-	err = writeDouble(r.DoubleField, w)
-	if err != nil {
-		return err
-	}
-	err = writeBool(r.BoolField, w)
-	if err != nil {
-		return err
-	}
-	err = writeNestedRecord(r.NestedRecordField, w)
-	if err != nil {
-		return err
-	}
+	pkg := NewPackage("avro")
+	primitiveRecord.AddSerializer(pkg)
 
-	return nil
-}`
-	imports := make(map[string]string)
-	ns := make(map[string]string)
+	assert.Equal(t, pkg.Files(), []string{UTIL_FILE, "primitive_struct.go"})
+	utilFile, _ := pkg.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io", "math"})
+	expectedFunctions := []FunctionName{{"", "writeBool"}, {"", "writeDouble"}, {"", "writeLong"}, {"", "writeInt"}, {"", "writeString"}, {"", "writeFloat"}, {"", "encodeInt"}, {"", "encodeFloat"}, {"", "writePrimitiveStruct"}}
+	sort.Sort(FunctionNameList(expectedFunctions))
+	assert.Equal(t, utilFile.Functions(), expectedFunctions)
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter", "StringWriter"})
 
-	primitiveRecord.namespaceMap(imports, ns)
-	// Verify we import the correct packages
-	_, ok := imports["io"]
-	assert.Equal(t, ok, true)
-	_, ok = imports["math"]
-	assert.Equal(t, ok, true)
-	assert.Equal(t, len(imports), 2)
-
-	assert.Equal(t, len(ns), 11)
-	_, ok = ns["writeBool"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeDouble"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeLong"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeInt"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeString"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeFloat"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["encodeInt"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["encodeFloat"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["StringWriter"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["ByteWriter"]
-	assert.Equal(t, ok, true)
-
-	fmtSrc, err := format.Source([]byte(ns["writePrimitiveStruct"]))
-	assert.Nil(t, err)
-	assert.Equal(t, string(fmtSrc), expectedSerializer)
+	structFile, _ := pkg.File("primitive_struct.go")
+	assert.Equal(t, structFile.Imports(), []string{"io"})
+	assert.Equal(t, structFile.Functions(), []FunctionName{{"PrimitiveStruct", "Serialize"}})
 }
 
 func TestArrayStructDef(t *testing.T) {
@@ -132,10 +74,6 @@ func TestArrayStructDef(t *testing.T) {
 	BoolArray   []bool
 	RecordArray []*NestedRecord
 }
-
-func (r ArrayStruct) Serialize(w io.Writer) error {
-	return writeArrayStruct(&r, w)
-}
 `
 	fmtSrc, err := format.Source([]byte(arrayRecord.structDefinition()))
 	assert.Nil(t, err)
@@ -147,90 +85,18 @@ func TestArrayStructSerializer(t *testing.T) {
 		name:   "ArrayStruct",
 		fields: []field{&arrayField{"IntArray", testInt}, &arrayField{"StringArray", testString}, &arrayField{"FloatArray", testFloat}, &arrayField{"DoubleArray", testDouble}, &arrayField{"LongArray", testLong}, &arrayField{"BoolArray", testBool}, &arrayField{"RecordArray", testRecord}},
 	}
-	expectedSerializer := `func writeArrayStruct(r *ArrayStruct, w io.Writer) error {
-	var err error
-	err = writeArrayInt(r.IntArray, w)
-	if err != nil {
-		return err
-	}
-	err = writeArrayString(r.StringArray, w)
-	if err != nil {
-		return err
-	}
-	err = writeArrayFloat(r.FloatArray, w)
-	if err != nil {
-		return err
-	}
-	err = writeArrayDouble(r.DoubleArray, w)
-	if err != nil {
-		return err
-	}
-	err = writeArrayLong(r.LongArray, w)
-	if err != nil {
-		return err
-	}
-	err = writeArrayBool(r.BoolArray, w)
-	if err != nil {
-		return err
-	}
-	err = writeArrayNestedRecord(r.RecordArray, w)
-	if err != nil {
-		return err
-	}
 
-	return nil
-}`
-	imports := make(map[string]string)
-	ns := make(map[string]string)
+	pkg := NewPackage("avro")
+	arrayRecord.AddSerializer(pkg)
 
-	arrayRecord.namespaceMap(imports, ns)
-	// Verify we import the correct packages
-	_, ok := imports["io"]
-	assert.Equal(t, ok, true)
-	_, ok = imports["math"]
-	assert.Equal(t, ok, true)
-	assert.Equal(t, len(imports), 2)
+	assert.Equal(t, pkg.Files(), []string{"array_struct.go", UTIL_FILE})
+	utilFile, _ := pkg.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io", "math"})
+	expectedFunctions := []FunctionName{{"", "writeBool"}, {"", "writeDouble"}, {"", "writeLong"}, {"", "writeInt"}, {"", "writeString"}, {"", "writeFloat"}, {"", "writeArrayBool"}, {"", "writeArrayDouble"}, {"", "writeArrayLong"}, {"", "writeArrayInt"}, {"", "writeArrayString"}, {"", "writeArrayFloat"}, {"", "writeArrayNestedRecord"}, {"", "encodeInt"}, {"", "encodeFloat"}, {"", "writeArrayStruct"}}
+	sort.Sort(FunctionNameList(expectedFunctions))
+	assert.Equal(t, utilFile.Functions(), expectedFunctions)
 
-	assert.Equal(t, len(ns), 18)
-	_, ok = ns["writeBool"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeDouble"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeLong"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeInt"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeString"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeFloat"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeArrayBool"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeArrayDouble"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeArrayLong"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeArrayInt"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeArrayString"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeArrayFloat"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeArrayNestedRecord"]
-	assert.Equal(t, ok, true)
-
-	_, ok = ns["encodeInt"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["encodeFloat"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["StringWriter"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["ByteWriter"]
-	assert.Equal(t, ok, true)
-
-	fmtSrc, err := format.Source([]byte(ns["writeArrayStruct"]))
-	assert.Nil(t, err)
-	assert.Equal(t, string(fmtSrc), expectedSerializer)
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter", "StringWriter"})
 }
 
 func TestMapStructDef(t *testing.T) {
@@ -247,14 +113,11 @@ func TestMapStructDef(t *testing.T) {
 	BoolMap   map[string]bool
 	RecordMap map[string]*NestedRecord
 }
-
-func (r MapStruct) Serialize(w io.Writer) error {
-	return writeMapStruct(&r, w)
-}
 `
 	fmtSrc, err := format.Source([]byte(mapRecord.structDefinition()))
 	assert.Nil(t, err)
 	assert.Equal(t, string(fmtSrc), expectedStructDef)
+
 }
 
 func TestMapSerializer(t *testing.T) {
@@ -262,90 +125,22 @@ func TestMapSerializer(t *testing.T) {
 		name:   "MapStruct",
 		fields: []field{&mapField{"IntMap", testInt}, &mapField{"StringMap", testString}, &mapField{"FloatMap", testFloat}, &mapField{"DoubleMap", testDouble}, &mapField{"LongMap", testLong}, &mapField{"BoolMap", testBool}, &mapField{"RecordMap", testRecord}},
 	}
-	expectedSerializer := `func writeMapStruct(r *MapStruct, w io.Writer) error {
-	var err error
-	err = writeMapInt(r.IntMap, w)
-	if err != nil {
-		return err
-	}
-	err = writeMapString(r.StringMap, w)
-	if err != nil {
-		return err
-	}
-	err = writeMapFloat(r.FloatMap, w)
-	if err != nil {
-		return err
-	}
-	err = writeMapDouble(r.DoubleMap, w)
-	if err != nil {
-		return err
-	}
-	err = writeMapLong(r.LongMap, w)
-	if err != nil {
-		return err
-	}
-	err = writeMapBool(r.BoolMap, w)
-	if err != nil {
-		return err
-	}
-	err = writeMapNestedRecord(r.RecordMap, w)
-	if err != nil {
-		return err
-	}
 
-	return nil
-}`
+	pkg := NewPackage("avro")
+	mapRecord.AddSerializer(pkg)
 
-	imports := make(map[string]string)
-	ns := make(map[string]string)
+	assert.Equal(t, pkg.Files(), []string{"map_struct.go", UTIL_FILE})
+	utilFile, _ := pkg.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io", "math"})
+	expectedFunctions := []FunctionName{{"", "writeBool"}, {"", "writeDouble"}, {"", "writeLong"}, {"", "writeInt"}, {"", "writeString"}, {"", "writeFloat"}, {"", "writeMapBool"}, {"", "writeMapDouble"}, {"", "writeMapLong"}, {"", "writeMapInt"}, {"", "writeMapString"}, {"", "writeMapFloat"}, {"", "writeMapNestedRecord"}, {"", "encodeInt"}, {"", "encodeFloat"}, {"", "writeMapStruct"}}
+	sort.Sort(FunctionNameList(expectedFunctions))
+	assert.Equal(t, utilFile.Functions(), expectedFunctions)
 
-	mapRecord.namespaceMap(imports, ns)
-	// Verify we import the correct packages
-	_, ok := imports["io"]
-	assert.Equal(t, ok, true)
-	_, ok = imports["math"]
-	assert.Equal(t, ok, true)
-	assert.Equal(t, len(imports), 2)
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter", "StringWriter"})
 
-	assert.Equal(t, len(ns), 18)
-	_, ok = ns["writeBool"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeDouble"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeLong"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeInt"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeString"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeFloat"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeMapBool"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeMapDouble"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeMapLong"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeMapInt"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeMapString"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeMapFloat"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeMapNestedRecord"]
-	assert.Equal(t, ok, true)
-
-	_, ok = ns["encodeInt"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["encodeFloat"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["StringWriter"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["ByteWriter"]
-	assert.Equal(t, ok, true)
-	fmtSrc, err := format.Source([]byte(ns["writeMapStruct"]))
-	assert.Nil(t, err)
-	assert.Equal(t, string(fmtSrc), expectedSerializer)
+	structFile, _ := pkg.File("map_struct.go")
+	assert.Equal(t, structFile.Imports(), []string{"io"})
+	assert.Equal(t, structFile.Functions(), []FunctionName{{"MapStruct", "Serialize"}})
 }
 
 func TestPrimitiveUnionStructDef(t *testing.T) {
@@ -355,10 +150,6 @@ func TestPrimitiveUnionStructDef(t *testing.T) {
 	}
 	expectedStructDef := `type UnionStruct struct {
 	UnionField UnionIntStringFloatDoubleLongBoolNestedRecordNull
-}
-
-func (r UnionStruct) Serialize(w io.Writer) error {
-	return writeUnionStruct(&r, w)
 }
 `
 	fmtSrc, err := format.Source([]byte(record.structDefinition()))
@@ -372,55 +163,20 @@ func TestPrimitiveUnionSerializer(t *testing.T) {
 		name:   "UnionStruct",
 		fields: []field{&unionField{"UnionField", false, []field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
 	}
-	expectedSerializer := `func writeUnionStruct(r *UnionStruct, w io.Writer) error {
-	var err error
-	err = writeUnionIntStringFloatDoubleLongBoolNestedRecordNull(r.UnionField, w)
-	if err != nil {
-		return err
-	}
 
-	return nil
-}`
-	imports := make(map[string]string)
-	ns := make(map[string]string)
+	pkg := NewPackage("avro")
+	record.AddSerializer(pkg)
 
-	record.namespaceMap(imports, ns)
-	// Verify we import the correct packages
-	assert.Equal(t, len(imports), 3)
-	_, ok := imports["io"]
-	assert.Equal(t, ok, true)
-	_, ok = imports["math"]
-	assert.Equal(t, ok, true)
-	_, ok = imports["fmt"]
-	assert.Equal(t, ok, true)
+	assert.Equal(t, pkg.Files(), []string{UTIL_FILE, "union_int_string_float_double_long_bool_nested_record_null.go", "union_struct.go"})
+	utilFile, _ := pkg.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io", "math"})
+	expectedFunctions := []FunctionName{{"", "writeBool"}, {"", "writeDouble"}, {"", "writeLong"}, {"", "writeInt"}, {"", "writeString"}, {"", "writeFloat"}, {"", "writeNull"}, {"", "writeUnionIntStringFloatDoubleLongBoolNestedRecordNull"}, {"", "writeUnionStruct"}, {"", "encodeInt"}, {"", "encodeFloat"}}
+	sort.Sort(FunctionNameList(expectedFunctions))
+	assert.Equal(t, utilFile.Functions(), expectedFunctions)
 
-	assert.Equal(t, len(ns), 15)
-	_, ok = ns["writeBool"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeDouble"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeLong"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeInt"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeString"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeFloat"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeNull"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["writeUnionIntStringFloatDoubleLongBoolNestedRecordNull"]
-	assert.Equal(t, ok, true)
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter", "StringWriter"})
 
-	_, ok = ns["encodeInt"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["encodeFloat"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["StringWriter"]
-	assert.Equal(t, ok, true)
-	_, ok = ns["ByteWriter"]
-	assert.Equal(t, ok, true)
-	fmtSrc, err := format.Source([]byte(ns["writeUnionStruct"]))
-	assert.Nil(t, err)
-	assert.Equal(t, string(fmtSrc), expectedSerializer)
+	structFile, _ := pkg.File("union_int_string_float_double_long_bool_nested_record_null.go")
+	assert.Equal(t, structFile.Imports(), []string{"fmt"})
+	assert.Equal(t, structFile.Functions(), []FunctionName{})
 }

@@ -37,20 +37,22 @@ func (s *arrayField) GoType() string {
 	return fmt.Sprintf("[]%v", s.itemType.GoType())
 }
 
-func (s *arrayField) SerializerNs(imports, aux map[string]string) {
-	s.itemType.SerializerNs(imports, aux)
-	itemMethodName := s.itemType.SerializerMethod()
-	methodName := s.SerializerMethod()
-	if _, ok := aux[methodName]; ok {
-		return
-	}
-	arraySerializer := fmt.Sprintf(arraySerializerTemplate, s.SerializerMethod(), s.GoType(), itemMethodName)
-	aux[methodName] = arraySerializer
-	aux["writeLong"] = writeLongMethod
-	aux["encodeInt"] = encodeIntMethod
-	aux["ByteWriter"] = byteWriterInterface
-}
-
 func (s *arrayField) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.FieldType())
+}
+
+func (s *arrayField) AddStruct(p *Package) {
+	s.itemType.AddStruct(p)
+}
+
+func (s *arrayField) AddSerializer(p *Package) {
+	itemMethodName := s.itemType.SerializerMethod()
+	methodName := s.SerializerMethod()
+	arraySerializer := fmt.Sprintf(arraySerializerTemplate, s.SerializerMethod(), s.GoType(), itemMethodName)
+	s.itemType.AddSerializer(p)
+	p.addFunction(UTIL_FILE, "", methodName, arraySerializer)
+	p.addFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
+	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.addImport(UTIL_FILE, "io")
 }

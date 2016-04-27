@@ -29,13 +29,16 @@ func (s *bytesField) GoType() string {
 	return "[]byte"
 }
 
-func (s *bytesField) SerializerNs(imports, aux map[string]string) {
-	aux["writeBytes"] = writeBytesMethod
-	aux["writeLong"] = writeLongMethod
-	aux["encodeInt"] = encodeIntMethod
-	aux["ByteWriter"] = byteWriterInterface
-}
-
 func (s *bytesField) SerializerMethod() string {
 	return "writeBytes"
+}
+
+func (s *bytesField) AddStruct(*Package) {}
+
+func (s *bytesField) AddSerializer(p *Package) {
+	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.addFunction(UTIL_FILE, "", "writeBytes", writeBytesMethod)
+	p.addFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
+	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.addImport(UTIL_FILE, "io")
 }

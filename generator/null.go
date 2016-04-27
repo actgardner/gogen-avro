@@ -30,3 +30,10 @@ func (s *nullField) SerializerNs(imports, aux map[string]string) {
 func (s *nullField) SerializerMethod() string {
 	return "writeNull"
 }
+
+func (s *nullField) AddStruct(p *Package) {}
+
+func (s *nullField) AddSerializer(p *Package) {
+	p.addFunction(UTIL_FILE, "", "writeNull", writeNullMethod)
+	p.addImport(UTIL_FILE, "io")
+}

@@ -50,3 +50,14 @@ func (s *stringField) SerializerNs(imports, aux map[string]string) {
 func (s *stringField) SerializerMethod() string {
 	return "writeString"
 }
+
+func (s *stringField) AddStruct(*Package) {}
+
+func (s *stringField) AddSerializer(p *Package) {
+	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.addStruct(UTIL_FILE, "StringWriter", stringWriterInterface)
+	p.addFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
+	p.addFunction(UTIL_FILE, "", "writeString", writeStringMethod)
+	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.addImport(UTIL_FILE, "io")
+}

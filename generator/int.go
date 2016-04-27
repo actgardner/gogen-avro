@@ -75,12 +75,15 @@ func (s *intField) GoType() string {
 	return "int32"
 }
 
-func (s *intField) SerializerNs(imports, aux map[string]string) {
-	aux[s.SerializerMethod()] = writeIntMethod
-	aux["encodeInt"] = encodeIntMethod
-	aux["ByteWriter"] = byteWriterInterface
-}
-
 func (s *intField) SerializerMethod() string {
 	return "writeInt"
+}
+
+func (s *intField) AddStruct(p *Package) {}
+
+func (s *intField) AddSerializer(p *Package) {
+	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.addFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
+	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.addImport(UTIL_FILE, "io")
 }

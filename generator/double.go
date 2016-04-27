@@ -26,13 +26,15 @@ func (s *doubleField) GoType() string {
 	return "float64"
 }
 
-func (s *doubleField) SerializerNs(imports, aux map[string]string) {
-	imports["math"] = "import \"math\""
-	aux["writeDouble"] = writeDoubleMethod
-	aux["encodeFloat"] = encodeFloatMethod
-	aux["ByteWriter"] = byteWriterInterface
-}
-
 func (s *doubleField) SerializerMethod() string {
 	return "writeDouble"
+}
+
+func (s *doubleField) AddStruct(*Package) {}
+
+func (s *doubleField) AddSerializer(p *Package) {
+	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.addFunction(UTIL_FILE, "", "writeDouble", writeDoubleMethod)
+	p.addFunction(UTIL_FILE, "", "encodeFloat", encodeFloatMethod)
+	p.addImport(UTIL_FILE, "io")
 }

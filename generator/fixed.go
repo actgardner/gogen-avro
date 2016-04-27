@@ -39,12 +39,20 @@ func (s *fixedField) typeDef() string {
 	return fmt.Sprintf("type %v [%v]byte\n", s.GoType(), s.sizeBytes)
 }
 
-func (s *fixedField) SerializerNs(imports, aux map[string]string) {
-	aux[s.SerializerMethod()] = s.serializerMethodDef()
-	aux["ByteWriter"] = byteWriterInterface
-	aux[s.GoType()] = s.typeDef()
+func (s *fixedField) filename() string {
+	return toSnake(s.GoType()) + ".go"
 }
 
 func (s *fixedField) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.FieldType())
+}
+
+func (s *fixedField) AddStruct(p *Package) {
+	p.addStruct(s.filename(), s.GoType(), s.typeDef())
+}
+
+func (s *fixedField) AddSerializer(p *Package) {
+	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.addFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
+	p.addImport(UTIL_FILE, "io")
 }

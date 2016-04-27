@@ -3,25 +3,21 @@ package generator
 import (
 	"encoding/json"
 	"fmt"
-	"go/format"
 )
 
 /*
 	Given a JSON Avro schema, produce a struct and serializer/deserializer pair
 	TODO: Figure out how this should handle multiple record definitions
 */
-func GenerateForSchema(schemaJson []byte) (string, error) {
+func GenerateForSchema(packageName string, schemaJson []byte) (*Package, error) {
 	r, err := decodeSchema(schemaJson)
 	if err != nil {
-		return "", fmt.Errorf("Error decoding schema JSON: %v", err)
+		return nil, fmt.Errorf("Error decoding schema JSON: %v", err)
 	}
-	imports := make(map[string]string)
-	ns := make(map[string]string)
-	structDef := r.structDefinition()
-	r.namespaceMap(imports, ns)
-	src := fmt.Sprintf("package avro\n%v\n%v\n%v", concatSortedMap(imports, "\n"), structDef, concatSortedMap(ns, "\n"))
-	fmtSrc, err := format.Source([]byte(src))
-	return string(fmtSrc), err
+	p := NewPackage(packageName)
+	r.AddStruct(p)
+	r.AddSerializer(p)
+	return p, err
 }
 
 /* Decode the schema for a single Record */
@@ -231,7 +227,7 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (fi
 		if err != nil {
 			return nil, err
 		}
-		return &recordField{nameStr, def.goName(), def}, nil
+		return &recordField{nameStr, def.GoType(), def}, nil
 	default:
 		return nil, fmt.Errorf("Unknown complex type %v", typeStr)
 	}

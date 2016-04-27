@@ -22,14 +22,19 @@ func (s *recordField) FieldType() string {
 	return s.typeName
 }
 
-func (s *recordField) SerializerNs(imports, aux map[string]string) {
-	// Records can just be a record name referencing a different schema file, or a whole nested record definition
+func (s *recordField) SerializerMethod() string {
+	return fmt.Sprintf("write%v", s.typeName)
+}
+
+/* If the record type is defined inline, add the definition to the Package */
+func (s *recordField) AddStruct(p *Package) {
 	if s.def != nil {
-		s.def.namespaceMap(imports, aux)
-		aux[s.def.goName()] = s.def.structDefinition()
+		s.def.AddStruct(p)
 	}
 }
 
-func (s *recordField) SerializerMethod() string {
-	return fmt.Sprintf("write%v", s.typeName)
+func (s *recordField) AddSerializer(p *Package) {
+	if s.def != nil {
+		s.def.AddSerializer(p)
+	}
 }
