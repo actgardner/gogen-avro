@@ -82,7 +82,7 @@ func TestRoundTrip(t *testing.T) {
 	}
 }
 
-func BenchmarkPrimitiveRecord(b *testing.B) {
+func BenchmarkSerializePrimitiveRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
 	for i := 0; i < b.N; i++ {
 		record := PrimitiveTestRecord{1, 2, 3.4, 5.6, "789", true, []byte{1, 2, 3, 4}}
@@ -93,7 +93,7 @@ func BenchmarkPrimitiveRecord(b *testing.B) {
 	}
 }
 
-func BenchmarkPrimitiveGoavro(b *testing.B) {
+func BenchmarkSerializePrimitiveGoavro(b *testing.B) {
 	schemaJson, err := ioutil.ReadFile("primitives.avsc")
 	if err != nil {
 		b.Fatal(err)
@@ -117,6 +117,60 @@ func BenchmarkPrimitiveGoavro(b *testing.B) {
 		someRecord.Set("BytesField", []byte{1, 2, 3, 4})
 
 		err := codec.Encode(buf, someRecord)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+
+}
+
+func BenchmarkDeserializePrimitiveRecord(b *testing.B) {
+	buf := new(bytes.Buffer)
+	record := PrimitiveTestRecord{1, 2, 3.4, 5.6, "789", true, []byte{1, 2, 3, 4}}
+	err := record.Serialize(buf)
+	if err != nil {
+		b.Fatal(err)
+	}
+	recordBytes := buf.Bytes()
+	for i := 0; i < b.N; i++ {
+		bb := bytes.NewBuffer(recordBytes)
+		_, err := DeserializePrimitiveTestRecord(bb)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkDeserializePrimitiveGoavro(b *testing.B) {
+	schemaJson, err := ioutil.ReadFile("primitives.avsc")
+	if err != nil {
+		b.Fatal(err)
+	}
+	codec, err := goavro.NewCodec(string(schemaJson))
+	if err != nil {
+		b.Fatal(err)
+	}
+	someRecord, err := goavro.NewRecord(goavro.RecordSchema(string(schemaJson)))
+	if err != nil {
+		b.Fatal(err)
+	}
+	buf := new(bytes.Buffer)
+	someRecord.Set("IntField", int32(1))
+	someRecord.Set("LongField", int64(2))
+	someRecord.Set("FloatField", float32(3.4))
+	someRecord.Set("DoubleField", float64(5.6))
+	someRecord.Set("StringField", "789")
+	someRecord.Set("BoolField", true)
+	someRecord.Set("BytesField", []byte{1, 2, 3, 4})
+
+	err = codec.Encode(buf, someRecord)
+	if err != nil {
+		b.Fatal(err)
+	}
+	recordBytes := buf.Bytes()
+	for i := 0; i < b.N; i++ {
+		bb := bytes.NewBuffer(recordBytes)
+		_, err := codec.Decode(bb)
 		if err != nil {
 			b.Fatal(err)
 		}
