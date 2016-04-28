@@ -14,8 +14,144 @@ var (
 	testDouble = &doubleField{"DoubleField", 1, true}
 	testLong   = &longField{"LongField", 1, true}
 	testBool   = &boolField{"BoolField", true, true}
+	testBytes  = &bytesField{"BytesField", []byte{}, true}
+	testFixed  = &fixedField{"FixedField", "FixedType", []byte{}, false, 16}
+	testEnum   = &enumField{"EnumField", "EnumType", "", false, []string{"a", "b"}}
 	testRecord = &recordField{"NestedRecordField", "NestedRecord", nil}
 )
+
+/* For each field type, ensure we add the correct functions (including dependencies), structs and imports to each file */
+func TestIntSerialize(t *testing.T) {
+	p := NewPackage("avro")
+	testInt.AddSerializer(p)
+
+	assert.Equal(t, p.Files(), []string{UTIL_FILE})
+
+	utilFile, _ := p.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io"})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter"})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{{"", "encodeInt"}, {"", "writeInt"}})
+}
+
+func TestLongSerialize(t *testing.T) {
+	p := NewPackage("avro")
+	testLong.AddSerializer(p)
+
+	assert.Equal(t, p.Files(), []string{UTIL_FILE})
+
+	utilFile, _ := p.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io"})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter"})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{{"", "encodeInt"}, {"", "writeLong"}})
+}
+
+func TestFloatSerialize(t *testing.T) {
+	p := NewPackage("avro")
+	testFloat.AddSerializer(p)
+
+	assert.Equal(t, p.Files(), []string{UTIL_FILE})
+
+	utilFile, _ := p.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io", "math"})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter"})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{{"", "encodeFloat"}, {"", "writeFloat"}})
+}
+
+func TestDoubleSerialize(t *testing.T) {
+	p := NewPackage("avro")
+	testDouble.AddSerializer(p)
+
+	assert.Equal(t, p.Files(), []string{UTIL_FILE})
+
+	utilFile, _ := p.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io", "math"})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter"})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{{"", "encodeFloat"}, {"", "writeDouble"}})
+}
+
+func TestBytesSerialize(t *testing.T) {
+	p := NewPackage("avro")
+	testBytes.AddSerializer(p)
+
+	assert.Equal(t, p.Files(), []string{UTIL_FILE})
+
+	utilFile, _ := p.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io"})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter"})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{{"", "encodeInt"}, {"", "writeBytes"}, {"", "writeLong"}})
+}
+
+func TestStringSerialize(t *testing.T) {
+	p := NewPackage("avro")
+	testString.AddSerializer(p)
+
+	assert.Equal(t, p.Files(), []string{UTIL_FILE})
+
+	utilFile, _ := p.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io"})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter", "StringWriter"})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{{"", "encodeInt"}, {"", "writeLong"}, {"", "writeString"}})
+}
+
+func TestBoolSerialize(t *testing.T) {
+	p := NewPackage("avro")
+	testBool.AddSerializer(p)
+
+	assert.Equal(t, p.Files(), []string{UTIL_FILE})
+
+	utilFile, _ := p.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io"})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter"})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{{"", "writeBool"}})
+}
+
+func TestFixedSerialize(t *testing.T) {
+	p := NewPackage("avro")
+	testFixed.AddSerializer(p)
+
+	assert.Equal(t, p.Files(), []string{UTIL_FILE})
+
+	utilFile, _ := p.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io"})
+	assert.Equal(t, utilFile.Structs(), []string{})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{{"", "writeFixedType"}})
+}
+
+func TestFixedType(t *testing.T) {
+	p := NewPackage("avro")
+	testFixed.AddStruct(p)
+
+	assert.Equal(t, p.Files(), []string{"fixed_type.go"})
+
+	utilFile, _ := p.File("fixed_type.go")
+	assert.Equal(t, utilFile.Imports(), []string{})
+	assert.Equal(t, utilFile.Structs(), []string{"FixedType"})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{})
+}
+
+func TestEnumSerialize(t *testing.T) {
+	p := NewPackage("avro")
+	testEnum.AddSerializer(p)
+
+	assert.Equal(t, p.Files(), []string{UTIL_FILE})
+
+	utilFile, _ := p.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"io"})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter"})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{{"", "encodeInt"}, {"", "writeEnumType"}, {"", "writeInt"}})
+}
+
+func TestEnumType(t *testing.T) {
+	p := NewPackage("avro")
+	testEnum.AddStruct(p)
+
+	assert.Equal(t, p.Files(), []string{"enum_type.go"})
+
+	utilFile, _ := p.File("enum_type.go")
+	assert.Equal(t, utilFile.Imports(), []string{})
+	assert.Equal(t, utilFile.Structs(), []string{"EnumType"})
+	assert.Equal(t, utilFile.Functions(), []FunctionName{{"EnumType", "String"}})
+}
 
 func TestRecordStructDef(t *testing.T) {
 	primitiveRecord := &recordDefinition{
@@ -167,16 +303,16 @@ func TestPrimitiveUnionSerializer(t *testing.T) {
 	pkg := NewPackage("avro")
 	record.AddSerializer(pkg)
 
-	assert.Equal(t, pkg.Files(), []string{UTIL_FILE, "union_int_string_float_double_long_bool_nested_record_null.go", "union_struct.go"})
+	assert.Equal(t, pkg.Files(), []string{UTIL_FILE, "union_struct.go"})
 	utilFile, _ := pkg.File(UTIL_FILE)
-	assert.Equal(t, utilFile.Imports(), []string{"io", "math"})
+	assert.Equal(t, utilFile.Imports(), []string{"fmt", "io", "math"})
 	expectedFunctions := []FunctionName{{"", "writeBool"}, {"", "writeDouble"}, {"", "writeLong"}, {"", "writeInt"}, {"", "writeString"}, {"", "writeFloat"}, {"", "writeNull"}, {"", "writeUnionIntStringFloatDoubleLongBoolNestedRecordNull"}, {"", "writeUnionStruct"}, {"", "encodeInt"}, {"", "encodeFloat"}}
 	sort.Sort(FunctionNameList(expectedFunctions))
 	assert.Equal(t, utilFile.Functions(), expectedFunctions)
 
 	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter", "StringWriter"})
 
-	structFile, _ := pkg.File("union_int_string_float_double_long_bool_nested_record_null.go")
-	assert.Equal(t, structFile.Imports(), []string{"fmt"})
-	assert.Equal(t, structFile.Functions(), []FunctionName{})
+	structFile, _ := pkg.File("union_struct.go")
+	assert.Equal(t, structFile.Imports(), []string{"io"})
+	assert.Equal(t, structFile.Functions(), []FunctionName{{"UnionStruct", "Serialize"}})
 }
