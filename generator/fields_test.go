@@ -502,3 +502,63 @@ func TestPrimitiveUnionDeserializer(t *testing.T) {
 	assert.Equal(t, structFile.Imports(), []string{"io"})
 	assert.Equal(t, structFile.Functions(), []FunctionName{{"", "DeserializeUnionStruct"}})
 }
+
+func TestRecursiveUnionStructDef(t *testing.T) {
+	record := &recordDefinition{
+		name:   "RecursiveStruct",
+		fields: []field{&unionField{"RecursiveField", false, []field{&nullField{}, &recordField{typeName: "RecursiveStruct"}}}},
+	}
+	expectedStructDef := `type RecursiveStruct struct {
+	RecursiveField UnionNullRecursiveStruct
+}
+`
+	fmtSrc, err := format.Source([]byte(record.structDefinition()))
+	assert.Nil(t, err)
+	assert.Equal(t, string(fmtSrc), expectedStructDef)
+}
+
+func TestRecursiveUnionSerializer(t *testing.T) {
+	record := &recordDefinition{
+		name:   "RecursiveStruct",
+		fields: []field{&unionField{"RecursiveField", false, []field{&nullField{}, &recordField{typeName: "RecursiveStruct"}}}},
+	}
+
+	pkg := NewPackage("avro")
+	record.AddSerializer(pkg)
+
+	assert.Equal(t, pkg.Files(), []string{UTIL_FILE, "recursive_struct.go"})
+	utilFile, _ := pkg.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"fmt", "io"})
+	expectedFunctions := []FunctionName{{"", "writeLong"}, {"", "writeNull"}, {"", "writeUnionNullRecursiveStruct"}, {"", "writeRecursiveStruct"}, {"", "encodeInt"}}
+	sort.Sort(FunctionNameList(expectedFunctions))
+	assert.Equal(t, utilFile.Functions(), expectedFunctions)
+
+	assert.Equal(t, utilFile.Structs(), []string{"ByteWriter"})
+
+	structFile, _ := pkg.File("recursive_struct.go")
+	assert.Equal(t, structFile.Imports(), []string{"io"})
+	assert.Equal(t, structFile.Functions(), []FunctionName{{"RecursiveStruct", "Serialize"}})
+}
+
+func TestRecursiveUnionDeserializer(t *testing.T) {
+	record := &recordDefinition{
+		name:   "RecursiveStruct",
+		fields: []field{&unionField{"RecursiveField", false, []field{&nullField{}, &recordField{typeName: "RecursiveStruct"}}}},
+	}
+
+	pkg := NewPackage("avro")
+	record.AddDeserializer(pkg)
+
+	assert.Equal(t, pkg.Files(), []string{UTIL_FILE, "recursive_struct.go"})
+	utilFile, _ := pkg.File(UTIL_FILE)
+	assert.Equal(t, utilFile.Imports(), []string{"fmt", "io"})
+	expectedFunctions := []FunctionName{{"", "readLong"}, {"", "readNull"}, {"", "readUnionNullRecursiveStruct"}, {"", "readRecursiveStruct"}}
+	sort.Sort(FunctionNameList(expectedFunctions))
+	assert.Equal(t, utilFile.Functions(), expectedFunctions)
+
+	assert.Equal(t, utilFile.Structs(), []string{})
+
+	structFile, _ := pkg.File("recursive_struct.go")
+	assert.Equal(t, structFile.Imports(), []string{"io"})
+	assert.Equal(t, structFile.Functions(), []FunctionName{{"", "DeserializeRecursiveStruct"}})
+}
