@@ -48,7 +48,7 @@ func (p *Package) File(name string) (*File, bool) {
 func (p *Package) addFunction(file, str, name, def string) {
 	f, ok := p.files[file]
 	if !ok {
-		f = &File{file, make(map[FunctionName]string), make(map[string]string), make(map[string]interface{})}
+		f = NewFile(file)
 		p.files[file] = f
 	}
 	f.functions[FunctionName{str, name}] = def
@@ -57,7 +57,7 @@ func (p *Package) addFunction(file, str, name, def string) {
 func (p *Package) addStruct(file, name, def string) {
 	f, ok := p.files[file]
 	if !ok {
-		f = &File{file, make(map[FunctionName]string), make(map[string]string), make(map[string]interface{})}
+		f = NewFile(file)
 		p.files[file] = f
 	}
 	f.structs[name] = def
@@ -66,7 +66,7 @@ func (p *Package) addStruct(file, name, def string) {
 func (p *Package) addImport(file, name string) {
 	f, ok := p.files[file]
 	if !ok {
-		f = &File{file, make(map[FunctionName]string), make(map[string]string), make(map[string]interface{})}
+		f = NewFile(file)
 		p.files[file] = f
 	}
 	f.imports[name] = 1
@@ -105,6 +105,10 @@ type File struct {
 	functions map[FunctionName]string
 	structs   map[string]string
 	imports   map[string]interface{}
+}
+
+func NewFile(name string) *File {
+	return &File{name: name, functions: make(map[FunctionName]string), structs: make(map[string]string), imports: make(map[string]interface{})}
 }
 
 type FunctionName struct {
