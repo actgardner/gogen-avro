@@ -52,7 +52,6 @@ func (s *fixedField) AddStruct(p *Package) {
 }
 
 func (s *fixedField) AddSerializer(p *Package) {
-	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.addFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
 	p.addImport(UTIL_FILE, "io")
 }
