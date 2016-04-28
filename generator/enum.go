@@ -27,6 +27,13 @@ func %v(r %v, w io.Writer) error {
 }
 `
 
+const enumDeserializerDef = `
+func %v(r io.Reader) (%v, error) {
+	val, err := readInt(r)
+	return %v(val), err
+}
+`
+
 type enumField struct {
 	name         string
 	typeName     string
@@ -79,6 +86,14 @@ func (e *enumField) SerializerMethod() string {
 	return "write" + e.FieldType()
 }
 
+func (e *enumField) deserializerMethodDef() string {
+	return fmt.Sprintf(enumDeserializerDef, e.DeserializerMethod(), e.FieldType(), e.FieldType())
+}
+
+func (e *enumField) DeserializerMethod() string {
+	return "read" + e.FieldType()
+}
+
 func (e *enumField) filename() string {
 	return toSnake(e.GoType()) + ".go"
 }
@@ -93,5 +108,11 @@ func (e *enumField) AddSerializer(p *Package) {
 	p.addFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
 	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.addFunction(UTIL_FILE, "", e.SerializerMethod(), e.serializerMethodDef())
+	p.addImport(UTIL_FILE, "io")
+}
+
+func (e *enumField) AddDeserializer(p *Package) {
+	p.addFunction(UTIL_FILE, "", "readInt", readIntMethod)
+	p.addFunction(UTIL_FILE, "", e.DeserializerMethod(), e.deserializerMethodDef())
 	p.addImport(UTIL_FILE, "io")
 }

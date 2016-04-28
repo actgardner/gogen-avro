@@ -57,6 +57,25 @@ func encodeInt(w io.Writer, byteCount int, encoded uint64) error {
 }
 `
 
+const readIntMethod = `
+func readInt(r io.Reader) (int32, error) {
+	var v int
+	buf := make([]byte, 1)
+	for shift := uint(0); ; shift += 7 {
+		if _, err := io.ReadFull(r, buf); err != nil {
+			return 0, err
+		}
+		b := buf[0]
+		v |= int(b&127) << shift
+		if b&128 == 0 {
+			break
+		}
+	}
+	datum := (int32(v>>1) ^ -int32(v&1))
+	return datum, nil
+}
+`
+
 type intField struct {
 	name         string
 	defaultValue int32
@@ -79,11 +98,20 @@ func (s *intField) SerializerMethod() string {
 	return "writeInt"
 }
 
+func (s *intField) DeserializerMethod() string {
+	return "readInt"
+}
+
 func (s *intField) AddStruct(p *Package) {}
 
 func (s *intField) AddSerializer(p *Package) {
 	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.addFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
 	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.addImport(UTIL_FILE, "io")
+}
+
+func (s *intField) AddDeserializer(p *Package) {
+	p.addFunction(UTIL_FILE, "", "readInt", readIntMethod)
 	p.addImport(UTIL_FILE, "io")
 }

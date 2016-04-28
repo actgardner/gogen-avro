@@ -17,6 +17,23 @@ func %v(r %v, w io.Writer) error {
 }
 `
 
+const unionDeserializerTemplate = `
+func %v(r io.Reader) (%v, error) {
+	field, err := readLong(r)
+	var unionStr %v
+	if err != nil {
+		return unionStr, err
+	}
+	unionStr.UnionType = %v(field)
+	switch unionStr.UnionType {
+		%v
+	default:	
+		return unionStr, fmt.Errorf("Invalid value for %v")
+	}
+	return unionStr, nil
+}
+`
+
 type unionField struct {
 	name     string
 	hasDef   bool
@@ -68,12 +85,24 @@ func (s *unionField) unionSerializer() string {
 	return fmt.Sprintf(unionSerializerTemplate, s.SerializerMethod(), s.GoType(), switchCase, s.GoType())
 }
 
+func (s *unionField) unionDeserializer() string {
+	switchCase := ""
+	for _, t := range s.itemType {
+		switchCase += fmt.Sprintf("case %v:\nval, err :=  %v(r)\nif err != nil {return unionStr, err}\nunionStr.%v = val\n", s.unionEnumType()+t.FieldType(), t.DeserializerMethod(), t.FieldType())
+	}
+	return fmt.Sprintf(unionDeserializerTemplate, s.DeserializerMethod(), s.GoType(), s.GoType(), s.unionEnumType(), switchCase, s.GoType())
+}
+
 func (s *unionField) filename() string {
 	return toSnake(s.GoType()) + ".go"
 }
 
 func (s *unionField) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.FieldType())
+}
+
+func (s *unionField) DeserializerMethod() string {
+	return fmt.Sprintf("read%v", s.FieldType())
 }
 
 func (s *unionField) AddStruct(p *Package) {
@@ -93,5 +122,15 @@ func (s *unionField) AddSerializer(p *Package) {
 	p.addImport(UTIL_FILE, "io")
 	for _, f := range s.itemType {
 		f.AddSerializer(p)
+	}
+}
+
+func (s *unionField) AddDeserializer(p *Package) {
+	p.addImport(UTIL_FILE, "fmt")
+	p.addFunction(UTIL_FILE, "", s.DeserializerMethod(), s.unionDeserializer())
+	p.addFunction(UTIL_FILE, "", "readLong", readLongMethod)
+	p.addImport(UTIL_FILE, "io")
+	for _, f := range s.itemType {
+		f.AddDeserializer(p)
 	}
 }

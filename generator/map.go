@@ -24,6 +24,41 @@ func %v(r %v, w io.Writer) error {
 }
 `
 
+const mapDeserializerTemplate = `
+func %v(r io.Reader) (%v, error) {
+	m := make(%v)
+	for {
+		blkSize, err := readLong(r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Decoding block size \n", blkSize)
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err := readLong(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			key, err := readString(r)
+			if err != nil {
+				return nil, err
+			}
+			val, err := %v(r)
+			if err != nil {
+				return nil, err
+			}
+			m[key] = val
+		}
+	}
+	return m, nil
+}
+`
+
 type mapField struct {
 	name     string
 	itemType field
@@ -45,6 +80,10 @@ func (s *mapField) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.FieldType())
 }
 
+func (s *mapField) DeserializerMethod() string {
+	return fmt.Sprintf("read%v", s.FieldType())
+}
+
 func (s *mapField) AddStruct(p *Package) {}
 
 func (s *mapField) AddSerializer(p *Package) {
@@ -60,4 +99,17 @@ func (s *mapField) AddSerializer(p *Package) {
 	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.addFunction(UTIL_FILE, "", methodName, mapSerializer)
 	p.addImport(UTIL_FILE, "io")
+}
+
+func (s *mapField) AddDeserializer(p *Package) {
+	s.itemType.AddDeserializer(p)
+	itemMethodName := s.itemType.DeserializerMethod()
+	methodName := s.DeserializerMethod()
+	mapDeserializer := fmt.Sprintf(mapDeserializerTemplate, s.DeserializerMethod(), s.GoType(), s.GoType(), itemMethodName)
+
+	p.addFunction(UTIL_FILE, "", "readLong", readLongMethod)
+	p.addFunction(UTIL_FILE, "", "readString", readStringMethod)
+	p.addFunction(UTIL_FILE, "", methodName, mapDeserializer)
+	p.addImport(UTIL_FILE, "io")
+	p.addImport(UTIL_FILE, "fmt")
 }

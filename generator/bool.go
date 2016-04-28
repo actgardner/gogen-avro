@@ -30,6 +30,17 @@ func writeBool(r bool, w io.Writer) error {
 }
 `
 
+const readBoolMethod = `
+func readBool(r io.Reader) (bool, error) {
+	b := make([]byte, 1)
+	_, err := r.Read(b)
+	if err != nil {
+		return false, err
+	}
+	return b[0] == 1, nil
+}
+`
+
 type boolField struct {
 	name         string
 	defaultValue bool
@@ -52,10 +63,19 @@ func (s *boolField) SerializerMethod() string {
 	return "writeBool"
 }
 
+func (s *boolField) DeserializerMethod() string {
+	return "readBool"
+}
+
 func (s *boolField) AddStruct(*Package) {}
 
 func (s *boolField) AddSerializer(p *Package) {
 	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.addFunction(UTIL_FILE, "", "writeBool", writeBoolMethod)
+	p.addImport(UTIL_FILE, "io")
+}
+
+func (s *boolField) AddDeserializer(p *Package) {
+	p.addFunction(UTIL_FILE, "", "readBool", readBoolMethod)
 	p.addImport(UTIL_FILE, "io")
 }

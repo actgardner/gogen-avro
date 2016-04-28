@@ -21,6 +21,21 @@ func writeString(r string, w io.Writer) error {
 }
 `
 
+const readStringMethod = `
+func readString(r io.Reader) (string, error) {
+	len, err := readLong(r)
+	if err != nil {
+		return "", err
+	}
+	bb := make([]byte, len)
+	_, err = io.ReadFull(r, bb)
+	if err != nil {
+		return "", err
+	}
+	return string(bb), nil
+}
+`
+
 type stringField struct {
 	name         string
 	defaultValue string
@@ -39,16 +54,12 @@ func (s *stringField) GoType() string {
 	return "string"
 }
 
-func (s *stringField) SerializerNs(imports, aux map[string]string) {
-	aux["writeLong"] = writeLongMethod
-	aux["writeString"] = writeStringMethod
-	aux["encodeInt"] = encodeIntMethod
-	aux["ByteWriter"] = byteWriterInterface
-	aux["StringWriter"] = stringWriterInterface
-}
-
 func (s *stringField) SerializerMethod() string {
 	return "writeString"
+}
+
+func (s *stringField) DeserializerMethod() string {
+	return "readString"
 }
 
 func (s *stringField) AddStruct(*Package) {}
@@ -59,5 +70,11 @@ func (s *stringField) AddSerializer(p *Package) {
 	p.addFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
 	p.addFunction(UTIL_FILE, "", "writeString", writeStringMethod)
 	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.addImport(UTIL_FILE, "io")
+}
+
+func (s *stringField) AddDeserializer(p *Package) {
+	p.addFunction(UTIL_FILE, "", "readLong", readLongMethod)
+	p.addFunction(UTIL_FILE, "", "readString", readStringMethod)
 	p.addImport(UTIL_FILE, "io")
 }

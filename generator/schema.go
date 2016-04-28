@@ -15,6 +15,7 @@ func GenerateForSchema(packageName string, schemaJson []byte, pkg *Package) erro
 	}
 	r.AddStruct(pkg)
 	r.AddSerializer(pkg)
+	r.AddDeserializer(pkg)
 	return nil
 }
 
