@@ -20,7 +20,7 @@ gogen-avro <output directory> <avro schema files>
 
 Gogen-avro will write a Go file in the output directory for each `record`, `fixed`, and `enum` type defined in the schema files. Multiple schema files are supported.
 
-Set the fields in a record struct and call `Serialize(io.Writer)` on the struct to encode the contents into the given `io.Writer`. 
+Generated structs have a function `Serialize(io.Writer)` to encode the contents into the given `io.Writer`, and `Deserialize<RecordType>(io.Reader)` to read a struct from the given `io.Reader`. See `test/primitive/schema_test.go` for examples of encoding and decoding.
 
 ### Type Conversion
 
@@ -74,7 +74,6 @@ const (
 
 This package doesn't implement the entire Avro 1.7.7 specification, specifically:
 
-- Decoding things
 - Schema resolution
 - Framing - generate RPCs and container format readers/writers
 
