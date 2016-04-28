@@ -32,7 +32,6 @@ func %v(r io.Reader) (%v, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("Decoding block size \n", blkSize)
 		if blkSize == 0 {
 			break
 		}
@@ -111,5 +110,4 @@ func (s *mapField) AddDeserializer(p *Package) {
 	p.addFunction(UTIL_FILE, "", "readString", readStringMethod)
 	p.addFunction(UTIL_FILE, "", methodName, mapDeserializer)
 	p.addImport(UTIL_FILE, "io")
-	p.addImport(UTIL_FILE, "fmt")
 }
