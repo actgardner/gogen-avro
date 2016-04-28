@@ -10,6 +10,10 @@ type NestedRecord struct {
 	BytesField  []byte
 }
 
+func DeserializeNestedRecord(r io.Reader) (*NestedRecord, error) {
+	return readNestedRecord(r)
+}
+
 func (r NestedRecord) Serialize(w io.Writer) error {
 	return writeNestedRecord(&r, w)
 }

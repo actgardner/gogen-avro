@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"reflect"
 	"testing"
@@ -124,5 +125,26 @@ func BenchmarkArrayGoavro(b *testing.B) {
 		if err != nil {
 			b.Fatal(err)
 		}
+	}
+}
+
+func TestRoundTrip(t *testing.T) {
+	fixtures := make([]ArrayTestRecord, 0)
+	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var buf bytes.Buffer
+	for _, f := range fixtures {
+		buf.Reset()
+		err = f.Serialize(&buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		datum, err := DeserializeArrayTestRecord(&buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		assert.Equal(t, *datum, f)
 	}
 }

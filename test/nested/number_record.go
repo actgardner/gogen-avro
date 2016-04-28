@@ -11,6 +11,10 @@ type NumberRecord struct {
 	DoubleField float64
 }
 
+func DeserializeNumberRecord(r io.Reader) (*NumberRecord, error) {
+	return readNumberRecord(r)
+}
+
 func (r NumberRecord) Serialize(w io.Writer) error {
 	return writeNumberRecord(&r, w)
 }

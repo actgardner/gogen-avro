@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"reflect"
 	"testing"
@@ -57,6 +58,27 @@ func TestPrimitiveFixture(t *testing.T) {
 				t.Fatalf("Field %v not equal: %v != %v", fieldName, structVal, avroVal)
 			}
 		}
+	}
+}
+
+func TestRoundTrip(t *testing.T) {
+	fixtures := make([]PrimitiveTestRecord, 0)
+	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var buf bytes.Buffer
+	for _, f := range fixtures {
+		buf.Reset()
+		err = f.Serialize(&buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		datum, err := DeserializePrimitiveTestRecord(&buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		assert.Equal(t, *datum, f)
 	}
 }
 

@@ -60,6 +60,181 @@ func encodeInt(w io.Writer, byteCount int, encoded uint64) error {
 
 }
 
+func readArrayInt(r io.Reader) ([]int32, error) {
+	var err error
+	var blkSize int64
+	var arr []int32
+	for {
+		blkSize, err = readLong(r)
+		if err != nil {
+			return nil, err
+		}
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err = readLong(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			elem, err := readInt(r)
+			if err != nil {
+				return nil, err
+			}
+			arr = append(arr, elem)
+		}
+	}
+	return arr, nil
+}
+
+func readComplexUnionTestRecord(r io.Reader) (*ComplexUnionTestRecord, error) {
+	var str ComplexUnionTestRecord
+	var err error
+	str.UnionField, err = readUnionNullArrayIntMapIntNestedUnionRecord(r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &str, nil
+}
+
+func readInt(r io.Reader) (int32, error) {
+	var v int
+	buf := make([]byte, 1)
+	for shift := uint(0); ; shift += 7 {
+		if _, err := io.ReadFull(r, buf); err != nil {
+			return 0, err
+		}
+		b := buf[0]
+		v |= int(b&127) << shift
+		if b&128 == 0 {
+			break
+		}
+	}
+	datum := (int32(v>>1) ^ -int32(v&1))
+	return datum, nil
+}
+
+func readLong(r io.Reader) (int64, error) {
+	var v uint64
+	buf := make([]byte, 1)
+	for shift := uint(0); ; shift += 7 {
+		if _, err := io.ReadFull(r, buf); err != nil {
+			return 0, err
+		}
+		b := buf[0]
+		v |= uint64(b&127) << shift
+		if b&128 == 0 {
+			break
+		}
+	}
+	datum := (int64(v>>1) ^ -int64(v&1))
+	return datum, nil
+}
+
+func readMapInt(r io.Reader) (map[string]int32, error) {
+	m := make(map[string]int32)
+	for {
+		blkSize, err := readLong(r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Decoding block size \n", blkSize)
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err := readLong(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			key, err := readString(r)
+			if err != nil {
+				return nil, err
+			}
+			val, err := readInt(r)
+			if err != nil {
+				return nil, err
+			}
+			m[key] = val
+		}
+	}
+	return m, nil
+}
+
+func readNestedUnionRecord(r io.Reader) (*NestedUnionRecord, error) {
+	var str NestedUnionRecord
+	var err error
+	str.IntField, err = readInt(r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &str, nil
+}
+
+func readNull(_ io.Reader) (interface{}, error) {
+	return nil, nil
+}
+
+func readString(r io.Reader) (string, error) {
+	len, err := readLong(r)
+	if err != nil {
+		return "", err
+	}
+	bb := make([]byte, len)
+	_, err = io.ReadFull(r, bb)
+	if err != nil {
+		return "", err
+	}
+	return string(bb), nil
+}
+
+func readUnionNullArrayIntMapIntNestedUnionRecord(r io.Reader) (UnionNullArrayIntMapIntNestedUnionRecord, error) {
+	field, err := readLong(r)
+	var unionStr UnionNullArrayIntMapIntNestedUnionRecord
+	if err != nil {
+		return unionStr, err
+	}
+	unionStr.UnionType = UnionNullArrayIntMapIntNestedUnionRecordTypeEnum(field)
+	switch unionStr.UnionType {
+	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull:
+		val, err := readNull(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.Null = val
+	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt:
+		val, err := readArrayInt(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.ArrayInt = val
+	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt:
+		val, err := readMapInt(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.MapInt = val
+	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord:
+		val, err := readNestedUnionRecord(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.NestedUnionRecord = val
+
+	default:
+		return unionStr, fmt.Errorf("Invalid value for UnionNullArrayIntMapIntNestedUnionRecord")
+	}
+	return unionStr, nil
+}
+
 func writeArrayInt(r []int32, w io.Writer) error {
 	err := writeLong(int64(len(r)), w)
 	if err != nil {

@@ -14,6 +14,10 @@ type PrimitiveTestRecord struct {
 	BytesField  []byte
 }
 
+func DeserializePrimitiveTestRecord(r io.Reader) (*PrimitiveTestRecord, error) {
+	return readPrimitiveTestRecord(r)
+}
+
 func (r PrimitiveTestRecord) Serialize(w io.Writer) error {
 	return writePrimitiveTestRecord(&r, w)
 }

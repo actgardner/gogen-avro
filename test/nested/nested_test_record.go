@@ -9,6 +9,10 @@ type NestedTestRecord struct {
 	OtherField  *NestedRecord
 }
 
+func DeserializeNestedTestRecord(r io.Reader) (*NestedTestRecord, error) {
+	return readNestedTestRecord(r)
+}
+
 func (r NestedTestRecord) Serialize(w io.Writer) error {
 	return writeNestedTestRecord(&r, w)
 }

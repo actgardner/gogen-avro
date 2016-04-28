@@ -14,6 +14,10 @@ type ArrayTestRecord struct {
 	BytesField  [][]byte
 }
 
+func DeserializeArrayTestRecord(r io.Reader) (*ArrayTestRecord, error) {
+	return readArrayTestRecord(r)
+}
+
 func (r ArrayTestRecord) Serialize(w io.Writer) error {
 	return writeArrayTestRecord(&r, w)
 }

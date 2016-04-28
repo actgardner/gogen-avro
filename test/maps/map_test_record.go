@@ -14,6 +14,10 @@ type MapTestRecord struct {
 	BytesField  map[string][]byte
 }
 
+func DeserializeMapTestRecord(r io.Reader) (*MapTestRecord, error) {
+	return readMapTestRecord(r)
+}
+
 func (r MapTestRecord) Serialize(w io.Writer) error {
 	return writeMapTestRecord(&r, w)
 }

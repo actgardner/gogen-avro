@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"reflect"
 	"testing"
@@ -101,5 +102,26 @@ func TestNestedFixture(t *testing.T) {
 				}
 			}
 		}
+	}
+}
+
+func TestRoundTrip(t *testing.T) {
+	fixtures := make([]NestedTestRecord, 0)
+	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var buf bytes.Buffer
+	for _, f := range fixtures {
+		buf.Reset()
+		err = f.Serialize(&buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		datum, err := DeserializeNestedTestRecord(&buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		assert.Equal(t, *datum, f)
 	}
 }

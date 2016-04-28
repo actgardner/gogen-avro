@@ -1,6 +1,8 @@
 package avro
 
 import (
+	"encoding/binary"
+	"fmt"
 	"io"
 	"math"
 )
@@ -85,6 +87,361 @@ func encodeInt(w io.Writer, byteCount int, encoded uint64) error {
 	}
 	return nil
 
+}
+
+func readBool(r io.Reader) (bool, error) {
+	b := make([]byte, 1)
+	_, err := r.Read(b)
+	if err != nil {
+		return false, err
+	}
+	return b[0] == 1, nil
+}
+
+func readBytes(r io.Reader) ([]byte, error) {
+	size, err := readLong(r)
+	if err != nil {
+		return nil, err
+	}
+	bb := make([]byte, size)
+	_, err = io.ReadFull(r, bb)
+	return bb, err
+}
+
+func readDouble(r io.Reader) (float64, error) {
+	buf := make([]byte, 8)
+	_, err := io.ReadFull(r, buf)
+	if err != nil {
+		return 0, err
+	}
+	bits := binary.LittleEndian.Uint64(buf)
+	val := math.Float64frombits(bits)
+	return val, nil
+}
+
+func readFloat(r io.Reader) (float32, error) {
+	buf := make([]byte, 4)
+	_, err := io.ReadFull(r, buf)
+	if err != nil {
+		return 0, err
+	}
+	bits := binary.LittleEndian.Uint32(buf)
+	val := math.Float32frombits(bits)
+	return val, nil
+
+}
+
+func readInt(r io.Reader) (int32, error) {
+	var v int
+	buf := make([]byte, 1)
+	for shift := uint(0); ; shift += 7 {
+		if _, err := io.ReadFull(r, buf); err != nil {
+			return 0, err
+		}
+		b := buf[0]
+		v |= int(b&127) << shift
+		if b&128 == 0 {
+			break
+		}
+	}
+	datum := (int32(v>>1) ^ -int32(v&1))
+	return datum, nil
+}
+
+func readLong(r io.Reader) (int64, error) {
+	var v uint64
+	buf := make([]byte, 1)
+	for shift := uint(0); ; shift += 7 {
+		if _, err := io.ReadFull(r, buf); err != nil {
+			return 0, err
+		}
+		b := buf[0]
+		v |= uint64(b&127) << shift
+		if b&128 == 0 {
+			break
+		}
+	}
+	datum := (int64(v>>1) ^ -int64(v&1))
+	return datum, nil
+}
+
+func readMapBool(r io.Reader) (map[string]bool, error) {
+	m := make(map[string]bool)
+	for {
+		blkSize, err := readLong(r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Decoding block size \n", blkSize)
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err := readLong(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			key, err := readString(r)
+			if err != nil {
+				return nil, err
+			}
+			val, err := readBool(r)
+			if err != nil {
+				return nil, err
+			}
+			m[key] = val
+		}
+	}
+	return m, nil
+}
+
+func readMapBytes(r io.Reader) (map[string][]byte, error) {
+	m := make(map[string][]byte)
+	for {
+		blkSize, err := readLong(r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Decoding block size \n", blkSize)
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err := readLong(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			key, err := readString(r)
+			if err != nil {
+				return nil, err
+			}
+			val, err := readBytes(r)
+			if err != nil {
+				return nil, err
+			}
+			m[key] = val
+		}
+	}
+	return m, nil
+}
+
+func readMapDouble(r io.Reader) (map[string]float64, error) {
+	m := make(map[string]float64)
+	for {
+		blkSize, err := readLong(r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Decoding block size \n", blkSize)
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err := readLong(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			key, err := readString(r)
+			if err != nil {
+				return nil, err
+			}
+			val, err := readDouble(r)
+			if err != nil {
+				return nil, err
+			}
+			m[key] = val
+		}
+	}
+	return m, nil
+}
+
+func readMapFloat(r io.Reader) (map[string]float32, error) {
+	m := make(map[string]float32)
+	for {
+		blkSize, err := readLong(r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Decoding block size \n", blkSize)
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err := readLong(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			key, err := readString(r)
+			if err != nil {
+				return nil, err
+			}
+			val, err := readFloat(r)
+			if err != nil {
+				return nil, err
+			}
+			m[key] = val
+		}
+	}
+	return m, nil
+}
+
+func readMapInt(r io.Reader) (map[string]int32, error) {
+	m := make(map[string]int32)
+	for {
+		blkSize, err := readLong(r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Decoding block size \n", blkSize)
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err := readLong(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			key, err := readString(r)
+			if err != nil {
+				return nil, err
+			}
+			val, err := readInt(r)
+			if err != nil {
+				return nil, err
+			}
+			m[key] = val
+		}
+	}
+	return m, nil
+}
+
+func readMapLong(r io.Reader) (map[string]int64, error) {
+	m := make(map[string]int64)
+	for {
+		blkSize, err := readLong(r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Decoding block size \n", blkSize)
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err := readLong(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			key, err := readString(r)
+			if err != nil {
+				return nil, err
+			}
+			val, err := readLong(r)
+			if err != nil {
+				return nil, err
+			}
+			m[key] = val
+		}
+	}
+	return m, nil
+}
+
+func readMapString(r io.Reader) (map[string]string, error) {
+	m := make(map[string]string)
+	for {
+		blkSize, err := readLong(r)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Decoding block size \n", blkSize)
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err := readLong(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			key, err := readString(r)
+			if err != nil {
+				return nil, err
+			}
+			val, err := readString(r)
+			if err != nil {
+				return nil, err
+			}
+			m[key] = val
+		}
+	}
+	return m, nil
+}
+
+func readMapTestRecord(r io.Reader) (*MapTestRecord, error) {
+	var str MapTestRecord
+	var err error
+	str.IntField, err = readMapInt(r)
+	if err != nil {
+		return nil, err
+	}
+	str.LongField, err = readMapLong(r)
+	if err != nil {
+		return nil, err
+	}
+	str.DoubleField, err = readMapDouble(r)
+	if err != nil {
+		return nil, err
+	}
+	str.StringField, err = readMapString(r)
+	if err != nil {
+		return nil, err
+	}
+	str.FloatField, err = readMapFloat(r)
+	if err != nil {
+		return nil, err
+	}
+	str.BoolField, err = readMapBool(r)
+	if err != nil {
+		return nil, err
+	}
+	str.BytesField, err = readMapBytes(r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &str, nil
+}
+
+func readString(r io.Reader) (string, error) {
+	len, err := readLong(r)
+	if err != nil {
+		return "", err
+	}
+	bb := make([]byte, len)
+	_, err = io.ReadFull(r, bb)
+	if err != nil {
+		return "", err
+	}
+	return string(bb), nil
 }
 
 func writeBool(r bool, w io.Writer) error {

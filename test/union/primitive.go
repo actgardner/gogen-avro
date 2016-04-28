@@ -1,6 +1,7 @@
 package avro
 
 import (
+	"encoding/binary"
 	"fmt"
 	"io"
 	"math"
@@ -86,6 +87,173 @@ func encodeInt(w io.Writer, byteCount int, encoded uint64) error {
 	}
 	return nil
 
+}
+
+func readBool(r io.Reader) (bool, error) {
+	b := make([]byte, 1)
+	_, err := r.Read(b)
+	if err != nil {
+		return false, err
+	}
+	return b[0] == 1, nil
+}
+
+func readBytes(r io.Reader) ([]byte, error) {
+	size, err := readLong(r)
+	if err != nil {
+		return nil, err
+	}
+	bb := make([]byte, size)
+	_, err = io.ReadFull(r, bb)
+	return bb, err
+}
+
+func readDouble(r io.Reader) (float64, error) {
+	buf := make([]byte, 8)
+	_, err := io.ReadFull(r, buf)
+	if err != nil {
+		return 0, err
+	}
+	bits := binary.LittleEndian.Uint64(buf)
+	val := math.Float64frombits(bits)
+	return val, nil
+}
+
+func readFloat(r io.Reader) (float32, error) {
+	buf := make([]byte, 4)
+	_, err := io.ReadFull(r, buf)
+	if err != nil {
+		return 0, err
+	}
+	bits := binary.LittleEndian.Uint32(buf)
+	val := math.Float32frombits(bits)
+	return val, nil
+
+}
+
+func readInt(r io.Reader) (int32, error) {
+	var v int
+	buf := make([]byte, 1)
+	for shift := uint(0); ; shift += 7 {
+		if _, err := io.ReadFull(r, buf); err != nil {
+			return 0, err
+		}
+		b := buf[0]
+		v |= int(b&127) << shift
+		if b&128 == 0 {
+			break
+		}
+	}
+	datum := (int32(v>>1) ^ -int32(v&1))
+	return datum, nil
+}
+
+func readLong(r io.Reader) (int64, error) {
+	var v uint64
+	buf := make([]byte, 1)
+	for shift := uint(0); ; shift += 7 {
+		if _, err := io.ReadFull(r, buf); err != nil {
+			return 0, err
+		}
+		b := buf[0]
+		v |= uint64(b&127) << shift
+		if b&128 == 0 {
+			break
+		}
+	}
+	datum := (int64(v>>1) ^ -int64(v&1))
+	return datum, nil
+}
+
+func readNull(_ io.Reader) (interface{}, error) {
+	return nil, nil
+}
+
+func readPrimitiveUnionTestRecord(r io.Reader) (*PrimitiveUnionTestRecord, error) {
+	var str PrimitiveUnionTestRecord
+	var err error
+	str.UnionField, err = readUnionIntLongFloatDoubleStringBoolBytesNull(r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &str, nil
+}
+
+func readString(r io.Reader) (string, error) {
+	len, err := readLong(r)
+	if err != nil {
+		return "", err
+	}
+	bb := make([]byte, len)
+	_, err = io.ReadFull(r, bb)
+	if err != nil {
+		return "", err
+	}
+	return string(bb), nil
+}
+
+func readUnionIntLongFloatDoubleStringBoolBytesNull(r io.Reader) (UnionIntLongFloatDoubleStringBoolBytesNull, error) {
+	field, err := readLong(r)
+	var unionStr UnionIntLongFloatDoubleStringBoolBytesNull
+	if err != nil {
+		return unionStr, err
+	}
+	unionStr.UnionType = UnionIntLongFloatDoubleStringBoolBytesNullTypeEnum(field)
+	switch unionStr.UnionType {
+	case UnionIntLongFloatDoubleStringBoolBytesNullTypeEnumInt:
+		val, err := readInt(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.Int = val
+	case UnionIntLongFloatDoubleStringBoolBytesNullTypeEnumLong:
+		val, err := readLong(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.Long = val
+	case UnionIntLongFloatDoubleStringBoolBytesNullTypeEnumFloat:
+		val, err := readFloat(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.Float = val
+	case UnionIntLongFloatDoubleStringBoolBytesNullTypeEnumDouble:
+		val, err := readDouble(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.Double = val
+	case UnionIntLongFloatDoubleStringBoolBytesNullTypeEnumString:
+		val, err := readString(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.String = val
+	case UnionIntLongFloatDoubleStringBoolBytesNullTypeEnumBool:
+		val, err := readBool(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.Bool = val
+	case UnionIntLongFloatDoubleStringBoolBytesNullTypeEnumBytes:
+		val, err := readBytes(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.Bytes = val
+	case UnionIntLongFloatDoubleStringBoolBytesNullTypeEnumNull:
+		val, err := readNull(r)
+		if err != nil {
+			return unionStr, err
+		}
+		unionStr.Null = val
+
+	default:
+		return unionStr, fmt.Errorf("Invalid value for UnionIntLongFloatDoubleStringBoolBytesNull")
+	}
+	return unionStr, nil
 }
 
 func writeBool(r bool, w io.Writer) error {

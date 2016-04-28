@@ -3,6 +3,7 @@ package avro
 import (
 	"bytes"
 	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"reflect"
 	"testing"
@@ -49,5 +50,21 @@ func TestFixedFixture(t *testing.T) {
 		if !reflect.DeepEqual(recordVal.([]byte), ([]byte)((f.FixedField)[:])) {
 			t.Fatalf("FixedField %v is not equal to %v", recordVal.([]byte), ([]byte)((f.FixedField)[:]))
 		}
+	}
+}
+
+func TestRoundTrip(t *testing.T) {
+	var buf bytes.Buffer
+	for _, f := range fixtures {
+		buf.Reset()
+		err := f.Serialize(&buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		datum, err := DeserializeFixedTestRecord(&buf)
+		if err != nil {
+			t.Fatal(err)
+		}
+		assert.Equal(t, *datum, f)
 	}
 }
