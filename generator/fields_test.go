@@ -227,6 +227,7 @@ func TestBoolDeserialize(t *testing.T) {
 
 	utilFile, _ := p.File(UTIL_FILE)
 	assert.Equal(t, utilFile.Imports(), []string{"io"})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteReader"})
 	assert.Equal(t, utilFile.Functions(), []FunctionName{{"", "readBool"}})
 }
 
@@ -310,7 +311,7 @@ func TestRecordDeserializerMethod(t *testing.T) {
 	expectedFunctions := []FunctionName{{"", "readBool"}, {"", "readDouble"}, {"", "readLong"}, {"", "readInt"}, {"", "readString"}, {"", "readFloat"}, {"", "readPrimitiveStruct"}}
 	sort.Sort(FunctionNameList(expectedFunctions))
 	assert.Equal(t, utilFile.Functions(), expectedFunctions)
-	assert.Equal(t, utilFile.Structs(), []string{})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteReader"})
 
 	structFile, _ := pkg.File("primitive_struct.go")
 	assert.Equal(t, structFile.Imports(), []string{"io"})
@@ -372,7 +373,7 @@ func TestArrayStructDeserializer(t *testing.T) {
 	sort.Sort(FunctionNameList(expectedFunctions))
 	assert.Equal(t, utilFile.Functions(), expectedFunctions)
 
-	assert.Equal(t, utilFile.Structs(), []string{})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteReader"})
 }
 
 func TestMapStructDef(t *testing.T) {
@@ -430,12 +431,11 @@ func TestMapDeserializer(t *testing.T) {
 
 	assert.Equal(t, pkg.Files(), []string{"map_struct.go", UTIL_FILE})
 	utilFile, _ := pkg.File(UTIL_FILE)
-	assert.Equal(t, utilFile.Imports(), []string{"encoding/binary", "fmt", "io", "math"})
+	assert.Equal(t, utilFile.Imports(), []string{"encoding/binary", "io", "math"})
 	expectedFunctions := []FunctionName{{"", "readBool"}, {"", "readDouble"}, {"", "readLong"}, {"", "readInt"}, {"", "readString"}, {"", "readFloat"}, {"", "readMapBool"}, {"", "readMapDouble"}, {"", "readMapLong"}, {"", "readMapInt"}, {"", "readMapString"}, {"", "readMapFloat"}, {"", "readMapNestedRecord"}, {"", "readMapStruct"}}
 	sort.Sort(FunctionNameList(expectedFunctions))
 	assert.Equal(t, utilFile.Functions(), expectedFunctions)
-
-	assert.Equal(t, utilFile.Structs(), []string{})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteReader"})
 
 	structFile, _ := pkg.File("map_struct.go")
 	assert.Equal(t, structFile.Imports(), []string{"io"})
@@ -495,8 +495,7 @@ func TestPrimitiveUnionDeserializer(t *testing.T) {
 	expectedFunctions := []FunctionName{{"", "readBool"}, {"", "readDouble"}, {"", "readLong"}, {"", "readInt"}, {"", "readString"}, {"", "readFloat"}, {"", "readNull"}, {"", "readUnionIntStringFloatDoubleLongBoolNestedRecordNull"}, {"", "readUnionStruct"}}
 	sort.Sort(FunctionNameList(expectedFunctions))
 	assert.Equal(t, utilFile.Functions(), expectedFunctions)
-
-	assert.Equal(t, utilFile.Structs(), []string{})
+	assert.Equal(t, utilFile.Structs(), []string{"ByteReader"})
 
 	structFile, _ := pkg.File("union_struct.go")
 	assert.Equal(t, structFile.Imports(), []string{"io"})
@@ -555,7 +554,6 @@ func TestRecursiveUnionDeserializer(t *testing.T) {
 	expectedFunctions := []FunctionName{{"", "readLong"}, {"", "readNull"}, {"", "readUnionNullRecursiveStruct"}, {"", "readRecursiveStruct"}}
 	sort.Sort(FunctionNameList(expectedFunctions))
 	assert.Equal(t, utilFile.Functions(), expectedFunctions)
-
 	assert.Equal(t, utilFile.Structs(), []string{})
 
 	structFile, _ := pkg.File("recursive_struct.go")
