@@ -7,6 +7,12 @@ type ByteWriter interface {
 } 
 `
 
+const byteReaderInterface = `
+type ByteReader interface {
+	ReadByte() (byte, error)
+} 
+`
+
 const writeBoolMethod = `
 
 func writeBool(r bool, w io.Writer) error {
@@ -32,12 +38,19 @@ func writeBool(r bool, w io.Writer) error {
 
 const readBoolMethod = `
 func readBool(r io.Reader) (bool, error) {
-	b := make([]byte, 1)
-	_, err := r.Read(b)
-	if err != nil {
-		return false, err
+	var b byte
+	var err error
+	if br, ok := r.(ByteReader); ok {
+		b, err = br.ReadByte()
+	} else {
+		bs := make([]byte, 1)
+		_, err = io.ReadFull(r, bs)
+		if err != nil {
+			return false, err
+		}
+		b = bs[0]
 	}
-	return b[0] == 1, nil
+	return b == 1, nil
 }
 `
 
@@ -76,6 +89,7 @@ func (s *boolField) AddSerializer(p *Package) {
 }
 
 func (s *boolField) AddDeserializer(p *Package) {
+	p.addStruct(UTIL_FILE, "ByteReader", byteReaderInterface)
 	p.addFunction(UTIL_FILE, "", "readBool", readBoolMethod)
 	p.addImport(UTIL_FILE, "io")
 }
