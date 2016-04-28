@@ -3,7 +3,6 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/linkedin/goavro"
 	"io/ioutil"
 	"testing"
@@ -50,7 +49,6 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		fmt.Printf("Record: %v\n", f)
 		switch f.UnionField.UnionType {
 		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull:
 			if recordField != nil {
