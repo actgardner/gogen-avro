@@ -37,4 +37,5 @@ func (s *doubleField) AddSerializer(p *Package) {
 	p.addFunction(UTIL_FILE, "", "writeDouble", writeDoubleMethod)
 	p.addFunction(UTIL_FILE, "", "encodeFloat", encodeFloatMethod)
 	p.addImport(UTIL_FILE, "io")
+	p.addImport(UTIL_FILE, "math")
 }
