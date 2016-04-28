@@ -126,7 +126,7 @@ func (r *recordDefinition) AddDeserializer(p *Package) {
 	if !p.hasFunction(r.filename(), "", r.deserializerMethod()) {
 		p.addImport(r.filename(), "io")
 		p.addFunction(UTIL_FILE, "", r.deserializerMethod(), r.deserializerMethodDef())
-		p.addFunction(r.filename(), r.GoType(), r.publicDeserializerMethod(), r.publicDeserializerMethodDef())
+		p.addFunction(r.filename(), "", r.publicDeserializerMethod(), r.publicDeserializerMethodDef())
 		for _, f := range r.fields {
 			f.AddDeserializer(p)
 		}
