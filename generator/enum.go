@@ -10,7 +10,9 @@ type %v int32
 const (
 %v
 )
+`
 
+const enumTypeStringer = `
 func (e %v) String() string {
 	switch e {
 %v
@@ -38,7 +40,7 @@ func (e *enumField) Name() string {
 }
 
 func (e *enumField) FieldType() string {
-	return toPublicName(e.typeName) + "Enum"
+	return toPublicName(e.typeName)
 }
 
 func (e *enumField) GoType() string {
@@ -62,7 +64,11 @@ func (e *enumField) stringerList() string {
 }
 
 func (e *enumField) structDef() string {
-	return fmt.Sprintf(enumTypeDef, e.GoType(), e.typeList(), e.GoType(), e.stringerList())
+	return fmt.Sprintf(enumTypeDef, e.GoType(), e.typeList())
+}
+
+func (e *enumField) stringerDef() string {
+	return fmt.Sprintf(enumTypeStringer, e.GoType(), e.stringerList())
 }
 
 func (e *enumField) serializerMethodDef() string {
@@ -79,13 +85,13 @@ func (e *enumField) filename() string {
 
 func (e *enumField) AddStruct(p *Package) {
 	p.addStruct(e.filename(), e.GoType(), e.structDef())
+	p.addFunction(e.filename(), e.GoType(), "String", e.stringerDef())
 }
 
 func (e *enumField) AddSerializer(p *Package) {
 	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.addFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
 	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.addFunction(e.filename(), "", e.SerializerMethod(), e.serializerMethodDef())
+	p.addFunction(UTIL_FILE, "", e.SerializerMethod(), e.serializerMethodDef())
 	p.addImport(UTIL_FILE, "io")
-	p.addImport(e.filename(), "io")
 }
