@@ -5,6 +5,8 @@ go:
   - 1.6
   - tip
 
+install: go get -t -v ./...
+
 script:
   - go test github.com/alanctgardner/gogen-avro/generator
   - bash test.sh 
