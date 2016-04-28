@@ -3,16 +3,24 @@ gogen-avro
 
 [![Build Status](https://travis-ci.org/alanctgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/alanctgardner/gogen-avro)
 
-Generate Go structures and serializer / deserializer methods from Avro schemas. Based on LinkedIn's goavro package. _This package and the generated code have not been thoroughly tested. Please do not attempt to use it to run a nuclear reactor._
+Generate Go structures and serializer / deserializer methods from Avro schemas. Based on LinkedIn's goavro package.
+
+### Installation
+
+```
+go get github.com/alanctgardner/gogen-avro
+go install github.com/alanctgardner/gogen-avro
+```
 
 ### Usage
 
-
 ```
-gogen-avro <avro schema file>
+gogen-avro <output directory> <avro schema files>
 ```
 
-Produces a single Go output file on stdout. The output file will have a struct representing the Avro record, and `Serialize(io.Writer)`, `Deserialize(io.Writer)` methods (note - `Deserialize()` isn't implemented yet). There are no external dependencies outside the standard library - methods to read and write Avro primitives are in the output file. 
+Gogen-avro will write a Go file in the output directory for each `record`, `fixed`, and `enum` type defined in the schema files. Multiple schema files are supported.
+
+Set the fields in a record struct and call `Serialize(io.Writer)` on the struct to encode the contents into the given `io.Writer`. 
 
 ### Type Conversion
 
@@ -72,4 +80,4 @@ This package doesn't implement the entire Avro 1.7.7 specification, specifically
 
 ### Thanks
 
-Thanks to LinkedIn's [goavro library](https://github.com/linkedin/goavro), for providing the encoders for primitives and a great example of how to encode everything else.
+Thanks to LinkedIn's [goavro library](https://github.com/linkedin/goavro), for providing the encoders for primitives.

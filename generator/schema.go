@@ -6,18 +6,16 @@ import (
 )
 
 /*
-	Given a JSON Avro schema, produce a struct and serializer/deserializer pair
-	TODO: Figure out how this should handle multiple record definitions
+	Add the structs and serializer/deserializer methods to the given Package
 */
-func GenerateForSchema(packageName string, schemaJson []byte) (*Package, error) {
+func GenerateForSchema(packageName string, schemaJson []byte, pkg *Package) error {
 	r, err := decodeSchema(schemaJson)
 	if err != nil {
-		return nil, fmt.Errorf("Error decoding schema JSON: %v", err)
+		return fmt.Errorf("Error decoding schema JSON: %v", err)
 	}
-	p := NewPackage(packageName)
-	r.AddStruct(p)
-	r.AddSerializer(p)
-	return p, err
+	r.AddStruct(pkg)
+	r.AddSerializer(pkg)
+	return nil
 }
 
 /* Decode the schema for a single Record */
