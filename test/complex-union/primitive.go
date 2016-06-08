@@ -142,7 +142,6 @@ func readMapInt(r io.Reader) (map[string]int32, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("Decoding block size \n", blkSize)
 		if blkSize == 0 {
 			break
 		}

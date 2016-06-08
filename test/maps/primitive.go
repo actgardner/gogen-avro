@@ -2,10 +2,13 @@ package avro
 
 import (
 	"encoding/binary"
-	"fmt"
 	"io"
 	"math"
 )
+
+type ByteReader interface {
+	ReadByte() (byte, error)
+}
 
 type ByteWriter interface {
 	Grow(int)
@@ -90,12 +93,19 @@ func encodeInt(w io.Writer, byteCount int, encoded uint64) error {
 }
 
 func readBool(r io.Reader) (bool, error) {
-	b := make([]byte, 1)
-	_, err := r.Read(b)
-	if err != nil {
-		return false, err
+	var b byte
+	var err error
+	if br, ok := r.(ByteReader); ok {
+		b, err = br.ReadByte()
+	} else {
+		bs := make([]byte, 1)
+		_, err = io.ReadFull(r, bs)
+		if err != nil {
+			return false, err
+		}
+		b = bs[0]
 	}
-	return b[0] == 1, nil
+	return b == 1, nil
 }
 
 func readBytes(r io.Reader) ([]byte, error) {
@@ -172,7 +182,6 @@ func readMapBool(r io.Reader) (map[string]bool, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("Decoding block size \n", blkSize)
 		if blkSize == 0 {
 			break
 		}
@@ -205,7 +214,6 @@ func readMapBytes(r io.Reader) (map[string][]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("Decoding block size \n", blkSize)
 		if blkSize == 0 {
 			break
 		}
@@ -238,7 +246,6 @@ func readMapDouble(r io.Reader) (map[string]float64, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("Decoding block size \n", blkSize)
 		if blkSize == 0 {
 			break
 		}
@@ -271,7 +278,6 @@ func readMapFloat(r io.Reader) (map[string]float32, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("Decoding block size \n", blkSize)
 		if blkSize == 0 {
 			break
 		}
@@ -304,7 +310,6 @@ func readMapInt(r io.Reader) (map[string]int32, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("Decoding block size \n", blkSize)
 		if blkSize == 0 {
 			break
 		}
@@ -337,7 +342,6 @@ func readMapLong(r io.Reader) (map[string]int64, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("Decoding block size \n", blkSize)
 		if blkSize == 0 {
 			break
 		}
@@ -370,7 +374,6 @@ func readMapString(r io.Reader) (map[string]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("Decoding block size \n", blkSize)
 		if blkSize == 0 {
 			break
 		}
