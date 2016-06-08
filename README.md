@@ -8,8 +8,7 @@ Generate Go structures and serializer / deserializer methods from Avro schemas. 
 ### Installation
 
 ```
-go get github.com/alanctgardner/gogen-avro
-go install github.com/alanctgardner/gogen-avro
+go get github.com/alanctgardner/gogen-avro/...
 ```
 
 ### Usage
