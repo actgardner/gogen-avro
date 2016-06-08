@@ -3,7 +3,7 @@ gogen-avro
 
 [![Build Status](https://travis-ci.org/alanctgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/alanctgardner/gogen-avro)
 
-Generate Go structures and serializer / deserializer methods from Avro schemas. Based on LinkedIn's goavro package.
+Generate Go structures and serializer / deserializer methods from Avro schemas. Generated serializers/deserializers are 2-8x faster than goavro.
 
 ### Installation
 
@@ -16,6 +16,12 @@ go install github.com/alanctgardner/gogen-avro
 
 ```
 gogen-avro <output directory> <avro schema files>
+```
+
+Or use a `go:generate` directive in a source file ([example](https://github.com/alanctgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
+
+```
+//go:generate $GOPATH/bin/gogen-avro . primitives.avsc
 ```
 
 Gogen-avro will write a Go file in the output directory for each `record`, `fixed`, and `enum` type defined in the schema files. Multiple schema files are supported.
