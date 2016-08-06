@@ -49,7 +49,7 @@ func TestFixedFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !reflect.DeepEqual(recordVal.([]byte), ([]byte)((f.FixedField)[:])) {
+		if !reflect.DeepEqual(recordVal.(goavro.Fixed).Value, ([]byte)((f.FixedField)[:])) {
 			t.Fatalf("FixedField %v is not equal to %v", recordVal.([]byte), ([]byte)((f.FixedField)[:]))
 		}
 	}

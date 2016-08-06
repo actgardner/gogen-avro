@@ -54,7 +54,7 @@ func TestEnumFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if recordVal.(string) != f.EnumField.String() {
+		if recordVal.(goavro.Enum).Value != f.EnumField.String() {
 			t.Fatalf("EnumField %v is not equal to %v", recordVal, f.EnumField)
 		}
 	}
