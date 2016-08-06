@@ -4,6 +4,7 @@ set -e
 
 go install github.com/alanctgardner/gogen-avro
 
+go get -t github.com/alanctgardner/gogen-avro/test/primitive
 go generate  github.com/alanctgardner/gogen-avro/test/primitive
 go test  github.com/alanctgardner/gogen-avro/test/primitive
 
@@ -12,6 +13,9 @@ go test  github.com/alanctgardner/gogen-avro/test/maps
 
 go generate  github.com/alanctgardner/gogen-avro/test/arrays
 go test  github.com/alanctgardner/gogen-avro/test/arrays
+
+go generate  github.com/alanctgardner/gogen-avro/test/complex-arrays
+go test  github.com/alanctgardner/gogen-avro/test/complex-arrays
 
 go generate  github.com/alanctgardner/gogen-avro/test/union
 go test  github.com/alanctgardner/gogen-avro/test/union

@@ -65,7 +65,6 @@ func decodeSchemaMap(schemaMap map[string]interface{}) (*recordDefinition, error
 		}
 		fieldStruct, err := decodeField(field)
 		if err != nil {
-			fmt.Printf("Decoded field err %v - %v\n", f, err)
 			return nil, err
 		}
 		decodedFields = append(decodedFields, fieldStruct)
@@ -149,7 +148,7 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (fi
 		case string:
 			fieldType, err = createFieldStruct("", items.(string), nil, false)
 		case map[string]interface{}:
-			fieldType, err = decodeFieldDefinition("", items.(map[string]interface{}))
+			fieldType, err = decodeFieldDefinitionType("", items.(map[string]interface{}), nil, false)
 		case []interface{}:
 			fieldType, err = decodeUnionDefinition("", nil, false, items.([]interface{}))
 
