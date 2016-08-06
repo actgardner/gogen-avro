@@ -1,36 +1,12 @@
-#/bin/bash
+#!/bin/bash -x
 
 set -e
 
 go install github.com/alanctgardner/gogen-avro
 
-go get -t github.com/alanctgardner/gogen-avro/test/primitive
-go generate  github.com/alanctgardner/gogen-avro/test/primitive
-go test  github.com/alanctgardner/gogen-avro/test/primitive
-
-go generate  github.com/alanctgardner/gogen-avro/test/maps
-go test  github.com/alanctgardner/gogen-avro/test/maps
-
-go generate  github.com/alanctgardner/gogen-avro/test/arrays
-go test  github.com/alanctgardner/gogen-avro/test/arrays
-
-go generate  github.com/alanctgardner/gogen-avro/test/complex-arrays
-go test  github.com/alanctgardner/gogen-avro/test/complex-arrays
-
-go generate  github.com/alanctgardner/gogen-avro/test/union
-go test  github.com/alanctgardner/gogen-avro/test/union
-
-go generate  github.com/alanctgardner/gogen-avro/test/nested
-go test  github.com/alanctgardner/gogen-avro/test/nested
-
-go generate  github.com/alanctgardner/gogen-avro/test/enum
-go test  github.com/alanctgardner/gogen-avro/test/enum
-
-go generate  github.com/alanctgardner/gogen-avro/test/fixed
-go test  github.com/alanctgardner/gogen-avro/test/fixed
-
-go generate  github.com/alanctgardner/gogen-avro/test/complex-union
-go test  github.com/alanctgardner/gogen-avro/test/complex-union
-
-go generate  github.com/alanctgardner/gogen-avro/test/recursive
-go test  github.com/alanctgardner/gogen-avro/test/recursive
+for t in test/*/; do
+	echo "Running test $t"
+	go generate -v github.com/alanctgardner/gogen-avro/$t
+	go get -t -v github.com/alanctgardner/gogen-avro/$t
+	go test  github.com/alanctgardner/gogen-avro/$t
+done

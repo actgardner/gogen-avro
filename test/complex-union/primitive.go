@@ -63,7 +63,7 @@ func encodeInt(w io.Writer, byteCount int, encoded uint64) error {
 func readArrayInt(r io.Reader) ([]int32, error) {
 	var err error
 	var blkSize int64
-	var arr []int32
+	var arr = make([]int32, 0)
 	for {
 		blkSize, err = readLong(r)
 		if err != nil {

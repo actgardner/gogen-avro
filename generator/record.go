@@ -23,11 +23,11 @@ func (s *recordField) FieldType() string {
 }
 
 func (s *recordField) SerializerMethod() string {
-	return fmt.Sprintf("write%v", s.typeName)
+	return fmt.Sprintf("write%v", toPublicName(s.typeName))
 }
 
 func (s *recordField) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", s.typeName)
+	return fmt.Sprintf("read%v", toPublicName(s.typeName))
 }
 
 /* If the record type is defined inline, add the definition to the Package */

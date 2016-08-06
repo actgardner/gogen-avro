@@ -1,0 +1,13 @@
+{
+   "name":"Parent",
+   "type":"record",
+   "fields":[
+      {
+         "name":"Children",
+         "type":{
+            "type":"array",
+            "items": "child"
+         }
+      }
+   ]
+}
