@@ -95,7 +95,7 @@ func encodeInt(w io.Writer, byteCount int, encoded uint64) error {
 func readArrayBool(r io.Reader) ([]bool, error) {
 	var err error
 	var blkSize int64
-	var arr []bool
+	var arr = make([]bool, 0)
 	for {
 		blkSize, err = readLong(r)
 		if err != nil {
@@ -125,7 +125,7 @@ func readArrayBool(r io.Reader) ([]bool, error) {
 func readArrayBytes(r io.Reader) ([][]byte, error) {
 	var err error
 	var blkSize int64
-	var arr [][]byte
+	var arr = make([][]byte, 0)
 	for {
 		blkSize, err = readLong(r)
 		if err != nil {
@@ -155,7 +155,7 @@ func readArrayBytes(r io.Reader) ([][]byte, error) {
 func readArrayDouble(r io.Reader) ([]float64, error) {
 	var err error
 	var blkSize int64
-	var arr []float64
+	var arr = make([]float64, 0)
 	for {
 		blkSize, err = readLong(r)
 		if err != nil {
@@ -185,7 +185,7 @@ func readArrayDouble(r io.Reader) ([]float64, error) {
 func readArrayFloat(r io.Reader) ([]float32, error) {
 	var err error
 	var blkSize int64
-	var arr []float32
+	var arr = make([]float32, 0)
 	for {
 		blkSize, err = readLong(r)
 		if err != nil {
@@ -215,7 +215,7 @@ func readArrayFloat(r io.Reader) ([]float32, error) {
 func readArrayInt(r io.Reader) ([]int32, error) {
 	var err error
 	var blkSize int64
-	var arr []int32
+	var arr = make([]int32, 0)
 	for {
 		blkSize, err = readLong(r)
 		if err != nil {
@@ -245,7 +245,7 @@ func readArrayInt(r io.Reader) ([]int32, error) {
 func readArrayLong(r io.Reader) ([]int64, error) {
 	var err error
 	var blkSize int64
-	var arr []int64
+	var arr = make([]int64, 0)
 	for {
 		blkSize, err = readLong(r)
 		if err != nil {
@@ -275,7 +275,7 @@ func readArrayLong(r io.Reader) ([]int64, error) {
 func readArrayString(r io.Reader) ([]string, error) {
 	var err error
 	var blkSize int64
-	var arr []string
+	var arr = make([]string, 0)
 	for {
 		blkSize, err = readLong(r)
 		if err != nil {
