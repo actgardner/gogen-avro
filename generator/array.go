@@ -24,7 +24,7 @@ const arrayDeserializerTemplate = `
 func %v(r io.Reader) (%v, error) {
 	var err error
 	var blkSize int64
-	var arr %v
+	var arr = make(%v, 0)
 	for {
 		blkSize, err = readLong(r)
 		if err != nil {
