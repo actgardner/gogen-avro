@@ -1,0 +1,5 @@
+*/*
+!.gitignore
+!*/*.avsc
+!*/schema_test.go
+
