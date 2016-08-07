@@ -13,7 +13,7 @@ import (
 func DeserializeRecordSchema(packageName string, schemaJson []byte, pkg *Package) error {
 	r, err := deserializeRecordDefinition(schemaJson)
 	if err != nil {
-		return fmt.Errorf("Error decoding schema JSON: %v", err)
+		return err
 	}
 	r.AddStruct(pkg)
 	r.AddSerializer(pkg)
@@ -29,65 +29,57 @@ func deserializeRecordDefinition(schemaJson []byte) (*recordDefinition, error) {
 	}
 	schemaMap, ok := schema.(map[string]interface{})
 	if !ok {
-		return nil, fmt.Errorf("Invalid or unsupported schema - expected map")
+		return nil, fmt.Errorf("Invalid or unsupported schema - expected map as root JSON object")
 	}
 	return decodeRecordDefinition(schemaMap)
 }
 
 /* Given a map representing a record definition, validate the definition and build the recordDefinition struct */
 func decodeRecordDefinition(schemaMap map[string]interface{}) (*recordDefinition, error) {
-	t, ok := schemaMap["type"]
-	if !ok {
-		return nil, fmt.Errorf("Schema is missing required field 'type'")
+	typeStr, err := getMapString(schemaMap, "type")
+	if err != nil {
+		return nil, err
 	}
-	typeStr, ok := t.(string)
-	if !ok || typeStr != "record" {
-		return nil, fmt.Errorf("Schema type must be 'record'")
+
+	if typeStr != "record" {
+		return nil, fmt.Errorf("Type of record must be 'record'")
 	}
-	name, ok := schemaMap["name"]
-	if !ok {
-		return nil, fmt.Errorf("Record schema missing required field 'name'")
+
+	name, err := getMapString(schemaMap, "name")
+	if err != nil {
+		return nil, err
 	}
-	nameStr, ok := name.(string)
-	if !ok {
-		return nil, fmt.Errorf("Record schema field 'name' must be string")
+
+	fieldList, err := getMapArray(schemaMap, "fields")
+	if err != nil {
+		return nil, err
 	}
-	fields, ok := schemaMap["fields"]
-	if !ok {
-		return nil, fmt.Errorf("Record schema missing required field 'fields'")
-	}
-	fieldList, ok := fields.([]interface{})
-	if !ok {
-		return nil, fmt.Errorf("Record schema field 'fields' must be an array")
-	}
+
 	decodedFields := make([]field, 0)
 	for _, f := range fieldList {
 		field, ok := f.(map[string]interface{})
 		if !ok {
-			return nil, fmt.Errorf("Record schema field 'fields' elements must be maps")
+			return nil, NewWrongMapValueTypeError("fields", "map[]", field)
 		}
-		name, ok := field["name"]
-		if !ok {
-			return nil, fmt.Errorf("Field is missing requird 'name' field")
-		}
-		nameStr, ok := name.(string)
-		if !ok {
-			return nil, fmt.Errorf("Field 'name' must be string type")
+		fieldName, err := getMapString(field, "name")
+		if err != nil {
+			return nil, err
 		}
 		t, ok := field["type"]
 		if !ok {
-			return nil, fmt.Errorf("Field %q is missing required 'type' field", nameStr)
+			return nil, NewRequiredMapKeyError("type")
 		}
 		def, hasDef := field["default"]
-		fieldStruct, err := decodeFieldDefinitionType(nameStr, t, def, hasDef)
+		fieldStruct, err := decodeFieldDefinitionType(fieldName, t, def, hasDef)
 		if err != nil {
 			return nil, err
 		}
 
 		decodedFields = append(decodedFields, fieldStruct)
 	}
+
 	return &recordDefinition{
-		name:   nameStr,
+		name:   name,
 		fields: decodedFields,
 	}, nil
 }
@@ -102,7 +94,7 @@ func decodeFieldDefinitionType(nameStr string, t, def interface{}, hasDef bool) 
 	case map[string]interface{}:
 		return decodeComplexDefinition(nameStr, t.(map[string]interface{}))
 	}
-	return nil, fmt.Errorf("Field %v has invalid type - must be a JSON string, array or map", nameStr)
+	return nil, NewSchemaError(nameStr, NewWrongMapValueTypeError("type", "array, string, map", t))
 }
 
 func decodeUnionDefinition(nameStr string, def interface{}, hasDef bool, fieldList []interface{}) (field, error) {
@@ -124,83 +116,63 @@ func decodeUnionDefinition(nameStr string, def interface{}, hasDef bool, fieldLi
 }
 
 func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (field, error) {
-	t, ok := typeMap["type"]
-	if !ok {
-		return nil, fmt.Errorf("Field %q is missing required complex 'type' field", nameStr)
-	}
-	typeStr, ok := t.(string)
-	if !ok {
-		return nil, fmt.Errorf("Field %q complex 'type' field must be string", nameStr)
+	typeStr, err := getMapString(typeMap, "type")
+	if err != nil {
+		return nil, NewSchemaError(nameStr, err)
 	}
 	switch typeStr {
 	case "array":
 		items, ok := typeMap["items"]
 		if !ok {
-			return nil, fmt.Errorf("Field %q must have an 'items' field", nameStr)
+			return nil, NewSchemaError(nameStr, NewRequiredMapKeyError("items"))
 		}
 		fieldType, err := decodeFieldDefinitionType("", items, nil, false)
 		if err != nil {
-			return nil, fmt.Errorf("Array %v item definition is invalid - %v", err)
+			return nil, NewSchemaError(nameStr, err)
 		}
 		return &arrayField{nameStr, fieldType}, nil
 	case "map":
 		values, ok := typeMap["values"]
 		if !ok {
-			return nil, fmt.Errorf("Field %q must have an 'values' field", nameStr)
+			return nil, NewSchemaError(nameStr, NewRequiredMapKeyError("values"))
 		}
 		fieldType, err := decodeFieldDefinitionType("", values, nil, false)
 		if err != nil {
-			return nil, fmt.Errorf("Array %v item definition is invalid - %v", err)
+			return nil, NewSchemaError(nameStr, err)
 		}
 		return &mapField{nameStr, fieldType}, nil
 	case "enum":
-		symbols, ok := typeMap["symbols"]
-		if !ok {
-			return nil, fmt.Errorf("Field %q must have a 'symbols' field", nameStr)
-		}
-		symbolSlice, ok := symbols.([]interface{})
-		if !ok {
-			return nil, fmt.Errorf("Field %q 'symbols' must be an array", nameStr)
+		symbolSlice, err := getMapArray(typeMap, "symbols")
+		if err != nil {
+			return nil, NewSchemaError(nameStr, err)
 		}
 		symbolStr, ok := interfaceSliceToStringSlice(symbolSlice)
 		if !ok {
-			return nil, fmt.Errorf("Field %q 'symbols' must be an array of strings", nameStr)
+			return nil, NewSchemaError(nameStr, fmt.Errorf("'symbols' must be an array of strings"))
 		}
-		typeName, ok := typeMap["name"]
-		if !ok {
-			return nil, fmt.Errorf("Field %q must have a 'name' field", nameStr)
-		}
-		typeNameStr, ok := typeName.(string)
-		if !ok {
-			return nil, fmt.Errorf("Field %q 'name' must be a string", nameStr)
+		typeNameStr, err := getMapString(typeMap, "name")
+		if err != nil {
+			return nil, NewSchemaError(nameStr, err)
 		}
 		return &enumField{nameStr, typeNameStr, "", false, symbolStr}, nil
 	case "fixed":
-		size, ok := typeMap["size"]
-		if !ok {
-			return nil, fmt.Errorf("Field %q must have a 'size' field", nameStr)
+		size, err := getMapFloat(typeMap, "size")
+		if err != nil {
+			return nil, NewSchemaError(nameStr, err)
 		}
-		sizeInt, ok := size.(float64)
-		if !ok {
-			return nil, fmt.Errorf("Field %q 'size' must be an integer", nameStr)
+		typeNameStr, err := getMapString(typeMap, "name")
+		if err != nil {
+			return nil, NewSchemaError(nameStr, err)
 		}
-		typeName, ok := typeMap["name"]
-		if !ok {
-			return nil, fmt.Errorf("Field %q must have a 'name' field", nameStr)
-		}
-		typeNameStr, ok := typeName.(string)
-		if !ok {
-			return nil, fmt.Errorf("Field %q 'name' must be a string", nameStr)
-		}
-		return &fixedField{nameStr, typeNameStr, nil, false, int(sizeInt)}, nil
+		return &fixedField{nameStr, typeNameStr, nil, false, int(size)}, nil
 	case "record":
 		def, err := decodeRecordDefinition(typeMap)
 		if err != nil {
-			return nil, err
+			return nil, NewSchemaError(nameStr, err)
 		}
 		return &recordField{nameStr, def.GoType(), def}, nil
 	default:
-		return nil, fmt.Errorf("Unknown complex type %v", typeStr)
+		return nil, NewSchemaError(nameStr, fmt.Errorf("Unknown type name %v", typeStr))
 	}
 }
 
@@ -212,7 +184,7 @@ func createFieldStruct(nameStr, typeStr string, def interface{}, hasDef bool) (f
 		if hasDef {
 			defStr, ok = def.(string)
 			if !ok {
-				return nil, fmt.Errorf("Field %q default must be string type", nameStr)
+				return nil, fmt.Errorf("Default value must be string type")
 			}
 
 		}
@@ -222,7 +194,7 @@ func createFieldStruct(nameStr, typeStr string, def interface{}, hasDef bool) (f
 		if hasDef {
 			defFloat, ok := def.(float64)
 			if !ok {
-				return nil, fmt.Errorf("Field %q default must be float type", nameStr)
+				return nil, fmt.Errorf("Default must be float type")
 			}
 			defInt = int32(defFloat)
 
