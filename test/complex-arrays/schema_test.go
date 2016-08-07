@@ -7,8 +7,6 @@ import (
 	"testing"
 )
 
-//go:generate $GOPATH/bin/gogen-avro . arrays.avsc
-
 /* Round trip some records nested in arrays */
 const fixtureJson = `
 [
