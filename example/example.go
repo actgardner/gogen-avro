@@ -9,6 +9,7 @@ import (
 // Use a go:generate directive to build the Go structs for `example.avsc`
 // Source files will be in a package called `avro`
 
+//go:generate mkdir -p ./avro
 //go:generate $GOPATH/bin/gogen-avro ./avro example.avsc
 
 func main() {
