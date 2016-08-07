@@ -6,10 +6,12 @@ import (
 )
 
 /*
-	Add the structs and serializer/deserializer methods to the given Package
+ Deserialize the JSON definiton of a record and generate structs, deserializer and serializer methods.
+ This function only supports JSON maps at the moment, where "type" -> "record". Avro also allows for schemas
+ which are JSON arrays or JSON strings, but we don't currently support those as the root JSON type.
 */
-func GenerateForSchema(packageName string, schemaJson []byte, pkg *Package) error {
-	r, err := decodeSchema(schemaJson)
+func DeserializeRecordSchema(packageName string, schemaJson []byte, pkg *Package) error {
+	r, err := deserializeRecordDefinition(schemaJson)
 	if err != nil {
 		return fmt.Errorf("Error decoding schema JSON: %v", err)
 	}
@@ -19,8 +21,8 @@ func GenerateForSchema(packageName string, schemaJson []byte, pkg *Package) erro
 	return nil
 }
 
-/* Decode the schema for a single Record */
-func decodeSchema(schemaJson []byte) (*recordDefinition, error) {
+/* Given a JSON record definition as a JSON encoded string, deserialize the JSON and build the record definition structs */
+func deserializeRecordDefinition(schemaJson []byte) (*recordDefinition, error) {
 	var schema interface{}
 	if err := json.Unmarshal(schemaJson, &schema); err != nil {
 		return nil, err
@@ -29,10 +31,11 @@ func decodeSchema(schemaJson []byte) (*recordDefinition, error) {
 	if !ok {
 		return nil, fmt.Errorf("Invalid or unsupported schema - expected map")
 	}
-	return decodeSchemaMap(schemaMap)
+	return decodeRecordDefinition(schemaMap)
 }
 
-func decodeSchemaMap(schemaMap map[string]interface{}) (*recordDefinition, error) {
+/* Given a map representing a record definition, validate the definition and build the recordDefinition struct */
+func decodeRecordDefinition(schemaMap map[string]interface{}) (*recordDefinition, error) {
 	t, ok := schemaMap["type"]
 	if !ok {
 		return nil, fmt.Errorf("Schema is missing required field 'type'")
@@ -63,37 +66,30 @@ func decodeSchemaMap(schemaMap map[string]interface{}) (*recordDefinition, error
 		if !ok {
 			return nil, fmt.Errorf("Record schema field 'fields' elements must be maps")
 		}
-		fieldStruct, err := decodeField(field)
+		name, ok := field["name"]
+		if !ok {
+			return nil, fmt.Errorf("Field is missing requird 'name' field")
+		}
+		nameStr, ok := name.(string)
+		if !ok {
+			return nil, fmt.Errorf("Field 'name' must be string type")
+		}
+		t, ok := field["type"]
+		if !ok {
+			return nil, fmt.Errorf("Field %q is missing required 'type' field", nameStr)
+		}
+		def, hasDef := field["default"]
+		fieldStruct, err := decodeFieldDefinitionType(nameStr, t, def, hasDef)
 		if err != nil {
 			return nil, err
 		}
+
 		decodedFields = append(decodedFields, fieldStruct)
 	}
 	return &recordDefinition{
 		name:   nameStr,
 		fields: decodedFields,
 	}, nil
-}
-
-func decodeField(fieldMap map[string]interface{}) (field, error) {
-	name, ok := fieldMap["name"]
-	if !ok {
-		return nil, fmt.Errorf("Field is missing requird 'name' field")
-	}
-	nameStr, ok := name.(string)
-	if !ok {
-		return nil, fmt.Errorf("Field 'name' must be string type")
-	}
-	return decodeFieldDefinition(nameStr, fieldMap)
-}
-
-func decodeFieldDefinition(nameStr string, fieldMap map[string]interface{}) (field, error) {
-	t, ok := fieldMap["type"]
-	if !ok {
-		return nil, fmt.Errorf("Field %q is missing required 'type' field", nameStr)
-	}
-	def, hasDef := fieldMap["default"]
-	return decodeFieldDefinitionType(nameStr, t, def, hasDef)
 }
 
 func decodeFieldDefinitionType(nameStr string, t, def interface{}, hasDef bool) (field, error) {
@@ -142,40 +138,17 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (fi
 		if !ok {
 			return nil, fmt.Errorf("Field %q must have an 'items' field", nameStr)
 		}
-		var fieldType field
-		var err error
-		switch items.(type) {
-		case string:
-			fieldType, err = createFieldStruct("", items.(string), nil, false)
-		case map[string]interface{}:
-			fieldType, err = decodeFieldDefinitionType("", items.(map[string]interface{}), nil, false)
-		case []interface{}:
-			fieldType, err = decodeUnionDefinition("", nil, false, items.([]interface{}))
-
-		default:
-			return nil, fmt.Errorf("Array %v items type must be a string or map", nameStr)
-		}
+		fieldType, err := decodeFieldDefinitionType("", items, nil, false)
 		if err != nil {
 			return nil, fmt.Errorf("Array %v item definition is invalid - %v", err)
 		}
 		return &arrayField{nameStr, fieldType}, nil
 	case "map":
-		items, ok := typeMap["values"]
+		values, ok := typeMap["values"]
 		if !ok {
 			return nil, fmt.Errorf("Field %q must have an 'values' field", nameStr)
 		}
-		var fieldType field
-		var err error
-		switch items.(type) {
-		case string:
-			fieldType, err = createFieldStruct("", items.(string), nil, false)
-		case map[string]interface{}:
-			fieldType, err = decodeFieldDefinition("", items.(map[string]interface{}))
-		case []interface{}:
-			fieldType, err = decodeUnionDefinition("", nil, false, items.([]interface{}))
-		default:
-			return nil, fmt.Errorf("Array %v items type must be a string or map", nameStr)
-		}
+		fieldType, err := decodeFieldDefinitionType("", values, nil, false)
 		if err != nil {
 			return nil, fmt.Errorf("Array %v item definition is invalid - %v", err)
 		}
@@ -221,7 +194,7 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (fi
 		}
 		return &fixedField{nameStr, typeNameStr, nil, false, int(sizeInt)}, nil
 	case "record":
-		def, err := decodeSchemaMap(typeMap)
+		def, err := decodeRecordDefinition(typeMap)
 		if err != nil {
 			return nil, err
 		}

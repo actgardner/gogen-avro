@@ -22,7 +22,7 @@ func TestParsePrimitiveSchema(t *testing.T) {
 		]
 	}
 `
-	schema, err := decodeSchema([]byte(schemaString))
+	schema, err := deserializeRecordDefinition([]byte(schemaString))
 	assert.Nil(t, err)
 	assert.Equal(t, schema.name, "PrimitiveTest")
 	assert.Equal(t, len(schema.fields), 8)
@@ -61,7 +61,7 @@ func TestParsePrimitiveMapTypes(t *testing.T) {
 		]
 	}
 	`
-	schema, err := decodeSchema([]byte(schemaString))
+	schema, err := deserializeRecordDefinition([]byte(schemaString))
 	assert.Nil(t, err)
 	assert.Equal(t, schema.name, "ComplexRecord")
 	assert.Equal(t, len(schema.fields), 8)
@@ -109,7 +109,7 @@ func TestParsePrimitiveArrayTypes(t *testing.T) {
 		]
 	}
 	`
-	schema, err := decodeSchema([]byte(schemaString))
+	schema, err := deserializeRecordDefinition([]byte(schemaString))
 	assert.Nil(t, err)
 	assert.Equal(t, schema.name, "ComplexRecord")
 	assert.Equal(t, len(schema.fields), 8)
@@ -150,7 +150,7 @@ func TestParsePrimitiveUnion(t *testing.T) {
 		]
 	}
 `
-	schema, err := decodeSchema([]byte(schemaString))
+	schema, err := deserializeRecordDefinition([]byte(schemaString))
 	assert.Nil(t, err)
 	assert.Equal(t, schema.name, "UnionRecord")
 	assert.Equal(t, len(schema.fields), 1)

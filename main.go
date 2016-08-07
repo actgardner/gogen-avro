@@ -21,7 +21,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error reading file %q - %v\n", fileName, err)
 			os.Exit(2)
 		}
-		err = generator.GenerateForSchema("avro", schema, pkg)
+		err = generator.DeserializeRecordSchema("avro", schema, pkg)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error generating schema for file %q - %v\n", fileName, err)
 			os.Exit(3)
