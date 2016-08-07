@@ -2,16 +2,21 @@ gogen-avro
 ===
 
 [![Build Status](https://travis-ci.org/alanctgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/alanctgardner/gogen-avro)
+[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)](https://opensource.org/licenses/mit-license.php)  
 
-Generate Go structures and serializer / deserializer methods from Avro schemas. Generated serializers/deserializers are 2-8x faster than goavro.
+Generate Go structures and serializer / deserializer methods from Avro schemas. Generated serializers/deserializers are 2-8x faster than goavro, and you get compile-time safety for getting and setting fields.
 
 ### Installation
+
+gogen-avro is a tool which you install on your system (usually on your GOPATH), and run as part of your build process. To install gogen-avro to `$GOPATH/bin/`, run:
 
 ```
 go get github.com/alanctgardner/gogen-avro/...
 ```
 
 ### Usage
+
+To generate Go source files from one or more Avro schema files, run:
 
 ```
 gogen-avro <output directory> <avro schema files>
@@ -23,9 +28,7 @@ Or use a `go:generate` directive in a source file ([example](https://github.com/
 //go:generate $GOPATH/bin/gogen-avro . primitives.avsc
 ```
 
-Gogen-avro will write a Go file in the output directory for each `record`, `fixed`, and `enum` type defined in the schema files. Multiple schema files are supported.
-
-Generated structs have a function `Serialize(io.Writer)` to encode the contents into the given `io.Writer`, and `Deserialize<RecordType>(io.Reader)` to read a struct from the given `io.Reader`. See `test/primitive/schema_test.go` for examples of encoding and decoding.
+The generated source files contain structs for each schema, plus a function `Serialize(io.Writer)` to encode the contents into the given `io.Writer`, and `Deserialize<RecordType>(io.Reader)` to read a struct from the given `io.Reader`. 
 
 ### Example
 
@@ -41,7 +44,7 @@ go install github.com/alanctgardner/gogen-avro/example
 
 ### Type Conversion
 
-Go types mostly map neatly onto Avro types:
+Gogen-avro produces a Go struct which reflects the structure of your Avro schema. Most Go types map neatly onto Avro types:
 
 | Avro Type     | Go Type           | Notes                                                                                                                |
 |---------------|-------------------|----------------------------------------------------------------------------------------------------------------------|
@@ -57,33 +60,22 @@ Go types mostly map neatly onto Avro types:
 | fixed         | [<n>]byte         | Fixed fields are given a custom type, which is an alias for an appropriately sized byte array                        |
 | union         | custom type       | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
 
-`union` is the exception. To avoid a round-trip through `interface{}`, we generate a struct and enumeration whose name is uniquely determined by the types in the union. This can get pretty hairy - for a field whose type is `["int", "string", "float", "double", "long", "bool", "null"]` we generate the following:
+`union` is more complicated than primitive types. We generate a struct and enum whose name is uniquely determined by the types in the union. For a field whose type is `["null", "int"]` we generate the following:
 
 ```
-type UnionIntStringFloatDoubleLongBoolNull struct {
+type UnionNullInt struct {
 	// All the possible types the union could take on
-	Int                int32
-	String             string
-	Float              float32
-	Double             float64
-	Long               int64
-	Bool               bool
 	Null               interface{}
-	// Which field actually has data in it
-	UnionType          UnionIntStringFloatDoubleLongBoolNullTypeEnum
+	Int                int32
+	// Which field actually has data in it - defaults to the first type in the list, "null"
+	UnionType          UnionNullTypeEnum
 }
 
-// These names are obscenely long to guarantee uniqueness
-type UnionIntStringFloatDoubleLongBoolNullTypeEnum int
+type UnionNullIntTypeEnum int
 
 const (
-	UnionIntStringFloatDoubleLongBoolNullTypeEnumInt                UnionIntStringFloatDoubleLongBoolNullTypeEnum = 0
-	UnionIntStringFloatDoubleLongBoolNullTypeEnumString             UnionIntStringFloatDoubleLongBoolNullTypeEnum = 1
-	UnionIntStringFloatDoubleLongBoolNullTypeEnumFloat              UnionIntStringFloatDoubleLongBoolNullTypeEnum = 2
-	UnionIntStringFloatDoubleLongBoolNullTypeEnumDouble             UnionIntStringFloatDoubleLongBoolNullTypeEnum = 3
-	UnionIntStringFloatDoubleLongBoolNullTypeEnumLong               UnionIntStringFloatDoubleLongBoolNullTypeEnum = 4
-	UnionIntStringFloatDoubleLongBoolNullTypeEnumBool               UnionIntStringFloatDoubleLongBoolNullTypeEnum = 5
-	UnionIntStringFloatDoubleLongBoolNullTypeEnumNull               UnionIntStringFloatDoubleLongBoolNullTypeEnum = 6
+	UnionNullIntTypeEnumNull            UnionNullIntTypeEnum = 0
+	UnionNullIntTypeEnumInt             UnionNullIntTypeEnum = 1
 )
 ``` 
 
