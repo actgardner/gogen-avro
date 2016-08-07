@@ -2,7 +2,8 @@ gogen-avro
 ===
 
 [![Build Status](https://travis-ci.org/alanctgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/alanctgardner/gogen-avro)
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)](https://opensource.org/licenses/mit-license.php)  
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/alanctgardner/gogen-avro/master/LICENSE)
+[![Version 2.0.0](https://img.shields.io/badge/version-2.0.0-lightgrey.svg)](https://gopkg.in/alanctgardner/gogen-avro.v2)
 
 Generate Go structures and serializer / deserializer methods from Avro schemas. Generated serializers/deserializers are 2-8x faster than goavro, and you get compile-time safety for getting and setting fields.
 
