@@ -27,6 +27,18 @@ Gogen-avro will write a Go file in the output directory for each `record`, `fixe
 
 Generated structs have a function `Serialize(io.Writer)` to encode the contents into the given `io.Writer`, and `Deserialize<RecordType>(io.Reader)` to read a struct from the given `io.Reader`. See `test/primitive/schema_test.go` for examples of encoding and decoding.
 
+### Example
+
+The `example` directory contains a simple example project with an Avro schema. Once you've installed gogen-avro on your GOPATH, you can install the example project:
+
+```
+# Build the Go source files from the Avro schema using the generate directive 
+go generate github.com/alanctgardner/gogen-avro/example
+
+# Install the example project on the gopath
+go install github.com/alanctgardner/gogen-avro/example
+```
+
 ### Type Conversion
 
 Go types mostly map neatly onto Avro types:
