@@ -7,7 +7,7 @@ import (
 const mapSerializerTemplate = `
 func %v(r %v, w io.Writer) error {
 	err := writeLong(int64(len(r)), w)
-	if err != nil {
+	if err != nil || len(r) == 0 {
 		return err
 	}
 	for k, e := range r {
