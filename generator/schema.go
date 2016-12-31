@@ -11,14 +11,40 @@ import (
  which are JSON arrays or JSON strings, but we don't currently support those as the root JSON type.
 */
 func DeserializeRecordSchema(packageName string, schemaJson []byte, pkg *Package) error {
-	r, err := deserializeRecordDefinition(schemaJson)
+	// Add the Avro definitions for the user-supplied schema
+	r, err := addDefinitionForSchema(schemaJson, pkg)
 	if err != nil {
 		return err
 	}
+
+	// Add the generic Avro container schema
+	_, err = addDefinitionForSchema([]byte(AVRO_BLOCK_SCHEMA), pkg)
+	if err != nil {
+		return err
+	}
+
+	_, err = addDefinitionForSchema([]byte(AVRO_HEADER_SCHEMA), pkg)
+	if err != nil {
+		return err
+	}
+
+	// Add the container definitions for this file
+	containerWriter := &avroContainerWriter{schemaJson, r}
+	containerWriter.AddAvroContainerWriter(pkg)
+	return nil
+}
+
+func addDefinitionForSchema(schemaJson []byte, pkg *Package) (*recordDefinition, error) {
+	r, err := deserializeRecordDefinition(schemaJson)
+	if err != nil {
+		return nil, err
+	}
+
+	// Add the Avro type definitions
 	r.AddStruct(pkg)
 	r.AddSerializer(pkg)
 	r.AddDeserializer(pkg)
-	return nil
+	return r, nil
 }
 
 /* Given a JSON record definition as a JSON encoded string, deserialize the JSON and build the record definition structs */
