@@ -1,6 +1,7 @@
-package generator
+package types
 
 import (
+	"github.com/alanctgardner/gogen-avro/generator"
 	"fmt"
 )
 
@@ -54,11 +55,11 @@ func %v(r io.Reader) (%v, error) {
 
 type arrayField struct {
 	name     string
-	itemType field
+	itemType Field
 }
 
 func (s *arrayField) Name() string {
-	return toPublicName(s.name)
+	return generator.ToPublicName(s.name)
 }
 
 func (s *arrayField) FieldType() string {
@@ -77,28 +78,28 @@ func (s *arrayField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.FieldType())
 }
 
-func (s *arrayField) AddStruct(p *Package) {
+func (s *arrayField) AddStruct(p *generator.Package) {
 	s.itemType.AddStruct(p)
 }
 
-func (s *arrayField) AddSerializer(p *Package) {
+func (s *arrayField) AddSerializer(p *generator.Package) {
 	itemMethodName := s.itemType.SerializerMethod()
 	methodName := s.SerializerMethod()
 	arraySerializer := fmt.Sprintf(arraySerializerTemplate, s.SerializerMethod(), s.GoType(), itemMethodName)
 	s.itemType.AddSerializer(p)
-	p.addFunction(UTIL_FILE, "", methodName, arraySerializer)
-	p.addFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.addImport(UTIL_FILE, "io")
+	p.AddFunction(UTIL_FILE, "", methodName, arraySerializer)
+	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
+	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *arrayField) AddDeserializer(p *Package) {
+func (s *arrayField) AddDeserializer(p *generator.Package) {
 	itemMethodName := s.itemType.DeserializerMethod()
 	methodName := s.DeserializerMethod()
 	arrayDeserializer := fmt.Sprintf(arrayDeserializerTemplate, methodName, s.GoType(), s.GoType(), itemMethodName)
 	s.itemType.AddDeserializer(p)
-	p.addFunction(UTIL_FILE, "", methodName, arrayDeserializer)
-	p.addFunction(UTIL_FILE, "", "readLong", readLongMethod)
-	p.addImport(UTIL_FILE, "io")
+	p.AddFunction(UTIL_FILE, "", methodName, arrayDeserializer)
+	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
+	p.AddImport(UTIL_FILE, "io")
 }

@@ -1,7 +1,8 @@
-package generator
+package types
 
 import (
 	"fmt"
+	"github.com/alanctgardner/gogen-avro/generator"
 )
 
 const mapSerializerTemplate = `
@@ -60,11 +61,11 @@ func %v(r io.Reader) (%v, error) {
 
 type mapField struct {
 	name     string
-	itemType field
+	itemType Field
 }
 
 func (s *mapField) Name() string {
-	return toPublicName(s.name)
+	return generator.ToPublicName(s.name)
 }
 
 func (s *mapField) FieldType() string {
@@ -83,31 +84,31 @@ func (s *mapField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.FieldType())
 }
 
-func (s *mapField) AddStruct(p *Package) {}
+func (s *mapField) AddStruct(p *generator.Package) {}
 
-func (s *mapField) AddSerializer(p *Package) {
+func (s *mapField) AddSerializer(p *generator.Package) {
 	s.itemType.AddSerializer(p)
 	itemMethodName := s.itemType.SerializerMethod()
 	methodName := s.SerializerMethod()
 	mapSerializer := fmt.Sprintf(mapSerializerTemplate, s.SerializerMethod(), s.GoType(), itemMethodName)
 
-	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.addStruct(UTIL_FILE, "StringWriter", stringWriterInterface)
-	p.addFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.addFunction(UTIL_FILE, "", "writeString", writeStringMethod)
-	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.addFunction(UTIL_FILE, "", methodName, mapSerializer)
-	p.addImport(UTIL_FILE, "io")
+	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.AddStruct(UTIL_FILE, "StringWriter", stringWriterInterface)
+	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
+	p.AddFunction(UTIL_FILE, "", "writeString", writeStringMethod)
+	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.AddFunction(UTIL_FILE, "", methodName, mapSerializer)
+	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *mapField) AddDeserializer(p *Package) {
+func (s *mapField) AddDeserializer(p *generator.Package) {
 	s.itemType.AddDeserializer(p)
 	itemMethodName := s.itemType.DeserializerMethod()
 	methodName := s.DeserializerMethod()
 	mapDeserializer := fmt.Sprintf(mapDeserializerTemplate, s.DeserializerMethod(), s.GoType(), s.GoType(), itemMethodName)
 
-	p.addFunction(UTIL_FILE, "", "readLong", readLongMethod)
-	p.addFunction(UTIL_FILE, "", "readString", readStringMethod)
-	p.addFunction(UTIL_FILE, "", methodName, mapDeserializer)
-	p.addImport(UTIL_FILE, "io")
+	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
+	p.AddFunction(UTIL_FILE, "", "readString", readStringMethod)
+	p.AddFunction(UTIL_FILE, "", methodName, mapDeserializer)
+	p.AddImport(UTIL_FILE, "io")
 }

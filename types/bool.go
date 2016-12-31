@@ -1,4 +1,8 @@
-package generator
+package types
+
+import (
+	"github.com/alanctgardner/gogen-avro/generator"
+)
 
 const byteWriterInterface = `
 type ByteWriter interface {
@@ -61,7 +65,7 @@ type boolField struct {
 }
 
 func (s *boolField) Name() string {
-	return toPublicName(s.name)
+	return generator.ToPublicName(s.name)
 }
 
 func (s *boolField) FieldType() string {
@@ -80,16 +84,16 @@ func (s *boolField) DeserializerMethod() string {
 	return "readBool"
 }
 
-func (s *boolField) AddStruct(*Package) {}
+func (s *boolField) AddStruct(*generator.Package) {}
 
-func (s *boolField) AddSerializer(p *Package) {
-	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.addFunction(UTIL_FILE, "", "writeBool", writeBoolMethod)
-	p.addImport(UTIL_FILE, "io")
+func (s *boolField) AddSerializer(p *generator.Package) {
+	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.AddFunction(UTIL_FILE, "", "writeBool", writeBoolMethod)
+	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *boolField) AddDeserializer(p *Package) {
-	p.addStruct(UTIL_FILE, "ByteReader", byteReaderInterface)
-	p.addFunction(UTIL_FILE, "", "readBool", readBoolMethod)
-	p.addImport(UTIL_FILE, "io")
+func (s *boolField) AddDeserializer(p *generator.Package) {
+	p.AddStruct(UTIL_FILE, "ByteReader", byteReaderInterface)
+	p.AddFunction(UTIL_FILE, "", "readBool", readBoolMethod)
+	p.AddImport(UTIL_FILE, "io")
 }

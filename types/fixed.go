@@ -1,6 +1,7 @@
-package generator
+package types
 
 import (
+	"github.com/alanctgardner/gogen-avro/generator"
 	"fmt"
 )
 
@@ -28,11 +29,11 @@ type fixedField struct {
 }
 
 func (s *fixedField) Name() string {
-	return toPublicName(s.name)
+	return generator.ToPublicName(s.name)
 }
 
 func (s *fixedField) FieldType() string {
-	return toPublicName(s.typeName)
+	return generator.ToPublicName(s.typeName)
 }
 
 func (s *fixedField) GoType() string {
@@ -52,7 +53,7 @@ func (s *fixedField) typeDef() string {
 }
 
 func (s *fixedField) filename() string {
-	return toSnake(s.GoType()) + ".go"
+	return generator.ToSnake(s.GoType()) + ".go"
 }
 
 func (s *fixedField) SerializerMethod() string {
@@ -63,16 +64,16 @@ func (s *fixedField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.FieldType())
 }
 
-func (s *fixedField) AddStruct(p *Package) {
-	p.addStruct(s.filename(), s.GoType(), s.typeDef())
+func (s *fixedField) AddStruct(p *generator.Package) {
+	p.AddStruct(s.filename(), s.GoType(), s.typeDef())
 }
 
-func (s *fixedField) AddSerializer(p *Package) {
-	p.addFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
-	p.addImport(UTIL_FILE, "io")
+func (s *fixedField) AddSerializer(p *generator.Package) {
+	p.AddFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
+	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *fixedField) AddDeserializer(p *Package) {
-	p.addFunction(UTIL_FILE, "", s.DeserializerMethod(), s.deserializerMethodDef())
-	p.addImport(UTIL_FILE, "io")
+func (s *fixedField) AddDeserializer(p *generator.Package) {
+	p.AddFunction(UTIL_FILE, "", s.DeserializerMethod(), s.deserializerMethodDef())
+	p.AddImport(UTIL_FILE, "io")
 }

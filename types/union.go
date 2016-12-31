@@ -1,7 +1,8 @@
-package generator
+package types
 
 import (
 	"fmt"
+	"github.com/alanctgardner/gogen-avro/generator"
 )
 
 const unionSerializerTemplate = `
@@ -37,11 +38,11 @@ func %v(r io.Reader) (%v, error) {
 type unionField struct {
 	name     string
 	hasDef   bool
-	itemType []field
+	itemType []Field
 }
 
 func (s *unionField) Name() string {
-	return toPublicName(s.name)
+	return generator.ToPublicName(s.name)
 }
 
 func (s *unionField) FieldType() string {
@@ -94,7 +95,7 @@ func (s *unionField) unionDeserializer() string {
 }
 
 func (s *unionField) filename() string {
-	return toSnake(s.GoType()) + ".go"
+	return generator.ToSnake(s.GoType()) + ".go"
 }
 
 func (s *unionField) SerializerMethod() string {
@@ -105,31 +106,31 @@ func (s *unionField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.FieldType())
 }
 
-func (s *unionField) AddStruct(p *Package) {
-	p.addStruct(s.filename(), s.unionEnumType(), s.unionEnumDef())
-	p.addStruct(s.filename(), s.FieldType(), s.unionTypeDef())
+func (s *unionField) AddStruct(p *generator.Package) {
+	p.AddStruct(s.filename(), s.unionEnumType(), s.unionEnumDef())
+	p.AddStruct(s.filename(), s.FieldType(), s.unionTypeDef())
 	for _, f := range s.itemType {
 		f.AddStruct(p)
 	}
 }
 
-func (s *unionField) AddSerializer(p *Package) {
-	p.addImport(UTIL_FILE, "fmt")
-	p.addFunction(UTIL_FILE, "", s.SerializerMethod(), s.unionSerializer())
-	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.addFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.addImport(UTIL_FILE, "io")
+func (s *unionField) AddSerializer(p *generator.Package) {
+	p.AddImport(UTIL_FILE, "fmt")
+	p.AddFunction(UTIL_FILE, "", s.SerializerMethod(), s.unionSerializer())
+	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
+	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.AddImport(UTIL_FILE, "io")
 	for _, f := range s.itemType {
 		f.AddSerializer(p)
 	}
 }
 
-func (s *unionField) AddDeserializer(p *Package) {
-	p.addImport(UTIL_FILE, "fmt")
-	p.addFunction(UTIL_FILE, "", s.DeserializerMethod(), s.unionDeserializer())
-	p.addFunction(UTIL_FILE, "", "readLong", readLongMethod)
-	p.addImport(UTIL_FILE, "io")
+func (s *unionField) AddDeserializer(p *generator.Package) {
+	p.AddImport(UTIL_FILE, "fmt")
+	p.AddFunction(UTIL_FILE, "", s.DeserializerMethod(), s.unionDeserializer())
+	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
+	p.AddImport(UTIL_FILE, "io")
 	for _, f := range s.itemType {
 		f.AddDeserializer(p)
 	}

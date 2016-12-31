@@ -1,7 +1,8 @@
-package generator
+package types
 
 import (
 	"fmt"
+	"github.com/alanctgardner/gogen-avro/generator"
 )
 
 const enumTypeDef = `
@@ -47,7 +48,7 @@ func (e *enumField) Name() string {
 }
 
 func (e *enumField) FieldType() string {
-	return toPublicName(e.typeName)
+	return generator.ToPublicName(e.typeName)
 }
 
 func (e *enumField) GoType() string {
@@ -57,7 +58,7 @@ func (e *enumField) GoType() string {
 func (e *enumField) typeList() string {
 	typeStr := ""
 	for i, t := range e.symbols {
-		typeStr += fmt.Sprintf("%v %v = %v\n", toPublicName(t), e.GoType(), i)
+		typeStr += fmt.Sprintf("%v %v = %v\n", generator.ToPublicName(t), e.GoType(), i)
 	}
 	return typeStr
 }
@@ -65,7 +66,7 @@ func (e *enumField) typeList() string {
 func (e *enumField) stringerList() string {
 	stringerStr := ""
 	for _, t := range e.symbols {
-		stringerStr += fmt.Sprintf("case %v:\n return %q\n", toPublicName(t), t)
+		stringerStr += fmt.Sprintf("case %v:\n return %q\n", generator.ToPublicName(t), t)
 	}
 	return stringerStr
 }
@@ -95,24 +96,24 @@ func (e *enumField) DeserializerMethod() string {
 }
 
 func (e *enumField) filename() string {
-	return toSnake(e.GoType()) + ".go"
+	return generator.ToSnake(e.GoType()) + ".go"
 }
 
-func (e *enumField) AddStruct(p *Package) {
-	p.addStruct(e.filename(), e.GoType(), e.structDef())
-	p.addFunction(e.filename(), e.GoType(), "String", e.stringerDef())
+func (e *enumField) AddStruct(p *generator.Package) {
+	p.AddStruct(e.filename(), e.GoType(), e.structDef())
+	p.AddFunction(e.filename(), e.GoType(), "String", e.stringerDef())
 }
 
-func (e *enumField) AddSerializer(p *Package) {
-	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.addFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
-	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.addFunction(UTIL_FILE, "", e.SerializerMethod(), e.serializerMethodDef())
-	p.addImport(UTIL_FILE, "io")
+func (e *enumField) AddSerializer(p *generator.Package) {
+	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.AddFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
+	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.AddFunction(UTIL_FILE, "", e.SerializerMethod(), e.serializerMethodDef())
+	p.AddImport(UTIL_FILE, "io")
 }
 
-func (e *enumField) AddDeserializer(p *Package) {
-	p.addFunction(UTIL_FILE, "", "readInt", readIntMethod)
-	p.addFunction(UTIL_FILE, "", e.DeserializerMethod(), e.deserializerMethodDef())
-	p.addImport(UTIL_FILE, "io")
+func (e *enumField) AddDeserializer(p *generator.Package) {
+	p.AddFunction(UTIL_FILE, "", "readInt", readIntMethod)
+	p.AddFunction(UTIL_FILE, "", e.DeserializerMethod(), e.deserializerMethodDef())
+	p.AddImport(UTIL_FILE, "io")
 }

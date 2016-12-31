@@ -1,4 +1,8 @@
-package generator
+package types
+
+import (
+	"github.com/alanctgardner/gogen-avro/generator"
+)
 
 const writeLongMethod = `
 func writeLong(r int64, w io.Writer) error {
@@ -35,7 +39,7 @@ type longField struct {
 }
 
 func (s *longField) Name() string {
-	return toPublicName(s.name)
+	return generator.ToPublicName(s.name)
 }
 
 func (s *longField) FieldType() string {
@@ -54,16 +58,16 @@ func (s *longField) DeserializerMethod() string {
 	return "readLong"
 }
 
-func (s *longField) AddStruct(p *Package) {}
+func (s *longField) AddStruct(p *generator.Package) {}
 
-func (s *longField) AddSerializer(p *Package) {
-	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.addFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.addFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.addImport(UTIL_FILE, "io")
+func (s *longField) AddSerializer(p *generator.Package) {
+	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
+	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *longField) AddDeserializer(p *Package) {
-	p.addFunction(UTIL_FILE, "", "readLong", readLongMethod)
-	p.addImport(UTIL_FILE, "io")
+func (s *longField) AddDeserializer(p *generator.Package) {
+	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
+	p.AddImport(UTIL_FILE, "io")
 }

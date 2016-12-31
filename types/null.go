@@ -1,4 +1,8 @@
-package generator
+package types
+
+import (
+	"github.com/alanctgardner/gogen-avro/generator"
+)
 
 const writeNullMethod = `
 func writeNull(_ interface{}, _ io.Writer) error {
@@ -18,7 +22,7 @@ type nullField struct {
 }
 
 func (s *nullField) Name() string {
-	return toPublicName(s.name)
+	return generator.ToPublicName(s.name)
 }
 
 func (s *nullField) FieldType() string {
@@ -37,14 +41,14 @@ func (s *nullField) DeserializerMethod() string {
 	return "readNull"
 }
 
-func (s *nullField) AddStruct(p *Package) {}
+func (s *nullField) AddStruct(p *generator.Package) {}
 
-func (s *nullField) AddSerializer(p *Package) {
-	p.addFunction(UTIL_FILE, "", "writeNull", writeNullMethod)
-	p.addImport(UTIL_FILE, "io")
+func (s *nullField) AddSerializer(p *generator.Package) {
+	p.AddFunction(UTIL_FILE, "", "writeNull", writeNullMethod)
+	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *nullField) AddDeserializer(p *Package) {
-	p.addFunction(UTIL_FILE, "", "readNull", readNullMethod)
-	p.addImport(UTIL_FILE, "io")
+func (s *nullField) AddDeserializer(p *generator.Package) {
+	p.AddFunction(UTIL_FILE, "", "readNull", readNullMethod)
+	p.AddImport(UTIL_FILE, "io")
 }

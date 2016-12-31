@@ -1,4 +1,4 @@
-package generator
+package container
 
 const AVRO_BLOCK_SCHEMA = `
 {"type": "record", "name": "AvroContainerBlock",

@@ -1,4 +1,8 @@
-package generator
+package types
+
+import (
+	"github.com/alanctgardner/gogen-avro/generator"
+)
 
 const writeDoubleMethod = `
 func writeDouble(r float64, w io.Writer) error {
@@ -28,7 +32,7 @@ type doubleField struct {
 }
 
 func (s *doubleField) Name() string {
-	return toPublicName(s.name)
+	return generator.ToPublicName(s.name)
 }
 
 func (s *doubleField) FieldType() string {
@@ -47,19 +51,19 @@ func (s *doubleField) DeserializerMethod() string {
 	return "readDouble"
 }
 
-func (s *doubleField) AddStruct(*Package) {}
+func (s *doubleField) AddStruct(*generator.Package) {}
 
-func (s *doubleField) AddSerializer(p *Package) {
-	p.addStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.addFunction(UTIL_FILE, "", "writeDouble", writeDoubleMethod)
-	p.addFunction(UTIL_FILE, "", "encodeFloat", encodeFloatMethod)
-	p.addImport(UTIL_FILE, "io")
-	p.addImport(UTIL_FILE, "math")
+func (s *doubleField) AddSerializer(p *generator.Package) {
+	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
+	p.AddFunction(UTIL_FILE, "", "writeDouble", writeDoubleMethod)
+	p.AddFunction(UTIL_FILE, "", "encodeFloat", encodeFloatMethod)
+	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, "math")
 }
 
-func (s *doubleField) AddDeserializer(p *Package) {
-	p.addFunction(UTIL_FILE, "", "readDouble", readDoubleMethod)
-	p.addImport(UTIL_FILE, "io")
-	p.addImport(UTIL_FILE, "math")
-	p.addImport(UTIL_FILE, "encoding/binary")
+func (s *doubleField) AddDeserializer(p *generator.Package) {
+	p.AddFunction(UTIL_FILE, "", "readDouble", readDoubleMethod)
+	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, "math")
+	p.AddImport(UTIL_FILE, "encoding/binary")
 }

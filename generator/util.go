@@ -6,7 +6,7 @@ import (
 	"unicode"
 )
 
-func toPublicName(name string) string {
+func ToPublicName(name string) string {
 	if name == "" {
 		return ""
 	}
@@ -26,20 +26,8 @@ func concatSortedMap(m map[string]string, sep string) string {
 	return s
 }
 
-func interfaceSliceToStringSlice(iSlice []interface{}) ([]string, bool) {
-	var ok bool
-	stringSlice := make([]string, len(iSlice))
-	for i, v := range iSlice {
-		stringSlice[i], ok = v.(string)
-		if !ok {
-			return nil, false
-		}
-	}
-	return stringSlice, true
-}
-
 // Make filenames snake-case, taken from https://gist.github.com/elwinar/14e1e897fdbe4d3432e1
-func toSnake(in string) string {
+func ToSnake(in string) string {
 	runes := []rune(in)
 	length := len(runes)
 

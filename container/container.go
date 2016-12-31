@@ -1,7 +1,9 @@
-package generator
+package container
 
 import (
 	"fmt"
+	"github.com/alanctgardner/gogen-avro/generator"
+	"github.com/alanctgardner/gogen-avro/types"
 )
 
 const containerWriterCommonFile = "avro_container.go"
@@ -125,54 +127,61 @@ func (avroWriter *%v) Flush() error {
 }
 `
 
-type avroContainerWriter struct {
+type AvroContainerWriter struct {
 	schema []byte
-	record *recordDefinition
+	record *types.RecordDefinition
 }
 
-func (a *avroContainerWriter) filename() string {
-	return toSnake(a.name()) + ".go"
+func NewAvroContainerWriter(schema []byte, record *types.RecordDefinition) *AvroContainerWriter {
+	return &AvroContainerWriter {
+		schema: schema,
+		record: record,
+	}
 }
 
-func (a *avroContainerWriter) name() string {
+func (a *AvroContainerWriter) filename() string {
+	return generator.ToSnake(a.name()) + ".go"
+}
+
+func (a *AvroContainerWriter) name() string {
 	return fmt.Sprintf("%vContainerWriter", a.record.GoType())
 }
 
-func (a *avroContainerWriter) structDef() string {
+func (a *AvroContainerWriter) structDef() string {
 	return fmt.Sprintf(containerWriterTemplate, a.name())
 }
 
-func (a *avroContainerWriter) constructor() string {
+func (a *AvroContainerWriter) constructor() string {
 	return fmt.Sprintf("New%v", a.name())
 }
 
-func (a *avroContainerWriter) constructorDef() string {
+func (a *AvroContainerWriter) constructorDef() string {
 	return fmt.Sprintf(containerWriterConstructorTemplate, a.constructor(), a.name(), a.schemaVariable(), a.name())
 }
 
-func (a *avroContainerWriter) writeRecordDef() string {
+func (a *AvroContainerWriter) writeRecordDef() string {
 	return fmt.Sprintf(containerWriterWriteTemplate, a.name(), a.record.GoType())
 }
 
-func (a *avroContainerWriter) schemaVariable() string {
+func (a *AvroContainerWriter) schemaVariable() string {
 	return fmt.Sprintf("%vSchema", a.record.GoType())
 }
 
-func (a *avroContainerWriter) flushDef() string {
+func (a *AvroContainerWriter) flushDef() string {
 	return fmt.Sprintf(containerWriterFlushTemplate, a.name())
 }
 
-func (a *avroContainerWriter) AddAvroContainerWriter(p *Package) {
-		p.addImport(a.filename(), "io")
-		p.addImport(a.filename(), "bytes")
-		p.addImport(a.filename(), "github.com/golang/snappy")
-		p.addImport(a.filename(), "compress/flate")
-		p.addImport(containerWriterCommonFile, "io")
-		p.addStruct(containerWriterCommonFile, "Codec", codecDef)
-		p.addStruct(containerWriterCommonFile, "FlushableResettableWriter", flushableResettableWriterDef)
-		p.addStruct(a.filename(), a.name(), a.structDef())
-		p.addConstant(a.filename(), a.schemaVariable(), string(a.schema))
-		p.addFunction(a.filename(), "", a.constructor(), a.constructorDef())
-		p.addFunction(a.filename(), a.name(), "WriteRecord", a.writeRecordDef())
-		p.addFunction(a.filename(), a.name(), "Flush", a.flushDef())
+func (a *AvroContainerWriter) AddAvroContainerWriter(p *generator.Package) {
+		p.AddImport(a.filename(), "io")
+		p.AddImport(a.filename(), "bytes")
+		p.AddImport(a.filename(), "github.com/golang/snappy")
+		p.AddImport(a.filename(), "compress/flate")
+		p.AddImport(containerWriterCommonFile, "io")
+		p.AddStruct(containerWriterCommonFile, "Codec", codecDef)
+		p.AddStruct(containerWriterCommonFile, "FlushableResettableWriter", flushableResettableWriterDef)
+		p.AddStruct(a.filename(), a.name(), a.structDef())
+		p.AddConstant(a.filename(), a.schemaVariable(), string(a.schema))
+		p.AddFunction(a.filename(), "", a.constructor(), a.constructorDef())
+		p.AddFunction(a.filename(), a.name(), "WriteRecord", a.writeRecordDef())
+		p.AddFunction(a.filename(), a.name(), "Flush", a.flushDef())
 }

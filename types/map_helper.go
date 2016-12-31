@@ -1,4 +1,4 @@
-package generator
+package types
 
 func getMapString(m map[string]interface{}, key string) (string, error) {
 	val, ok := m[key]
