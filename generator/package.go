@@ -72,6 +72,15 @@ func (p *Package) addImport(file, name string) {
 	f.imports[name] = 1
 }
 
+func (p *Package) addConstant(file, name string, value interface{}) {
+	f, ok := p.files[file]
+	if !ok {
+		f = NewFile(file)
+		p.files[file] = f
+	}
+	f.constants[name] = value
+}
+
 func (p *Package) hasStruct(file, name string) bool {
 	f, ok := p.files[file]
 	if !ok {
@@ -105,10 +114,17 @@ type File struct {
 	functions map[FunctionName]string
 	structs   map[string]string
 	imports   map[string]interface{}
+	constants map[string]interface{}
 }
 
 func NewFile(name string) *File {
-	return &File{name: name, functions: make(map[FunctionName]string), structs: make(map[string]string), imports: make(map[string]interface{})}
+	return &File{
+		name: name,
+		functions: make(map[FunctionName]string),
+		structs: make(map[string]string),
+		imports: make(map[string]interface{}),
+		constants: make(map[string]interface{}),
+	}
 }
 
 type FunctionName struct {
@@ -157,6 +173,23 @@ func (f *File) importString() string {
 	return imports
 }
 
+func (f *File) constantString() string {
+	if len(f.constants) == 0 {
+		return ""
+	}
+	constants := "const (\n"
+	for name, value := range f.constants {
+		// For strings, quote the right-hand side
+		if valueString, ok := value.(string); ok {
+			constants += fmt.Sprintf("%s = %q\n", name, valueString)
+		} else {
+			constants += fmt.Sprintf("%s = %s\n", name, value)
+		}
+	}
+	constants += ")"
+	return constants
+}
+
 func (f *File) structString() string {
 	structs := ""
 	keys := make([]string, 0)
@@ -190,7 +223,7 @@ func (f *File) functionString() string {
 TODO: It'd be better to group funcs attached to a struct with the struct definition
 */
 func (f *File) writeFile(pkgName, targetFile string) error {
-	src := fmt.Sprintf("package %v\n%v\n%v\n%v\n", pkgName, f.importString(), f.structString(), f.functionString())
+	src := fmt.Sprintf("package %v\n%v\n%v\n%v\n%v\n", pkgName, f.importString(), f.constantString(), f.structString(), f.functionString())
 	fileContent, err := format.Source([]byte(src))
 	if err != nil {
 		return fmt.Errorf("Error formatting file %v - %v\n\nContents: %v", f.name, err, src)

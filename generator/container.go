@@ -23,8 +23,6 @@ type FlushableResettableWriter interface {
 }
 `
 
-const avroSchemaTemplate = "const %v = `%v`\n"
-
 const containerWriterTemplate = `
 type %v struct {
 	writer io.Writer
@@ -160,10 +158,6 @@ func (a *avroContainerWriter) schemaVariable() string {
 	return fmt.Sprintf("%vSchema", a.record.GoType())
 }
 
-func (a *avroContainerWriter) schemaVariableDef() string {
-	return fmt.Sprintf(avroSchemaTemplate, a.schemaVariable(), string(a.schema))
-}
-
 func (a *avroContainerWriter) flushDef() string {
 	return fmt.Sprintf(containerWriterFlushTemplate, a.name())
 }
@@ -177,7 +171,7 @@ func (a *avroContainerWriter) AddAvroContainerWriter(p *Package) {
 		p.addStruct(containerWriterCommonFile, "Codec", codecDef)
 		p.addStruct(containerWriterCommonFile, "FlushableResettableWriter", flushableResettableWriterDef)
 		p.addStruct(a.filename(), a.name(), a.structDef())
-		p.addStruct(a.filename(), a.schemaVariable(), a.schemaVariableDef())
+		p.addConstant(a.filename(), a.schemaVariable(), string(a.schema))
 		p.addFunction(a.filename(), "", a.constructor(), a.constructorDef())
 		p.addFunction(a.filename(), a.name(), "WriteRecord", a.writeRecordDef())
 		p.addFunction(a.filename(), a.name(), "Flush", a.flushDef())
