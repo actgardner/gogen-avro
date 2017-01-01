@@ -255,9 +255,9 @@ func TestEnumDeserialize(t *testing.T) {
 }
 
 func TestRecordStructDef(t *testing.T) {
-	primitiveRecord := &recordDefinition{
+	primitiveRecord := &RecordDefinition{
 		name:   "PrimitiveStruct",
-		fields: []field{testInt, testString, testLong, testFloat, testDouble, testBool, testRecord},
+		fields: []Field{testInt, testString, testLong, testFloat, testDouble, testBool, testRecord},
 	}
 
 	expectedStructDef := `type PrimitiveStruct struct {
@@ -276,9 +276,9 @@ func TestRecordStructDef(t *testing.T) {
 }
 
 func TestRecordSerializerMethod(t *testing.T) {
-	primitiveRecord := &recordDefinition{
+	primitiveRecord := &RecordDefinition{
 		name:   "PrimitiveStruct",
-		fields: []field{testInt, testString, testLong, testFloat, testDouble, testBool, testRecord},
+		fields: []Field{testInt, testString, testLong, testFloat, testDouble, testBool, testRecord},
 	}
 
 	pkg := generator.NewPackage("avro")
@@ -298,9 +298,9 @@ func TestRecordSerializerMethod(t *testing.T) {
 }
 
 func TestRecordDeserializerMethod(t *testing.T) {
-	primitiveRecord := &recordDefinition{
+	primitiveRecord := &RecordDefinition{
 		name:   "PrimitiveStruct",
-		fields: []field{testInt, testString, testLong, testFloat, testDouble, testBool, testRecord},
+		fields: []Field{testInt, testString, testLong, testFloat, testDouble, testBool, testRecord},
 	}
 
 	pkg := generator.NewPackage("avro")
@@ -320,9 +320,9 @@ func TestRecordDeserializerMethod(t *testing.T) {
 }
 
 func TestArrayStructDef(t *testing.T) {
-	arrayRecord := &recordDefinition{
+	arrayRecord := &RecordDefinition{
 		name:   "ArrayStruct",
-		fields: []field{&arrayField{"IntArray", testInt}, &arrayField{"StringArray", testString}, &arrayField{"FloatArray", testFloat}, &arrayField{"DoubleArray", testDouble}, &arrayField{"LongArray", testLong}, &arrayField{"BoolArray", testBool}, &arrayField{"RecordArray", testRecord}},
+		fields: []Field{&arrayField{"IntArray", testInt}, &arrayField{"StringArray", testString}, &arrayField{"FloatArray", testFloat}, &arrayField{"DoubleArray", testDouble}, &arrayField{"LongArray", testLong}, &arrayField{"BoolArray", testBool}, &arrayField{"RecordArray", testRecord}},
 	}
 	expectedStructDef := `type ArrayStruct struct {
 	IntArray    []int32
@@ -340,9 +340,9 @@ func TestArrayStructDef(t *testing.T) {
 }
 
 func TestArrayStructSerializer(t *testing.T) {
-	arrayRecord := &recordDefinition{
+	arrayRecord := &RecordDefinition{
 		name:   "ArrayStruct",
-		fields: []field{&arrayField{"IntArray", testInt}, &arrayField{"StringArray", testString}, &arrayField{"FloatArray", testFloat}, &arrayField{"DoubleArray", testDouble}, &arrayField{"LongArray", testLong}, &arrayField{"BoolArray", testBool}, &arrayField{"RecordArray", testRecord}},
+		fields: []Field{&arrayField{"IntArray", testInt}, &arrayField{"StringArray", testString}, &arrayField{"FloatArray", testFloat}, &arrayField{"DoubleArray", testDouble}, &arrayField{"LongArray", testLong}, &arrayField{"BoolArray", testBool}, &arrayField{"RecordArray", testRecord}},
 	}
 
 	pkg := generator.NewPackage("avro")
@@ -359,9 +359,9 @@ func TestArrayStructSerializer(t *testing.T) {
 }
 
 func TestArrayStructDeserializer(t *testing.T) {
-	arrayRecord := &recordDefinition{
+	arrayRecord := &RecordDefinition{
 		name:   "ArrayStruct",
-		fields: []field{&arrayField{"IntArray", testInt}, &arrayField{"StringArray", testString}, &arrayField{"FloatArray", testFloat}, &arrayField{"DoubleArray", testDouble}, &arrayField{"LongArray", testLong}, &arrayField{"BoolArray", testBool}, &arrayField{"RecordArray", testRecord}},
+		fields: []Field{&arrayField{"IntArray", testInt}, &arrayField{"StringArray", testString}, &arrayField{"FloatArray", testFloat}, &arrayField{"DoubleArray", testDouble}, &arrayField{"LongArray", testLong}, &arrayField{"BoolArray", testBool}, &arrayField{"RecordArray", testRecord}},
 	}
 
 	pkg := generator.NewPackage("avro")
@@ -378,9 +378,9 @@ func TestArrayStructDeserializer(t *testing.T) {
 }
 
 func TestMapStructDef(t *testing.T) {
-	mapRecord := &recordDefinition{
+	mapRecord := &RecordDefinition{
 		name:   "MapStruct",
-		fields: []field{&mapField{"IntMap", testInt}, &mapField{"StringMap", testString}, &mapField{"FloatMap", testFloat}, &mapField{"DoubleMap", testDouble}, &mapField{"LongMap", testLong}, &mapField{"BoolMap", testBool}, &mapField{"RecordMap", testRecord}},
+		fields: []Field{&mapField{"IntMap", testInt}, &mapField{"StringMap", testString}, &mapField{"FloatMap", testFloat}, &mapField{"DoubleMap", testDouble}, &mapField{"LongMap", testLong}, &mapField{"BoolMap", testBool}, &mapField{"RecordMap", testRecord}},
 	}
 	expectedStructDef := `type MapStruct struct {
 	IntMap    map[string]int32
@@ -399,9 +399,9 @@ func TestMapStructDef(t *testing.T) {
 }
 
 func TestMapSerializer(t *testing.T) {
-	mapRecord := &recordDefinition{
+	mapRecord := &RecordDefinition{
 		name:   "MapStruct",
-		fields: []field{&mapField{"IntMap", testInt}, &mapField{"StringMap", testString}, &mapField{"FloatMap", testFloat}, &mapField{"DoubleMap", testDouble}, &mapField{"LongMap", testLong}, &mapField{"BoolMap", testBool}, &mapField{"RecordMap", testRecord}},
+		fields: []Field{&mapField{"IntMap", testInt}, &mapField{"StringMap", testString}, &mapField{"FloatMap", testFloat}, &mapField{"DoubleMap", testDouble}, &mapField{"LongMap", testLong}, &mapField{"BoolMap", testBool}, &mapField{"RecordMap", testRecord}},
 	}
 
 	pkg := generator.NewPackage("avro")
@@ -422,9 +422,9 @@ func TestMapSerializer(t *testing.T) {
 }
 
 func TestMapDeserializer(t *testing.T) {
-	mapRecord := &recordDefinition{
+	mapRecord := &RecordDefinition{
 		name:   "MapStruct",
-		fields: []field{&mapField{"IntMap", testInt}, &mapField{"StringMap", testString}, &mapField{"FloatMap", testFloat}, &mapField{"DoubleMap", testDouble}, &mapField{"LongMap", testLong}, &mapField{"BoolMap", testBool}, &mapField{"RecordMap", testRecord}},
+		fields: []Field{&mapField{"IntMap", testInt}, &mapField{"StringMap", testString}, &mapField{"FloatMap", testFloat}, &mapField{"DoubleMap", testDouble}, &mapField{"LongMap", testLong}, &mapField{"BoolMap", testBool}, &mapField{"RecordMap", testRecord}},
 	}
 
 	pkg := generator.NewPackage("avro")
@@ -444,9 +444,9 @@ func TestMapDeserializer(t *testing.T) {
 }
 
 func TestPrimitiveUnionStructDef(t *testing.T) {
-	record := &recordDefinition{
+	record := &RecordDefinition{
 		name:   "UnionStruct",
-		fields: []field{&unionField{"UnionField", false, []field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
+		fields: []Field{&unionField{"UnionField", false, []Field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
 	}
 	expectedStructDef := `type UnionStruct struct {
 	UnionField UnionIntStringFloatDoubleLongBoolNestedRecordNull
@@ -459,9 +459,9 @@ func TestPrimitiveUnionStructDef(t *testing.T) {
 }
 
 func TestPrimitiveUnionSerializer(t *testing.T) {
-	record := &recordDefinition{
+	record := &RecordDefinition{
 		name:   "UnionStruct",
-		fields: []field{&unionField{"UnionField", false, []field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
+		fields: []Field{&unionField{"UnionField", false, []Field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
 	}
 
 	pkg := generator.NewPackage("avro")
@@ -482,9 +482,9 @@ func TestPrimitiveUnionSerializer(t *testing.T) {
 }
 
 func TestPrimitiveUnionDeserializer(t *testing.T) {
-	record := &recordDefinition{
+	record := &RecordDefinition{
 		name:   "UnionStruct",
-		fields: []field{&unionField{"UnionField", false, []field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
+		fields: []Field{&unionField{"UnionField", false, []Field{testInt, testString, testFloat, testDouble, testLong, testBool, testRecord, &nullField{}}}},
 	}
 
 	pkg := generator.NewPackage("avro")
@@ -504,9 +504,9 @@ func TestPrimitiveUnionDeserializer(t *testing.T) {
 }
 
 func TestRecursiveUnionStructDef(t *testing.T) {
-	record := &recordDefinition{
+	record := &RecordDefinition{
 		name:   "RecursiveStruct",
-		fields: []field{&unionField{"RecursiveField", false, []field{&nullField{}, &recordField{typeName: "RecursiveStruct"}}}},
+		fields: []Field{&unionField{"RecursiveField", false, []Field{&nullField{}, &recordField{typeName: "RecursiveStruct"}}}},
 	}
 	expectedStructDef := `type RecursiveStruct struct {
 	RecursiveField UnionNullRecursiveStruct
@@ -518,9 +518,9 @@ func TestRecursiveUnionStructDef(t *testing.T) {
 }
 
 func TestRecursiveUnionSerializer(t *testing.T) {
-	record := &recordDefinition{
+	record := &RecordDefinition{
 		name:   "RecursiveStruct",
-		fields: []field{&unionField{"RecursiveField", false, []field{&nullField{}, &recordField{typeName: "RecursiveStruct"}}}},
+		fields: []Field{&unionField{"RecursiveField", false, []Field{&nullField{}, &recordField{typeName: "RecursiveStruct"}}}},
 	}
 
 	pkg := generator.NewPackage("avro")
@@ -541,9 +541,9 @@ func TestRecursiveUnionSerializer(t *testing.T) {
 }
 
 func TestRecursiveUnionDeserializer(t *testing.T) {
-	record := &recordDefinition{
+	record := &RecordDefinition{
 		name:   "RecursiveStruct",
-		fields: []field{&unionField{"RecursiveField", false, []field{&nullField{}, &recordField{typeName: "RecursiveStruct"}}}},
+		fields: []Field{&unionField{"RecursiveField", false, []Field{&nullField{}, &recordField{typeName: "RecursiveStruct"}}}},
 	}
 
 	pkg := generator.NewPackage("avro")

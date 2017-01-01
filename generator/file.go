@@ -31,9 +31,9 @@ func NewFile(name string) *File {
 
 type FunctionName struct {
 	// The target struct type, if there is one
-	str string
+	Str string
 	// The function name
-	name string
+	Name string
 }
 
 /* Write the contents of the file:
