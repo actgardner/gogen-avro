@@ -6,15 +6,10 @@ import (
 	"github.com/alanctgardner/gogen-avro/example/avro"
 )
 
-// Use a go:generate directive to build the Go structs for `example.avsc`
-// Source files will be in a package called `avro`
-
-//go:generate mkdir -p ./avro
-//go:generate $GOPATH/bin/gogen-avro ./avro example.avsc
-
+/* This example shows serializing and deserializing records as byte buffers */
 func main() {
 	// Create a new DemoSchema struct
-	demoStruct := &avro.DemoSchema{
+	demoStruct := avro.DemoSchema{
 		IntField:    1,
 		DoubleField: 2.3,
 		StringField: "A string",
