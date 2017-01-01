@@ -33,8 +33,7 @@ The generated source files contain structs for each schema, plus a function `Ser
 
 ### Container File Support
 
-* Container file support is still being worked on - please report any bugs you find *
-
+_Container file support is still being worked on - please report any bugs you find_
 
 Supplying the `--container` flag generates a container file writer for each schema in addition to the serializers.
 
