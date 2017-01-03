@@ -38,6 +38,44 @@ type %v struct {
 }
 `
 
+const snappyWriterDef = `
+// A Writer that buffers until it's closed, then
+// emits one Snappy-encoded block with the CRC suffix
+// required by the Avro spec
+type snappyWriter struct {
+	writer io.Writer
+	inputBuffer *bytes.Buffer
+	outputBytes []byte
+}
+
+func newSnappyWriter(writer io.Writer) *snappyWriter {
+	return &snappyWriter{
+		writer: writer,
+		inputBuffer: bytes.NewBuffer(make([]byte, 0)),
+		outputBytes: make([]byte, 0),
+	}
+}
+
+func (w *snappyWriter) Write(buf []byte) (int, error) {
+	return w.inputBuffer.Write(buf)
+}
+
+func (w *snappyWriter) Close() error {
+	w.outputBytes = snappy.Encode(w.outputBytes, w.inputBuffer.Bytes())
+	_, err := w.writer.Write(w.outputBytes)
+	if err != nil {
+		return err
+	}
+	return binary.Write(w.writer, binary.BigEndian, crc32.ChecksumIEEE(w.inputBuffer.Bytes()))
+}
+
+func (w *snappyWriter) Reset(writer io.Writer) {
+	w.outputBytes = w.outputBytes[:0]
+	w.inputBuffer.Reset()
+	w.writer = writer
+}
+`
+
 const containerWriterConstructorTemplate = `
 func %v(writer io.Writer, codec Codec, recordsPerBlock int64) (*%v, error) {
 	blockBytes := make([]byte, 0)
@@ -73,7 +111,7 @@ func %v(writer io.Writer, codec Codec, recordsPerBlock int64) (*%v, error) {
 			return nil, err
 		}
 	} else if codec == Snappy {
-		avroWriter.compressedWriter = snappy.NewBufferedWriter(avroWriter.blockBuffer)
+		avroWriter.compressedWriter = newSnappyWriter(avroWriter.blockBuffer)
 	} else if codec == Null {
 		avroWriter.compressedWriter = avroWriter.blockBuffer
 	}
@@ -174,10 +212,14 @@ func (a *AvroContainerWriter) flushDef() string {
 func (a *AvroContainerWriter) AddAvroContainerWriter(p *generator.Package) {
 	p.AddImport(a.filename(), "io")
 	p.AddImport(a.filename(), "bytes")
-	p.AddImport(a.filename(), "github.com/golang/snappy")
 	p.AddImport(a.filename(), "compress/flate")
 	p.AddImport(containerWriterCommonFile, "io")
+	p.AddImport(containerWriterCommonFile, "bytes")
+	p.AddImport(containerWriterCommonFile, "encoding/binary")
+	p.AddImport(containerWriterCommonFile, "hash/crc32")
+	p.AddImport(containerWriterCommonFile, "github.com/golang/snappy")
 	p.AddStruct(containerWriterCommonFile, "Codec", codecDef)
+	p.AddStruct(containerWriterCommonFile, "snappyWriter", snappyWriterDef)
 	p.AddStruct(containerWriterCommonFile, "CloseableResettableWriter", closeableResettableWriterDef)
 	p.AddStruct(a.filename(), a.name(), a.structDef())
 	p.AddConstant(a.filename(), a.schemaVariable(), string(a.schema))
