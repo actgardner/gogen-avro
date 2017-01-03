@@ -18,9 +18,9 @@ const (
 )
 `
 
-const flushableResettableWriterDef = `
-type FlushableResettableWriter interface {
-	Flush() error
+const closeableResettableWriterDef = `
+type CloseableResettableWriter interface {
+	Close() error
 	Reset(io.Writer) 
 }
 `
@@ -105,11 +105,11 @@ const containerWriterFlushTemplate = `
 func (avroWriter *%v) Flush() error {
 	// Write out all of the buffered records as a new block
 	// Must be called before closing to ensure the last block is written
-	if fwWriter, ok := avroWriter.compressedWriter.(FlushableResettableWriter); ok {
-		fwWriter.Flush()
+	if fwWriter, ok := avroWriter.compressedWriter.(CloseableResettableWriter); ok {
+		fwWriter.Close()
 		fwWriter.Reset(avroWriter.blockBuffer)
 	}
-		
+
 	block := &AvroContainerBlock {
 		NumRecords: avroWriter.nextBlockRecords,
 		RecordBytes: avroWriter.blockBuffer.Bytes(),
@@ -178,7 +178,7 @@ func (a *AvroContainerWriter) AddAvroContainerWriter(p *generator.Package) {
 		p.AddImport(a.filename(), "compress/flate")
 		p.AddImport(containerWriterCommonFile, "io")
 		p.AddStruct(containerWriterCommonFile, "Codec", codecDef)
-		p.AddStruct(containerWriterCommonFile, "FlushableResettableWriter", flushableResettableWriterDef)
+		p.AddStruct(containerWriterCommonFile, "CloseableResettableWriter", closeableResettableWriterDef)
 		p.AddStruct(a.filename(), a.name(), a.structDef())
 		p.AddConstant(a.filename(), a.schemaVariable(), string(a.schema))
 		p.AddFunction(a.filename(), "", a.constructor(), a.constructorDef())
