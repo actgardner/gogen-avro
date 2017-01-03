@@ -6,4 +6,3 @@ package generate
 
 //go:generate mkdir -p ./avro
 //go:generate $GOPATH/bin/gogen-avro --container ./avro example.avsc
-

@@ -2,9 +2,9 @@ package generator
 
 import (
 	"fmt"
+	"go/format"
 	"io/ioutil"
 	"os"
-	"go/format"
 	"sort"
 )
 
@@ -21,10 +21,10 @@ type File struct {
 
 func NewFile(name string) *File {
 	return &File{
-		name: name,
+		name:      name,
 		functions: make(map[FunctionName]string),
-		structs: make(map[string]string),
-		imports: make(map[string]interface{}),
+		structs:   make(map[string]string),
+		imports:   make(map[string]interface{}),
 		constants: make(map[string]interface{}),
 	}
 }

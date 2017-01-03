@@ -1,8 +1,8 @@
 package types
 
 import (
-	"github.com/stretchr/testify/assert"
 	"github.com/alanctgardner/gogen-avro/generator"
+	"github.com/stretchr/testify/assert"
 	"go/format"
 	"sort"
 	"testing"

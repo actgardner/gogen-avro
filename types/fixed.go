@@ -1,8 +1,8 @@
 package types
 
 import (
-	"github.com/alanctgardner/gogen-avro/generator"
 	"fmt"
+	"github.com/alanctgardner/gogen-avro/generator"
 )
 
 const writeFixedMethod = `

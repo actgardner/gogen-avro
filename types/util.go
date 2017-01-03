@@ -11,5 +11,3 @@ func interfaceSliceToStringSlice(iSlice []interface{}) ([]string, bool) {
 	}
 	return stringSlice, true
 }
-
-

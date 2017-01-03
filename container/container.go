@@ -109,7 +109,7 @@ func (avroWriter *%v) Flush() error {
 		fwWriter.Close()
 		fwWriter.Reset(avroWriter.blockBuffer)
 	}
-
+	
 	block := &AvroContainerBlock {
 		NumRecords: avroWriter.nextBlockRecords,
 		RecordBytes: avroWriter.blockBuffer.Bytes(),
@@ -133,7 +133,7 @@ type AvroContainerWriter struct {
 }
 
 func NewAvroContainerWriter(schema []byte, record *types.RecordDefinition) *AvroContainerWriter {
-	return &AvroContainerWriter {
+	return &AvroContainerWriter{
 		schema: schema,
 		record: record,
 	}
@@ -172,16 +172,16 @@ func (a *AvroContainerWriter) flushDef() string {
 }
 
 func (a *AvroContainerWriter) AddAvroContainerWriter(p *generator.Package) {
-		p.AddImport(a.filename(), "io")
-		p.AddImport(a.filename(), "bytes")
-		p.AddImport(a.filename(), "github.com/golang/snappy")
-		p.AddImport(a.filename(), "compress/flate")
-		p.AddImport(containerWriterCommonFile, "io")
-		p.AddStruct(containerWriterCommonFile, "Codec", codecDef)
-		p.AddStruct(containerWriterCommonFile, "CloseableResettableWriter", closeableResettableWriterDef)
-		p.AddStruct(a.filename(), a.name(), a.structDef())
-		p.AddConstant(a.filename(), a.schemaVariable(), string(a.schema))
-		p.AddFunction(a.filename(), "", a.constructor(), a.constructorDef())
-		p.AddFunction(a.filename(), a.name(), "WriteRecord", a.writeRecordDef())
-		p.AddFunction(a.filename(), a.name(), "Flush", a.flushDef())
+	p.AddImport(a.filename(), "io")
+	p.AddImport(a.filename(), "bytes")
+	p.AddImport(a.filename(), "github.com/golang/snappy")
+	p.AddImport(a.filename(), "compress/flate")
+	p.AddImport(containerWriterCommonFile, "io")
+	p.AddStruct(containerWriterCommonFile, "Codec", codecDef)
+	p.AddStruct(containerWriterCommonFile, "CloseableResettableWriter", closeableResettableWriterDef)
+	p.AddStruct(a.filename(), a.name(), a.structDef())
+	p.AddConstant(a.filename(), a.schemaVariable(), string(a.schema))
+	p.AddFunction(a.filename(), "", a.constructor(), a.constructorDef())
+	p.AddFunction(a.filename(), a.name(), "WriteRecord", a.writeRecordDef())
+	p.AddFunction(a.filename(), a.name(), "Flush", a.flushDef())
 }
