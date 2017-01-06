@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/linkedin/goavro"
+	avrotest "github.com/alanctgardner/gogen-avro/test"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
-	"reflect"
 	"testing"
 )
 
@@ -34,9 +34,9 @@ func TestArrayFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var buf bytes.Buffer
 	for _, f := range fixtures {
-		buf.Reset()
+		avrotest.RoundTripGoAvroTest(f, codec, t)
+		/*buf.Reset()
 		err = f.Serialize(&buf)
 		if err != nil {
 			t.Fatal(err)
@@ -53,18 +53,9 @@ func TestArrayFixture(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			avroArray := avroVal.([]interface{})
-			if len(avroArray) != value.Field(i).Len() {
-				t.Fatalf("Got %v elements from goavro but expected %v", len(avroArray), value.Field(i).Len())
-			}
-			for j := 0; j < value.Field(i).Len(); j++ {
-				avroArrayVal := avroArray[j]
-				structArrayVal := value.Field(i).Index(j).Interface()
-				if !reflect.DeepEqual(avroArrayVal, structArrayVal) {
-					t.Fatalf("Field %v element %v not equal: %v != %v", fieldName, j, avroArrayVal, structArrayVal)
-				}
-			}
+			
 		}
+*/
 	}
 }
 

@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/linkedin/goavro"
+	avrotest "github.com/alanctgardner/gogen-avro/test"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
-	"reflect"
 	"testing"
 )
 
@@ -33,9 +33,9 @@ func TestMapFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var buf bytes.Buffer
 	for _, f := range fixtures {
-		buf.Reset()
+		avrotest.RoundTripGoAvroTest(f, codec, t)
+/*		buf.Reset()
 		err = f.Serialize(&buf)
 		if err != nil {
 			t.Fatal(err)
@@ -65,6 +65,7 @@ func TestMapFixture(t *testing.T) {
 				}
 			}
 		}
+	*/
 	}
 }
 

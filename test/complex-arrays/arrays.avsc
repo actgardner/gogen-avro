@@ -11,7 +11,7 @@
                "type":"record",
                "fields":[
                   {
-                     "name":"name",
+                     "name":"Name",
                      "type":"string"
                   }
                ]

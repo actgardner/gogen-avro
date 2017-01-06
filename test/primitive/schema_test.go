@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/linkedin/goavro"
+	avrotest "github.com/alanctgardner/gogen-avro/test"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
-	"reflect"
 	"testing"
 )
 
@@ -30,34 +30,14 @@ func TestPrimitiveFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	codec, err := goavro.NewCodec(string(schemaJson))
 	if err != nil {
 		t.Fatal(err)
 	}
-	var buf bytes.Buffer
+
 	for _, f := range fixtures {
-		buf.Reset()
-		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
-		datum, err := codec.Decode(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
-		record := datum.(*goavro.Record)
-		value := reflect.ValueOf(f)
-		for i := 0; i < value.NumField(); i++ {
-			fieldName := value.Type().Field(i).Name
-			structVal := value.Field(i).Interface()
-			avroVal, err := record.Get(fieldName)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !reflect.DeepEqual(structVal, avroVal) {
-				t.Fatalf("Field %v not equal: %v != %v", fieldName, structVal, avroVal)
-			}
-		}
+		avrotest.RoundTripGoAvroTest(f, codec, t)
 	}
 }
 

@@ -3,7 +3,10 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/linkedin/goavro"
+	avrotest "github.com/alanctgardner/gogen-avro/test"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"testing"
 )
 
@@ -15,6 +18,28 @@ const fixtureJson = `
   {"Children": [{"Name": "test-record"}, {"Name": "test-record-2"}]}
 ]
 `
+
+func TestPrimitiveFixture(t *testing.T) {
+	fixtures := make([]Parent, 0)
+	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	schemaJson, err := ioutil.ReadFile("arrays.avsc")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	codec, err := goavro.NewCodec(string(schemaJson))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, f := range fixtures {
+		avrotest.RoundTripGoAvroTest(&f, codec, t)
+	}
+}
 
 func TestRoundTrip(t *testing.T) {
 	fixtures := make([]Parent, 0)
