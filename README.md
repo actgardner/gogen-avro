@@ -20,27 +20,38 @@ go get gopkg.in/alanctgardner/gogen-avro.v2/...
 To generate Go source files from one or more Avro schema files, run:
 
 ```
-gogen-avro <output directory> <avro schema files>
+gogen-avro [--container] <output directory> <avro schema files>
 ```
 
-Or use a `go:generate` directive in a source file ([example](https://github.com/alanctgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
+You can also use a `go:generate` directive in a source file ([example](https://github.com/alanctgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
 
 ```
 //go:generate $GOPATH/bin/gogen-avro . primitives.avsc
 ```
 
-The generated source files contain structs for each schema, plus a function `Serialize(io.Writer)` to encode the contents into the given `io.Writer`, and `Deserialize<RecordType>(io.Reader)` to read a struct from the given `io.Reader`. 
+The generated source files contain structs for each schema, plus a function `Serialize(io.Writer)` to encode the contents into the given `io.Writer`, and `Deserialize<RecordType>(io.Reader)` to read a struct from the given `io.Reader`.
+
+### Container File Support
+
+_Container file support is still being worked on - please report any bugs you find_
+
+Supplying the `--container` flag generates a container file writer for each schema in addition to the serializers.
+
+The container file writer should be constructed with an existing `io.Writer`, a `Codec` (`Null`, `Snappy`, or `Deflate`) and a block size in records. Records are encoded and buffered when you call `writer.writeRecord(record)`, and synchronously flushed when the block size is hit. You can also manually flush a block by calling `writer.Flush()`. You must call `writer.Flush()` before closing the underlying `io.Writer`, to ensure all the records in the last block are written. 
+
+An example of how to write a container file can be found in `example/container/example.go`.
 
 ### Example
 
-The `example` directory contains a simple example project with an Avro schema. Once you've installed gogen-avro on your GOPATH, you can install the example project:
+The `example` directory contains simple example projects with an Avro schema. Once you've installed gogen-avro on your GOPATH, you can install the example projects:
 
 ```
 # Build the Go source files from the Avro schema using the generate directive 
 go generate github.com/alanctgardner/gogen-avro/example
 
-# Install the example project on the gopath
-go install github.com/alanctgardner/gogen-avro/example
+# Install the example projects on the gopath
+go install github.com/alanctgardner/gogen-avro/example/record
+go install github.com/alanctgardner/gogen-avro/example/container
 ```
 
 ### Type Conversion

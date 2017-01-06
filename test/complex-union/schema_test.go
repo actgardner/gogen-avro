@@ -9,8 +9,6 @@ import (
 	"testing"
 )
 
-//go:generate $GOPATH/bin/gogen-avro . union.avsc
-
 /* Round-trip some primitive values through our serializer and goavro to verify */
 const fixtureJson = `
 [

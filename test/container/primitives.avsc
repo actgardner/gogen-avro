@@ -1,0 +1,13 @@
+{
+	"type": "record",
+	"name": "PrimitiveTestRecord",
+	"fields": [
+		{"name": "IntField", "type": "int"},
+		{"name": "LongField", "type": "long"},
+		{"name": "FloatField", "type": "float"},
+		{"name": "DoubleField", "type": "double"},
+		{"name": "StringField", "type": "string"},
+		{"name": "BoolField", "type": "boolean"},
+		{"name": "BytesField", "type": "bytes"}
+	]
+}
