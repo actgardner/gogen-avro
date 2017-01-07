@@ -88,7 +88,7 @@ func (f *File) commentString(sources []string) string {
 	// looking at generated code.
 
 	const fileComment = `/*
-* CODE GENERATED AUTOMATICALLY WITH github.com/securityscorecard/gogen-avro
+* CODE GENERATED AUTOMATICALLY WITH github.com/alanctgardner/gogen-avro
 * THIS FILE SHOULD NOT BE EDITED BY HAND
 *
 * SOURCE: %s
