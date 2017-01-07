@@ -3,25 +3,27 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"os"
+
 	"github.com/alanctgardner/gogen-avro/container"
 	"github.com/alanctgardner/gogen-avro/generator"
 	"github.com/alanctgardner/gogen-avro/types"
-	"io/ioutil"
-	"os"
 )
 
 func main() {
 	generateContainer := flag.Bool("container", false, "Whether to emit container file writer code")
+	packageName := flag.String("package", "avro", "Name of generated package")
 	flag.Parse()
 	if flag.NArg() < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--container] <target directory> <schema files>\n")
+		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--container] [--package=<package name>] <target directory> <schema files>\n")
 		os.Exit(1)
 	}
 	targetDir := flag.Arg(0)
 	files := flag.Args()[1:]
 
 	var err error
-	pkg := generator.NewPackage("avro")
+	pkg := generator.NewPackage(*packageName)
 
 	if *generateContainer {
 		err = addRecordDefinition([]byte(container.AVRO_BLOCK_SCHEMA), pkg, false)
