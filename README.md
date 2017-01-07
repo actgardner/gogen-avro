@@ -20,7 +20,7 @@ go get gopkg.in/alanctgardner/gogen-avro.v2/...
 To generate Go source files from one or more Avro schema files, run:
 
 ```
-gogen-avro [--container] <output directory> <avro schema files>
+gogen-avro [--container] [--package=<package name>] <output directory> <avro schema files>
 ```
 
 You can also use a `go:generate` directive in a source file ([example](https://github.com/alanctgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
@@ -37,7 +37,7 @@ _Container file support is still being worked on - please report any bugs you fi
 
 Supplying the `--container` flag generates a container file writer for each schema in addition to the serializers.
 
-The container file writer should be constructed with an existing `io.Writer`, a `Codec` (`Null`, `Snappy`, or `Deflate`) and a block size in records. Records are encoded and buffered when you call `writer.writeRecord(record)`, and synchronously flushed when the block size is hit. You can also manually flush a block by calling `writer.Flush()`. You must call `writer.Flush()` before closing the underlying `io.Writer`, to ensure all the records in the last block are written. 
+The container file writer should be constructed with an existing `io.Writer`, a `Codec` (`Null`, `Snappy`, or `Deflate`) and a block size in records. Records are encoded and buffered when you call `writer.writeRecord(record)`, and synchronously flushed when the block size is hit. You can also manually flush a block by calling `writer.Flush()`. You must call `writer.Flush()` before closing the underlying `io.Writer`, to ensure all the records in the last block are written.
 
 An example of how to write a container file can be found in `example/container/example.go`.
 
@@ -46,7 +46,7 @@ An example of how to write a container file can be found in `example/container/e
 The `example` directory contains simple example projects with an Avro schema. Once you've installed gogen-avro on your GOPATH, you can install the example projects:
 
 ```
-# Build the Go source files from the Avro schema using the generate directive 
+# Build the Go source files from the Avro schema using the generate directive
 go generate github.com/alanctgardner/gogen-avro/example
 
 # Install the example projects on the gopath
@@ -89,7 +89,7 @@ const (
 	UnionNullIntTypeEnumNull            UnionNullIntTypeEnum = 0
 	UnionNullIntTypeEnumInt             UnionNullIntTypeEnum = 1
 )
-``` 
+```
 
 ### TODO / Caveats
 
