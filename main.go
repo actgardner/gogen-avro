@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"os"
+
 	"github.com/alanctgardner/gogen-avro/container"
 	"github.com/alanctgardner/gogen-avro/generator"
 	"github.com/alanctgardner/gogen-avro/types"
-	"io/ioutil"
-	"os"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 	files := flag.Args()[1:]
 
 	var err error
-	pkg := generator.NewPackage("avro")
+	pkg := generator.NewPackage("avro", files)
 
 	if *generateContainer {
 		err = addRecordDefinition([]byte(container.AVRO_BLOCK_SCHEMA), pkg, false)

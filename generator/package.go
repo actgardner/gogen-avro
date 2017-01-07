@@ -7,17 +7,18 @@ import (
 
 // Represents the output package
 type Package struct {
-	name  string
-	files map[string]*File
+	name    string
+	files   map[string]*File
+	sources []string
 }
 
-func NewPackage(name string) *Package {
-	return &Package{name: name, files: make(map[string]*File)}
+func NewPackage(name string, sources []string) *Package {
+	return &Package{name: name, files: make(map[string]*File), sources: sources}
 }
 
 func (p *Package) WriteFiles(targetDir string) error {
 	for _, f := range p.files {
-		err := f.WriteFile(p.name, filepath.Join(targetDir, f.name))
+		err := f.WriteFile(p.name, filepath.Join(targetDir, f.name), p.sources)
 		if err != nil {
 			return err
 		}
