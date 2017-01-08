@@ -2,15 +2,14 @@ package generator
 
 import (
 	"sort"
-	"strings"
 	"unicode"
+
+	"github.com/serenize/snaker"
 )
 
+// ToPublicName returns a go-idiomatic public name
 func ToPublicName(name string) string {
-	if name == "" {
-		return ""
-	}
-	return strings.ToUpper(name[0:1]) + name[1:]
+	return snaker.SnakeToCamel(name)
 }
 
 func concatSortedMap(m map[string]string, sep string) string {
