@@ -55,9 +55,9 @@ func main() {
 	}
 
 	// Add header comment to all generated files.
-	// for _, f := range pkg.Files() {
-	// 	pkg.AddHeader(f, codegenComment(files))
-	// }
+	for _, f := range pkg.Files() {
+		pkg.AddHeader(f, codegenComment(files))
+	}
 
 	err = pkg.WriteFiles(targetDir)
 	if err != nil {
