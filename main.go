@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/alanctgardner/gogen-avro/container"
 	"github.com/alanctgardner/gogen-avro/generator"
@@ -22,7 +23,7 @@ func main() {
 	files := flag.Args()[1:]
 
 	var err error
-	pkg := generator.NewPackage("avro", files)
+	pkg := generator.NewPackage("avro")
 
 	if *generateContainer {
 		err = addRecordDefinition([]byte(container.AVRO_BLOCK_SCHEMA), pkg, false)
@@ -52,6 +53,11 @@ func main() {
 		}
 	}
 
+	// Add header comment to all generated files.
+	// for _, f := range pkg.Files() {
+	// 	pkg.AddHeader(f, codegenComment(files))
+	// }
+
 	err = pkg.WriteFiles(targetDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing source files to directory %q - %v\n", targetDir, err)
@@ -73,4 +79,29 @@ func addRecordDefinition(schema []byte, pkg *generator.Package, generateContaine
 		containerWriter.AddAvroContainerWriter(pkg)
 	}
 	return nil
+}
+
+// codegenComment generates a comment informing readers they are looking at
+// generated code and lists the source avro files used to generate the code
+//
+// invariant: sources > 0
+func codegenComment(sources []string) string {
+	const fileComment = `/*
+ * CODE GENERATED AUTOMATICALLY WITH github.com/alanctgardner/gogen-avro
+ * THIS FILE SHOULD NOT BE EDITED BY HAND
+ *
+ * %s
+ */`
+	var sourceBlock []string
+	if len(sources) == 1 {
+		sourceBlock = append(sourceBlock, "SOURCE:")
+	} else {
+		sourceBlock = append(sourceBlock, "SOURCES:")
+	}
+
+	for _, source := range sources {
+		sourceBlock = append(sourceBlock, fmt.Sprintf(" *     %s", source))
+	}
+
+	return fmt.Sprintf(fileComment, strings.Join(sourceBlock, "\n"))
 }
