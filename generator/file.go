@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+	"strings"
 )
 
 /*
@@ -83,13 +84,12 @@ func (f *File) Functions() []FunctionName {
 	return funcs
 }
 
-func (f *File) headerString() []string {
-	var headers []string
-	for _, header := range f.headers {
-		headers = append(headers, header)
+func (f *File) headerString() string {
+	if len(f.headers) == 0 {
+		return ""
 	}
 
-	return headers
+	return strings.Join(f.headers, "\n")
 }
 
 func (f *File) importString() string {
