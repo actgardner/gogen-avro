@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
-	"strings"
 )
 
 /*
@@ -14,6 +13,7 @@ File represents a Go source file in the output package
 */
 type File struct {
 	name      string
+	headers   []string
 	functions map[FunctionName]string
 	structs   map[string]string
 	imports   map[string]interface{}
@@ -43,8 +43,8 @@ type FunctionName struct {
 - functions (sorted alphabetically by struct to which they're attached, then unattached funcs)
 TODO: It'd be better to group funcs attached to a struct with the struct definition
 */
-func (f *File) WriteFile(pkgName, targetFile string, sources []string) error {
-	src := fmt.Sprintf("%v\npackage %v\n%v\n%v\n%v\n%v\n", f.commentString(sources), pkgName, f.importString(), f.constantString(), f.structString(), f.functionString())
+func (f *File) WriteFile(pkgName, targetFile string) error {
+	src := fmt.Sprintf("%v\npackage %v\n%v\n%v\n%v\n%v\n", f.headerString(), pkgName, f.importString(), f.constantString(), f.structString(), f.functionString())
 	fileContent, err := format.Source([]byte(src))
 	if err != nil {
 		return fmt.Errorf("Error formatting file %v - %v\n\nContents: %v", f.name, err, src)
@@ -83,20 +83,13 @@ func (f *File) Functions() []FunctionName {
 	return funcs
 }
 
-func (f *File) commentString(sources []string) string {
-	// fileComment is prepended to all generated files to inform readers that they are
-	// looking at generated code.
+func (f *File) headerString() []string {
+	var headers []string
+	for _, header := range f.headers {
+		headers = append(headers, header)
+	}
 
-	const fileComment = `/*
-* CODE GENERATED AUTOMATICALLY WITH github.com/alanctgardner/gogen-avro
-* THIS FILE SHOULD NOT BE EDITED BY HAND
-*
-* SOURCE: %s
-*/
-`
-	sourcesString := strings.Join(sources, " ")
-
-	return fmt.Sprintf(fileComment, sourcesString)
+	return headers
 }
 
 func (f *File) importString() string {
