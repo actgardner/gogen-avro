@@ -6,13 +6,15 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+	"strings"
 )
 
 /*
-Represents a Go source file in the output package
+File represents a Go source file in the output package
 */
 type File struct {
 	name      string
+	headers   []string
 	functions map[FunctionName]string
 	structs   map[string]string
 	imports   map[string]interface{}
@@ -43,7 +45,7 @@ type FunctionName struct {
 TODO: It'd be better to group funcs attached to a struct with the struct definition
 */
 func (f *File) WriteFile(pkgName, targetFile string) error {
-	src := fmt.Sprintf("package %v\n%v\n%v\n%v\n%v\n", pkgName, f.importString(), f.constantString(), f.structString(), f.functionString())
+	src := fmt.Sprintf("%v\npackage %v\n%v\n%v\n%v\n%v\n", f.headerString(), pkgName, f.importString(), f.constantString(), f.structString(), f.functionString())
 	fileContent, err := format.Source([]byte(src))
 	if err != nil {
 		return fmt.Errorf("Error formatting file %v - %v\n\nContents: %v", f.name, err, src)
@@ -80,6 +82,14 @@ func (f *File) Functions() []FunctionName {
 	}
 	sort.Sort(FunctionNameList(funcs))
 	return funcs
+}
+
+func (f *File) headerString() string {
+	if len(f.headers) == 0 {
+		return ""
+	}
+
+	return strings.Join(f.headers, "\n")
 }
 
 func (f *File) importString() string {

@@ -39,6 +39,16 @@ func (p *Package) File(name string) (*File, bool) {
 	return file, ok
 }
 
+func (p *Package) AddHeader(file, header string) {
+	f, ok := p.files[file]
+	if !ok {
+		f = NewFile(file)
+		p.files[file] = f
+	}
+
+	f.headers = append(f.headers, header)
+}
+
 func (p *Package) AddFunction(file, str, name, def string) {
 	f, ok := p.files[file]
 	if !ok {
