@@ -1,6 +1,7 @@
 package main
 
 import "testing"
+import "github.com/stretchr/testify/assert"
 
 func TestCodegenComment(t *testing.T) {
 	tt := []struct {
@@ -24,13 +25,7 @@ func TestCodegenComment(t *testing.T) {
  */`},
 	}
 
-	for i, tc := range tt {
-		got := codegenComment(tc.in)
-		expected := tc.out
-
-		if got != expected {
-			t.Errorf("#%d: got\n%sexpected\n%s", i, got, expected)
-		}
+	for _, tc := range tt {
+		assert.Equal(t, tc.out, codegenComment(tc.in))
 	}
-
 }
