@@ -3,7 +3,7 @@ gogen-avro
 
 [![Build Status](https://travis-ci.org/alanctgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/alanctgardner/gogen-avro)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/alanctgardner/gogen-avro/master/LICENSE)
-[![Version 2.0.0](https://img.shields.io/badge/version-2.0.0-lightgrey.svg)](https://gopkg.in/alanctgardner/gogen-avro.v2)
+[![Version 3.0.0](https://img.shields.io/badge/version-3.0.0-lightgrey.svg)](https://gopkg.in/alanctgardner/gogen-avro.v3)
 
 Generate Go structures and serializer / deserializer methods from Avro schemas. Generated serializers/deserializers are 2-8x faster than goavro, and you get compile-time safety for getting and setting fields.
 
@@ -98,7 +98,23 @@ This package doesn't implement the entire Avro 1.7.7 specification, specifically
 - Schema resolution
 - Framing - generate RPCs and container format readers/writers
 
-### Changelog
+### Versioning
+
+This tool is versioned using [gopkg.in](http://labix.org/gopkg.in).
+The API is guaranteed to be stable within a release. This guarantee applies to:
+- the public members of generated structures
+- the public methods attached to generated structures
+- the command-line arguments of the tool itself
+
+Only bugfixes will be backported to existing major releases.
+This means that source files generated with the same major release may differ, but they will never break your build.
+
+3.0
+---
+- Experimental support for writing object container files
+- Improved variable and type names
+- Support for custom package names as a command line argument
+
 
 2.0
 ---
@@ -108,6 +124,7 @@ This package doesn't implement the entire Avro 1.7.7 specification, specifically
 1.0
 ---
 - Initial release
+- No longer supported - no more bugfixes are being backported
 
 ### Thanks
 
