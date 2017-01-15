@@ -20,7 +20,7 @@ go get gopkg.in/alanctgardner/gogen-avro.v2/...
 To generate Go source files from one or more Avro schema files, run:
 
 ```
-gogen-avro <output directory> <avro schema files>
+gogen-avro.v2 <output directory> <avro schema files>
 ```
 
 Or use a `go:generate` directive in a source file ([example](https://github.com/alanctgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
