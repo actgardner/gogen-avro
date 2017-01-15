@@ -2,8 +2,8 @@ package container
 
 import (
 	"fmt"
-	"github.com/alanctgardner/gogen-avro/generator"
-	"github.com/alanctgardner/gogen-avro/types"
+	"gopkg.in/alanctgardner/gogen-avro.v3/generator"
+	"gopkg.in/alanctgardner/gogen-avro.v3/types"
 )
 
 const containerWriterCommonFile = "avro_container.go"

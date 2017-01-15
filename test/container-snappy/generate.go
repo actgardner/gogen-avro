@@ -1,3 +1,3 @@
 package avro
 
-//go:generate $GOPATH/bin/gogen-avro --container  . primitives.avsc
+//go:generate $GOPATH/bin/gogen-avro.v3 --container  . primitives.avsc

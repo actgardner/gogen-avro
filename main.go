@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/alanctgardner/gogen-avro/container"
-	"github.com/alanctgardner/gogen-avro/generator"
-	"github.com/alanctgardner/gogen-avro/types"
+	"gopkg.in/alanctgardner/gogen-avro.v3/container"
+	"gopkg.in/alanctgardner/gogen-avro.v3/generator"
+	"gopkg.in/alanctgardner/gogen-avro.v3/types"
 )
 
 func main() {

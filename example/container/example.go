@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/alanctgardner/gogen-avro/example/avro"
+	"gopkg.in/alanctgardner/gogen-avro.v3/example/avro"
 	"os"
 )
 
