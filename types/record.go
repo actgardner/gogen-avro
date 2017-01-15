@@ -20,7 +20,7 @@ func (s *recordField) GoType() string {
 }
 
 func (s *recordField) FieldType() string {
-	return s.typeName
+	return generator.ToPublicName(s.typeName)
 }
 
 func (s *recordField) SerializerMethod() string {
