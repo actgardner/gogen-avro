@@ -9,5 +9,5 @@ go:
 install: go get -t -v ./...
 
 script:
-  - go test github.com/alanctgardner/gogen-avro/generator
+  - go test gopkg.in/alanctgardner/gogen-avro.v2/generator
   - bash test.sh 

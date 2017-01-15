@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/alanctgardner/gogen-avro/example/avro"
+	"gopkg.in/alanctgardner/gogen-avro.v2/example/avro"
 )
 
 // Use a go:generate directive to build the Go structs for `example.avsc`
