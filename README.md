@@ -3,7 +3,7 @@ gogen-avro
 
 [![Build Status](https://travis-ci.org/alanctgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/alanctgardner/gogen-avro)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/alanctgardner/gogen-avro/master/LICENSE)
-[![Version 3.0.0](https://img.shields.io/badge/version-3.0.0-lightgrey.svg)](https://gopkg.in/alanctgardner/gogen-avro.v3)
+[![Version 3.0.1](https://img.shields.io/badge/version-3.0.1-lightgrey.svg)](https://gopkg.in/alanctgardner/gogen-avro.v3)
 
 Generate Go structures and serializer / deserializer methods from Avro schemas. Generated serializers/deserializers are 2-8x faster than goavro, and you get compile-time safety for getting and setting fields.
 
@@ -12,7 +12,7 @@ Generate Go structures and serializer / deserializer methods from Avro schemas. 
 gogen-avro is a tool which you install on your system (usually on your GOPATH), and run as part of your build process. To install gogen-avro to `$GOPATH/bin/`, run:
 
 ```
-go get gopkg.in/alanctgardner/gogen-avro.v2/...
+go get gopkg.in/alanctgardner/gogen-avro.v3/...
 ```
 
 ### Usage
@@ -20,13 +20,13 @@ go get gopkg.in/alanctgardner/gogen-avro.v2/...
 To generate Go source files from one or more Avro schema files, run:
 
 ```
-gogen-avro [--container] [--package=<package name>] <output directory> <avro schema files>
+gogen-avro.v3 [--container] [--package=<package name>] <output directory> <avro schema files>
 ```
 
 You can also use a `go:generate` directive in a source file ([example](https://github.com/alanctgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
 
 ```
-//go:generate $GOPATH/bin/gogen-avro . primitives.avsc
+//go:generate $GOPATH/bin/gogen-avro.v3 . primitives.avsc
 ```
 
 The generated source files contain structs for each schema, plus a function `Serialize(io.Writer)` to encode the contents into the given `io.Writer`, and `Deserialize<RecordType>(io.Reader)` to read a struct from the given `io.Reader`.
