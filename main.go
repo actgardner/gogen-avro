@@ -67,16 +67,16 @@ func main() {
 }
 
 func addRecordDefinition(schema []byte, pkg *generator.Package, generateContainer bool) error {
-	recordDefinition, err := types.RecordDefinitionForSchema(schema)
+	fieldDefinition, err := types.FieldDefinitionForSchema(schema)
 	if err != nil {
 		return err
 	}
-	recordDefinition.AddStruct(pkg)
-	recordDefinition.AddSerializer(pkg)
-	recordDefinition.AddDeserializer(pkg)
+	fieldDefinition.AddStruct(pkg)
+	fieldDefinition.AddSerializer(pkg)
+	fieldDefinition.AddDeserializer(pkg)
 
 	if generateContainer {
-		containerWriter := container.NewAvroContainerWriter(schema, recordDefinition)
+		containerWriter := container.NewAvroContainerWriter(schema, fieldDefinition)
 		containerWriter.AddAvroContainerWriter(pkg)
 	}
 	return nil

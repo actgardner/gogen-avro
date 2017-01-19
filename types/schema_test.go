@@ -22,8 +22,11 @@ func TestParsePrimitiveSchema(t *testing.T) {
 		]
 	}
 `
-	schema, err := RecordDefinitionForSchema([]byte(schemaString))
+	schemaField, err := FieldDefinitionForSchema([]byte(schemaString))
 	assert.Nil(t, err)
+	schemaRecord, ok := schemaField.(*recordField)
+	assert.True(t, ok)
+	schema := schemaRecord.def
 	assert.Equal(t, schema.name, "PrimitiveTest")
 	assert.Equal(t, len(schema.fields), 8)
 	assert.Equal(t, schema.fields[0].(*stringField).name, "StringField")
@@ -61,12 +64,16 @@ func TestParsePrimitiveMapTypes(t *testing.T) {
 		]
 	}
 	`
-	schema, err := RecordDefinitionForSchema([]byte(schemaString))
+	schemaField, err := FieldDefinitionForSchema([]byte(schemaString))
 	assert.Nil(t, err)
+	schemaRecord, ok := schemaField.(*recordField)
+	assert.True(t, ok)
+	schema := schemaRecord.def
+
 	assert.Equal(t, schema.name, "ComplexRecord")
 	assert.Equal(t, len(schema.fields), 8)
 	assert.Equal(t, schema.fields[0].(*mapField).name, "StringMapField")
-	_, ok := schema.fields[0].(*mapField).itemType.(*stringField)
+	_, ok = schema.fields[0].(*mapField).itemType.(*stringField)
 	assert.Equal(t, ok, true)
 	assert.Equal(t, schema.fields[1].(*mapField).name, "IntMapField")
 	_, ok = schema.fields[1].(*mapField).itemType.(*intField)
@@ -109,12 +116,16 @@ func TestParsePrimitiveArrayTypes(t *testing.T) {
 		]
 	}
 	`
-	schema, err := RecordDefinitionForSchema([]byte(schemaString))
+	schemaField, err := FieldDefinitionForSchema([]byte(schemaString))
 	assert.Nil(t, err)
+	schemaRecord, ok := schemaField.(*recordField)
+	assert.True(t, ok)
+	schema := schemaRecord.def
+
 	assert.Equal(t, schema.name, "ComplexRecord")
 	assert.Equal(t, len(schema.fields), 8)
 	assert.Equal(t, schema.fields[0].(*arrayField).name, "StringArrayField")
-	_, ok := schema.fields[0].(*arrayField).itemType.(*stringField)
+	_, ok = schema.fields[0].(*arrayField).itemType.(*stringField)
 	assert.Equal(t, ok, true)
 	assert.Equal(t, schema.fields[1].(*arrayField).name, "IntArrayField")
 	_, ok = schema.fields[1].(*arrayField).itemType.(*intField)
@@ -150,8 +161,12 @@ func TestParsePrimitiveUnion(t *testing.T) {
 		]
 	}
 `
-	schema, err := RecordDefinitionForSchema([]byte(schemaString))
+	schemaField, err := FieldDefinitionForSchema([]byte(schemaString))
 	assert.Nil(t, err)
+	schemaRecord, ok := schemaField.(*recordField)
+	assert.True(t, ok)
+	schema := schemaRecord.def
+
 	assert.Equal(t, schema.name, "UnionRecord")
 	assert.Equal(t, len(schema.fields), 1)
 	unionField, ok := schema.fields[0].(*unionField)

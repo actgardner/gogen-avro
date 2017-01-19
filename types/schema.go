@@ -7,17 +7,31 @@ import (
 
 const UTIL_FILE = "primitive.go"
 
-/* Given a JSON record definition as a JSON encoded string, deserialize the JSON and build the record definition structs */
-func RecordDefinitionForSchema(schemaJson []byte) (*RecordDefinition, error) {
+/* 
+  Given an Avro schema as a JSON string, decode it and return the Field defined at the top level:
+    - a single record definition (JSON map)
+    - a union of multiple types (JSON array)  
+    - an already-defined type (JSON string)
+ */
+func FieldDefinitionForSchema(schemaJson []byte) (Field, error) {
 	var schema interface{}
 	if err := json.Unmarshal(schemaJson, &schema); err != nil {
 		return nil, err
 	}
-	schemaMap, ok := schema.(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("Invalid or unsupported schema - expected map as root JSON object")
+	return decodeFieldDefinitionType("", schema, nil, false)
+}
+
+func decodeFieldDefinitionType(nameStr string, t, def interface{}, hasDef bool) (Field, error) {
+	switch t.(type) {
+	case string:
+		typeStr := t.(string)
+		return createFieldStruct(nameStr, typeStr, def, hasDef)
+	case []interface{}:
+		return decodeUnionDefinition(nameStr, def, hasDef, t.([]interface{}))
+	case map[string]interface{}:
+		return decodeComplexDefinition(nameStr, t.(map[string]interface{}))
 	}
-	return decodeRecordDefinition(schemaMap)
+	return nil, NewSchemaError(nameStr, NewWrongMapValueTypeError("type", "array, string, map", t))
 }
 
 /* Given a map representing a record definition, validate the definition and build the recordDefinition struct */
@@ -68,19 +82,6 @@ func decodeRecordDefinition(schemaMap map[string]interface{}) (*RecordDefinition
 		name:   name,
 		fields: decodedFields,
 	}, nil
-}
-
-func decodeFieldDefinitionType(nameStr string, t, def interface{}, hasDef bool) (Field, error) {
-	switch t.(type) {
-	case string:
-		typeStr := t.(string)
-		return createFieldStruct(nameStr, typeStr, def, hasDef)
-	case []interface{}:
-		return decodeUnionDefinition(nameStr, def, hasDef, t.([]interface{}))
-	case map[string]interface{}:
-		return decodeComplexDefinition(nameStr, t.(map[string]interface{}))
-	}
-	return nil, NewSchemaError(nameStr, NewWrongMapValueTypeError("type", "array, string, map", t))
 }
 
 func decodeUnionDefinition(nameStr string, def interface{}, hasDef bool, FieldList []interface{}) (Field, error) {

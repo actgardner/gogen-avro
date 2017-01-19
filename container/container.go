@@ -167,13 +167,13 @@ func (avroWriter *%v) Flush() error {
 
 type AvroContainerWriter struct {
 	schema []byte
-	record *types.RecordDefinition
+	field types.Field
 }
 
-func NewAvroContainerWriter(schema []byte, record *types.RecordDefinition) *AvroContainerWriter {
+func NewAvroContainerWriter(schema []byte, field types.Field) *AvroContainerWriter {
 	return &AvroContainerWriter{
 		schema: schema,
-		record: record,
+		field: field,
 	}
 }
 
@@ -182,7 +182,7 @@ func (a *AvroContainerWriter) filename() string {
 }
 
 func (a *AvroContainerWriter) name() string {
-	return fmt.Sprintf("%vContainerWriter", a.record.GoType())
+	return fmt.Sprintf("%vContainerWriter", a.field.Name())
 }
 
 func (a *AvroContainerWriter) structDef() string {
@@ -198,11 +198,11 @@ func (a *AvroContainerWriter) constructorDef() string {
 }
 
 func (a *AvroContainerWriter) writeRecordDef() string {
-	return fmt.Sprintf(containerWriterWriteTemplate, a.name(), a.record.GoType())
+	return fmt.Sprintf(containerWriterWriteTemplate, a.name(), a.field.GoType())
 }
 
 func (a *AvroContainerWriter) schemaVariable() string {
-	return fmt.Sprintf("%vSchema", a.record.GoType())
+	return fmt.Sprintf("%vSchema", a.field.Name())
 }
 
 func (a *AvroContainerWriter) flushDef() string {
