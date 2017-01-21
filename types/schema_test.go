@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestParsePrimitiveSchema(t *testing.T) {
+func TestParsePrimitiveRecordSchema(t *testing.T) {
 	schemaString := `
 	{
 		"type": "record",
@@ -47,7 +47,7 @@ func TestParsePrimitiveSchema(t *testing.T) {
 	assert.Equal(t, schema.fields[7].(*recordField).typeName, "NestedRecord")
 }
 
-func TestParsePrimitiveMapTypes(t *testing.T) {
+func TestParsePrimitiveMapRecordSchema(t *testing.T) {
 	schemaString := `
 	{
 		"type": "record",
@@ -99,7 +99,7 @@ func TestParsePrimitiveMapTypes(t *testing.T) {
 	assert.Equal(t, schema.fields[7].(*mapField).itemType.(*recordField).typeName, "NestedRecord")
 }
 
-func TestParsePrimitiveArrayTypes(t *testing.T) {
+func TestParsePrimitiveArrayRecordSchema(t *testing.T) {
 	schemaString := `
 	{
 		"type": "record",
@@ -151,7 +151,7 @@ func TestParsePrimitiveArrayTypes(t *testing.T) {
 	assert.Equal(t, schema.fields[7].(*arrayField).itemType.(*recordField).typeName, "NestedRecord")
 }
 
-func TestParsePrimitiveUnion(t *testing.T) {
+func TestParsePrimitiveUnionRecordSchema(t *testing.T) {
 	schemaString := `
 	{
 		"type": "record",
@@ -190,4 +190,51 @@ func TestParsePrimitiveUnion(t *testing.T) {
 	_, ok = unionField.itemType[8].(*recordField)
 	assert.Equal(t, ok, true)
 	assert.Equal(t, unionField.itemType[8].(*recordField).typeName, "NestedRecord")
+}
+
+func TestParsePrimitiveSchema(t *testing.T) {
+	schemaString := `"string"`
+	schemaField, err := FieldDefinitionForSchema([]byte(schemaString))
+	assert.Nil(t, err)
+	field, ok := schemaField.(*stringField)
+	assert.True(t, ok)
+	assert.Equal(t, field.name, "")
+	assert.Equal(t, field.hasDefault, false)
+}
+
+func TestParsePrimitiveUnionSchema(t *testing.T) {
+	schemaString := `
+	[
+		"string",
+		"int",
+		"long",
+		"boolean",
+		"float",
+		"double",
+		"bytes",
+		"NestedRecord"
+	]
+`
+	schemaField, err := FieldDefinitionForSchema([]byte(schemaString))
+	assert.Nil(t, err)
+	schemaUnion, ok := schemaField.(*unionField)
+	assert.True(t, ok)
+	assert.Equal(t, schemaUnion.name, "")
+	assert.Equal(t, len(schemaUnion.itemType), 8)
+	assert.Equal(t, schemaUnion.itemType[0].(*stringField).name, "")
+	assert.Equal(t, schemaUnion.itemType[0].(*stringField).hasDefault, false)
+	assert.Equal(t, schemaUnion.itemType[1].(*intField).name, "")
+	assert.Equal(t, schemaUnion.itemType[1].(*intField).hasDefault, false)
+	assert.Equal(t, schemaUnion.itemType[2].(*longField).name, "")
+	assert.Equal(t, schemaUnion.itemType[2].(*longField).hasDefault, false)
+	assert.Equal(t, schemaUnion.itemType[3].(*boolField).name, "")
+	assert.Equal(t, schemaUnion.itemType[3].(*boolField).hasDefault, false)
+	assert.Equal(t, schemaUnion.itemType[4].(*floatField).name, "")
+	assert.Equal(t, schemaUnion.itemType[4].(*floatField).hasDefault, false)
+	assert.Equal(t, schemaUnion.itemType[5].(*doubleField).name, "")
+	assert.Equal(t, schemaUnion.itemType[5].(*doubleField).hasDefault, false)
+	assert.Equal(t, schemaUnion.itemType[6].(*bytesField).name, "")
+	assert.Equal(t, schemaUnion.itemType[6].(*bytesField).hasDefault, false)
+	assert.Equal(t, schemaUnion.itemType[7].(*recordField).name, "")
+	assert.Equal(t, schemaUnion.itemType[7].(*recordField).typeName, "NestedRecord")
 }
