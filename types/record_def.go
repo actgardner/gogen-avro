@@ -12,21 +12,21 @@ const recordStructDefTemplate = `type %v struct {
 
 const recordStructPublicSerializerTemplate = `
 func (r %v) Serialize(w io.Writer) error {
-	return %v(&r, w)
+	return %v(r, w)
 }
 `
 
 const recordStructDeserializerTemplate = `
-func %v(r io.Reader) (*%v, error) {
-	var str %v
+func %v(r io.Reader) (%v, error) {
+	var str = &%v{}
 	var err error
 	%v
-	return &str, nil
+	return str, nil
 }
 `
 
 const recordStructPublicDeserializerTemplate = `
-func %v(r io.Reader) (*%v, error) {
+func %v(r io.Reader) (%v, error) {
 	return %v(r)
 }
 `
@@ -37,6 +37,10 @@ type RecordDefinition struct {
 }
 
 func (r *RecordDefinition) GoType() string {
+	return fmt.Sprintf("*%v", r.FieldType())
+}
+
+func (r *RecordDefinition) FieldType() string {
 	return generator.ToPublicName(r.name)
 }
 
@@ -65,27 +69,27 @@ func (r *RecordDefinition) fieldDeserializers() string {
 }
 
 func (r *RecordDefinition) structDefinition() string {
-	return fmt.Sprintf(recordStructDefTemplate, r.GoType(), r.structFields())
+	return fmt.Sprintf(recordStructDefTemplate, r.FieldType(), r.structFields())
 }
 
 func (r *RecordDefinition) serializerMethodDef() string {
-	return fmt.Sprintf("func %v(r *%v, w io.Writer) error {\n%v\nreturn nil\n}", r.SerializerMethod(), r.GoType(), r.fieldSerializers())
+	return fmt.Sprintf("func %v(r %v, w io.Writer) error {\n%v\nreturn nil\n}", r.SerializerMethod(), r.GoType(), r.fieldSerializers())
 }
 
 func (r *RecordDefinition) deserializerMethodDef() string {
-	return fmt.Sprintf(recordStructDeserializerTemplate, r.DeserializerMethod(), r.GoType(), r.GoType(), r.fieldDeserializers())
+	return fmt.Sprintf(recordStructDeserializerTemplate, r.DeserializerMethod(), r.GoType(), r.FieldType(), r.fieldDeserializers())
 }
 
 func (r *RecordDefinition) SerializerMethod() string {
-	return fmt.Sprintf("write%v", r.GoType())
+	return fmt.Sprintf("write%v", r.FieldType())
 }
 
 func (r *RecordDefinition) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", r.GoType())
+	return fmt.Sprintf("read%v", r.FieldType())
 }
 
 func (r *RecordDefinition) publicDeserializerMethod() string {
-	return fmt.Sprintf("Deserialize%v", r.GoType())
+	return fmt.Sprintf("Deserialize%v", r.FieldType())
 }
 
 func (r *RecordDefinition) publicSerializerMethodDef() string {
@@ -97,7 +101,7 @@ func (r *RecordDefinition) publicDeserializerMethodDef() string {
 }
 
 func (r *RecordDefinition) filename() string {
-	return generator.ToSnake(r.GoType()) + ".go"
+	return generator.ToSnake(r.FieldType()) + ".go"
 }
 
 func (r *RecordDefinition) AddStruct(p *generator.Package) {

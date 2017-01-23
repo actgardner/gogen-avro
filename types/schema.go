@@ -157,7 +157,7 @@ func decodeComplexDefinition(nameStr string, typeMap map[string]interface{}) (Fi
 		if err != nil {
 			return nil, NewSchemaError(nameStr, err)
 		}
-		return &recordField{nameStr, def.GoType(), def}, nil
+		return &recordField{nameStr, def.FieldType(), def}, nil
 	default:
 		return nil, NewSchemaError(nameStr, fmt.Errorf("Unknown type name %v", typeStr))
 	}

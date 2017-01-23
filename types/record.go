@@ -16,19 +16,19 @@ func (s *recordField) Name() string {
 }
 
 func (s *recordField) GoType() string {
-	return fmt.Sprintf("*%v", generator.ToPublicName(s.typeName))
+	return fmt.Sprintf("*%v", s.FieldType())
 }
 
 func (s *recordField) FieldType() string {
-	return s.typeName
+	return generator.ToPublicName(s.typeName)
 }
 
 func (s *recordField) SerializerMethod() string {
-	return fmt.Sprintf("write%v", generator.ToPublicName(s.typeName))
+	return fmt.Sprintf("write%v", s.FieldType())
 }
 
 func (s *recordField) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", generator.ToPublicName(s.typeName))
+	return fmt.Sprintf("read%v", s.FieldType())
 }
 
 /* If the record type is defined inline, add the definition to the generator.Package */
