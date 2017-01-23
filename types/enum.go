@@ -35,27 +35,29 @@ func %v(r io.Reader) (%v, error) {
 }
 `
 
-type enumField struct {
-	name         string
-	typeName     string
-	defaultValue string
-	hasDefault   bool
+type EnumDefinition struct {
+	name         QualifiedName
+	aliases []QualifiedName
 	symbols      []string
 }
 
-func (e *enumField) Name() string {
+func (e *EnumDefinition) AvroName() QualifiedName {
 	return e.name
 }
 
-func (e *enumField) FieldType() string {
-	return generator.ToPublicName(e.typeName)
+func (e *EnumDefinition) Aliases() []QualifiedName {
+	return e.aliases
 }
 
-func (e *enumField) GoType() string {
+func (e *EnumDefinition) FieldType() string {
+	return generator.ToPublicName(e.name.Name)
+}
+
+func (e *EnumDefinition) GoType() string {
 	return e.FieldType()
 }
 
-func (e *enumField) typeList() string {
+func (e *EnumDefinition) typeList() string {
 	typeStr := ""
 	for i, t := range e.symbols {
 		typeStr += fmt.Sprintf("%v %v = %v\n", generator.ToPublicName(t), e.GoType(), i)
@@ -63,7 +65,7 @@ func (e *enumField) typeList() string {
 	return typeStr
 }
 
-func (e *enumField) stringerList() string {
+func (e *EnumDefinition) stringerList() string {
 	stringerStr := ""
 	for _, t := range e.symbols {
 		stringerStr += fmt.Sprintf("case %v:\n return %q\n", generator.ToPublicName(t), t)
@@ -71,40 +73,40 @@ func (e *enumField) stringerList() string {
 	return stringerStr
 }
 
-func (e *enumField) structDef() string {
+func (e *EnumDefinition) structDef() string {
 	return fmt.Sprintf(enumTypeDef, e.GoType(), e.typeList())
 }
 
-func (e *enumField) stringerDef() string {
+func (e *EnumDefinition) stringerDef() string {
 	return fmt.Sprintf(enumTypeStringer, e.GoType(), e.stringerList())
 }
 
-func (e *enumField) serializerMethodDef() string {
+func (e *EnumDefinition) serializerMethodDef() string {
 	return fmt.Sprintf(enumSerializerDef, e.SerializerMethod(), e.FieldType())
 }
 
-func (e *enumField) SerializerMethod() string {
+func (e *EnumDefinition) SerializerMethod() string {
 	return "write" + e.FieldType()
 }
 
-func (e *enumField) deserializerMethodDef() string {
+func (e *EnumDefinition) deserializerMethodDef() string {
 	return fmt.Sprintf(enumDeserializerDef, e.DeserializerMethod(), e.FieldType(), e.FieldType())
 }
 
-func (e *enumField) DeserializerMethod() string {
+func (e *EnumDefinition) DeserializerMethod() string {
 	return "read" + e.FieldType()
 }
 
-func (e *enumField) filename() string {
+func (e *EnumDefinition) filename() string {
 	return generator.ToSnake(e.GoType()) + ".go"
 }
 
-func (e *enumField) AddStruct(p *generator.Package) {
+func (e *EnumDefinition) AddStruct(p *generator.Package) {
 	p.AddStruct(e.filename(), e.GoType(), e.structDef())
 	p.AddFunction(e.filename(), e.GoType(), "String", e.stringerDef())
 }
 
-func (e *enumField) AddSerializer(p *generator.Package) {
+func (e *EnumDefinition) AddSerializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.AddFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
@@ -112,8 +114,12 @@ func (e *enumField) AddSerializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (e *enumField) AddDeserializer(p *generator.Package) {
+func (e *EnumDefinition) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readInt", readIntMethod)
 	p.AddFunction(UTIL_FILE, "", e.DeserializerMethod(), e.deserializerMethodDef())
 	p.AddImport(UTIL_FILE, "io")
+}
+
+func (s *EnumDefinition) ResolveReferences(n *Namespace) error {
+	return nil
 }

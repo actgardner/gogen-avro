@@ -170,10 +170,10 @@ type AvroContainerWriter struct {
 	field types.Field
 }
 
-func NewAvroContainerWriter(schema []byte, field types.Field) *AvroContainerWriter {
+func NewAvroContainerWriter(schema types.Schema) *AvroContainerWriter {
 	return &AvroContainerWriter{
-		schema: schema,
-		field: field,
+		schema: schema.JSONSchema,
+		field: schema.Root,
 	}
 }
 

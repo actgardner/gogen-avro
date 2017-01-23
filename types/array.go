@@ -103,3 +103,7 @@ func (s *arrayField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
+
+func (s *arrayField) ResolveReferences(n *Namespace) error {
+	return s.itemType.ResolveReferences(n)
+}

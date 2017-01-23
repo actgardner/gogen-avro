@@ -112,3 +112,7 @@ func (s *mapField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", methodName, mapDeserializer)
 	p.AddImport(UTIL_FILE, "io")
 }
+
+func (s *mapField) ResolveReferences(n *Namespace) error {
+	return s.itemType.ResolveReferences(n)
+}

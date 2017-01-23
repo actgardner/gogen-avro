@@ -119,3 +119,7 @@ func (s *intField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readInt", readIntMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
+
+func (s *intField) ResolveReferences(n *Namespace) error {
+	return nil
+}

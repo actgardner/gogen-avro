@@ -67,3 +67,7 @@ func (s *doubleField) AddDeserializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "math")
 	p.AddImport(UTIL_FILE, "encoding/binary")
 }
+
+func (s *doubleField) ResolveReferences(n *Namespace) error {
+	return nil
+}

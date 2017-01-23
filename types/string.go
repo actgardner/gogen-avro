@@ -82,3 +82,7 @@ func (s *stringField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readString", readStringMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
+
+func (s *stringField) ResolveReferences(n *Namespace) error {
+	return nil
+}

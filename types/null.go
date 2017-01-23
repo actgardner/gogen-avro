@@ -52,3 +52,7 @@ func (s *nullField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readNull", readNullMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
+
+func (s *nullField) ResolveReferences(n *Namespace) error {
+	return nil
+}

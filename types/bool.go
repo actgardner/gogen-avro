@@ -97,3 +97,7 @@ func (s *boolField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readBool", readBoolMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
+
+func (s *boolField) ResolveReferences(n *Namespace) error {
+	return nil
+}

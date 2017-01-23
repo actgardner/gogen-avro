@@ -96,3 +96,7 @@ func (e *floatField) AddDeserializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "encoding/binary")
 	p.AddImport(UTIL_FILE, "io")
 }
+
+func (s *floatField) ResolveReferences(n *Namespace) error {
+	return nil
+}

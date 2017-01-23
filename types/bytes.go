@@ -68,3 +68,7 @@ func (s *bytesField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
+
+func (s *bytesField) ResolveReferences(n *Namespace) error {
+	return nil
+}

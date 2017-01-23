@@ -5,12 +5,13 @@ import (
 )
 
 /*
- * The interface implemented by all Avro field types.
- */
-type Field interface {
-	// The field name
-	Name() string
-	// The friendly type name
+  The definition of a record, fixed or enum satisfies this interface.
+*/
+
+type Definition interface{
+	AvroName() QualifiedName
+	Aliases() []QualifiedName
+	// The friendly name for the type
 	FieldType() string
 	// The corresponding Go type
 	GoType() string
@@ -24,6 +25,5 @@ type Field interface {
 	AddSerializer(*generator.Package)
 	// Add the imports, methods and structs required for the deserializer to the generator.Package
 	AddDeserializer(*generator.Package)
-	// Attempt to resolve references to named structs, enums or fixed fields
 	ResolveReferences(*Namespace) error
 }

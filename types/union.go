@@ -135,3 +135,14 @@ func (s *unionField) AddDeserializer(p *generator.Package) {
 		f.AddDeserializer(p)
 	}
 }
+
+func (s *unionField) ResolveReferences(n *Namespace) error {
+	var err error
+	for _, f := range s.itemType {
+		err = f.ResolveReferences(n)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

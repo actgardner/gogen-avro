@@ -25,15 +25,16 @@ func main() {
 
 	var err error
 	pkg := generator.NewPackage(*packageName)
+	namespace := types.NewNamespace()
 
 	if *generateContainer {
-		err = addRecordDefinition([]byte(container.AVRO_BLOCK_SCHEMA), pkg, false)
+		_, err = namespace.FieldDefinitionForSchema([]byte(container.AVRO_BLOCK_SCHEMA))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error generating Avro container block schema - %v\n", err)
 			os.Exit(2)
 		}
 
-		err = addRecordDefinition([]byte(container.AVRO_HEADER_SCHEMA), pkg, false)
+		_, err = namespace.FieldDefinitionForSchema([]byte(container.AVRO_HEADER_SCHEMA))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error generating Avro container header schema - %v\n", err)
 			os.Exit(2)
@@ -47,11 +48,18 @@ func main() {
 			os.Exit(2)
 		}
 
-		err = addRecordDefinition(schema, pkg, *generateContainer)
+		_, err = namespace.FieldDefinitionForSchema(schema)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error decoding schema for file %q - %v\n", fileName, err)
 			os.Exit(3)
 		}
+	}
+
+	// Resolve dependencies and add the schemas to the package
+	err = addFieldsToPackage(namespace, pkg, *generateContainer)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error generating code for schema - %v\n", err)
+		os.Exit(4)
 	}
 
 	// Add header comment to all generated files.
@@ -66,18 +74,21 @@ func main() {
 	}
 }
 
-func addRecordDefinition(schema []byte, pkg *generator.Package, generateContainer bool) error {
-	fieldDefinition, err := types.FieldDefinitionForSchema(schema)
-	if err != nil {
-		return err
-	}
-	fieldDefinition.AddStruct(pkg)
-	fieldDefinition.AddSerializer(pkg)
-	fieldDefinition.AddDeserializer(pkg)
+func addFieldsToPackage(namespace *types.Namespace, pkg *generator.Package, generateContainer bool) error {
+	for _, schema := range namespace.Schemas {
+		err := schema.Root.ResolveReferences(namespace)
+		if err != nil {
+			return err
+		}
 
-	if generateContainer {
-		containerWriter := container.NewAvroContainerWriter(schema, fieldDefinition)
-		containerWriter.AddAvroContainerWriter(pkg)
+		schema.Root.AddStruct(pkg)
+		schema.Root.AddSerializer(pkg)
+		schema.Root.AddDeserializer(pkg)
+
+		if generateContainer {
+			containerWriter := container.NewAvroContainerWriter(schema)
+			containerWriter.AddAvroContainerWriter(pkg)
+		}
 	}
 	return nil
 }

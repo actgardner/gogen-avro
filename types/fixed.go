@@ -20,60 +20,66 @@ func %v(r io.Reader) (%v, error) {
 }
 `
 
-type fixedField struct {
-	name         string
-	typeName     string
-	defaultValue []byte
-	hasDefault   bool
+type FixedDefinition struct {
+	name         QualifiedName
+	aliases []QualifiedName
 	sizeBytes    int
 }
 
-func (s *fixedField) Name() string {
-	return generator.ToPublicName(s.name)
+func (s *FixedDefinition) AvroName() QualifiedName {
+	return s.name
 }
 
-func (s *fixedField) FieldType() string {
-	return generator.ToPublicName(s.typeName)
+func (s *FixedDefinition) Aliases() []QualifiedName {
+	return s.aliases
 }
 
-func (s *fixedField) GoType() string {
-	return s.FieldType()
+func (s *FixedDefinition) FieldType() string {
+	return s.GoType()
 }
 
-func (s *fixedField) serializerMethodDef() string {
+func (s *FixedDefinition) GoType() string {
+	return generator.ToPublicName(s.name.Name)
+}
+
+func (s *FixedDefinition) serializerMethodDef() string {
 	return fmt.Sprintf(writeFixedMethod, s.SerializerMethod(), s.GoType())
 }
 
-func (s *fixedField) deserializerMethodDef() string {
+func (s *FixedDefinition) deserializerMethodDef() string {
 	return fmt.Sprintf(readFixedMethod, s.DeserializerMethod(), s.GoType(), s.GoType())
 }
 
-func (s *fixedField) typeDef() string {
+func (s *FixedDefinition) typeDef() string {
 	return fmt.Sprintf("type %v [%v]byte\n", s.GoType(), s.sizeBytes)
 }
 
-func (s *fixedField) filename() string {
+func (s *FixedDefinition) filename() string {
 	return generator.ToSnake(s.GoType()) + ".go"
 }
 
-func (s *fixedField) SerializerMethod() string {
+func (s *FixedDefinition) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.FieldType())
 }
 
-func (s *fixedField) DeserializerMethod() string {
+func (s *FixedDefinition) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.FieldType())
 }
 
-func (s *fixedField) AddStruct(p *generator.Package) {
+func (s *FixedDefinition) AddStruct(p *generator.Package) {
 	p.AddStruct(s.filename(), s.GoType(), s.typeDef())
 }
 
-func (s *fixedField) AddSerializer(p *generator.Package) {
+func (s *FixedDefinition) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *fixedField) AddDeserializer(p *generator.Package) {
+func (s *FixedDefinition) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", s.DeserializerMethod(), s.deserializerMethodDef())
 	p.AddImport(UTIL_FILE, "io")
+}
+
+func (s *FixedDefinition) ResolveReferences(n *Namespace) error {
+	return nil
 }

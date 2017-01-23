@@ -71,3 +71,7 @@ func (s *longField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
+
+func (s *longField) ResolveReferences(n *Namespace) error {
+	return nil
+}
