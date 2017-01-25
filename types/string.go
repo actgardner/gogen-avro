@@ -46,6 +46,14 @@ type stringField struct {
 	hasDefault   bool
 }
 
+func (s *stringField) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *stringField) Default() interface{} {
+	return s.defaultValue
+}
+
 func (s *stringField) Name() string {
 	return generator.ToPublicName(s.name)
 }
@@ -85,4 +93,8 @@ func (s *stringField) AddDeserializer(p *generator.Package) {
 
 func (s *stringField) ResolveReferences(n *Namespace) error {
 	return nil
+}
+
+func (s *stringField) Schema(names map[QualifiedName]interface{}) interface{} {
+	return "string"
 }

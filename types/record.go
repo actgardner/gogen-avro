@@ -1,12 +1,19 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
+	"strconv"
 )
 
 const recordStructDefTemplate = `type %v struct {
 %v
+}
+`
+
+const recordSchemaTemplate = `func (r %v) Schema() string {
+ return %v
 }
 `
 
@@ -113,6 +120,11 @@ func (r *RecordDefinition) filename() string {
 	return generator.ToSnake(r.FieldType()) + ".go"
 }
 
+func (r *RecordDefinition) schemaMethod() string {
+	schemaJson, _ := json.Marshal(r.Schema(make(map[QualifiedName]interface{})))
+	return fmt.Sprintf(recordSchemaTemplate, r.GoType(), strconv.Quote(string(schemaJson)))
+}
+
 func (r *RecordDefinition) AddStruct(p *generator.Package) {
 	// Import guard, to avoid circular dependencies
 	if !p.HasStruct(r.filename(), r.GoType()) {
@@ -120,6 +132,7 @@ func (r *RecordDefinition) AddStruct(p *generator.Package) {
 		for _, f := range r.fields {
 			f.AddStruct(p)
 		}
+		p.AddFunction(r.filename(), r.GoType(), "Schema", r.schemaMethod())
 	}
 }
 
@@ -156,4 +169,28 @@ func (r *RecordDefinition) ResolveReferences(n *Namespace) error {
 		}
 	}
 	return nil
+}
+
+func (r *RecordDefinition) Schema(names map[QualifiedName]interface{}) interface{} {
+	name := r.name.String()
+	if _, ok := names[r.name]; ok {
+		return name
+	}
+	names[r.name] = 1
+	fields := make([]interface{}, 0, len(r.fields))
+	for _, f := range r.fields {
+		fieldDef := map[string]interface{}{
+			"name": f.Name(),
+			"type": f.Schema(names),
+		}
+		if f.HasDefault() {
+			fieldDef["default"] = f.Default()
+		}
+		fields = append(fields, fieldDef)
+	}
+	return map[string]interface{}{
+		"type":   "record",
+		"name":   name,
+		"fields": fields,
+	}
 }

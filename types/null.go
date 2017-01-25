@@ -21,6 +21,14 @@ type nullField struct {
 	hasDefault bool
 }
 
+func (s *nullField) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *nullField) Default() interface{} {
+	return nil
+}
+
 func (s *nullField) Name() string {
 	return generator.ToPublicName(s.name)
 }
@@ -55,4 +63,8 @@ func (s *nullField) AddDeserializer(p *generator.Package) {
 
 func (s *nullField) ResolveReferences(n *Namespace) error {
 	return nil
+}
+
+func (s *nullField) Schema(names map[QualifiedName]interface{}) interface{} {
+	return "null"
 }

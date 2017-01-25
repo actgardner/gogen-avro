@@ -123,3 +123,16 @@ func (e *EnumDefinition) AddDeserializer(p *generator.Package) {
 func (s *EnumDefinition) ResolveReferences(n *Namespace) error {
 	return nil
 }
+
+func (s *EnumDefinition) Schema(names map[QualifiedName]interface{}) interface{} {
+	name := s.name.String()
+	if _, ok := names[s.name]; ok {
+		return name
+	}
+	names[s.name] = 1
+	return map[string]interface{}{
+		"type":    "enum",
+		"name":    name,
+		"symbols": s.symbols,
+	}
+}

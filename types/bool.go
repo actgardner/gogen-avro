@@ -68,6 +68,14 @@ func (s *boolField) Name() string {
 	return generator.ToPublicName(s.name)
 }
 
+func (s *boolField) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *boolField) Default() interface{} {
+	return s.defaultValue
+}
+
 func (s *boolField) FieldType() string {
 	return "Bool"
 }
@@ -100,4 +108,8 @@ func (s *boolField) AddDeserializer(p *generator.Package) {
 
 func (s *boolField) ResolveReferences(n *Namespace) error {
 	return nil
+}
+
+func (s *boolField) Schema(names map[QualifiedName]interface{}) interface{} {
+	return "boolean"
 }

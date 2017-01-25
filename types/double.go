@@ -35,6 +35,14 @@ func (s *doubleField) Name() string {
 	return generator.ToPublicName(s.name)
 }
 
+func (s *doubleField) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *doubleField) Default() interface{} {
+	return s.defaultValue
+}
+
 func (s *doubleField) FieldType() string {
 	return "Double"
 }
@@ -70,4 +78,8 @@ func (s *doubleField) AddDeserializer(p *generator.Package) {
 
 func (s *doubleField) ResolveReferences(n *Namespace) error {
 	return nil
+}
+
+func (s *doubleField) Schema(names map[QualifiedName]interface{}) interface{} {
+	return "double"
 }

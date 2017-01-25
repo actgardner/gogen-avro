@@ -54,12 +54,22 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type arrayField struct {
-	name     string
-	itemType Field
+	name         string
+	itemType     Field
+	hasDefault   bool
+	defaultValue interface{}
 }
 
 func (s *arrayField) Name() string {
 	return generator.ToPublicName(s.name)
+}
+
+func (s *arrayField) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *arrayField) Default() interface{} {
+	return s.defaultValue
 }
 
 func (s *arrayField) FieldType() string {
@@ -106,4 +116,11 @@ func (s *arrayField) AddDeserializer(p *generator.Package) {
 
 func (s *arrayField) ResolveReferences(n *Namespace) error {
 	return s.itemType.ResolveReferences(n)
+}
+
+func (s *arrayField) Schema(names map[QualifiedName]interface{}) interface{} {
+	return map[string]interface{}{
+		"type":  "array",
+		"items": s.itemType.Schema(names),
+	}
 }

@@ -60,6 +60,14 @@ type floatField struct {
 	hasDefault   bool
 }
 
+func (s *floatField) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *floatField) Default() interface{} {
+	return s.defaultValue
+}
+
 func (s *floatField) Name() string {
 	return generator.ToPublicName(s.name)
 }
@@ -99,4 +107,8 @@ func (e *floatField) AddDeserializer(p *generator.Package) {
 
 func (s *floatField) ResolveReferences(n *Namespace) error {
 	return nil
+}
+
+func (s *floatField) Schema(names map[QualifiedName]interface{}) interface{} {
+	return "float"
 }

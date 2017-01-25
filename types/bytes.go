@@ -37,6 +37,14 @@ func (s *bytesField) Name() string {
 	return generator.ToPublicName(s.name)
 }
 
+func (s *bytesField) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *bytesField) Default() interface{} {
+	return s.defaultValue
+}
+
 func (s *bytesField) FieldType() string {
 	return "Bytes"
 }
@@ -71,4 +79,8 @@ func (s *bytesField) AddDeserializer(p *generator.Package) {
 
 func (s *bytesField) ResolveReferences(n *Namespace) error {
 	return nil
+}
+
+func (s *bytesField) Schema(names map[QualifiedName]interface{}) interface{} {
+	return "bytes"
 }

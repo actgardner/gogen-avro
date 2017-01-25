@@ -36,9 +36,18 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type unionField struct {
-	name     string
-	hasDef   bool
-	itemType []Field
+	name         string
+	hasDefault   bool
+	defaultValue interface{}
+	itemType     []Field
+}
+
+func (s *unionField) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *unionField) Default() interface{} {
+	return s.defaultValue
 }
 
 func (s *unionField) Name() string {
@@ -145,4 +154,12 @@ func (s *unionField) ResolveReferences(n *Namespace) error {
 		}
 	}
 	return nil
+}
+
+func (s *unionField) Schema(names map[QualifiedName]interface{}) interface{} {
+	unionDefs := make([]interface{}, 0, len(s.itemType))
+	for _, item := range s.itemType {
+		unionDefs = append(unionDefs, item.Schema(names))
+	}
+	return unionDefs
 }

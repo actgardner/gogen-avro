@@ -12,6 +12,9 @@ type Field interface {
 	Name() string
 	// The friendly type name
 	FieldType() string
+	// Default value for the field
+	HasDefault() bool
+	Default() interface{}
 	// The corresponding Go type
 	GoType() string
 	// The name of the method which writes this field onto the wire
@@ -26,4 +29,6 @@ type Field interface {
 	AddDeserializer(*generator.Package)
 	// Attempt to resolve references to named structs, enums or fixed fields
 	ResolveReferences(*Namespace) error
+	// Get the objects that will serialize to the normalized JSON schema
+	Schema(names map[QualifiedName]interface{}) interface{}
 }

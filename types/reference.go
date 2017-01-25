@@ -10,9 +10,19 @@ import (
 */
 
 type Reference struct {
-	name     string
-	typeName QualifiedName
-	def      Definition
+	name         string
+	typeName     QualifiedName
+	def          Definition
+	defaultValue interface{}
+	hasDefault   bool
+}
+
+func (s *Reference) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *Reference) Default() interface{} {
+	return s.defaultValue
 }
 
 func (s *Reference) Definition() Definition {
@@ -49,6 +59,10 @@ func (s *Reference) AddSerializer(p *generator.Package) {
 
 func (s *Reference) AddDeserializer(p *generator.Package) {
 	s.def.AddDeserializer(p)
+}
+
+func (s *Reference) Schema(names map[QualifiedName]interface{}) interface{} {
+	return s.def.Schema(names)
 }
 
 func (s *Reference) ResolveReferences(n *Namespace) error {

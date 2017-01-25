@@ -83,3 +83,16 @@ func (s *FixedDefinition) AddDeserializer(p *generator.Package) {
 func (s *FixedDefinition) ResolveReferences(n *Namespace) error {
 	return nil
 }
+
+func (s *FixedDefinition) Schema(names map[QualifiedName]interface{}) interface{} {
+	name := s.name.String()
+	if _, ok := names[s.name]; ok {
+		return name
+	}
+	names[s.name] = 1
+	return map[string]interface{}{
+		"type": "fixed",
+		"name": name,
+		"size": s.sizeBytes,
+	}
+}

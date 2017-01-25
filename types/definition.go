@@ -26,4 +26,5 @@ type Definition interface {
 	// Add the imports, methods and structs required for the deserializer to the generator.Package
 	AddDeserializer(*generator.Package)
 	ResolveReferences(*Namespace) error
+	Schema(names map[QualifiedName]interface{}) interface{}
 }

@@ -60,8 +60,18 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type mapField struct {
-	name     string
-	itemType Field
+	name         string
+	itemType     Field
+	hasDefault   bool
+	defaultValue interface{}
+}
+
+func (s *mapField) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *mapField) Default() interface{} {
+	return s.defaultValue
 }
 
 func (s *mapField) Name() string {
@@ -115,4 +125,11 @@ func (s *mapField) AddDeserializer(p *generator.Package) {
 
 func (s *mapField) ResolveReferences(n *Namespace) error {
 	return s.itemType.ResolveReferences(n)
+}
+
+func (s *mapField) Schema(names map[QualifiedName]interface{}) interface{} {
+	return map[string]interface{}{
+		"type":   "map",
+		"values": s.itemType.Schema(names),
+	}
 }

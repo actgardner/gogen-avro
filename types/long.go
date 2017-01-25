@@ -42,6 +42,14 @@ func (s *longField) Name() string {
 	return generator.ToPublicName(s.name)
 }
 
+func (s *longField) HasDefault() bool {
+	return s.hasDefault
+}
+
+func (s *longField) Default() interface{} {
+	return s.defaultValue
+}
+
 func (s *longField) FieldType() string {
 	return "Long"
 }
@@ -74,4 +82,8 @@ func (s *longField) AddDeserializer(p *generator.Package) {
 
 func (s *longField) ResolveReferences(n *Namespace) error {
 	return nil
+}
+
+func (s *longField) Schema(names map[QualifiedName]interface{}) interface{} {
+	return "long"
 }
