@@ -7,17 +7,15 @@ import (
 	"os"
 	"strings"
 
-	"github.com/alanctgardner/gogen-avro/container"
 	"github.com/alanctgardner/gogen-avro/generator"
 	"github.com/alanctgardner/gogen-avro/types"
 )
 
 func main() {
-	generateContainer := flag.Bool("container", false, "Whether to emit container file writer code")
 	packageName := flag.String("package", "avro", "Name of generated package")
 	flag.Parse()
 	if flag.NArg() < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--container] [--package=<package name>] <target directory> <schema files>\n")
+		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--package=<package name>] <target directory> <schema files>\n")
 		os.Exit(1)
 	}
 	targetDir := flag.Arg(0)
@@ -26,20 +24,6 @@ func main() {
 	var err error
 	pkg := generator.NewPackage(*packageName)
 	namespace := types.NewNamespace()
-
-	if *generateContainer {
-		_, err = namespace.FieldDefinitionForSchema([]byte(container.AVRO_BLOCK_SCHEMA))
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error generating Avro container block schema - %v\n", err)
-			os.Exit(2)
-		}
-
-		_, err = namespace.FieldDefinitionForSchema([]byte(container.AVRO_HEADER_SCHEMA))
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error generating Avro container header schema - %v\n", err)
-			os.Exit(2)
-		}
-	}
 
 	for _, fileName := range files {
 		schema, err := ioutil.ReadFile(fileName)
@@ -56,7 +40,7 @@ func main() {
 	}
 
 	// Resolve dependencies and add the schemas to the package
-	err = addFieldsToPackage(namespace, pkg, *generateContainer)
+	err = addFieldsToPackage(namespace, pkg)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating code for schema - %v\n", err)
 		os.Exit(4)
@@ -74,7 +58,7 @@ func main() {
 	}
 }
 
-func addFieldsToPackage(namespace *types.Namespace, pkg *generator.Package, generateContainer bool) error {
+func addFieldsToPackage(namespace *types.Namespace, pkg *generator.Package) error {
 	for _, schema := range namespace.Schemas {
 		err := schema.Root.ResolveReferences(namespace)
 		if err != nil {
@@ -84,11 +68,6 @@ func addFieldsToPackage(namespace *types.Namespace, pkg *generator.Package, gene
 		schema.Root.AddStruct(pkg)
 		schema.Root.AddSerializer(pkg)
 		schema.Root.AddDeserializer(pkg)
-
-		if generateContainer {
-			containerWriter := container.NewAvroContainerWriter(schema)
-			containerWriter.AddAvroContainerWriter(pkg)
-		}
 	}
 	return nil
 }
