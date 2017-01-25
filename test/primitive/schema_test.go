@@ -19,6 +19,22 @@ const fixtureJson = `
 ]
 `
 
+func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}) {
+	record := actual.(*goavro.Record)
+	value := reflect.ValueOf(expected)
+	for i := 0; i < value.NumField(); i++ {
+		fieldName := value.Type().Field(i).Name
+		structVal := value.Field(i).Interface()
+		avroVal, err := record.Get(fieldName)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(structVal, avroVal) {
+			t.Fatalf("Field %v not equal: %v != %v", fieldName, structVal, avroVal)
+		}
+	}
+}
+
 func TestPrimitiveFixture(t *testing.T) {
 	fixtures := make([]PrimitiveTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
@@ -45,19 +61,7 @@ func TestPrimitiveFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		record := datum.(*goavro.Record)
-		value := reflect.ValueOf(f)
-		for i := 0; i < value.NumField(); i++ {
-			fieldName := value.Type().Field(i).Name
-			structVal := value.Field(i).Interface()
-			avroVal, err := record.Get(fieldName)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !reflect.DeepEqual(structVal, avroVal) {
-				t.Fatalf("Field %v not equal: %v != %v", fieldName, structVal, avroVal)
-			}
-		}
+		compareFixtureGoAvro(t, datum, f)
 	}
 }
 
