@@ -32,9 +32,9 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type RecordDefinition struct {
-	name   QualifiedName
+	name    QualifiedName
 	aliases []QualifiedName
-	fields []Field
+	fields  []Field
 }
 
 func (r *RecordDefinition) AvroName() QualifiedName {

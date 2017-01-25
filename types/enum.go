@@ -36,9 +36,9 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type EnumDefinition struct {
-	name         QualifiedName
+	name    QualifiedName
 	aliases []QualifiedName
-	symbols      []string
+	symbols []string
 }
 
 func (e *EnumDefinition) AvroName() QualifiedName {

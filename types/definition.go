@@ -8,7 +8,7 @@ import (
   The definition of a record, fixed or enum satisfies this interface.
 */
 
-type Definition interface{
+type Definition interface {
 	AvroName() QualifiedName
 	Aliases() []QualifiedName
 	// The friendly name for the type

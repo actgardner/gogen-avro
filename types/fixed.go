@@ -21,9 +21,9 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type FixedDefinition struct {
-	name         QualifiedName
-	aliases []QualifiedName
-	sizeBytes    int
+	name      QualifiedName
+	aliases   []QualifiedName
+	sizeBytes int
 }
 
 func (s *FixedDefinition) AvroName() QualifiedName {

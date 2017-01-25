@@ -2,34 +2,44 @@ package types
 
 import (
 	"encoding/json"
-	"strings"
 	"fmt"
+	"strings"
 )
 
 const UTIL_FILE = "primitive.go"
 
+/*
+  An Avro qualified name, which includes an optional namespace and the type name.
+*/
 type QualifiedName struct {
 	Namespace string
-	Name string
+	Name      string
 }
 
 type Schema struct {
-	Root Field
+	Root       Field
 	JSONSchema []byte
 }
 
+/*
+  Namespace is a mapping of QualifiedNames to their Definitions, used to resolve
+  type lookups within a schema.
+*/
 type Namespace struct {
 	Definitions map[QualifiedName]Definition
-	Schemas []Schema
+	Schemas     []Schema
 }
 
 func NewNamespace() *Namespace {
-	return &Namespace {
+	return &Namespace{
 		Definitions: make(map[QualifiedName]Definition),
-		Schemas: make([]Schema, 0),
+		Schemas:     make([]Schema, 0),
 	}
 }
 
+/*
+  Add a new type definition to the namespace. Returns an error if the type is already defined.
+*/
 func (n *Namespace) RegisterDefinition(d Definition) error {
 	if _, ok := n.Definitions[d.AvroName()]; ok {
 		return fmt.Errorf("Conflicting definitions for %v", d.AvroName())
@@ -58,14 +68,14 @@ func ParseAvroName(enclosing, name string) QualifiedName {
 	return QualifiedName{enclosing, name}
 }
 
-/* 
+/*
   Given an Avro schema as a JSON string, decode it and return the Field defined at the top level:
     - a single record definition (JSON map)
-    - a union of multiple types (JSON array)  
+    - a union of multiple types (JSON array)
     - an already-defined type (JSON string)
 
 The Field defined at the top level and all the type definitions beneath it will also be added to this Namespace.
- */
+*/
 func (n *Namespace) FieldDefinitionForSchema(schemaJson []byte) (Field, error) {
 	var schema interface{}
 	if err := json.Unmarshal(schemaJson, &schema); err != nil {
@@ -94,8 +104,9 @@ func (n *Namespace) decodeFieldDefinitionType(namespace, nameStr string, t, def 
 	return nil, NewSchemaError(nameStr, NewWrongMapValueTypeError("type", "array, string, map", t))
 }
 
-/* Given a map representing a record definition, validate the definition and build the RecordDefinition struct.
- */
+/*
+   Given a map representing a record definition, validate the definition and build the RecordDefinition struct.
+*/
 func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[string]interface{}) (Definition, error) {
 	typeStr, err := getMapString(schemaMap, "type")
 	if err != nil {
@@ -147,9 +158,9 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 	}
 
 	return &RecordDefinition{
-		name:   ParseAvroName(namespace, name),
+		name:    ParseAvroName(namespace, name),
 		aliases: make([]QualifiedName, 0),
-		fields: decodedFields,
+		fields:  decodedFields,
 	}, nil
 }
 
@@ -187,9 +198,8 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 		return nil, fmt.Errorf("'symbols' must be an array of strings")
 	}
 
-
 	return &EnumDefinition{
-		name: ParseAvroName(namespace, name),
+		name:    ParseAvroName(namespace, name),
 		aliases: make([]QualifiedName, 0),
 		symbols: symbolStr,
 	}, nil
@@ -224,8 +234,8 @@ func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string
 	}
 
 	return &FixedDefinition{
-		name: ParseAvroName(namespace, name),
-		aliases: make([]QualifiedName, 0),
+		name:      ParseAvroName(namespace, name),
+		aliases:   make([]QualifiedName, 0),
 		sizeBytes: int(sizeBytes),
 	}, nil
 }

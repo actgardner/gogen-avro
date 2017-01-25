@@ -1,8 +1,8 @@
 package types
 
 import (
-	"github.com/alanctgardner/gogen-avro/generator"
 	"fmt"
+	"github.com/alanctgardner/gogen-avro/generator"
 )
 
 /*
@@ -13,6 +13,10 @@ type Reference struct {
 	name     string
 	typeName QualifiedName
 	def      Definition
+}
+
+func (s *Reference) Definition() Definition {
+	return s.def
 }
 
 func (s *Reference) Name() string {
