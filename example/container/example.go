@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/alanctgardner/gogen-avro/container"
 	"github.com/alanctgardner/gogen-avro/example/avro"
 	"os"
 )
@@ -24,17 +25,17 @@ func main() {
 		return
 	}
 
-	// Create a DemoSchemaContainerWriter which writes to the file
+	// Create a container.Writer which can write any generated Avro struct to a file
+	// Note that all the objects written to the file must be the same type
 	// Using the Null codec means blocks are uncompressed - other options are Snappy and Deflate
-	var containerWriter *avro.DemoSchemaContainerWriter
-	containerWriter, err = avro.NewDemoSchemaContainerWriter(fileWriter, avro.Null, 10)
+	containerWriter, err := container.NewWriter(fileWriter, container.Null, 10)
 	if err != nil {
 		fmt.Printf("Error opening container writer: %v\n", err)
 		return
 	}
 
 	// Write the record to the container file
-	err = containerWriter.WriteRecord(demoStruct)
+	err = containerWriter.WriteRecord(&demoStruct)
 	if err != nil {
 		fmt.Printf("Error writing record to file: %v\n", err)
 		return

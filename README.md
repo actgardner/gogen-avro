@@ -35,9 +35,9 @@ The generated source files contain structs for each schema, plus a function `Ser
 
 _Container file support is still being worked on - please report any bugs you find_
 
-Supplying the `--container` flag generates a container file writer for each schema in addition to the serializers.
+gogen-avro will generate structs for each record type defined in the supplied schemas. Container file support is implemented in a generic way for all generated structs. The package `container` has a `Writer` which wraps an `io.Writer` and accepts some arguments for block size (in records) and codec (for compression). 
 
-The container file writer should be constructed with an existing `io.Writer`, a `Codec` (`Null`, `Snappy`, or `Deflate`) and a block size in records. Records are encoded and buffered when you call `writer.writeRecord(record)`, and synchronously flushed when the block size is hit. You can also manually flush a block by calling `writer.Flush()`. You must call `writer.Flush()` before closing the underlying `io.Writer`, to ensure all the records in the last block are written.
+The `WriteRecord` method in `container.Writer` accepts an `AvroRecord`, which is an interface implemented by every generated record struct. 
 
 An example of how to write a container file can be found in `example/container/example.go`.
 
