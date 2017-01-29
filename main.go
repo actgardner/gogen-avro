@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/alanctgardner/gogen-avro/generator"
@@ -91,7 +92,8 @@ func codegenComment(sources []string) string {
 	}
 
 	for _, source := range sources {
-		sourceBlock = append(sourceBlock, fmt.Sprintf(" *     %s", source))
+		_, fName := filepath.Split(source)
+		sourceBlock = append(sourceBlock, fmt.Sprintf(" *     %s", fName))
 	}
 
 	return fmt.Sprintf(fileComment, strings.Join(sourceBlock, "\n"))
