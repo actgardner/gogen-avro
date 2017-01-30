@@ -39,6 +39,7 @@ type EnumDefinition struct {
 	name    QualifiedName
 	aliases []QualifiedName
 	symbols []string
+	metadata map[string]interface{}
 }
 
 func (e *EnumDefinition) AvroName() QualifiedName {
@@ -130,9 +131,9 @@ func (s *EnumDefinition) Schema(names map[QualifiedName]interface{}) interface{}
 		return name
 	}
 	names[s.name] = 1
-	return map[string]interface{}{
+	return mergeMaps(map[string]interface{}{
 		"type":    "enum",
 		"name":    name,
 		"symbols": s.symbols,
-	}
+	}, s.metadata)
 }

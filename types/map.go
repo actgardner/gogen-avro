@@ -64,6 +64,7 @@ type mapField struct {
 	itemType     Field
 	hasDefault   bool
 	defaultValue interface{}
+	metadata map[string]interface{}
 }
 
 func (s *mapField) HasDefault() bool {
@@ -128,8 +129,8 @@ func (s *mapField) ResolveReferences(n *Namespace) error {
 }
 
 func (s *mapField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return map[string]interface{}{
+	return mergeMaps(map[string]interface{}{
 		"type":   "map",
 		"values": s.itemType.Schema(names),
-	}
+	}, s.metadata)
 }

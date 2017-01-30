@@ -24,6 +24,7 @@ type FixedDefinition struct {
 	name      QualifiedName
 	aliases   []QualifiedName
 	sizeBytes int
+	metadata map[string]interface{}
 }
 
 func (s *FixedDefinition) AvroName() QualifiedName {
@@ -90,9 +91,9 @@ func (s *FixedDefinition) Schema(names map[QualifiedName]interface{}) interface{
 		return name
 	}
 	names[s.name] = 1
-	return map[string]interface{}{
+	return mergeMaps(map[string]interface{}{
 		"type": "fixed",
 		"name": name,
 		"size": s.sizeBytes,
-	}
+	}, s.metadata)
 }

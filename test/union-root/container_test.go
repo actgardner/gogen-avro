@@ -3,6 +3,8 @@ package avro
 import (
 	"bytes"
 	"github.com/alanctgardner/gogen-avro/container"
+	"github.com/stretchr/testify/assert"
+	"encoding/json"
 	"github.com/linkedin/goavro"
 	"testing"
 )
@@ -19,6 +21,40 @@ func TestSnappyEncoding(t *testing.T) {
 
 func TestDeflateEncoding(t *testing.T) {
 	roundTripWithCodec(container.Snappy, t)
+}
+
+/* Test that extra metadata in the schema is included */
+func TestEventSchemaMetadata(t *testing.T) {
+	event := &Event{}
+	var eventJson map[string]interface{}
+	assert.Nil(t, json.Unmarshal([]byte(event.Schema()), &eventJson))
+	metadata, ok := eventJson["metadata"]
+	assert.Equal(t, ok, true)
+	metadataMap, ok := metadata.(map[string]interface{})
+	assert.Equal(t, ok, true)
+	assert.Equal(t, metadataMap["key"], "value")
+}
+
+func TestIPSchemaMetadata(t *testing.T) {
+	event := &Event{}
+	var eventJson map[string]interface{}
+	assert.Nil(t, json.Unmarshal([]byte(event.Schema()), &eventJson))
+	fields, ok := eventJson["fields"]
+	assert.Equal(t, ok, true)
+	fieldList, ok := fields.([]interface{})
+	assert.Equal(t, ok, true)
+	field, ok := fieldList[1].(map[string]interface{})
+	assert.Equal(t, ok, true)
+	typeField, ok := field["type"]
+	assert.Equal(t, ok, true)
+	typeMap, ok := typeField.(map[string]interface{})
+	assert.Equal(t, ok, true)
+	metadata, ok := typeMap["metadata"]
+	assert.Equal(t, ok, true)
+	metadataMap, ok := metadata.(map[string]interface{})
+	assert.Equal(t, ok, true)
+	assert.Equal(t, metadataMap["a"], "b")
+	assert.Equal(t, metadataMap["c"], float64(123))
 }
 
 func roundTripWithCodec(codec container.Codec, t *testing.T) {

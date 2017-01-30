@@ -42,6 +42,7 @@ type RecordDefinition struct {
 	name    QualifiedName
 	aliases []QualifiedName
 	fields  []Field
+	metadata map[string]interface{}
 }
 
 func (r *RecordDefinition) AvroName() QualifiedName {
@@ -188,9 +189,9 @@ func (r *RecordDefinition) Schema(names map[QualifiedName]interface{}) interface
 		}
 		fields = append(fields, fieldDef)
 	}
-	return map[string]interface{}{
+	return mergeMaps(map[string]interface{}{
 		"type":   "record",
 		"name":   name,
 		"fields": fields,
-	}
+	}, r.metadata)
 }

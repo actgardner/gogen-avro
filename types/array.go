@@ -58,6 +58,7 @@ type arrayField struct {
 	itemType     Field
 	hasDefault   bool
 	defaultValue interface{}
+	metadata map[string]interface{}
 }
 
 func (s *arrayField) Name() string {
@@ -119,8 +120,8 @@ func (s *arrayField) ResolveReferences(n *Namespace) error {
 }
 
 func (s *arrayField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return map[string]interface{}{
+	return mergeMaps(map[string]interface{}{
 		"type":  "array",
 		"items": s.itemType.Schema(names),
-	}
+	}, s.metadata)
 }

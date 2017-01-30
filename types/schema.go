@@ -168,6 +168,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		name:    ParseAvroName(namespace, name),
 		aliases: make([]QualifiedName, 0),
 		fields:  decodedFields,
+		metadata: schemaMap,
 	}, nil
 }
 
@@ -209,6 +210,7 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 		name:    ParseAvroName(namespace, name),
 		aliases: make([]QualifiedName, 0),
 		symbols: symbolStr,
+		metadata: schemaMap,
 	}, nil
 }
 
@@ -244,6 +246,7 @@ func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string
 		name:      ParseAvroName(namespace, name),
 		aliases:   make([]QualifiedName, 0),
 		sizeBytes: int(sizeBytes),
+		metadata: schemaMap,
 	}, nil
 }
 
@@ -290,6 +293,7 @@ func (n *Namespace) decodeComplexDefinition(namespace, nameStr string, typeMap m
 			itemType:     fieldType,
 			hasDefault:   hasDef,
 			defaultValue: def,
+			metadata: typeMap,
 		}, nil
 	case "map":
 		values, ok := typeMap["values"]
@@ -305,6 +309,7 @@ func (n *Namespace) decodeComplexDefinition(namespace, nameStr string, typeMap m
 			itemType:     fieldType,
 			hasDefault:   hasDef,
 			defaultValue: def,
+			metadata: typeMap,
 		}, nil
 	case "enum":
 		definition, err := n.decodeEnumDefinition(namespace, typeMap)

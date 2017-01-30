@@ -2,28 +2,45 @@
   {
     "type": "fixed",
     "size": 16,
-    "name": "ip_address"
+    "name": "ip_address",
+    "metadata": {
+      "a": "b",
+      "c": 123
+    },
+    "key": "value"
   },
   {
       "type": "record",
       "name": "event",
       "subject": "event",
+      "metadata": {
+        "key": "value"
+      },
       "fields": [
           {
               "name": "id",
               "type": "string",
               "logicalType": "uuid",
-              "doc": "Unique ID for this event."
+              "doc": "Unique ID for this event.",
+              "metadata": {
+                "key": "field1"
+              }
           },
           {
               "name": "start_ip",
               "type": "ip_address",
-              "doc": "Start IP of this observation's IP range."
+              "doc": "Start IP of this observation's IP range.",
+              "metadata": {
+                "key": "field2"
+              }
           },
           {
               "name": "end_ip",
               "type": "ip_address",
-              "doc": "End IP of this observation's IP range."
+              "doc": "End IP of this observation's IP range.",
+              "metadata": {
+                "key": "field3"
+              }
           }
       ]
   }
