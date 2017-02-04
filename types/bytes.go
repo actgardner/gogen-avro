@@ -33,7 +33,11 @@ type bytesField struct {
 	hasDefault   bool
 }
 
-func (s *bytesField) Name() string {
+func (s *bytesField) AvroName() string {
+	return s.name
+}
+
+func (s *bytesField) GoName() string {
 	return generator.ToPublicName(s.name)
 }
 

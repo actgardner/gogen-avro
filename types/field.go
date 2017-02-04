@@ -8,8 +8,10 @@ import (
  * The interface implemented by all Avro field types.
  */
 type Field interface {
-	// The field name
-	Name() string
+	// The field name in the schema definition
+	AvroName() string
+	// The field name in the Go struct
+	GoName() string
 	// The friendly type name
 	FieldType() string
 	// Default value for the field
@@ -31,4 +33,4 @@ type Field interface {
 	ResolveReferences(*Namespace) error
 	// Get the objects that will serialize to the normalized JSON schema
 	Schema(names map[QualifiedName]interface{}) interface{}
-}
+ }

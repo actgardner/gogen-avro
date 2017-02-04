@@ -94,7 +94,11 @@ func (s *intField) Default() interface{} {
 	return s.defaultValue
 }
 
-func (s *intField) Name() string {
+func (s *intField) AvroName() string {
+	return s.name
+}
+
+func (s *intField) GoName() string {
 	return generator.ToPublicName(s.name)
 }
 

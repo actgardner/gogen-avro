@@ -50,7 +50,11 @@ func (s *unionField) Default() interface{} {
 	return s.defaultValue
 }
 
-func (s *unionField) Name() string {
+func (s *unionField) AvroName() string {
+	return s.name
+}
+
+func (s *unionField) GoName() string {
 	return generator.ToPublicName(s.name)
 }
 

@@ -64,7 +64,7 @@ func (r *RecordDefinition) FieldType() string {
 func (r *RecordDefinition) structFields() string {
 	var fieldDefinitions string
 	for _, f := range r.fields {
-		fieldDefinitions += fmt.Sprintf("%v %v\n", f.Name(), f.GoType())
+		fieldDefinitions += fmt.Sprintf("%v %v\n", f.GoName(), f.GoType())
 	}
 	return fieldDefinitions
 }
@@ -72,7 +72,7 @@ func (r *RecordDefinition) structFields() string {
 func (r *RecordDefinition) fieldSerializers() string {
 	serializerMethods := "var err error\n"
 	for _, f := range r.fields {
-		serializerMethods += fmt.Sprintf("err = %v(r.%v, w)\nif err != nil {return err}\n", f.SerializerMethod(), f.Name())
+		serializerMethods += fmt.Sprintf("err = %v(r.%v, w)\nif err != nil {return err}\n", f.SerializerMethod(), f.GoName())
 	}
 	return serializerMethods
 }
@@ -80,7 +80,7 @@ func (r *RecordDefinition) fieldSerializers() string {
 func (r *RecordDefinition) fieldDeserializers() string {
 	deserializerMethods := ""
 	for _, f := range r.fields {
-		deserializerMethods += fmt.Sprintf("str.%v, err = %v(r)\nif err != nil {return nil, err}\n", f.Name(), f.DeserializerMethod())
+		deserializerMethods += fmt.Sprintf("str.%v, err = %v(r)\nif err != nil {return nil, err}\n", f.GoName(), f.DeserializerMethod())
 	}
 	return deserializerMethods
 }
@@ -181,7 +181,7 @@ func (r *RecordDefinition) Schema(names map[QualifiedName]interface{}) interface
 	fields := make([]interface{}, 0, len(r.fields))
 	for _, f := range r.fields {
 		fieldDef := map[string]interface{}{
-			"name": f.Name(),
+			"name": f.AvroName(),
 			"type": f.Schema(names),
 		}
 		if f.HasDefault() {

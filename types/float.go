@@ -68,7 +68,11 @@ func (s *floatField) Default() interface{} {
 	return s.defaultValue
 }
 
-func (s *floatField) Name() string {
+func (s *floatField) AvroName() string {
+	return s.name
+}
+
+func (s *floatField) GoName() string {
 	return generator.ToPublicName(s.name)
 }
 

@@ -24,13 +24,13 @@ var fixtures = []Event{
 func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}) {
 	record := actual.(*goavro.Record)
 	fixture := expected.(Event)
-	id, err := record.Get("ID")
+	id, err := record.Get("id")
 	assert.Nil(t, err)
 	assert.Equal(t, id, fixture.ID)
-	startIp, err := record.Get("StartIP")
+	startIp, err := record.Get("start_ip")
 	assert.Nil(t, err)
 	assert.Equal(t, startIp.(goavro.Fixed).Value, fixture.StartIP[:])
-	endIp, err := record.Get("EndIP")
+	endIp, err := record.Get("end_ip")
 	assert.Nil(t, err)
 	assert.Equal(t, endIp.(goavro.Fixed).Value, fixture.EndIP[:])
 }

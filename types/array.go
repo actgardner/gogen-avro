@@ -61,7 +61,11 @@ type arrayField struct {
 	metadata map[string]interface{}
 }
 
-func (s *arrayField) Name() string {
+func (s *arrayField) AvroName() string {
+	return s.name
+}
+
+func (s *arrayField) GoName() string {
 	return generator.ToPublicName(s.name)
 }
 

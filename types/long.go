@@ -38,7 +38,11 @@ type longField struct {
 	hasDefault   bool
 }
 
-func (s *longField) Name() string {
+func (s *longField) AvroName() string {
+	return s.name
+}
+
+func (s *longField) GoName() string {
 	return generator.ToPublicName(s.name)
 }
 

@@ -31,7 +31,11 @@ type doubleField struct {
 	hasDefault   bool
 }
 
-func (s *doubleField) Name() string {
+func (s *doubleField) AvroName() string {
+	return s.name
+}
+
+func (s *doubleField) GoName() string {
 	return generator.ToPublicName(s.name)
 }
 
