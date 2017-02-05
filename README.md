@@ -54,6 +54,16 @@ go install github.com/alanctgardner/gogen-avro/example/record
 go install github.com/alanctgardner/gogen-avro/example/container
 ```
 
+### Naming
+
+Gogen-avro converts field and type names to be valid, public Go names using snaker (github.com/serenize/snaker). 
+As a result the generated structs may have names that are slightly different from the names in the Avro schema - 
+illegal characters will be removed and the first character will be upper-case. 
+
+Gogen-avro respects namespaces and aliases when resolving type names. However, generated files will all be placed directly
+into the package specified by the user. This may cause issues in rare cases where two types have different namespaces but the
+same name.
+
 ### Type Conversion
 
 Gogen-avro produces a Go struct which reflects the structure of your Avro schema. Most Go types map neatly onto Avro types:
@@ -90,13 +100,6 @@ const (
 	UnionNullIntTypeEnumInt             UnionNullIntTypeEnum = 1
 )
 ```
-
-### TODO / Caveats
-
-This package doesn't implement the entire Avro 1.7.7 specification, specifically:
-
-- Schema resolution
-- Framing - generate RPCs and container format readers/writers
 
 ### Versioning
 
