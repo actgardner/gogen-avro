@@ -7,6 +7,6 @@
  *     header.avsc
  */
 
-package container
+package avro
 
-type Sync [16]byte
+type Magic [4]byte

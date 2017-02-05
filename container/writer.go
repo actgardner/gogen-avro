@@ -2,6 +2,7 @@
 package container
 
 import (
+	"github.com/alanctgardner/gogen-avro/container/avro"
 	"bytes"
 	"compress/flate"
 	"io"
@@ -73,7 +74,7 @@ func NewWriter(writer io.Writer, codec Codec, recordsPerBlock int64) (*Writer, e
 }
 
 func (avroWriter *Writer) writeHeader(schema string) error {
-	header := &AvroContainerHeader{
+	header := &avro.AvroContainerHeader{
 		Magic: [4]byte{'O', 'b', 'j', 1},
 		Meta: map[string][]byte{
 			"avro.schema": []byte(schema),
@@ -127,7 +128,7 @@ func (avroWriter *Writer) Flush() error {
 		fwWriter.Reset(avroWriter.blockBuffer)
 	}
 
-	block := &AvroContainerBlock{
+	block := &avro.AvroContainerBlock{
 		NumRecords:  avroWriter.nextBlockRecords,
 		RecordBytes: avroWriter.blockBuffer.Bytes(),
 		Sync:        avroWriter.syncMarker,

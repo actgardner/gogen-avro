@@ -7,7 +7,7 @@
  *     header.avsc
  */
 
-package container
+package avro
 
 import (
 	"io"
