@@ -1,0 +1,34 @@
+[
+  {
+    "type": "fixed",
+    "size": 16,
+    "name": "ip_address",
+    "aliases": [
+      "IPAddr",
+      "ipAddr"
+    ]
+  },
+  {
+      "type": "record",
+      "name": "event",
+      "subject": "event",
+      "fields": [
+          {
+              "name": "id",
+              "type": "string",
+              "logicalType": "uuid",
+              "doc": "Unique ID for this event."
+          },
+          {
+              "name": "start_ip",
+              "type": "IPAddr",
+              "doc": "Start IP of this observation's IP range."
+          },
+          {
+              "name": "end_ip",
+              "type": "ipAddr",
+              "doc": "End IP of this observation's IP range."
+          }
+      ]
+  }
+]
