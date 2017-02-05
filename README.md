@@ -112,6 +112,13 @@ The API is guaranteed to be stable within a release. This guarantee applies to:
 Only bugfixes will be backported to existing major releases.
 This means that source files generated with the same major release may differ, but they will never break your build.
 
+4.0
+---
+- Support for writing object container files is no longer experimental
+- `container` package now works with the generated code for any record type
+- Aliases and namespaces are now used properly to resolve types
+- Record structs expose a `Schema` method which includes metadata from the schema definition 
+
 3.0
 ---
 - Experimental support for writing object container files
