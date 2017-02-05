@@ -45,7 +45,7 @@ type FunctionName struct {
 TODO: It'd be better to group funcs attached to a struct with the struct definition
 */
 func (f *File) WriteFile(pkgName, targetFile string) error {
-	src := fmt.Sprintf("%v\npackage %v\n%v\n%v\n%v\n%v\n", f.headerString(), pkgName, f.importString(), f.constantString(), f.structString(), f.functionString())
+	src := fmt.Sprintf("%v\n\npackage %v\n%v\n%v\n%v\n%v\n", f.headerString(), pkgName, f.importString(), f.constantString(), f.structString(), f.functionString())
 	fileContent, err := format.Source([]byte(src))
 	if err != nil {
 		return fmt.Errorf("Error formatting file %v - %v\n\nContents: %v", f.name, err, src)
