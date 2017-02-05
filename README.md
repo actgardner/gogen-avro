@@ -41,6 +41,8 @@ The `WriteRecord` method in `container.Writer` accepts an `AvroRecord`, which is
 
 An example of how to write a container file can be found in `example/container/example.go`.
 
+[Godocs for the container package](https://godoc.org/github.com/alanctgardner/gogen-avro/container)
+
 ### Example
 
 The `example` directory contains simple example projects with an Avro schema. Once you've installed gogen-avro on your GOPATH, you can install the example projects:
