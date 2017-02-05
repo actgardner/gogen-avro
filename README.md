@@ -33,9 +33,7 @@ The generated source files contain structs for each schema, plus a function `Ser
 
 ### Container File Support
 
-_Container file support is still being worked on - please report any bugs you find_
-
-gogen-avro will generate structs for each record type defined in the supplied schemas. Container file support is implemented in a generic way for all generated structs. The package `container` has a `Writer` which wraps an `io.Writer` and accepts some arguments for block size (in records) and codec (for compression). 
+gogen-avro generates a struct for each record type defined in the supplied schemas. Container file support is implemented in a generic way for all generated structs. The package `container` has a `Writer` which wraps an `io.Writer` and accepts some arguments for block size (in records) and codec (for compression). 
 
 The `WriteRecord` method in `container.Writer` accepts an `AvroRecord`, which is an interface implemented by every generated record struct. 
 
