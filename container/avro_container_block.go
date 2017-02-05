@@ -6,6 +6,7 @@
  *     block.avsc
  *     header.avsc
  */
+
 package container
 
 import (
@@ -23,7 +24,7 @@ func DeserializeAvroContainerBlock(r io.Reader) (*AvroContainerBlock, error) {
 }
 
 func (r *AvroContainerBlock) Schema() string {
-	return "{\"fields\":[\"long\",\"bytes\",{\"name\":\"sync\",\"size\":16,\"type\":\"fixed\"}],\"name\":\"AvroContainerBlock\",\"type\":\"record\"}"
+	return "{\"fields\":[{\"name\":\"numRecords\",\"type\":\"long\"},{\"name\":\"recordBytes\",\"type\":\"bytes\"},{\"name\":\"sync\",\"type\":{\"name\":\"sync\",\"size\":16,\"type\":\"fixed\"}}],\"name\":\"AvroContainerBlock\",\"type\":\"record\"}"
 }
 
 func (r *AvroContainerBlock) Serialize(w io.Writer) error {

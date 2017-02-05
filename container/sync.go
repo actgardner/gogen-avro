@@ -6,6 +6,7 @@
  *     block.avsc
  *     header.avsc
  */
+
 package container
 
 type Sync [16]byte
