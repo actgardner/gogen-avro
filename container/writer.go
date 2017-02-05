@@ -2,7 +2,7 @@
 package container
 
 import (
-	"github.com/alanctgardner/gogen-avro/container/avro"
+	"gopkg.in/alanctgardner/gogen-avro.v4/container/avro"
 	"bytes"
 	"compress/flate"
 	"io"

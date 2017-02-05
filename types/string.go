@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/alanctgardner/gogen-avro/generator"
+	"gopkg.in/alanctgardner/gogen-avro.v4/generator"
 )
 
 const stringWriterInterface = `

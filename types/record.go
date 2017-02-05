@@ -3,7 +3,7 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/alanctgardner/gogen-avro/generator"
+	"gopkg.in/alanctgardner/gogen-avro.v4/generator"
 	"strconv"
 )
 
