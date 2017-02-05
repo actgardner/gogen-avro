@@ -164,10 +164,15 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		decodedFields = append(decodedFields, fieldStruct)
 	}
 
+	aliases, err := parseAliases(schemaMap, namespace)
+	if err != nil {
+		return nil, err
+	}
+
 	return &RecordDefinition{
-		name:    ParseAvroName(namespace, name),
-		aliases: make([]QualifiedName, 0),
-		fields:  decodedFields,
+		name:     ParseAvroName(namespace, name),
+		aliases:  aliases,
+		fields:   decodedFields,
 		metadata: schemaMap,
 	}, nil
 }
@@ -206,10 +211,15 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 		return nil, fmt.Errorf("'symbols' must be an array of strings")
 	}
 
+	aliases, err := parseAliases(schemaMap, namespace)
+	if err != nil {
+		return nil, err
+	}
+
 	return &EnumDefinition{
-		name:    ParseAvroName(namespace, name),
-		aliases: make([]QualifiedName, 0),
-		symbols: symbolStr,
+		name:     ParseAvroName(namespace, name),
+		aliases:  aliases,
+		symbols:  symbolStr,
 		metadata: schemaMap,
 	}, nil
 }
@@ -242,11 +252,16 @@ func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string
 		return nil, err
 	}
 
+	aliases, err := parseAliases(schemaMap, namespace)
+	if err != nil {
+		return nil, err
+	}
+
 	return &FixedDefinition{
 		name:      ParseAvroName(namespace, name),
-		aliases:   make([]QualifiedName, 0),
+		aliases:   aliases,
 		sizeBytes: int(sizeBytes),
-		metadata: schemaMap,
+		metadata:  schemaMap,
 	}, nil
 }
 
@@ -293,7 +308,7 @@ func (n *Namespace) decodeComplexDefinition(namespace, nameStr string, typeMap m
 			itemType:     fieldType,
 			hasDefault:   hasDef,
 			defaultValue: def,
-			metadata: typeMap,
+			metadata:     typeMap,
 		}, nil
 	case "map":
 		values, ok := typeMap["values"]
@@ -309,7 +324,7 @@ func (n *Namespace) decodeComplexDefinition(namespace, nameStr string, typeMap m
 			itemType:     fieldType,
 			hasDefault:   hasDef,
 			defaultValue: def,
-			metadata: typeMap,
+			metadata:     typeMap,
 		}, nil
 	case "enum":
 		definition, err := n.decodeEnumDefinition(namespace, typeMap)
@@ -450,4 +465,31 @@ func (n *Namespace) createFieldStruct(namespace, nameStr, typeStr string, def in
 			hasDefault:   hasDef,
 		}, nil
 	}
+}
+
+/*
+  Parse out all the aliases from a definition map - returns an empty slice if no aliases exist.
+  Returns an error if the aliases key exists but the value isn't a list of strings.
+*/
+func parseAliases(objectMap map[string]interface{}, namespace string) ([]QualifiedName, error) {
+	aliases, ok := objectMap["aliases"]
+	if !ok {
+		return make([]QualifiedName, 0), nil
+	}
+
+	aliasList, ok := aliases.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("Field aliases expected to be array, got %v", aliases)
+	}
+
+	qualifiedAliases := make([]QualifiedName, 0, len(aliasList))
+
+	for _, alias := range aliasList {
+		aliasString, ok := alias.(string)
+		if !ok {
+			return nil, fmt.Errorf("Field aliases expected to be array of strings, got %v", aliases)
+		}
+		qualifiedAliases = append(qualifiedAliases, ParseAvroName(namespace, aliasString))
+	}
+	return qualifiedAliases, nil
 }

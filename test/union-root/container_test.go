@@ -2,10 +2,10 @@ package avro
 
 import (
 	"bytes"
-	"github.com/alanctgardner/gogen-avro/container"
-	"github.com/stretchr/testify/assert"
 	"encoding/json"
+	"github.com/alanctgardner/gogen-avro/container"
 	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 

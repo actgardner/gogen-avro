@@ -64,7 +64,7 @@ type mapField struct {
 	itemType     Field
 	hasDefault   bool
 	defaultValue interface{}
-	metadata map[string]interface{}
+	metadata     map[string]interface{}
 }
 
 func (s *mapField) HasDefault() bool {

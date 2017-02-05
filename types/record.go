@@ -39,9 +39,9 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type RecordDefinition struct {
-	name    QualifiedName
-	aliases []QualifiedName
-	fields  []Field
+	name     QualifiedName
+	aliases  []QualifiedName
+	fields   []Field
 	metadata map[string]interface{}
 }
 

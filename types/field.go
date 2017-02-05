@@ -33,4 +33,4 @@ type Field interface {
 	ResolveReferences(*Namespace) error
 	// Get the objects that will serialize to the normalized JSON schema
 	Schema(names map[QualifiedName]interface{}) interface{}
- }
+}

@@ -58,7 +58,7 @@ type arrayField struct {
 	itemType     Field
 	hasDefault   bool
 	defaultValue interface{}
-	metadata map[string]interface{}
+	metadata     map[string]interface{}
 }
 
 func (s *arrayField) AvroName() string {

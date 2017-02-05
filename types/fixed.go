@@ -24,7 +24,7 @@ type FixedDefinition struct {
 	name      QualifiedName
 	aliases   []QualifiedName
 	sizeBytes int
-	metadata map[string]interface{}
+	metadata  map[string]interface{}
 }
 
 func (s *FixedDefinition) AvroName() QualifiedName {
