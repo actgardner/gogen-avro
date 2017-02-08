@@ -121,6 +121,11 @@ func (avroWriter *Writer) WriteRecord(record AvroRecord) error {
   This must be called before the underlying io.Writer is closed.
 */
 func (avroWriter *Writer) Flush() error {
+	// Don't flush if unused
+	if !avroWriter.headerWritten {
+		return nil
+	}
+
 	// Write out all of the buffered records as a new block
 	// Must be called before closing to ensure the last block is written
 	if fwWriter, ok := avroWriter.compressedWriter.(CloseableResettableWriter); ok {
