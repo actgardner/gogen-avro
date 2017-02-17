@@ -2,11 +2,12 @@ package generator
 
 import (
 	"fmt"
-	"go/format"
 	"io/ioutil"
 	"os"
 	"sort"
 	"strings"
+
+	"golang.org/x/tools/imports"
 )
 
 /*
@@ -46,7 +47,7 @@ TODO: It'd be better to group funcs attached to a struct with the struct definit
 */
 func (f *File) WriteFile(pkgName, targetFile string) error {
 	src := fmt.Sprintf("%v\n\npackage %v\n%v\n%v\n%v\n%v\n", f.headerString(), pkgName, f.importString(), f.constantString(), f.structString(), f.functionString())
-	fileContent, err := format.Source([]byte(src))
+	fileContent, err := imports.Process("", []byte(src), nil)
 	if err != nil {
 		return fmt.Errorf("Error formatting file %v - %v\n\nContents: %v", f.name, err, src)
 	}
