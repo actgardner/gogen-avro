@@ -294,6 +294,20 @@ func (n *Namespace) decodeComplexDefinition(namespace, nameStr string, typeMap m
 		return nil, NewSchemaError(nameStr, err)
 	}
 	switch typeStr {
+	case "string":
+		var defStr string
+		var ok bool
+		if hasDef {
+			defStr, ok = def.(string)
+			if !ok {
+				return nil, fmt.Errorf("Default value must be string type")
+			}
+		}
+		return &stringField{
+			name: nameStr,
+			defaultValue: defStr,
+			hasDefault: hasDef,
+		}, nil
 	case "array":
 		items, ok := typeMap["items"]
 		if !ok {
