@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "event",
+  "subject": "event",
+  "fields": [
+    {
+      "name": "id",
+      "type": {
+        "type": "string",
+        "avro.java.string": "String"
+      },
+      "doc": "Unique ID for this event."
+    }
+  ]
+}
+
