@@ -15,8 +15,8 @@ File represents a Go source file in the output package
 type File struct {
 	name      string
 	headers   []string
-	functions map[FunctionName]string
-	structs   map[string]string
+	functions map[FunctionName]*Function
+	structs   map[string]*Struct
 	imports   map[string]interface{}
 	constants map[string]interface{}
 }
@@ -24,18 +24,11 @@ type File struct {
 func NewFile(name string) *File {
 	return &File{
 		name:      name,
-		functions: make(map[FunctionName]string),
-		structs:   make(map[string]string),
+		functions: make(map[FunctionName]*Function),
+		structs:   make(map[string]*Struct),
 		imports:   make(map[string]interface{}),
 		constants: make(map[string]interface{}),
 	}
-}
-
-type FunctionName struct {
-	// The target struct type, if there is one
-	Str string
-	// The function name
-	Name string
 }
 
 /* Write the contents of the file:
@@ -96,6 +89,7 @@ func (f *File) importString() string {
 	if len(f.imports) == 0 {
 		return ""
 	}
+
 	imports := "import (\n"
 	for i, _ := range f.imports {
 		imports += fmt.Sprintf("%q\n", i)
@@ -108,6 +102,7 @@ func (f *File) constantString() string {
 	if len(f.constants) == 0 {
 		return ""
 	}
+
 	constants := "const (\n"
 	for name, value := range f.constants {
 		// For strings, quote the right-hand side
@@ -123,26 +118,34 @@ func (f *File) constantString() string {
 
 func (f *File) structString() string {
 	structs := ""
+
+	// Sort the structs lexographically
 	keys := make([]string, 0)
 	for k := range f.structs {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
+
+	// Concatenate together all the definitions
 	for _, k := range keys {
-		structs += f.structs[k] + "\n"
+		structs += f.structs[k].String() + "\n"
 	}
 	return structs
 }
 
 func (f *File) functionString() string {
 	funcs := ""
+
+	// Sort the functions lexographically
 	keys := make(FunctionNameList, 0)
 	for k := range f.functions {
 		keys = append(keys, k)
 	}
 	sort.Sort(keys)
+
+	// Concatenate together all the definitions
 	for _, k := range keys {
-		funcs += f.functions[k] + "\n"
+		funcs += f.functions[k].String() + "\n"
 	}
 	return funcs
 }

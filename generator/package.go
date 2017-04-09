@@ -25,6 +25,12 @@ func (p *Package) WriteFiles(targetDir string) error {
 	return nil
 }
 
+func (p *Package) AddBlocks(blocks Block...) {
+	for _i, block := range blocks {
+		block.AddToPackage(p)
+	}
+}
+
 func (p *Package) Files() []string {
 	files := make([]string, 0)
 	for file, _ := range p.files {
@@ -49,40 +55,13 @@ func (p *Package) AddHeader(file, header string) {
 	f.headers = append(f.headers, header)
 }
 
-func (p *Package) AddFunction(file, str, name, def string) {
+func (p *Package) getOrAddFile(file string) *File {
 	f, ok := p.files[file]
 	if !ok {
 		f = NewFile(file)
 		p.files[file] = f
 	}
-	f.functions[FunctionName{str, name}] = def
-}
-
-func (p *Package) AddStruct(file, name, def string) {
-	f, ok := p.files[file]
-	if !ok {
-		f = NewFile(file)
-		p.files[file] = f
-	}
-	f.structs[name] = def
-}
-
-func (p *Package) AddImport(file, name string) {
-	f, ok := p.files[file]
-	if !ok {
-		f = NewFile(file)
-		p.files[file] = f
-	}
-	f.imports[name] = 1
-}
-
-func (p *Package) AddConstant(file, name string, value interface{}) {
-	f, ok := p.files[file]
-	if !ok {
-		f = NewFile(file)
-		p.files[file] = f
-	}
-	f.constants[name] = value
+	return f
 }
 
 func (p *Package) HasStruct(file, name string) bool {
