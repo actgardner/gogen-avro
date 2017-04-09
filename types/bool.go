@@ -4,116 +4,104 @@ import (
 	"github.com/alanctgardner/gogen-avro/generator"
 )
 
-const byteWriterInterface = `
-type ByteWriter interface {
-	Grow(int)
-	WriteByte(byte) error
-} 
-`
-
-const byteReaderInterface = `
-type ByteReader interface {
-	ReadByte() (byte, error)
-} 
-`
-
-const writeBoolMethod = `
-
-func writeBool(r bool, w io.Writer) error {
-	var b byte
-	if r {
-		b = byte(1)
-	}
-
-	var err error
-	if bw, ok := w.(ByteWriter); ok {
-		err = bw.WriteByte(b)
-	} else {
-		bb := make([]byte, 1)
-		bb[0] = b
-		_, err = w.Write(bb)
-	}
-	if err != nil {
-		return err
-	}
-	return nil
+var BoolType = &PrimitiveType {
+	fieldType: "Boolean",
+	goType: "bool",
+	serializerMethod: writeBoolMethod,
+	deserializerMethod: readBoolMethod,
+	blocks: []generator.Block{},
 }
-`
 
-const readBoolMethod = `
-func readBool(r io.Reader) (bool, error) {
-	var b byte
-	var err error
-	if br, ok := r.(ByteReader); ok {
-		b, err = br.ReadByte()
-	} else {
-		bs := make([]byte, 1)
-		_, err = io.ReadFull(r, bs)
-		if err != nil {
-			return false, err
+var byteWriterInterface = &generator.Interface{
+	File: UTIL_FILE,
+	Name: "ByteWriter",
+	Functions: []*generator.Function {
+		&generator.Function {
+			Name: &generator.FunctionName{"", "Grow"},
+			Arguments: []*generator.StructField{
+				&generator.StructField{"", "int"},
+			},
+			ReturnTypes: []string{},
+		},
+		&generator.Function {
+			Name: "WriteByte",
+			Arguments: []*generator.StructField{
+				&generator.StructField{"", "byte"},
+			},
+			ReturnTypes: []string{"error"},
 		}
-		b = bs[0]
 	}
-	return b == 1, nil
-}
-`
-
-type boolField struct {
-	name         string
-	defaultValue bool
-	hasDefault   bool
 }
 
-func (s *boolField) AvroName() string {
-	return s.name
+var byteReaderInterface = &generator.Interface{
+	File: UTIL_FILE,
+	Name: "ByteReader",
+	Functions: []*generator.Function {
+		&generator.Function {
+			Name: &generator.FunctionName{"", "ReadByte"},
+			Arguments: []*generator.StructField{},
+			ReturnTypes: []string{"byte", "error"},
+		},
+	}
 }
 
-func (s *boolField) GoName() string {
-	return generator.ToPublicName(s.name)
+var writeBoolMethod = &generator.Function{
+	File: UTIL_FILE,
+	Name: &generator.FunctionName{"", "writeBool"},
+	Arguments: []*generator.StructField{
+		&generator.StructField{"r", "bool"},
+		&generator.StructField{"w", "io.Writer"},
+	},
+	ReturnTypes: ["error"],
+	Imports: []string{"io"},
+	Dependencies: []generator.Block {
+		byteWriterInterface,
+	},
+	Body: `
+		var b byte
+		if r {
+			b = byte(1)
+		}
+
+		var err error
+		if bw, ok := w.(ByteWriter); ok {
+			err = bw.WriteByte(b)
+		} else {
+			bb := make([]byte, 1)
+			bb[0] = b
+			_, err = w.Write(bb)
+		}
+		if err != nil {
+			return err
+		}
+		return nil
+	`
 }
 
-func (s *boolField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *boolField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *boolField) FieldType() string {
-	return "Bool"
-}
-
-func (s *boolField) GoType() string {
-	return "bool"
-}
-
-func (s *boolField) SerializerMethod() string {
-	return "writeBool"
-}
-
-func (s *boolField) DeserializerMethod() string {
-	return "readBool"
-}
-
-func (s *boolField) AddStruct(*generator.Package) {}
-
-func (s *boolField) AddSerializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeBool", writeBoolMethod)
-	p.AddImport(UTIL_FILE, "io")
-}
-
-func (s *boolField) AddDeserializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteReader", byteReaderInterface)
-	p.AddFunction(UTIL_FILE, "", "readBool", readBoolMethod)
-	p.AddImport(UTIL_FILE, "io")
-}
-
-func (s *boolField) ResolveReferences(n *Namespace) error {
-	return nil
-}
-
-func (s *boolField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return "boolean"
+var readBoolMethod = &generator.Function{
+	File: UTIL_FILE,
+	Name: &generator.FunctionName{"", "readBool"},
+	Arguments: []*generator.StructField{
+		&generator.StructField{"r", "io.Reader"},
+	},
+	ReturnTypes: ["bool", "error"],
+	Imports: []string{"io"},
+	Dependencies: []generator.Block {
+		byteReaderInterface,
+	},
+	Body: `
+		var b byte
+		var err error
+		if br, ok := r.(ByteReader); ok {
+			b, err = br.ReadByte()
+		} else {
+			bs := make([]byte, 1)
+			_, err = io.ReadFull(r, bs)
+			if err != nil {
+				return false, err
+			}
+			b = bs[0]
+		}
+		return b == 1, nil
+	`,
 }
