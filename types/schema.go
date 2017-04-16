@@ -24,7 +24,7 @@ func (q QualifiedName) String() string {
 }
 
 type Schema struct {
-	Root       Field
+	Root       AvroType
 	JSONSchema []byte
 }
 
@@ -76,20 +76,20 @@ func ParseAvroName(enclosing, name string) QualifiedName {
 }
 
 /*
-  Given an Avro schema as a JSON string, decode it and return the Field defined at the top level:
+  Given an Avro schema as a JSON string, decode it and return the AvroType defined at the top level:
     - a single record definition (JSON map)
     - a union of multiple types (JSON array)
     - an already-defined type (JSON string)
 
-The Field defined at the top level and all the type definitions beneath it will also be added to this Namespace.
+The Avro type defined at the top level and all the type definitions beneath it will also be added to this Namespace.
 */
-func (n *Namespace) FieldDefinitionForSchema(schemaJson []byte) (Field, error) {
+func (n *Namespace) TypeForSchema(schemaJson []byte) (AvroType, error) {
 	var schema interface{}
 	if err := json.Unmarshal(schemaJson, &schema); err != nil {
 		return nil, err
 	}
 
-	field, err := n.decodeFieldDefinitionType("", "", schema, nil, false)
+	field, err := n.decodeTypeDefinition("", schema)
 	if err != nil {
 		return nil, err
 	}
@@ -98,17 +98,21 @@ func (n *Namespace) FieldDefinitionForSchema(schemaJson []byte) (Field, error) {
 	return field, nil
 }
 
-func (n *Namespace) decodeFieldDefinitionType(namespace, nameStr string, t, def interface{}, hasDef bool) (Field, error) {
-	switch t.(type) {
+func (n *Namespace) decodeTypeDefinition(namespace string, schema interface{}) (AvroType, error) {
+	switch schema.(type) {
 	case string:
-		typeStr := t.(string)
-		return n.createFieldStruct(namespace, nameStr, typeStr, def, hasDef)
+		typeStr := schema.(string)
+		return n.getTypeByName(namespace, typeStr, schema), nil
+
 	case []interface{}:
-		return n.decodeUnionDefinition(namespace, nameStr, def, hasDef, t.([]interface{}))
+		return n.decodeUnionDefinition(namespace, schema.([]interface{}))
+
 	case map[string]interface{}:
-		return n.decodeComplexDefinition(namespace, nameStr, t.(map[string]interface{}), def, hasDef)
+		return n.decodeComplexDefinition(namespace, schema.(map[string]interface{}))
+
 	}
-	return nil, NewSchemaError(nameStr, NewWrongMapValueTypeError("type", "array, string, map", t))
+
+	return nil, NewWrongMapValueTypeError("type", "array, string, map", schema)
 }
 
 /*
@@ -141,25 +145,30 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		return nil, err
 	}
 
-	decodedFields := make([]Field, 0)
+	decodedFields := make([]*Field, 0)
 	for _, f := range fieldList {
 		field, ok := f.(map[string]interface{})
 		if !ok {
 			return nil, NewWrongMapValueTypeError("fields", "map[]", field)
 		}
+
 		fieldName, err := getMapString(field, "name")
 		if err != nil {
 			return nil, err
 		}
+
 		t, ok := field["type"]
 		if !ok {
 			return nil, NewRequiredMapKeyError("type")
 		}
-		def, hasDef := field["default"]
-		fieldStruct, err := n.decodeFieldDefinitionType(namespace, fieldName, t, def, hasDef)
+
+		fieldType, err := n.decodeTypeDefinition(namespace, t)
 		if err != nil {
 			return nil, err
 		}
+
+		def, hasDef := field["default"]
+		fieldStruct := NewField(fieldName, fieldType, def, hasDef, field)
 
 		decodedFields = append(decodedFields, fieldStruct)
 	}
@@ -169,12 +178,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		return nil, err
 	}
 
-	return &RecordDefinition{
-		name:     ParseAvroName(namespace, name),
-		aliases:  aliases,
-		fields:   decodedFields,
-		metadata: schemaMap,
-	}, nil
+	return NewRecordDefinition(ParseAvroName(namespace, name), aliases, decodedFields, schemaMap), nil
 }
 
 /* Given a map representing an enum definition, validate the definition and build the EnumDefinition struct.
@@ -216,12 +220,7 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 		return nil, err
 	}
 
-	return &EnumDefinition{
-		name:     ParseAvroName(namespace, name),
-		aliases:  aliases,
-		symbols:  symbolStr,
-		metadata: schemaMap,
-	}, nil
+	return NewEnumDefinition(ParseAvroName(namespace, name), aliases, symbolStr, schemaMap), nil
 }
 
 /* Given a map representing a fixed definition, validate the definition and build the FixedDefinition struct. */
@@ -257,228 +256,126 @@ func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string
 		return nil, err
 	}
 
-	return &FixedDefinition{
-		name:      ParseAvroName(namespace, name),
-		aliases:   aliases,
-		sizeBytes: int(sizeBytes),
-		metadata:  schemaMap,
-	}, nil
+	return NewFixedDefinition(ParseAvroName(namespace, name), aliases, int(sizeBytes), schemaMap), nil
 }
 
-func (n *Namespace) decodeUnionDefinition(namespace, nameStr string, def interface{}, hasDef bool, FieldList []interface{}) (Field, error) {
-	unionFields := make([]Field, 0)
-	for i, f := range FieldList {
-		var fieldDef Field
-		var err error
-		if i == 0 {
-			fieldDef, err = n.decodeFieldDefinitionType(namespace, "", f, nil, false)
-		} else {
-			fieldDef, err = n.decodeFieldDefinitionType(namespace, "", f, nil, false)
-		}
+func (n *Namespace) decodeUnionDefinition(namespace string, fieldList []interface{}) (AvroType, error) {
+	unionFields := make([]AvroType, 0)
+	for _, f := range fieldList {
+		fieldDef, err := n.decodeTypeDefinition(namespace, f)
 		if err != nil {
 			return nil, err
 		}
+
 		unionFields = append(unionFields, fieldDef)
 	}
-	return &unionField{
-		name:         nameStr,
-		hasDefault:   hasDef,
-		defaultValue: def,
-		itemType:     unionFields,
-	}, nil
+	return NewUnionField(unionFields, fieldList), nil
 }
 
-func (n *Namespace) decodeComplexDefinition(namespace, nameStr string, typeMap map[string]interface{}, def interface{}, hasDef bool) (Field, error) {
+func (n *Namespace) decodeComplexDefinition(namespace string, typeMap map[string]interface{}) (AvroType, error) {
 	typeStr, err := getMapString(typeMap, "type")
 	if err != nil {
-		return nil, NewSchemaError(nameStr, err)
+		return nil, err
 	}
 	switch typeStr {
-	case "string":
-		var defStr string
-		var ok bool
-		if hasDef {
-			defStr, ok = def.(string)
-			if !ok {
-				return nil, fmt.Errorf("Default value must be string type")
-			}
-		}
-		return &stringField{
-			name: nameStr,
-			defaultValue: defStr,
-			hasDefault: hasDef,
-		}, nil
 	case "array":
 		items, ok := typeMap["items"]
 		if !ok {
-			return nil, NewSchemaError(nameStr, NewRequiredMapKeyError("items"))
+			return nil, NewRequiredMapKeyError("items")
 		}
-		fieldType, err := n.decodeFieldDefinitionType(namespace, "", items, nil, false)
+
+		fieldType, err := n.decodeTypeDefinition(namespace, items)
 		if err != nil {
-			return nil, NewSchemaError(nameStr, err)
+			return nil, err
 		}
-		return &arrayField{
-			name:         nameStr,
-			itemType:     fieldType,
-			hasDefault:   hasDef,
-			defaultValue: def,
-			metadata:     typeMap,
-		}, nil
+
+		return NewArrayField(fieldType, typeMap), nil
+
 	case "map":
 		values, ok := typeMap["values"]
 		if !ok {
-			return nil, NewSchemaError(nameStr, NewRequiredMapKeyError("values"))
+			return nil, NewRequiredMapKeyError("values")
 		}
-		fieldType, err := n.decodeFieldDefinitionType(namespace, "", values, nil, false)
+
+		fieldType, err := n.decodeTypeDefinition(namespace, values)
 		if err != nil {
-			return nil, NewSchemaError(nameStr, err)
+			return nil,  err
 		}
-		return &mapField{
-			name:         nameStr,
-			itemType:     fieldType,
-			hasDefault:   hasDef,
-			defaultValue: def,
-			metadata:     typeMap,
-		}, nil
+
+		return NewMapField(fieldType, typeMap), nil
+
 	case "enum":
 		definition, err := n.decodeEnumDefinition(namespace, typeMap)
 		if err != nil {
-			return nil, NewSchemaError(nameStr, err)
+			return nil, err
 		}
+
 		err = n.RegisterDefinition(definition)
 		if err != nil {
-			return nil, NewSchemaError(nameStr, err)
+			return nil, err
 		}
-		return &Reference{
-			name:         nameStr,
-			typeName:     definition.AvroName(),
-			def:          nil,
-			defaultValue: def,
-			hasDefault:   hasDef,
-		}, nil
+		return NewReference(definition.AvroName()), nil
+
 	case "fixed":
 		definition, err := n.decodeFixedDefinition(namespace, typeMap)
 		if err != nil {
-			return nil, NewSchemaError(nameStr, err)
+			return nil, err
 		}
+
 		err = n.RegisterDefinition(definition)
 		if err != nil {
-			return nil, NewSchemaError(nameStr, err)
+			return nil, err
 		}
-		return &Reference{
-			name:         nameStr,
-			typeName:     definition.AvroName(),
-			def:          nil,
-			defaultValue: def,
-			hasDefault:   hasDef,
-		}, nil
+
+		return NewReference(definition.AvroName()), nil
+
 	case "record":
 		definition, err := n.decodeRecordDefinition(namespace, typeMap)
 		if err != nil {
-			return nil, NewSchemaError(nameStr, err)
+			return nil, err
 		}
+
 		err = n.RegisterDefinition(definition)
 		if err != nil {
-			return nil, NewSchemaError(nameStr, err)
+			return nil, err
 		}
-		return &Reference{
-			name:         nameStr,
-			typeName:     definition.AvroName(),
-			def:          nil,
-			defaultValue: def,
-			hasDefault:   hasDef,
-		}, nil
+
+		return NewReference(definition.AvroName()), nil
+
 	default:
-		return nil, NewSchemaError(nameStr, fmt.Errorf("Unknown type name %v", typeStr))
+		// If the type isn't a special case, it's a primitive or a reference to an existing type
+		return n.getTypeByName(namespace, typeStr, typeMap), nil
 	}
 }
 
-func (n *Namespace) createFieldStruct(namespace, nameStr, typeStr string, def interface{}, hasDef bool) (Field, error) {
+func (n *Namespace) getTypeByName(namespace string, typeStr string, definition interface{}) AvroType {
 	switch typeStr {
-	case "string":
-		var defStr string
-		var ok bool
-		if hasDef {
-			defStr, ok = def.(string)
-			if !ok {
-				return nil, fmt.Errorf("Default value must be string type")
-			}
-
-		}
-		return &stringField{nameStr, defStr, hasDef}, nil
 	case "int":
-		var defInt int32
-		if hasDef {
-			defFloat, ok := def.(float64)
-			if !ok {
-				return nil, fmt.Errorf("Default must be float type")
-			}
-			defInt = int32(defFloat)
+		return &intField{definition}
 
-		}
-		return &intField{nameStr, defInt, hasDef}, nil
 	case "long":
-		var defInt int64
-		if hasDef {
-			defFloat, ok := def.(float64)
-			if !ok {
-				return nil, fmt.Errorf("Field %q default must be float type", nameStr)
-			}
-			defInt = int64(defFloat)
-		}
-		return &longField{nameStr, defInt, hasDef}, nil
-	case "float":
-		var defFloat float64
-		var ok bool
-		if hasDef {
-			defFloat, ok = def.(float64)
-			if !ok {
-				return nil, fmt.Errorf("Field %q default must be float type", nameStr)
-			}
-		}
-		return &floatField{nameStr, float32(defFloat), hasDef}, nil
-	case "double":
-		var defFloat float64
-		var ok bool
-		if hasDef {
-			defFloat, ok = def.(float64)
-			if !ok {
-				return nil, fmt.Errorf("Field %q default must be float type", nameStr)
-			}
-		}
-		return &doubleField{nameStr, defFloat, hasDef}, nil
-	case "boolean":
-		var defBool bool
-		var ok bool
-		if hasDef {
-			defBool, ok = def.(bool)
-			if !ok {
-				return nil, fmt.Errorf("Field %q default must be bool type", nameStr)
-			}
+		return &longField{definition}
 
-		}
-		return &boolField{nameStr, defBool, hasDef}, nil
+	case "float":
+		return &floatField{definition}
+
+	case "double":
+		return &doubleField{definition}
+
+	case "boolean":
+		return &boolField{definition}
+
 	case "bytes":
-		var defBytes []byte
-		if hasDef {
-			defString, ok := def.(string)
-			if !ok {
-				return nil, fmt.Errorf("Field %q default must be string type", nameStr)
-			}
-			defBytes = []byte(defString)
-		}
-		return &bytesField{nameStr, defBytes, hasDef}, nil
+		return &bytesField{definition}
+
+	case "string":
+		return &stringField{definition}
+
 	case "null":
-		return &nullField{nameStr, hasDef}, nil
-	default:
-		return &Reference{
-			name:         nameStr,
-			typeName:     ParseAvroName(namespace, typeStr),
-			def:          nil,
-			defaultValue: def,
-			hasDefault:   hasDef,
-		}, nil
+		return &nullField{definition}
 	}
+
+	return  NewReference(ParseAvroName(namespace, typeStr))
 }
 
 /*

@@ -54,31 +54,19 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type arrayField struct {
-	name         string
-	itemType     Field
-	hasDefault   bool
-	defaultValue interface{}
-	metadata     map[string]interface{}
+	itemType     AvroType
+	definition	map[string]interface{}
 }
 
-func (s *arrayField) AvroName() string {
-	return s.name
+func NewArrayField(itemType AvroType, definition map[string]interface{}) *arrayField {
+	return &arrayField {
+		itemType: itemType,
+		definition: definition,
+	}
 }
 
-func (s *arrayField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *arrayField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *arrayField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *arrayField) FieldType() string {
-	return "Array" + s.itemType.FieldType()
+func (s *arrayField) Name() string {
+	return "Array" + s.itemType.Name()
 }
 
 func (s *arrayField) GoType() string {
@@ -86,11 +74,11 @@ func (s *arrayField) GoType() string {
 }
 
 func (s *arrayField) SerializerMethod() string {
-	return fmt.Sprintf("write%v", s.FieldType())
+	return fmt.Sprintf("write%v", s.Name())
 }
 
 func (s *arrayField) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", s.FieldType())
+	return fmt.Sprintf("read%v", s.Name())
 }
 
 func (s *arrayField) AddStruct(p *generator.Package) {
@@ -123,9 +111,7 @@ func (s *arrayField) ResolveReferences(n *Namespace) error {
 	return s.itemType.ResolveReferences(n)
 }
 
-func (s *arrayField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return mergeMaps(map[string]interface{}{
-		"type":  "array",
-		"items": s.itemType.Schema(names),
-	}, s.metadata)
+func (s *arrayField) Definition(scope map[QualifiedName]interface{}) interface{} {
+	s.definition["items"] = s.itemType.Definition(scope)
+	return s.definition
 }

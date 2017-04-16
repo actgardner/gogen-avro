@@ -59,28 +59,10 @@ func readBool(r io.Reader) (bool, error) {
 `
 
 type boolField struct {
-	name         string
-	defaultValue bool
-	hasDefault   bool
+	definition interface{}
 }
 
-func (s *boolField) AvroName() string {
-	return s.name
-}
-
-func (s *boolField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *boolField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *boolField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *boolField) FieldType() string {
+func (s *boolField) Name() string {
 	return "Bool"
 }
 
@@ -116,4 +98,8 @@ func (s *boolField) ResolveReferences(n *Namespace) error {
 
 func (s *boolField) Schema(names map[QualifiedName]interface{}) interface{} {
 	return "boolean"
+}
+
+func (s *boolField) Definition(_ map[QualifiedName]interface{}) interface{} {
+	return s.definition
 }

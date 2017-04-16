@@ -55,28 +55,10 @@ func readFloat(r io.Reader) (float32, error) {
 `
 
 type floatField struct {
-	name         string
-	defaultValue float32
-	hasDefault   bool
+	definition interface{}
 }
 
-func (s *floatField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *floatField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *floatField) AvroName() string {
-	return s.name
-}
-
-func (s *floatField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *floatField) FieldType() string {
+func (s *floatField) Name() string {
 	return "Float"
 }
 
@@ -113,6 +95,6 @@ func (s *floatField) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *floatField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return "float"
+func (s *floatField) Definition(_ map[QualifiedName]interface{}) interface{} {
+	return s.definition
 }

@@ -28,28 +28,10 @@ func readBytes(r io.Reader) ([]byte, error) {
 `
 
 type bytesField struct {
-	name         string
-	defaultValue []byte
-	hasDefault   bool
+	definition interface{}
 }
 
-func (s *bytesField) AvroName() string {
-	return s.name
-}
-
-func (s *bytesField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *bytesField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *bytesField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *bytesField) FieldType() string {
+func (s *bytesField) Name() string {
 	return "Bytes"
 }
 
@@ -85,6 +67,6 @@ func (s *bytesField) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *bytesField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return "bytes"
+func (s *bytesField) Definition(_ map[QualifiedName]interface{}) interface{} {
+	return s.definition
 }

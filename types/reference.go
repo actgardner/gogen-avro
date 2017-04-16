@@ -10,39 +10,22 @@ import (
 */
 
 type Reference struct {
-	name         string
 	typeName     QualifiedName
-	def          Definition
-	defaultValue interface{}
-	hasDefault   bool
+	def	     Definition
 }
 
-func (s *Reference) HasDefault() bool {
-	return s.hasDefault
+func NewReference(typeName QualifiedName) *Reference {
+	return &Reference {
+		typeName: typeName,
+	}
 }
 
-func (s *Reference) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *Reference) Definition() Definition {
-	return s.def
-}
-
-func (s *Reference) AvroName() string {
-	return s.name
-}
-
-func (s *Reference) GoName() string {
-	return generator.ToPublicName(s.name)
+func (s *Reference) Name() string {
+	return s.def.Name()
 }
 
 func (s *Reference) GoType() string {
 	return s.def.GoType()
-}
-
-func (s *Reference) FieldType() string {
-	return s.def.FieldType()
 }
 
 func (s *Reference) SerializerMethod() string {
@@ -65,10 +48,6 @@ func (s *Reference) AddDeserializer(p *generator.Package) {
 	s.def.AddDeserializer(p)
 }
 
-func (s *Reference) Schema(names map[QualifiedName]interface{}) interface{} {
-	return s.def.Schema(names)
-}
-
 func (s *Reference) ResolveReferences(n *Namespace) error {
 	if s.def == nil {
 		var ok bool
@@ -78,4 +57,8 @@ func (s *Reference) ResolveReferences(n *Namespace) error {
 		return s.def.ResolveReferences(n)
 	}
 	return nil
+}
+
+func (s *Reference) Definition(scope map[QualifiedName]interface{}) interface{} {
+	return s.def.Definition(scope)
 }

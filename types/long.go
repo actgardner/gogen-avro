@@ -33,28 +33,10 @@ func readLong(r io.Reader) (int64, error) {
 `
 
 type longField struct {
-	name         string
-	defaultValue int64
-	hasDefault   bool
+	definition interface{}
 }
 
-func (s *longField) AvroName() string {
-	return s.name
-}
-
-func (s *longField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *longField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *longField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *longField) FieldType() string {
+func (s *longField) Name() string {
 	return "Long"
 }
 
@@ -88,6 +70,6 @@ func (s *longField) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *longField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return "long"
+func (s *longField) Definition(_ map[QualifiedName]interface{}) interface{} {
+	return s.definition
 }

@@ -21,10 +21,23 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type FixedDefinition struct {
-	name      QualifiedName
-	aliases   []QualifiedName
+	name QualifiedName
+	aliases []QualifiedName
 	sizeBytes int
-	metadata  map[string]interface{}
+	definition map[string]interface{}
+}
+
+func NewFixedDefinition(name QualifiedName, aliases []QualifiedName, sizeBytes int, definition map[string]interface{}) *FixedDefinition {
+	return &FixedDefinition {
+		name: name,
+		aliases: aliases,
+		sizeBytes: sizeBytes,
+		definition: definition,
+	}
+}
+
+func (s *FixedDefinition) Name() string {
+	return s.GoType()
 }
 
 func (s *FixedDefinition) AvroName() QualifiedName {
@@ -33,10 +46,6 @@ func (s *FixedDefinition) AvroName() QualifiedName {
 
 func (s *FixedDefinition) Aliases() []QualifiedName {
 	return s.aliases
-}
-
-func (s *FixedDefinition) FieldType() string {
-	return s.GoType()
 }
 
 func (s *FixedDefinition) GoType() string {
@@ -60,11 +69,11 @@ func (s *FixedDefinition) filename() string {
 }
 
 func (s *FixedDefinition) SerializerMethod() string {
-	return fmt.Sprintf("write%v", s.FieldType())
+	return fmt.Sprintf("write%v", s.GoType())
 }
 
 func (s *FixedDefinition) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", s.FieldType())
+	return fmt.Sprintf("read%v", s.GoType())
 }
 
 func (s *FixedDefinition) AddStruct(p *generator.Package) {
@@ -85,15 +94,9 @@ func (s *FixedDefinition) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *FixedDefinition) Schema(names map[QualifiedName]interface{}) interface{} {
-	name := s.name.String()
-	if _, ok := names[s.name]; ok {
-		return name
+func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) interface{} {
+	if _, ok := scope[s.name]; ok {
+		return s.name.String()
 	}
-	names[s.name] = 1
-	return mergeMaps(map[string]interface{}{
-		"type": "fixed",
-		"name": name,
-		"size": s.sizeBytes,
-	}, s.metadata)
+	return s.definition
 }

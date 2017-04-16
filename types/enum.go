@@ -36,10 +36,23 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type EnumDefinition struct {
-	name     QualifiedName
-	aliases  []QualifiedName
+	name QualifiedName
+	aliases []QualifiedName
 	symbols  []string
-	metadata map[string]interface{}
+	definition map[string]interface{}
+}
+
+func NewEnumDefinition(name QualifiedName, aliases []QualifiedName, symbols []string, definition map[string]interface{}) *EnumDefinition {
+	return &EnumDefinition {
+		name: name,
+		aliases: aliases,
+		symbols: symbols,
+		definition: definition,
+	}
+}
+
+func (e *EnumDefinition) Name() string {
+	return e.GoType()
 }
 
 func (e *EnumDefinition) AvroName() QualifiedName {
@@ -50,12 +63,8 @@ func (e *EnumDefinition) Aliases() []QualifiedName {
 	return e.aliases
 }
 
-func (e *EnumDefinition) FieldType() string {
-	return generator.ToPublicName(e.name.Name)
-}
-
 func (e *EnumDefinition) GoType() string {
-	return e.FieldType()
+	return generator.ToPublicName(e.name.Name)
 }
 
 func (e *EnumDefinition) typeList() string {
@@ -83,19 +92,19 @@ func (e *EnumDefinition) stringerDef() string {
 }
 
 func (e *EnumDefinition) serializerMethodDef() string {
-	return fmt.Sprintf(enumSerializerDef, e.SerializerMethod(), e.FieldType())
+	return fmt.Sprintf(enumSerializerDef, e.SerializerMethod(), e.GoType())
 }
 
 func (e *EnumDefinition) SerializerMethod() string {
-	return "write" + e.FieldType()
+	return "write" + e.GoType()
 }
 
 func (e *EnumDefinition) deserializerMethodDef() string {
-	return fmt.Sprintf(enumDeserializerDef, e.DeserializerMethod(), e.FieldType(), e.FieldType())
+	return fmt.Sprintf(enumDeserializerDef, e.DeserializerMethod(), e.GoType(), e.GoType())
 }
 
 func (e *EnumDefinition) DeserializerMethod() string {
-	return "read" + e.FieldType()
+	return "read" + e.GoType()
 }
 
 func (e *EnumDefinition) filename() string {
@@ -125,15 +134,9 @@ func (s *EnumDefinition) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *EnumDefinition) Schema(names map[QualifiedName]interface{}) interface{} {
-	name := s.name.String()
-	if _, ok := names[s.name]; ok {
-		return name
+func (s *EnumDefinition) Definition(scope map[QualifiedName]interface{}) interface{} {
+	if _, ok := scope[s.name]; ok {
+		return s.name.String()
 	}
-	names[s.name] = 1
-	return mergeMaps(map[string]interface{}{
-		"type":    "enum",
-		"name":    name,
-		"symbols": s.symbols,
-	}, s.metadata)
+	return s.definition
 }

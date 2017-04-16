@@ -17,27 +17,10 @@ func readNull(_ io.Reader) (interface{}, error) {
 `
 
 type nullField struct {
-	name       string
-	hasDefault bool
+	definition interface{}
 }
 
-func (s *nullField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *nullField) Default() interface{} {
-	return nil
-}
-
-func (s *nullField) AvroName() string {
-	return s.name
-}
-
-func (s *nullField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *nullField) FieldType() string {
+func (s *nullField) Name() string {
 	return "Null"
 }
 
@@ -71,4 +54,8 @@ func (s *nullField) ResolveReferences(n *Namespace) error {
 
 func (s *nullField) Schema(names map[QualifiedName]interface{}) interface{} {
 	return "null"
+}
+
+func (s *nullField) Definition(_ map[QualifiedName]interface{}) interface{} {
+	return s.definition
 }

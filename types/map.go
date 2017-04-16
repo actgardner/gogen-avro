@@ -60,31 +60,19 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type mapField struct {
-	name         string
-	itemType     Field
-	hasDefault   bool
-	defaultValue interface{}
-	metadata     map[string]interface{}
+	itemType     AvroType
+	definition	map[string]interface{}
 }
 
-func (s *mapField) HasDefault() bool {
-	return s.hasDefault
+func NewMapField(itemType AvroType, definition map[string]interface{}) *mapField {
+	return &mapField {
+		itemType: itemType,
+		definition: definition,
+	}
 }
 
-func (s *mapField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *mapField) AvroName() string {
-	return s.name
-}
-
-func (s *mapField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *mapField) FieldType() string {
-	return "Map" + s.itemType.FieldType()
+func (s *mapField) Name() string {
+	return "Map" + s.itemType.Name()
 }
 
 func (s *mapField) GoType() string {
@@ -92,11 +80,11 @@ func (s *mapField) GoType() string {
 }
 
 func (s *mapField) SerializerMethod() string {
-	return fmt.Sprintf("write%v", s.FieldType())
+	return fmt.Sprintf("write%v", s.Name())
 }
 
 func (s *mapField) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", s.FieldType())
+	return fmt.Sprintf("read%v", s.Name())
 }
 
 func (s *mapField) AddStruct(p *generator.Package) {
@@ -134,9 +122,7 @@ func (s *mapField) ResolveReferences(n *Namespace) error {
 	return s.itemType.ResolveReferences(n)
 }
 
-func (s *mapField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return mergeMaps(map[string]interface{}{
-		"type":   "map",
-		"values": s.itemType.Schema(names),
-	}, s.metadata)
+func (s *mapField) Definition(scope map[QualifiedName]interface{}) interface{} {
+	s.definition["values"] = s.itemType.Definition(scope)
+	return s.definition
 }

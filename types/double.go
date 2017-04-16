@@ -26,28 +26,10 @@ func readDouble(r io.Reader) (float64, error) {
 `
 
 type doubleField struct {
-	name         string
-	defaultValue float64
-	hasDefault   bool
+	definition interface{}
 }
 
-func (s *doubleField) AvroName() string {
-	return s.name
-}
-
-func (s *doubleField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *doubleField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *doubleField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *doubleField) FieldType() string {
+func (s *doubleField) Name() string {
 	return "Double"
 }
 
@@ -84,6 +66,6 @@ func (s *doubleField) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *doubleField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return "double"
+func (s *doubleField) Definition(_ map[QualifiedName]interface{}) interface{} {
+	return s.definition
 }

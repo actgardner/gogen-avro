@@ -33,7 +33,7 @@ func main() {
 			os.Exit(2)
 		}
 
-		_, err = namespace.FieldDefinitionForSchema(schema)
+		_, err = namespace.TypeForSchema(schema)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error decoding schema for file %q - %v\n", fileName, err)
 			os.Exit(3)

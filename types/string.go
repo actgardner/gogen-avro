@@ -41,28 +41,10 @@ func readString(r io.Reader) (string, error) {
 `
 
 type stringField struct {
-	name         string
-	defaultValue string
-	hasDefault   bool
+	definition interface{}
 }
 
-func (s *stringField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *stringField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *stringField) AvroName() string {
-	return s.name
-}
-
-func (s *stringField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *stringField) FieldType() string {
+func (s *stringField) Name() string {
 	return "String"
 }
 
@@ -99,6 +81,6 @@ func (s *stringField) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *stringField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return "string"
+func (s *stringField) Definition(_ map[QualifiedName]interface{}) interface{} {
+	return s.definition
 }

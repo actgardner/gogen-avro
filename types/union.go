@@ -36,48 +36,37 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type unionField struct {
-	name         string
-	hasDefault   bool
-	defaultValue interface{}
-	itemType     []Field
+	itemType     []AvroType
+	definition   []interface{}
 }
 
-func (s *unionField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *unionField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *unionField) AvroName() string {
-	return s.name
-}
-
-func (s *unionField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *unionField) FieldType() string {
-	var unionFields = "Union"
-	for _, i := range s.itemType {
-		unionFields += i.FieldType()
+func NewUnionField(itemType []AvroType, definition []interface{}) *unionField {
+	return &unionField {
+		itemType: itemType,
+		definition: definition,
 	}
-	return unionFields
+}
+
+func (s *unionField) Name() string {
+	return s.GoType()
 }
 
 func (s *unionField) GoType() string {
-	return s.FieldType()
+	var unionFields = "Union"
+	for _, i := range s.itemType {
+		unionFields += i.Name()
+	}
+	return generator.ToPublicName(unionFields)
 }
 
 func (s *unionField) unionEnumType() string {
-	return fmt.Sprintf("%vTypeEnum", s.FieldType())
+	return fmt.Sprintf("%vTypeEnum", s.Name())
 }
 
 func (s *unionField) unionEnumDef() string {
 	var unionTypes string
 	for i, item := range s.itemType {
-		unionTypes += fmt.Sprintf("%v %v = %v\n", s.unionEnumType()+item.FieldType(), s.unionEnumType(), i)
+		unionTypes += fmt.Sprintf("%v %v = %v\n", s.unionEnumType()+item.Name(), s.unionEnumType(), i)
 	}
 	return fmt.Sprintf("type %v int\nconst(\n%v)\n", s.unionEnumType(), unionTypes)
 }
@@ -85,16 +74,16 @@ func (s *unionField) unionEnumDef() string {
 func (s *unionField) unionTypeDef() string {
 	var unionFields string
 	for _, i := range s.itemType {
-		unionFields += fmt.Sprintf("%v %v\n", i.FieldType(), i.GoType())
+		unionFields += fmt.Sprintf("%v %v\n", i.Name(), i.GoType())
 	}
 	unionFields += fmt.Sprintf("UnionType %v", s.unionEnumType())
-	return fmt.Sprintf("type %v struct{\n%v\n}\n", s.FieldType(), unionFields)
+	return fmt.Sprintf("type %v struct{\n%v\n}\n", s.Name(), unionFields)
 }
 
 func (s *unionField) unionSerializer() string {
 	switchCase := ""
 	for _, t := range s.itemType {
-		switchCase += fmt.Sprintf("case %v:\nreturn %v(r.%v, w)\n", s.unionEnumType()+t.FieldType(), t.SerializerMethod(), t.FieldType())
+		switchCase += fmt.Sprintf("case %v:\nreturn %v(r.%v, w)\n", s.unionEnumType()+t.Name(), t.SerializerMethod(), t.Name())
 	}
 	return fmt.Sprintf(unionSerializerTemplate, s.SerializerMethod(), s.GoType(), switchCase, s.GoType())
 }
@@ -102,7 +91,7 @@ func (s *unionField) unionSerializer() string {
 func (s *unionField) unionDeserializer() string {
 	switchCase := ""
 	for _, t := range s.itemType {
-		switchCase += fmt.Sprintf("case %v:\nval, err :=  %v(r)\nif err != nil {return unionStr, err}\nunionStr.%v = val\n", s.unionEnumType()+t.FieldType(), t.DeserializerMethod(), t.FieldType())
+		switchCase += fmt.Sprintf("case %v:\nval, err :=  %v(r)\nif err != nil {return unionStr, err}\nunionStr.%v = val\n", s.unionEnumType()+t.Name(), t.DeserializerMethod(), t.Name())
 	}
 	return fmt.Sprintf(unionDeserializerTemplate, s.DeserializerMethod(), s.GoType(), s.GoType(), s.unionEnumType(), switchCase, s.GoType())
 }
@@ -112,16 +101,16 @@ func (s *unionField) filename() string {
 }
 
 func (s *unionField) SerializerMethod() string {
-	return fmt.Sprintf("write%v", s.FieldType())
+	return fmt.Sprintf("write%v", s.Name())
 }
 
 func (s *unionField) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", s.FieldType())
+	return fmt.Sprintf("read%v", s.Name())
 }
 
 func (s *unionField) AddStruct(p *generator.Package) {
 	p.AddStruct(s.filename(), s.unionEnumType(), s.unionEnumDef())
-	p.AddStruct(s.filename(), s.FieldType(), s.unionTypeDef())
+	p.AddStruct(s.filename(), s.Name(), s.unionTypeDef())
 	for _, f := range s.itemType {
 		f.AddStruct(p)
 	}
@@ -160,10 +149,9 @@ func (s *unionField) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *unionField) Schema(names map[QualifiedName]interface{}) interface{} {
-	unionDefs := make([]interface{}, 0, len(s.itemType))
-	for _, item := range s.itemType {
-		unionDefs = append(unionDefs, item.Schema(names))
+func (s *unionField) Definition(scope map[QualifiedName]interface{}) interface{} {
+	for i, item := range s.itemType {
+		s.definition[i] = item.Definition(scope)
 	}
-	return unionDefs
+	return s.definition
 }

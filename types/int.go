@@ -81,28 +81,10 @@ func readInt(r io.Reader) (int32, error) {
 `
 
 type intField struct {
-	name         string
-	defaultValue int32
-	hasDefault   bool
+	definition interface{}
 }
 
-func (s *intField) HasDefault() bool {
-	return s.hasDefault
-}
-
-func (s *intField) Default() interface{} {
-	return s.defaultValue
-}
-
-func (s *intField) AvroName() string {
-	return s.name
-}
-
-func (s *intField) GoName() string {
-	return generator.ToPublicName(s.name)
-}
-
-func (s *intField) FieldType() string {
+func (s *intField) Name() string {
 	return "Int"
 }
 
@@ -136,6 +118,6 @@ func (s *intField) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *intField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return "int"
+func (s *intField) Definition(_ map[QualifiedName]interface{}) interface{} {
+	return s.definition
 }
