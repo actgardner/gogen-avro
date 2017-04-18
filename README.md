@@ -29,7 +29,11 @@ You can also use a `go:generate` directive in a source file ([example](https://g
 //go:generate $GOPATH/bin/gogen-avro.v4 . primitives.avsc
 ```
 
-The generated source files contain structs for each schema, plus a function `Serialize(io.Writer)` to encode the contents into the given `io.Writer`, and `Deserialize<RecordType>(io.Reader)` to read a struct from the given `io.Reader`.
+For each record in the provided schemas, gogen-avro will produce a struct, and the following methods:
+
+- `New<RecordType>()` - a constructor to create a new record struct with the default values from the Avro schema
+- `<RecordType>.Serialize(io.Writer)` - a method to encode the contents of the struct into the given `io.Writer`
+- `Deserialize<RecordType>(io.Reader)` - a method to read a struct from the given `io.Reader`
 
 ### Container File Support
 
