@@ -299,7 +299,7 @@ func (n *Namespace) decodeComplexDefinition(namespace string, typeMap map[string
 
 		fieldType, err := n.decodeTypeDefinition(namespace, values)
 		if err != nil {
-			return nil,  err
+			return nil, err
 		}
 
 		return NewMapField(fieldType, typeMap), nil
@@ -375,7 +375,7 @@ func (n *Namespace) getTypeByName(namespace string, typeStr string, definition i
 		return &nullField{definition}
 	}
 
-	return  NewReference(ParseAvroName(namespace, typeStr))
+	return NewReference(ParseAvroName(namespace, typeStr))
 }
 
 /*

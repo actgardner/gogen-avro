@@ -1,10 +1,10 @@
 package avro
 
 import (
-	"testing"
 	"bytes"
-	"github.com/linkedin/goavro"
 	"github.com/alanctgardner/gogen-avro/container"
+	"github.com/linkedin/goavro"
+	"testing"
 )
 
 func TestNullEncoding(t *testing.T) {

@@ -36,17 +36,17 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type EnumDefinition struct {
-	name QualifiedName
-	aliases []QualifiedName
-	symbols  []string
+	name       QualifiedName
+	aliases    []QualifiedName
+	symbols    []string
 	definition map[string]interface{}
 }
 
 func NewEnumDefinition(name QualifiedName, aliases []QualifiedName, symbols []string, definition map[string]interface{}) *EnumDefinition {
-	return &EnumDefinition {
-		name: name,
-		aliases: aliases,
-		symbols: symbols,
+	return &EnumDefinition{
+		name:       name,
+		aliases:    aliases,
+		symbols:    symbols,
 		definition: definition,
 	}
 }

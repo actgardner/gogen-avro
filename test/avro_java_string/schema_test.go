@@ -10,10 +10,10 @@ import (
 /* Round-trip some primitive values through our serializer and goavro to verify */
 var fixtures = []Event{
 	{
-		ID:      "id1",
+		ID: "id1",
 	},
 	{
-		ID:      "differentid",
+		ID: "differentid",
 	},
 }
 

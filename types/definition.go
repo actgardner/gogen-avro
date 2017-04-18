@@ -28,7 +28,7 @@ type Definition interface {
 	// Resolve references to user-defined types
 	ResolveReferences(*Namespace) error
 
-	// A JSON object defining this object, for writing the schema back out 
+	// A JSON object defining this object, for writing the schema back out
 	Definition(scope map[QualifiedName]interface{}) interface{}
 	DefaultValue(lvalue string, rvalue interface{}) string
 }

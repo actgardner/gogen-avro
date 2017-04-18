@@ -36,13 +36,13 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type unionField struct {
-	itemType     []AvroType
-	definition   []interface{}
+	itemType   []AvroType
+	definition []interface{}
 }
 
 func NewUnionField(itemType []AvroType, definition []interface{}) *unionField {
-	return &unionField {
-		itemType: itemType,
+	return &unionField{
+		itemType:   itemType,
 		definition: definition,
 	}
 }

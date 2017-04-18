@@ -8,19 +8,19 @@ import (
  * The interface implemented by all Avro field types.
  */
 type Field struct {
-	avroName string
-	avroType AvroType
-	defValue interface{}
-	hasDef bool
+	avroName   string
+	avroType   AvroType
+	defValue   interface{}
+	hasDef     bool
 	definition map[string]interface{}
 }
 
 func NewField(avroName string, avroType AvroType, defValue interface{}, hasDef bool, definition map[string]interface{}) *Field {
-	return &Field {
-		avroName: avroName,
-		avroType: avroType,
-		defValue: defValue,
-		hasDef: hasDef,
+	return &Field{
+		avroName:   avroName,
+		avroType:   avroType,
+		defValue:   defValue,
+		hasDef:     hasDef,
 		definition: definition,
 	}
 }

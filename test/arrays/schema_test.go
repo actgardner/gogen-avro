@@ -70,8 +70,8 @@ func TestArrayFixture(t *testing.T) {
 
 func TestArrayDefaults(t *testing.T) {
 	record := NewArrayTestRecord()
-	assert.Equal(t, record.IntField, []int32{1,2,3,4})
-	assert.Equal(t, record.LongField, []int64{5,6,7,8})
+	assert.Equal(t, record.IntField, []int32{1, 2, 3, 4})
+	assert.Equal(t, record.LongField, []int64{5, 6, 7, 8})
 	assert.Equal(t, record.FloatField, []float32{1.23, 3.45})
 	assert.Equal(t, record.DoubleField, []float64{1.5, 2.4})
 	assert.Equal(t, record.StringField, []string{"abc", "def"})

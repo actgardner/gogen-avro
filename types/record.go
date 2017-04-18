@@ -1,10 +1,10 @@
 package types
 
 import (
-	"fmt"
 	"encoding/json"
-	"strconv"
+	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
+	"strconv"
 )
 
 const recordStructDefTemplate = `type %v struct {
@@ -49,17 +49,17 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type RecordDefinition struct {
-	name QualifiedName
-	aliases []QualifiedName
+	name     QualifiedName
+	aliases  []QualifiedName
 	fields   []*Field
 	metadata map[string]interface{}
 }
 
 func NewRecordDefinition(name QualifiedName, aliases []QualifiedName, fields []*Field, metadata map[string]interface{}) *RecordDefinition {
-	return &RecordDefinition {
-		name: name,
-		aliases: aliases,
-		fields: fields,
+	return &RecordDefinition{
+		name:     name,
+		aliases:  aliases,
+		fields:   fields,
 		metadata: metadata,
 	}
 }

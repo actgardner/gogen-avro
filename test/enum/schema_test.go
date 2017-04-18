@@ -81,5 +81,5 @@ func TestRoundTrip(t *testing.T) {
 
 func TestDefaults(t *testing.T) {
 	record := NewEnumTestRecord()
-	assert.Equal(t, record.EnumField, TestSymbol3) 
+	assert.Equal(t, record.EnumField, TestSymbol3)
 }

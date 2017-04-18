@@ -2,9 +2,9 @@
 package container
 
 import (
-	"github.com/alanctgardner/gogen-avro/container/avro"
 	"bytes"
 	"compress/flate"
+	"github.com/alanctgardner/gogen-avro/container/avro"
 	"io"
 )
 
@@ -15,11 +15,11 @@ type Codec string
 
 const (
 	// No compression
-	Null    Codec = "null"
+	Null Codec = "null"
 	// Deflate compression
 	Deflate Codec = "deflate"
 	// Snappy compression
-	Snappy  Codec = "snappy"
+	Snappy Codec = "snappy"
 )
 
 type CloseableResettableWriter interface {
@@ -27,8 +27,8 @@ type CloseableResettableWriter interface {
 	Reset(io.Writer)
 }
 
-/* 
-  Writer wraps an io.Writer and writes the file and block-level framing required for an OCF file  
+/*
+  Writer wraps an io.Writer and writes the file and block-level framing required for an OCF file
 */
 type Writer struct {
 	writer           io.Writer
@@ -42,7 +42,7 @@ type Writer struct {
 }
 
 /*
-  Create a new Writer wrapping the provided io.Writer with the given Codec and number of records per block. 
+  Create a new Writer wrapping the provided io.Writer with the given Codec and number of records per block.
   The Writer will lazily write the container file header when WriteRecord is called the first time.
   You must call Flush on the Writer before closing the underlying io.Writer, to ensure the final block is written.
 */
@@ -88,7 +88,7 @@ func (avroWriter *Writer) writeHeader(schema string) error {
 /*
   Write an AvroRecord to the container file. All gogen-avro generated structs
   fulfill the AvroRecord interface. Note that all records in a given container file
-  must be of the same Avro type. 
+  must be of the same Avro type.
 */
 func (avroWriter *Writer) WriteRecord(record AvroRecord) error {
 	var err error
@@ -117,7 +117,7 @@ func (avroWriter *Writer) WriteRecord(record AvroRecord) error {
 }
 
 /*
-  Write the current block to the file, even if it hasn't been filled. 
+  Write the current block to the file, even if it hasn't been filled.
   This must be called before the underlying io.Writer is closed.
 */
 func (avroWriter *Writer) Flush() error {

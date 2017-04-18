@@ -10,12 +10,12 @@ import (
 */
 
 type Reference struct {
-	typeName     QualifiedName
-	def	     Definition
+	typeName QualifiedName
+	def      Definition
 }
 
 func NewReference(typeName QualifiedName) *Reference {
-	return &Reference {
+	return &Reference{
 		typeName: typeName,
 	}
 }

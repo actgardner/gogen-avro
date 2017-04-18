@@ -21,17 +21,17 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type FixedDefinition struct {
-	name QualifiedName
-	aliases []QualifiedName
-	sizeBytes int
+	name       QualifiedName
+	aliases    []QualifiedName
+	sizeBytes  int
 	definition map[string]interface{}
 }
 
 func NewFixedDefinition(name QualifiedName, aliases []QualifiedName, sizeBytes int, definition map[string]interface{}) *FixedDefinition {
-	return &FixedDefinition {
-		name: name,
-		aliases: aliases,
-		sizeBytes: sizeBytes,
+	return &FixedDefinition{
+		name:       name,
+		aliases:    aliases,
+		sizeBytes:  sizeBytes,
 		definition: definition,
 	}
 }

@@ -60,13 +60,13 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type mapField struct {
-	itemType     AvroType
-	definition	map[string]interface{}
+	itemType   AvroType
+	definition map[string]interface{}
 }
 
 func NewMapField(itemType AvroType, definition map[string]interface{}) *mapField {
-	return &mapField {
-		itemType: itemType,
+	return &mapField{
+		itemType:   itemType,
 		definition: definition,
 	}
 }

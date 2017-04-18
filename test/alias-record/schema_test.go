@@ -3,8 +3,8 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 /* Round-trip some primitive values through our serializer and goavro to verify */
