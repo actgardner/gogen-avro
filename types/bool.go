@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
 )
 
@@ -102,4 +103,8 @@ func (s *boolField) Schema(names map[QualifiedName]interface{}) interface{} {
 
 func (s *boolField) Definition(_ map[QualifiedName]interface{}) interface{} {
 	return s.definition
+}
+
+func (s *boolField) DefaultValue(lvalue string, rvalue interface{}) string {
+	return fmt.Sprintf("%v = %v", lvalue, rvalue)
 }

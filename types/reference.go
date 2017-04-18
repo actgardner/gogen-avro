@@ -62,3 +62,7 @@ func (s *Reference) ResolveReferences(n *Namespace) error {
 func (s *Reference) Definition(scope map[QualifiedName]interface{}) interface{} {
 	return s.def.Definition(scope)
 }
+
+func (s *Reference) DefaultValue(lvalue string, rvalue interface{}) string {
+	return s.def.DefaultValue(lvalue, rvalue)
+}

@@ -17,6 +17,16 @@ const recordSchemaTemplate = `func (r %v) Schema() string {
 }
 `
 
+const recordConstructorTemplate = `
+	func %v %v {
+		v := &%v{
+			%v
+		}
+		%v
+		return v
+	}
+`
+
 const recordStructPublicSerializerTemplate = `
 func (r %v) Serialize(w io.Writer) error {
 	return %v(r, w)
@@ -141,6 +151,7 @@ func (r *RecordDefinition) AddStruct(p *generator.Package) {
 	if !p.HasStruct(r.filename(), r.GoType()) {
 		p.AddStruct(r.filename(), r.GoType(), r.structDefinition())
 		p.AddFunction(r.filename(), r.GoType(), "Schema", r.schemaMethodDef())
+		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), r.ConstructorMethodDef())
 		for _, f := range r.fields {
 			f.Type().AddStruct(p)
 		}
@@ -194,4 +205,51 @@ func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) inter
 
 	r.metadata["fields"] = fields
 	return r.metadata
+}
+
+func (r *RecordDefinition) ConstructorMethod() string {
+	return fmt.Sprintf("New%v()", r.Name())
+}
+
+func (r *RecordDefinition) fieldConstructors() string {
+	constructors := ""
+	for _, f := range r.fields {
+		if constructor, ok := getConstructableForType(f.Type()); ok {
+			constructors += fmt.Sprintf("%v: %v,\n", f.GoName(), constructor.ConstructorMethod())
+		}
+	}
+	return constructors
+}
+
+func (r *RecordDefinition) defaultValues() string {
+	defaults := ""
+	for _, f := range r.fields {
+		if f.hasDef {
+			defaults += f.Type().DefaultValue(fmt.Sprintf("v.%v", f.GoName()), f.Default()) + "\n"
+		}
+	}
+	return defaults
+}
+
+func (r *RecordDefinition) ConstructorMethodDef() string {
+	return fmt.Sprintf(recordConstructorTemplate, r.ConstructorMethod(), r.GoType(), r.Name(), r.fieldConstructors(), r.defaultValues())
+}
+
+func (r *RecordDefinition) FieldByName(name string) *Field {
+	for _, f := range r.fields {
+		if f.Name() == name {
+			return f
+		}
+	}
+	return nil
+}
+
+func (r *RecordDefinition) DefaultValue(lvalue string, rvalue interface{}) string {
+	items := rvalue.(map[string]interface{})
+	fieldSetters := ""
+	for k, v := range items {
+		field := r.FieldByName(k)
+		fieldSetters += field.Type().DefaultValue(fmt.Sprintf("%v.%v", lvalue, field.GoName()), v) + "\n"
+	}
+	return fieldSetters
 }

@@ -115,3 +115,19 @@ func (s *arrayField) Definition(scope map[QualifiedName]interface{}) interface{}
 	s.definition["items"] = s.itemType.Definition(scope)
 	return s.definition
 }
+
+func (s *arrayField) ConstructorMethod() string {
+	return fmt.Sprintf("make(%v, 0)", s.GoType())
+}
+
+func (s *arrayField) DefaultValue(lvalue string, rvalue interface{}) string {
+	items := rvalue.([]interface{})
+	setter := fmt.Sprintf("%v = make(%v,%v)\n", lvalue, s.GoType(), len(items))
+	for i, item := range items {
+		if c, ok := getConstructableForType(s.itemType); ok {
+			setter += fmt.Sprintf("%v[%v] = %v\n", lvalue, i, c.ConstructorMethod())
+		}
+		setter += s.itemType.DefaultValue(fmt.Sprintf("%v[%v]", lvalue, i), item) + "\n"
+	}
+	return setter
+}

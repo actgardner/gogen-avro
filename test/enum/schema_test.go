@@ -78,3 +78,8 @@ func TestRoundTrip(t *testing.T) {
 		assert.Equal(t, *datum, f)
 	}
 }
+
+func TestDefaults(t *testing.T) {
+	record := NewEnumTestRecord()
+	assert.Equal(t, record.EnumField, TestSymbol3) 
+}

@@ -24,4 +24,5 @@ type AvroType interface {
 	ResolveReferences(*Namespace) error
 
 	Definition(scope map[QualifiedName]interface{}) interface{}
+	DefaultValue(lvalue string, rvalue interface{}) string
 }

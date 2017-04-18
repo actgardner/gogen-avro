@@ -8,7 +8,8 @@
 				"name": "TestEnumType",
 				"type": "enum",
 				"symbols": ["TestSymbol1", "testSymbol2", "testSymbol3"]
-			}
+			},
+			"default": "testSymbol3"
 		}
 	]
 }

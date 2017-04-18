@@ -126,3 +126,16 @@ func (s *mapField) Definition(scope map[QualifiedName]interface{}) interface{} {
 	s.definition["values"] = s.itemType.Definition(scope)
 	return s.definition
 }
+
+func (s *mapField) ConstructorMethod() string {
+	return fmt.Sprintf("make(%v)", s.GoType())
+}
+
+func (s *mapField) DefaultValue(lvalue string, rvalue interface{}) string {
+	items := rvalue.(map[string]interface{})
+	setter := ""
+	for k, v := range items {
+		setter += s.itemType.DefaultValue(fmt.Sprintf("%v[%q]", lvalue, k), v) + "\n"
+	}
+	return setter
+}

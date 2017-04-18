@@ -140,3 +140,7 @@ func (s *EnumDefinition) Definition(scope map[QualifiedName]interface{}) interfa
 	}
 	return s.definition
 }
+
+func (s *EnumDefinition) DefaultValue(lvalue string, rvalue interface{}) string {
+	return fmt.Sprintf("%v = %v", lvalue, generator.ToPublicName(rvalue.(string)))
+}

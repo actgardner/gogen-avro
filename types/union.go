@@ -155,3 +155,8 @@ func (s *unionField) Definition(scope map[QualifiedName]interface{}) interface{}
 	}
 	return s.definition
 }
+
+func (s *unionField) DefaultValue(lvalue string, rvalue interface{}) string {
+	lvalue = fmt.Sprintf("%v.%v", lvalue, s.itemType[0].Name())
+	return s.itemType[0].DefaultValue(lvalue, rvalue)
+}

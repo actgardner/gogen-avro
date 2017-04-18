@@ -16,7 +16,8 @@
                   }
                ]
             }
-         }
+         },
+         "default": [{"name": "record1"}, {"name": "record2"}]
       }
    ]
 }

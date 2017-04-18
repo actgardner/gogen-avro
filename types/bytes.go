@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
 )
 
@@ -69,4 +70,8 @@ func (s *bytesField) ResolveReferences(n *Namespace) error {
 
 func (s *bytesField) Definition(_ map[QualifiedName]interface{}) interface{} {
 	return s.definition
+}
+
+func (s *bytesField) DefaultValue(lvalue string, rvalue interface{}) string {
+	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue)
 }

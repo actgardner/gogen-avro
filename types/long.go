@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
 )
 
@@ -72,4 +73,8 @@ func (s *longField) ResolveReferences(n *Namespace) error {
 
 func (s *longField) Definition(_ map[QualifiedName]interface{}) interface{} {
 	return s.definition
+}
+
+func (s *longField) DefaultValue(lvalue string, rvalue interface{}) string {
+	return fmt.Sprintf("%v = %v", lvalue, rvalue)
 }

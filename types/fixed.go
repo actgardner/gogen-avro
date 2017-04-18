@@ -100,3 +100,7 @@ func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) interf
 	}
 	return s.definition
 }
+
+func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) string {
+	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue)
+}

@@ -59,3 +59,7 @@ func (s *nullField) Schema(names map[QualifiedName]interface{}) interface{} {
 func (s *nullField) Definition(_ map[QualifiedName]interface{}) interface{} {
 	return s.definition
 }
+
+func (s *nullField) DefaultValue(lvalue string, rvalue interface{}) string {
+	return ""
+}
