@@ -12,7 +12,7 @@ Generate Go structures and serializer / deserializer methods from Avro schemas. 
 gogen-avro is a tool which you install on your system (usually on your GOPATH), and run as part of your build process. To install gogen-avro to `$GOPATH/bin/`, run:
 
 ```
-go get gopkg.in/alanctgardner/gogen-avro.v4/...
+go get github.com/alanctgardner/gogen-avro/...
 ```
 
 ### Usage
@@ -20,13 +20,13 @@ go get gopkg.in/alanctgardner/gogen-avro.v4/...
 To generate Go source files from one or more Avro schema files, run:
 
 ```
-gogen-avro.v4 [--package=<package name>] <output directory> <avro schema files>
+gogen-avro [--package=<package name>] <output directory> <avro schema files>
 ```
 
 You can also use a `go:generate` directive in a source file ([example](https://github.com/alanctgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
 
 ```
-//go:generate $GOPATH/bin/gogen-avro.v4 . primitives.avsc
+//go:generate $GOPATH/bin/gogen-avro . primitives.avsc
 ```
 
 For each record in the provided schemas, gogen-avro will produce a struct, and the following methods:
