@@ -17,26 +17,18 @@ func readNull(_ io.Reader) (interface{}, error) {
 `
 
 type nullField struct {
-	definition interface{}
+	primitiveField
 }
 
-func (s *nullField) Name() string {
-	return "Null"
+func NewNullField(definition interface{}) *nullField {
+	return &nullField{primitiveField{
+		definition:         definition,
+		name:               "Null",
+		goType:             "interface{}",
+		serializerMethod:   "writeNull",
+		deserializerMethod: "readNull",
+	}}
 }
-
-func (s *nullField) GoType() string {
-	return "interface{}"
-}
-
-func (s *nullField) SerializerMethod() string {
-	return "writeNull"
-}
-
-func (s *nullField) DeserializerMethod() string {
-	return "readNull"
-}
-
-func (s *nullField) AddStruct(p *generator.Package) {}
 
 func (s *nullField) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "writeNull", writeNullMethod)
@@ -48,18 +40,6 @@ func (s *nullField) AddDeserializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *nullField) ResolveReferences(n *Namespace) error {
-	return nil
-}
-
-func (s *nullField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return "null"
-}
-
-func (s *nullField) Definition(_ map[QualifiedName]interface{}) interface{} {
-	return s.definition
-}
-
-func (s *nullField) DefaultValue(lvalue string, rvalue interface{}) string {
-	return ""
+func (s *nullField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	return "", nil
 }

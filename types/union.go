@@ -108,12 +108,16 @@ func (s *unionField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.Name())
 }
 
-func (s *unionField) AddStruct(p *generator.Package) {
+func (s *unionField) AddStruct(p *generator.Package) error {
 	p.AddStruct(s.filename(), s.unionEnumType(), s.unionEnumDef())
 	p.AddStruct(s.filename(), s.Name(), s.unionTypeDef())
 	for _, f := range s.itemType {
-		f.AddStruct(p)
+		err := f.AddStruct(p)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (s *unionField) AddSerializer(p *generator.Package) {
@@ -149,14 +153,18 @@ func (s *unionField) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *unionField) Definition(scope map[QualifiedName]interface{}) interface{} {
+func (s *unionField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
+	var err error
 	for i, item := range s.itemType {
-		s.definition[i] = item.Definition(scope)
+		s.definition[i], err = item.Definition(scope)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return s.definition
+	return s.definition, nil
 }
 
-func (s *unionField) DefaultValue(lvalue string, rvalue interface{}) string {
+func (s *unionField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	lvalue = fmt.Sprintf("%v.%v", lvalue, s.itemType[0].Name())
 	return s.itemType[0].DefaultValue(lvalue, rvalue)
 }

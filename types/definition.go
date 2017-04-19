@@ -21,7 +21,7 @@ type Definition interface {
 	DeserializerMethod() string
 
 	// Add the imports and struct for the definition of this type to the generator.Package
-	AddStruct(*generator.Package)
+	AddStruct(*generator.Package) error
 	AddSerializer(*generator.Package)
 	AddDeserializer(*generator.Package)
 
@@ -29,6 +29,6 @@ type Definition interface {
 	ResolveReferences(*Namespace) error
 
 	// A JSON object defining this object, for writing the schema back out
-	Definition(scope map[QualifiedName]interface{}) interface{}
-	DefaultValue(lvalue string, rvalue interface{}) string
+	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
+	DefaultValue(lvalue string, rvalue interface{}) (string, error)
 }

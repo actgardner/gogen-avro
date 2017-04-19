@@ -42,26 +42,18 @@ func readString(r io.Reader) (string, error) {
 `
 
 type stringField struct {
-	definition interface{}
+	primitiveField
 }
 
-func (s *stringField) Name() string {
-	return "String"
+func NewStringField(definition interface{}) *stringField {
+	return &stringField{primitiveField{
+		definition:         definition,
+		name:               "String",
+		goType:             "string",
+		serializerMethod:   "writeString",
+		deserializerMethod: "readString",
+	}}
 }
-
-func (s *stringField) GoType() string {
-	return "string"
-}
-
-func (s *stringField) SerializerMethod() string {
-	return "writeString"
-}
-
-func (s *stringField) DeserializerMethod() string {
-	return "readString"
-}
-
-func (s *stringField) AddStruct(*generator.Package) {}
 
 func (s *stringField) AddSerializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
@@ -78,14 +70,10 @@ func (s *stringField) AddDeserializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *stringField) ResolveReferences(n *Namespace) error {
-	return nil
-}
+func (s *stringField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	if _, ok := rvalue.(string); !ok {
+		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
+	}
 
-func (s *stringField) Definition(_ map[QualifiedName]interface{}) interface{} {
-	return s.definition
-}
-
-func (s *stringField) DefaultValue(lvalue string, rvalue interface{}) string {
-	return fmt.Sprintf("%v = %q", lvalue, rvalue)
+	return fmt.Sprintf("%v = %q", lvalue, rvalue), nil
 }

@@ -29,26 +29,18 @@ func readBytes(r io.Reader) ([]byte, error) {
 `
 
 type bytesField struct {
-	definition interface{}
+	primitiveField
 }
 
-func (s *bytesField) Name() string {
-	return "Bytes"
+func NewBytesField(definition interface{}) *bytesField {
+	return &bytesField{primitiveField{
+		definition:         definition,
+		name:               "Bytes",
+		goType:             "[]byte",
+		serializerMethod:   "writeBytes",
+		deserializerMethod: "readBytes",
+	}}
 }
-
-func (s *bytesField) GoType() string {
-	return "[]byte"
-}
-
-func (s *bytesField) SerializerMethod() string {
-	return "writeBytes"
-}
-
-func (s *bytesField) DeserializerMethod() string {
-	return "readBytes"
-}
-
-func (s *bytesField) AddStruct(*generator.Package) {}
 
 func (s *bytesField) AddSerializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
@@ -64,14 +56,10 @@ func (s *bytesField) AddDeserializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *bytesField) ResolveReferences(n *Namespace) error {
-	return nil
-}
+func (s *bytesField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	if _, ok := rvalue.(string); !ok {
+		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
+	}
 
-func (s *bytesField) Definition(_ map[QualifiedName]interface{}) interface{} {
-	return s.definition
-}
-
-func (s *bytesField) DefaultValue(lvalue string, rvalue interface{}) string {
-	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue)
+	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue), nil
 }

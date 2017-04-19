@@ -76,8 +76,9 @@ func (s *FixedDefinition) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.GoType())
 }
 
-func (s *FixedDefinition) AddStruct(p *generator.Package) {
+func (s *FixedDefinition) AddStruct(p *generator.Package) error {
 	p.AddStruct(s.filename(), s.GoType(), s.typeDef())
+	return nil
 }
 
 func (s *FixedDefinition) AddSerializer(p *generator.Package) {
@@ -94,13 +95,17 @@ func (s *FixedDefinition) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) interface{} {
+func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	if _, ok := scope[s.name]; ok {
-		return s.name.String()
+		return s.name.String(), nil
 	}
-	return s.definition
+	return s.definition, nil
 }
 
-func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) string {
-	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue)
+func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	if _, ok := rvalue.(string); !ok {
+		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
+	}
+
+	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue), nil
 }

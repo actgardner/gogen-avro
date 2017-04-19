@@ -36,8 +36,8 @@ func (s *Reference) DeserializerMethod() string {
 	return s.def.DeserializerMethod()
 }
 
-func (s *Reference) AddStruct(p *generator.Package) {
-	s.def.AddStruct(p)
+func (s *Reference) AddStruct(p *generator.Package) error {
+	return s.def.AddStruct(p)
 }
 
 func (s *Reference) AddSerializer(p *generator.Package) {
@@ -59,10 +59,10 @@ func (s *Reference) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *Reference) Definition(scope map[QualifiedName]interface{}) interface{} {
+func (s *Reference) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	return s.def.Definition(scope)
 }
 
-func (s *Reference) DefaultValue(lvalue string, rvalue interface{}) string {
+func (s *Reference) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	return s.def.DefaultValue(lvalue, rvalue)
 }

@@ -45,7 +45,12 @@ func (f *Field) Type() AvroType {
 	return f.avroType
 }
 
-func (f *Field) Definition(scope map[QualifiedName]interface{}) map[string]interface{} {
-	f.definition["type"] = f.avroType.Definition(scope)
-	return f.definition
+func (f *Field) Definition(scope map[QualifiedName]interface{}) (map[string]interface{}, error) {
+	var err error
+	f.definition["type"], err = f.avroType.Definition(scope)
+	if err != nil {
+		return nil, err
+	}
+
+	return f.definition, nil
 }

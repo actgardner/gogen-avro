@@ -87,8 +87,8 @@ func (s *mapField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.Name())
 }
 
-func (s *mapField) AddStruct(p *generator.Package) {
-	s.itemType.AddStruct(p)
+func (s *mapField) AddStruct(p *generator.Package) error {
+	return s.itemType.AddStruct(p)
 }
 
 func (s *mapField) AddSerializer(p *generator.Package) {
@@ -122,20 +122,32 @@ func (s *mapField) ResolveReferences(n *Namespace) error {
 	return s.itemType.ResolveReferences(n)
 }
 
-func (s *mapField) Definition(scope map[QualifiedName]interface{}) interface{} {
-	s.definition["values"] = s.itemType.Definition(scope)
-	return s.definition
+func (s *mapField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
+	var err error
+	s.definition["values"], err = s.itemType.Definition(scope)
+	if err != nil {
+		return nil, err
+	}
+	return s.definition, nil
 }
 
 func (s *mapField) ConstructorMethod() string {
 	return fmt.Sprintf("make(%v)", s.GoType())
 }
 
-func (s *mapField) DefaultValue(lvalue string, rvalue interface{}) string {
-	items := rvalue.(map[string]interface{})
-	setter := ""
-	for k, v := range items {
-		setter += s.itemType.DefaultValue(fmt.Sprintf("%v[%q]", lvalue, k), v) + "\n"
+func (s *mapField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	items, ok := rvalue.(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("Expected map as default for %v, got %v", lvalue, rvalue)
 	}
-	return setter
+	setters := ""
+
+	for k, v := range items {
+		setter, err := s.itemType.DefaultValue(fmt.Sprintf("%v[%q]", lvalue, k), v)
+		if err != nil {
+			return "", err
+		}
+		setters += setter + "\n"
+	}
+	return setters, nil
 }

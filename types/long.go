@@ -34,26 +34,18 @@ func readLong(r io.Reader) (int64, error) {
 `
 
 type longField struct {
-	definition interface{}
+	primitiveField
 }
 
-func (s *longField) Name() string {
-	return "Long"
+func NewLongField(definition interface{}) *longField {
+	return &longField{primitiveField{
+		definition:         definition,
+		name:               "Long",
+		goType:             "int64",
+		serializerMethod:   "writeLong",
+		deserializerMethod: "readLong",
+	}}
 }
-
-func (s *longField) GoType() string {
-	return "int64"
-}
-
-func (s *longField) SerializerMethod() string {
-	return "writeLong"
-}
-
-func (s *longField) DeserializerMethod() string {
-	return "readLong"
-}
-
-func (s *longField) AddStruct(p *generator.Package) {}
 
 func (s *longField) AddSerializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
@@ -67,14 +59,10 @@ func (s *longField) AddDeserializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *longField) ResolveReferences(n *Namespace) error {
-	return nil
-}
+func (s *longField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	if _, ok := rvalue.(float64); !ok {
+		return "", fmt.Errorf("Expected number as default for field %v, got %q", lvalue, rvalue)
+	}
 
-func (s *longField) Definition(_ map[QualifiedName]interface{}) interface{} {
-	return s.definition
-}
-
-func (s *longField) DefaultValue(lvalue string, rvalue interface{}) string {
-	return fmt.Sprintf("%v = %v", lvalue, rvalue)
+	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
 }

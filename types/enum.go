@@ -111,9 +111,10 @@ func (e *EnumDefinition) filename() string {
 	return generator.ToSnake(e.GoType()) + ".go"
 }
 
-func (e *EnumDefinition) AddStruct(p *generator.Package) {
+func (e *EnumDefinition) AddStruct(p *generator.Package) error {
 	p.AddStruct(e.filename(), e.GoType(), e.structDef())
 	p.AddFunction(e.filename(), e.GoType(), "String", e.stringerDef())
+	return nil
 }
 
 func (e *EnumDefinition) AddSerializer(p *generator.Package) {
@@ -134,13 +135,17 @@ func (s *EnumDefinition) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *EnumDefinition) Definition(scope map[QualifiedName]interface{}) interface{} {
+func (s *EnumDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	if _, ok := scope[s.name]; ok {
-		return s.name.String()
+		return s.name.String(), nil
 	}
-	return s.definition
+	return s.definition, nil
 }
 
-func (s *EnumDefinition) DefaultValue(lvalue string, rvalue interface{}) string {
-	return fmt.Sprintf("%v = %v", lvalue, generator.ToPublicName(rvalue.(string)))
+func (s *EnumDefinition) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	if _, ok := rvalue.(string); !ok {
+		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
+	}
+
+	return fmt.Sprintf("%v = %v", lvalue, generator.ToPublicName(rvalue.(string))), nil
 }

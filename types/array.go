@@ -81,8 +81,8 @@ func (s *arrayField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.Name())
 }
 
-func (s *arrayField) AddStruct(p *generator.Package) {
-	s.itemType.AddStruct(p)
+func (s *arrayField) AddStruct(p *generator.Package) error {
+	return s.itemType.AddStruct(p)
 }
 
 func (s *arrayField) AddSerializer(p *generator.Package) {
@@ -111,23 +111,38 @@ func (s *arrayField) ResolveReferences(n *Namespace) error {
 	return s.itemType.ResolveReferences(n)
 }
 
-func (s *arrayField) Definition(scope map[QualifiedName]interface{}) interface{} {
-	s.definition["items"] = s.itemType.Definition(scope)
-	return s.definition
+func (s *arrayField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
+	var err error
+	s.definition["items"], err = s.itemType.Definition(scope)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.definition, nil
 }
 
 func (s *arrayField) ConstructorMethod() string {
 	return fmt.Sprintf("make(%v, 0)", s.GoType())
 }
 
-func (s *arrayField) DefaultValue(lvalue string, rvalue interface{}) string {
-	items := rvalue.([]interface{})
-	setter := fmt.Sprintf("%v = make(%v,%v)\n", lvalue, s.GoType(), len(items))
+func (s *arrayField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	items, ok := rvalue.([]interface{})
+	if !ok {
+		return "", fmt.Errorf("Expected array as default for %v, got %v", lvalue, rvalue)
+	}
+
+	setters := fmt.Sprintf("%v = make(%v,%v)\n", lvalue, s.GoType(), len(items))
 	for i, item := range items {
 		if c, ok := getConstructableForType(s.itemType); ok {
-			setter += fmt.Sprintf("%v[%v] = %v\n", lvalue, i, c.ConstructorMethod())
+			setters += fmt.Sprintf("%v[%v] = %v\n", lvalue, i, c.ConstructorMethod())
 		}
-		setter += s.itemType.DefaultValue(fmt.Sprintf("%v[%v]", lvalue, i), item) + "\n"
+
+		setter, err := s.itemType.DefaultValue(fmt.Sprintf("%v[%v]", lvalue, i), item)
+		if err != nil {
+			return "", err
+		}
+
+		setters += setter + "\n"
 	}
-	return setter
+	return setters, nil
 }

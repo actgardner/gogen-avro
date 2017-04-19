@@ -351,28 +351,28 @@ func (n *Namespace) decodeComplexDefinition(namespace string, typeMap map[string
 func (n *Namespace) getTypeByName(namespace string, typeStr string, definition interface{}) AvroType {
 	switch typeStr {
 	case "int":
-		return &intField{definition}
+		return NewIntField(definition)
 
 	case "long":
-		return &longField{definition}
+		return NewLongField(definition)
 
 	case "float":
-		return &floatField{definition}
+		return NewFloatField(definition)
 
 	case "double":
-		return &doubleField{definition}
+		return NewDoubleField(definition)
 
 	case "boolean":
-		return &boolField{definition}
+		return NewBoolField(definition)
 
 	case "bytes":
-		return &bytesField{definition}
+		return NewBytesField(definition)
 
 	case "string":
-		return &stringField{definition}
+		return NewStringField(definition)
 
 	case "null":
-		return &nullField{definition}
+		return NewNullField(definition)
 	}
 
 	return NewReference(ParseAvroName(namespace, typeStr))

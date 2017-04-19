@@ -140,22 +140,37 @@ func (r *RecordDefinition) filename() string {
 	return generator.ToSnake(r.Name()) + ".go"
 }
 
-func (r *RecordDefinition) schemaMethodDef() string {
-	def := r.Definition(make(map[QualifiedName]interface{}))
+func (r *RecordDefinition) schemaMethodDef() (string, error) {
+	def, err := r.Definition(make(map[QualifiedName]interface{}))
+	if err != nil {
+		return "", err
+	}
+
 	schemaJson, _ := json.Marshal(def)
-	return fmt.Sprintf(recordSchemaTemplate, r.GoType(), strconv.Quote(string(schemaJson)))
+	return fmt.Sprintf(recordSchemaTemplate, r.GoType(), strconv.Quote(string(schemaJson))), nil
 }
 
-func (r *RecordDefinition) AddStruct(p *generator.Package) {
+func (r *RecordDefinition) AddStruct(p *generator.Package) error {
 	// Import guard, to avoid circular dependencies
 	if !p.HasStruct(r.filename(), r.GoType()) {
 		p.AddStruct(r.filename(), r.GoType(), r.structDefinition())
-		p.AddFunction(r.filename(), r.GoType(), "Schema", r.schemaMethodDef())
-		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), r.ConstructorMethodDef())
+		schemaDef, err := r.schemaMethodDef()
+		if err != nil {
+			return err
+		}
+
+		p.AddFunction(r.filename(), r.GoType(), "Schema", schemaDef)
+		constructorMethodDef, err := r.ConstructorMethodDef()
+		if err != nil {
+			return err
+		}
+
+		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
 		for _, f := range r.fields {
 			f.Type().AddStruct(p)
 		}
 	}
+	return nil
 }
 
 func (r *RecordDefinition) AddSerializer(p *generator.Package) {
@@ -193,46 +208,64 @@ func (r *RecordDefinition) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) interface{} {
+func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	if _, ok := scope[r.name]; ok {
-		return r.name.String()
+		return r.name.String(), nil
 	}
 	scope[r.name] = 1
 	fields := make([]map[string]interface{}, 0)
 	for _, f := range r.fields {
-		fields = append(fields, f.Definition(scope))
+		def, err := f.Definition(scope)
+		if err != nil {
+			return nil, err
+		}
+		fields = append(fields, def)
 	}
 
 	r.metadata["fields"] = fields
-	return r.metadata
+	return r.metadata, nil
 }
 
 func (r *RecordDefinition) ConstructorMethod() string {
 	return fmt.Sprintf("New%v()", r.Name())
 }
 
-func (r *RecordDefinition) fieldConstructors() string {
+func (r *RecordDefinition) fieldConstructors() (string, error) {
 	constructors := ""
 	for _, f := range r.fields {
 		if constructor, ok := getConstructableForType(f.Type()); ok {
 			constructors += fmt.Sprintf("%v: %v,\n", f.GoName(), constructor.ConstructorMethod())
 		}
 	}
-	return constructors
+	return constructors, nil
 }
 
-func (r *RecordDefinition) defaultValues() string {
+func (r *RecordDefinition) defaultValues() (string, error) {
 	defaults := ""
 	for _, f := range r.fields {
 		if f.hasDef {
-			defaults += f.Type().DefaultValue(fmt.Sprintf("v.%v", f.GoName()), f.Default()) + "\n"
+			def, err := f.Type().DefaultValue(fmt.Sprintf("v.%v", f.GoName()), f.Default())
+			if err != nil {
+				return "", err
+			}
+			defaults += def + "\n"
 		}
 	}
-	return defaults
+	return defaults, nil
 }
 
-func (r *RecordDefinition) ConstructorMethodDef() string {
-	return fmt.Sprintf(recordConstructorTemplate, r.ConstructorMethod(), r.GoType(), r.Name(), r.fieldConstructors(), r.defaultValues())
+func (r *RecordDefinition) ConstructorMethodDef() (string, error) {
+	defaults, err := r.defaultValues()
+	if err != nil {
+		return "", err
+	}
+
+	fieldConstructors, err := r.fieldConstructors()
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf(recordConstructorTemplate, r.ConstructorMethod(), r.GoType(), r.Name(), fieldConstructors, defaults), nil
 }
 
 func (r *RecordDefinition) FieldByName(name string) *Field {
@@ -244,12 +277,17 @@ func (r *RecordDefinition) FieldByName(name string) *Field {
 	return nil
 }
 
-func (r *RecordDefinition) DefaultValue(lvalue string, rvalue interface{}) string {
+func (r *RecordDefinition) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	items := rvalue.(map[string]interface{})
 	fieldSetters := ""
 	for k, v := range items {
 		field := r.FieldByName(k)
-		fieldSetters += field.Type().DefaultValue(fmt.Sprintf("%v.%v", lvalue, field.GoName()), v) + "\n"
+		fieldSetter, err := field.Type().DefaultValue(fmt.Sprintf("%v.%v", lvalue, field.GoName()), v)
+		if err != nil {
+			return "", err
+		}
+
+		fieldSetters += fieldSetter + "\n"
 	}
-	return fieldSetters
+	return fieldSetters, nil
 }

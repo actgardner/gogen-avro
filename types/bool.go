@@ -60,26 +60,18 @@ func readBool(r io.Reader) (bool, error) {
 `
 
 type boolField struct {
-	definition interface{}
+	primitiveField
 }
 
-func (s *boolField) Name() string {
-	return "Bool"
+func NewBoolField(definition interface{}) *boolField {
+	return &boolField{primitiveField{
+		definition:         definition,
+		name:               "Bool",
+		goType:             "bool",
+		serializerMethod:   "writeBool",
+		deserializerMethod: "readBool",
+	}}
 }
-
-func (s *boolField) GoType() string {
-	return "bool"
-}
-
-func (s *boolField) SerializerMethod() string {
-	return "writeBool"
-}
-
-func (s *boolField) DeserializerMethod() string {
-	return "readBool"
-}
-
-func (s *boolField) AddStruct(*generator.Package) {}
 
 func (s *boolField) AddSerializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
@@ -93,18 +85,10 @@ func (s *boolField) AddDeserializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *boolField) ResolveReferences(n *Namespace) error {
-	return nil
-}
+func (s *boolField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	if _, ok := rvalue.(bool); !ok {
+		return "", fmt.Errorf("Expected bool as default for field %v, got %q", lvalue, rvalue)
+	}
 
-func (s *boolField) Schema(names map[QualifiedName]interface{}) interface{} {
-	return "boolean"
-}
-
-func (s *boolField) Definition(_ map[QualifiedName]interface{}) interface{} {
-	return s.definition
-}
-
-func (s *boolField) DefaultValue(lvalue string, rvalue interface{}) string {
-	return fmt.Sprintf("%v = %v", lvalue, rvalue)
+	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
 }

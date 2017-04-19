@@ -27,26 +27,18 @@ func readDouble(r io.Reader) (float64, error) {
 `
 
 type doubleField struct {
-	definition interface{}
+	primitiveField
 }
 
-func (s *doubleField) Name() string {
-	return "Double"
+func NewDoubleField(definition interface{}) *doubleField {
+	return &doubleField{primitiveField{
+		definition:         definition,
+		name:               "Double",
+		goType:             "float64",
+		serializerMethod:   "writeDouble",
+		deserializerMethod: "readDouble",
+	}}
 }
-
-func (s *doubleField) GoType() string {
-	return "float64"
-}
-
-func (s *doubleField) SerializerMethod() string {
-	return "writeDouble"
-}
-
-func (s *doubleField) DeserializerMethod() string {
-	return "readDouble"
-}
-
-func (s *doubleField) AddStruct(*generator.Package) {}
 
 func (s *doubleField) AddSerializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
@@ -63,14 +55,9 @@ func (s *doubleField) AddDeserializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "encoding/binary")
 }
 
-func (s *doubleField) ResolveReferences(n *Namespace) error {
-	return nil
-}
-
-func (s *doubleField) Definition(_ map[QualifiedName]interface{}) interface{} {
-	return s.definition
-}
-
-func (s *doubleField) DefaultValue(lvalue string, rvalue interface{}) string {
-	return fmt.Sprintf("%v = %v", lvalue, rvalue)
+func (s *doubleField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	if _, ok := rvalue.(float64); !ok {
+		return "", fmt.Errorf("Expected number as default for field %v, got %q", lvalue, rvalue)
+	}
+	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
 }
