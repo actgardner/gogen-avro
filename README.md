@@ -60,9 +60,12 @@ go install github.com/alanctgardner/gogen-avro/example/container
 
 ### Naming
 
-Gogen-avro converts field and type names to be valid, public Go names using snaker (github.com/serenize/snaker). 
-As a result the generated structs may have names that are slightly different from the names in the Avro schema - 
-illegal characters will be removed and the first character will be upper-case. 
+Gogen-avro converts field and type names to be valid, public Go names by following a few simple steps:
+
+- removing leading underscore characters (`_`)
+- upper-casing the first letter of the name
+
+This minimizes the risk that two fields with different Avro names will have the same Go name.
 
 Gogen-avro respects namespaces and aliases when resolving type names. However, generated files will all be placed directly
 into the package specified by the user. This may cause issues in rare cases where two types have different namespaces but the
