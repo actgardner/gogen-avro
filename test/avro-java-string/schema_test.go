@@ -10,10 +10,10 @@ import (
 /* Round-trip some primitive values through our serializer and goavro to verify */
 var fixtures = []Event{
 	{
-		ID: "id1",
+		Id: "id1",
 	},
 	{
-		ID: "differentid",
+		Id: "differentid",
 	},
 }
 
@@ -22,7 +22,7 @@ func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}
 	fixture := expected.(Event)
 	id, err := record.Get("id")
 	assert.Nil(t, err)
-	assert.Equal(t, id, fixture.ID)
+	assert.Equal(t, id, fixture.Id)
 }
 
 func TestRootUnionFixture(t *testing.T) {

@@ -2,14 +2,16 @@ package generator
 
 import (
 	"sort"
+	"strings"
 	"unicode"
-
-	"github.com/serenize/snaker"
 )
 
-// ToPublicName returns a go-idiomatic public name
+/*
+  ToPublicName returns a go-idiomatic public name. The Avro spec specifies names must start with [A-Za-z_] and contain [A-Za-z0-9_].
+  The golang spec says valid identifiers start with [A-Za-z_] and contain [A-Za-z0-9], but the first character must be [A-Z] for the field to be public.
+*/
 func ToPublicName(name string) string {
-	return snaker.SnakeToCamel(name)
+	return strings.Title(strings.Trim(name, "_"))
 }
 
 func concatSortedMap(m map[string]string, sep string) string {
