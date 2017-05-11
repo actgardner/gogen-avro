@@ -28,7 +28,7 @@ func main() {
 	// Create a container.Writer which can write any generated Avro struct to a file
 	// Note that all the objects written to the file must be the same type
 	// Using the Null codec means blocks are uncompressed - other options are Snappy and Deflate
-	containerWriter, err := container.NewWriter(fileWriter, container.Null, 10)
+	containerWriter, err := container.NewWriter(fileWriter, container.Null, 10, demoStruct.Schema())
 	if err != nil {
 		fmt.Printf("Error opening container writer: %v\n", err)
 		return
