@@ -36,8 +36,8 @@ func (s *Reference) DeserializerMethod() string {
 	return s.def.DeserializerMethod()
 }
 
-func (s *Reference) AddStruct(p *generator.Package) error {
-	return s.def.AddStruct(p)
+func (s *Reference) AddStruct(p *generator.Package, containers bool) error {
+	return s.def.AddStruct(p, containers)
 }
 
 func (s *Reference) AddSerializer(p *generator.Package) {

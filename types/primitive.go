@@ -29,7 +29,7 @@ func (s *primitiveField) DeserializerMethod() string {
 	return s.deserializerMethod
 }
 
-func (s *primitiveField) AddStruct(p *generator.Package) error {
+func (s *primitiveField) AddStruct(p *generator.Package, _ bool) error {
 	return nil
 }
 

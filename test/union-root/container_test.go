@@ -60,8 +60,7 @@ func TestIPSchemaMetadata(t *testing.T) {
 func roundTripWithCodec(codec container.Codec, t *testing.T) {
 	var buf bytes.Buffer
 	// Write the container file contents to the buffer
-	sampleEvent := Event{}
-	containerWriter, err := container.NewWriter(&buf, codec, 2, sampleEvent.Schema())
+	containerWriter, err := NewEventWriter(&buf, codec, 2)
 	if err != nil {
 		t.Fatal(err)
 	}

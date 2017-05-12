@@ -5,6 +5,7 @@
  * SOURCE:
  *     example.avsc
  */
+
 package avro
 
 import (

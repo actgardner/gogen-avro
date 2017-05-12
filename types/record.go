@@ -48,6 +48,13 @@ func %v(r io.Reader) (%v, error) {
 }
 `
 
+const recordWriterTemplate = `
+func %v(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
+	str := &%v{}
+	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+}
+`
+
 type RecordDefinition struct {
 	name     QualifiedName
 	aliases  []QualifiedName
@@ -128,6 +135,14 @@ func (r *RecordDefinition) publicDeserializerMethod() string {
 	return fmt.Sprintf("Deserialize%v", r.Name())
 }
 
+func (r *RecordDefinition) recordWriterMethod() string {
+	return fmt.Sprintf("New%vWriter", r.Name())
+}
+
+func (r *RecordDefinition) recordWriterMethodDef() string {
+	return fmt.Sprintf(recordWriterTemplate, r.recordWriterMethod(), r.Name())
+}
+
 func (r *RecordDefinition) publicSerializerMethodDef() string {
 	return fmt.Sprintf(recordStructPublicSerializerTemplate, r.GoType(), r.SerializerMethod())
 }
@@ -150,7 +165,7 @@ func (r *RecordDefinition) schemaMethodDef() (string, error) {
 	return fmt.Sprintf(recordSchemaTemplate, r.GoType(), strconv.Quote(string(schemaJson))), nil
 }
 
-func (r *RecordDefinition) AddStruct(p *generator.Package) error {
+func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) error {
 	// Import guard, to avoid circular dependencies
 	if !p.HasStruct(r.filename(), r.GoType()) {
 		p.AddStruct(r.filename(), r.GoType(), r.structDefinition())
@@ -165,9 +180,14 @@ func (r *RecordDefinition) AddStruct(p *generator.Package) error {
 			return err
 		}
 
+		if containers {
+			p.AddImport(r.filename(), "github.com/alanctgardner/gogen-avro/container")
+			p.AddFunction(r.filename(), "", r.recordWriterMethod(), r.recordWriterMethodDef())
+		}
+
 		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
 		for _, f := range r.fields {
-			f.Type().AddStruct(p)
+			f.Type().AddStruct(p, containers)
 		}
 	}
 	return nil

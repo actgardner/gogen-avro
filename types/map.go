@@ -87,8 +87,8 @@ func (s *mapField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.Name())
 }
 
-func (s *mapField) AddStruct(p *generator.Package) error {
-	return s.itemType.AddStruct(p)
+func (s *mapField) AddStruct(p *generator.Package, containers bool) error {
+	return s.itemType.AddStruct(p, containers)
 }
 
 func (s *mapField) AddSerializer(p *generator.Package) {

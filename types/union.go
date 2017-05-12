@@ -108,11 +108,11 @@ func (s *unionField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.Name())
 }
 
-func (s *unionField) AddStruct(p *generator.Package) error {
+func (s *unionField) AddStruct(p *generator.Package, containers bool) error {
 	p.AddStruct(s.filename(), s.unionEnumType(), s.unionEnumDef())
 	p.AddStruct(s.filename(), s.Name(), s.unionTypeDef())
 	for _, f := range s.itemType {
-		err := f.AddStruct(p)
+		err := f.AddStruct(p, containers)
 		if err != nil {
 			return err
 		}

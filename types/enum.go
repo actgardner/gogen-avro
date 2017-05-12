@@ -111,7 +111,7 @@ func (e *EnumDefinition) filename() string {
 	return generator.ToSnake(e.GoType()) + ".go"
 }
 
-func (e *EnumDefinition) AddStruct(p *generator.Package) error {
+func (e *EnumDefinition) AddStruct(p *generator.Package, _ bool) error {
 	p.AddStruct(e.filename(), e.GoType(), e.structDef())
 	p.AddFunction(e.filename(), e.GoType(), "String", e.stringerDef())
 	return nil

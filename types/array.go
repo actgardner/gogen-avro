@@ -81,8 +81,8 @@ func (s *arrayField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.Name())
 }
 
-func (s *arrayField) AddStruct(p *generator.Package) error {
-	return s.itemType.AddStruct(p)
+func (s *arrayField) AddStruct(p *generator.Package, container bool) error {
+	return s.itemType.AddStruct(p, container)
 }
 
 func (s *arrayField) AddSerializer(p *generator.Package) {

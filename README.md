@@ -20,7 +20,7 @@ go get github.com/alanctgardner/gogen-avro/...
 To generate Go source files from one or more Avro schema files, run:
 
 ```
-gogen-avro [--package=<package name>] <output directory> <avro schema files>
+gogen-avro [--package=<package name>] [--containers] <output directory> <avro schema files>
 ```
 
 You can also use a `go:generate` directive in a source file ([example](https://github.com/alanctgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
@@ -35,11 +35,17 @@ For each record in the provided schemas, gogen-avro will produce a struct, and t
 - `<RecordType>.Serialize(io.Writer)` - a method to encode the contents of the struct into the given `io.Writer`
 - `Deserialize<RecordType>(io.Reader)` - a method to read a struct from the given `io.Reader`
 
+Passing the `--containers` flag also generates a method `New<RecordType>Writer(w io.Writer, codec Codec, batchSize int)` for each record type.
+This is a convenience method to generate a new container writer.
+
+The containers flag is disabled by default, because the generated files have to import the containers package. 
+
 ### Container File Support
 
-gogen-avro generates a struct for each record type defined in the supplied schemas. Container file support is implemented in a generic way for all generated structs. The package `container` has a `Writer` which wraps an `io.Writer` and accepts some arguments for block size (in records) and codec (for compression). 
+gogen-avro generates a struct definition for each record type defined in the supplied schemas. 
+The `WriteRecord` method in `container.Writer` accepts an `AvroRecord`, an interface implemented by every generated record struct.
 
-The `WriteRecord` method in `container.Writer` accepts an `AvroRecord`, which is an interface implemented by every generated record struct. 
+To create a new `container.Writer`, you can specify the schema manually in `container.NewWriter`, or you can use the `--containers` flag to generate methods for each record type. 
 
 An example of how to write a container file can be found in `example/container/example.go`.
 

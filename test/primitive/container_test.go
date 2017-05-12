@@ -32,8 +32,7 @@ func roundTripWithCodec(codec container.Codec, t *testing.T) {
 	var buf bytes.Buffer
 	// Write the container file contents to the buffer
 	var containerWriter *container.Writer
-	sampleRecord := PrimitiveTestRecord{}
-	containerWriter, err = container.NewWriter(&buf, codec, 2, sampleRecord.Schema())
+	containerWriter, err = NewPrimitiveTestRecordWriter(&buf, codec, 2)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -5,9 +5,11 @@
  * SOURCE:
  *     example.avsc
  */
+
 package avro
 
 import (
+	"github.com/alanctgardner/gogen-avro/container"
 	"io"
 )
 
@@ -21,6 +23,17 @@ type DemoSchema struct {
 
 func DeserializeDemoSchema(r io.Reader) (*DemoSchema, error) {
 	return readDemoSchema(r)
+}
+
+func NewDemoSchemaWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
+	str := &DemoSchema{}
+	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+}
+
+func NewDemoSchema() *DemoSchema {
+	v := &DemoSchema{}
+
+	return v
 }
 
 func (r *DemoSchema) Schema() string {

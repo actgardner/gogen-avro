@@ -14,11 +14,14 @@ import (
 
 func main() {
 	packageName := flag.String("package", "avro", "Name of generated package")
+	containers := flag.Bool("containers", false, "Whether to generate container writer methods")
+
 	flag.Parse()
 	if flag.NArg() < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--package=<package name>] <target directory> <schema files>\n")
+		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--package=<package name>] [--containers] <target directory> <schema files>\n")
 		os.Exit(1)
 	}
+
 	targetDir := flag.Arg(0)
 	files := flag.Args()[1:]
 
@@ -41,7 +44,7 @@ func main() {
 	}
 
 	// Resolve dependencies and add the schemas to the package
-	err = addFieldsToPackage(namespace, pkg)
+	err = addFieldsToPackage(namespace, pkg, *containers)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating code for schema - %v\n", err)
 		os.Exit(4)
@@ -59,14 +62,14 @@ func main() {
 	}
 }
 
-func addFieldsToPackage(namespace *types.Namespace, pkg *generator.Package) error {
+func addFieldsToPackage(namespace *types.Namespace, pkg *generator.Package, containers bool) error {
 	for _, schema := range namespace.Schemas {
 		err := schema.Root.ResolveReferences(namespace)
 		if err != nil {
 			return err
 		}
 
-		schema.Root.AddStruct(pkg)
+		schema.Root.AddStruct(pkg, containers)
 		schema.Root.AddSerializer(pkg)
 		schema.Root.AddDeserializer(pkg)
 	}

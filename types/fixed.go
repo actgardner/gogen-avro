@@ -76,7 +76,7 @@ func (s *FixedDefinition) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.GoType())
 }
 
-func (s *FixedDefinition) AddStruct(p *generator.Package) error {
+func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
 	p.AddStruct(s.filename(), s.GoType(), s.typeDef())
 	return nil
 }
