@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/alanctgardner/gogen-avro/generator"
 	"strings"
 )
 
@@ -42,6 +43,24 @@ func NewNamespace() *Namespace {
 		Definitions: make(map[QualifiedName]Definition),
 		Schemas:     make([]Schema, 0),
 	}
+}
+
+func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment string, containers bool) error {
+	for _, schema := range namespace.Schemas {
+		err := schema.Root.ResolveReferences(namespace)
+		if err != nil {
+			return err
+		}
+
+		schema.Root.AddStruct(p, containers)
+		schema.Root.AddSerializer(p)
+		schema.Root.AddDeserializer(p)
+	}
+
+	for _, f := range p.Files() {
+		p.AddHeader(f, headerComment)
+	}
+	return nil
 }
 
 /*

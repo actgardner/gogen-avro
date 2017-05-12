@@ -43,16 +43,10 @@ func main() {
 		}
 	}
 
-	// Resolve dependencies and add the schemas to the package
-	err = addFieldsToPackage(namespace, pkg, *containers)
+	err = namespace.AddToPackage(pkg, codegenComment(files), *containers)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating code for schema - %v\n", err)
 		os.Exit(4)
-	}
-
-	// Add header comment to all generated files.
-	for _, f := range pkg.Files() {
-		pkg.AddHeader(f, codegenComment(files))
 	}
 
 	err = pkg.WriteFiles(targetDir)
@@ -60,20 +54,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error writing source files to directory %q - %v\n", targetDir, err)
 		os.Exit(4)
 	}
-}
-
-func addFieldsToPackage(namespace *types.Namespace, pkg *generator.Package, containers bool) error {
-	for _, schema := range namespace.Schemas {
-		err := schema.Root.ResolveReferences(namespace)
-		if err != nil {
-			return err
-		}
-
-		schema.Root.AddStruct(pkg, containers)
-		schema.Root.AddSerializer(pkg)
-		schema.Root.AddDeserializer(pkg)
-	}
-	return nil
 }
 
 // codegenComment generates a comment informing readers they are looking at
