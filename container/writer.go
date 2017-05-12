@@ -38,15 +38,16 @@ type Writer struct {
 	blockBuffer      *bytes.Buffer
 	compressedWriter io.Writer
 	nextBlockRecords int64
-	headerWritten    bool
 }
 
 /*
   Create a new Writer wrapping the provided io.Writer with the given Codec and number of records per block.
   The Writer will lazily write the container file header when WriteRecord is called the first time.
   You must call Flush on the Writer before closing the underlying io.Writer, to ensure the final block is written.
+  A schema string must be passed to ensure that a correct header is written even if no records are written. This
+  is required to produce valid empty Avro container files.
 */
-func NewWriter(writer io.Writer, codec Codec, recordsPerBlock int64) (*Writer, error) {
+func NewWriter(writer io.Writer, codec Codec, recordsPerBlock int64, schema string) (*Writer, error) {
 	blockBytes := make([]byte, 0)
 	blockBuffer := bytes.NewBuffer(blockBytes)
 
@@ -56,7 +57,6 @@ func NewWriter(writer io.Writer, codec Codec, recordsPerBlock int64) (*Writer, e
 		codec:           codec,
 		recordsPerBlock: recordsPerBlock,
 		blockBuffer:     blockBuffer,
-		headerWritten:   false,
 	}
 	var err error
 	if codec == Deflate {
@@ -68,6 +68,11 @@ func NewWriter(writer io.Writer, codec Codec, recordsPerBlock int64) (*Writer, e
 		avroWriter.compressedWriter = newSnappyWriter(avroWriter.blockBuffer)
 	} else if codec == Null {
 		avroWriter.compressedWriter = avroWriter.blockBuffer
+	}
+
+	err = avroWriter.writeHeader(schema)
+	if err != nil {
+		return nil, err
 	}
 
 	return avroWriter, nil
@@ -92,14 +97,6 @@ func (avroWriter *Writer) writeHeader(schema string) error {
 */
 func (avroWriter *Writer) WriteRecord(record AvroRecord) error {
 	var err error
-	// Lazily write the header when the first record is written
-	if !avroWriter.headerWritten {
-		avroWriter.headerWritten = true
-		err = avroWriter.writeHeader(record.Schema())
-		if err != nil {
-			return err
-		}
-	}
 	// Serialize the new record into the compressed writer
 	err = record.Serialize(avroWriter.compressedWriter)
 	if err != nil {
@@ -121,11 +118,6 @@ func (avroWriter *Writer) WriteRecord(record AvroRecord) error {
   This must be called before the underlying io.Writer is closed.
 */
 func (avroWriter *Writer) Flush() error {
-	// Don't flush if unused
-	if !avroWriter.headerWritten {
-		return nil
-	}
-
 	// Write out all of the buffered records as a new block
 	// Must be called before closing to ensure the last block is written
 	if fwWriter, ok := avroWriter.compressedWriter.(CloseableResettableWriter); ok {
