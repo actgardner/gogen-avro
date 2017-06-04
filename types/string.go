@@ -32,6 +32,13 @@ func readString(r io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+  // makeslice can fail depending on available memory.
+  // We arbitrarily limit string size to sane default (~2.2GB).
+	if len > math.MaxInt32 {
+		return "", fmt.Errorf("input string length too large: %d", len)
+	}
+
 	bb := make([]byte, len)
 	_, err = io.ReadFull(r, bb)
 	if err != nil {
@@ -68,6 +75,8 @@ func (s *stringField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
 	p.AddFunction(UTIL_FILE, "", "readString", readStringMethod)
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, "fmt")
+	p.AddImport(UTIL_FILE, "math")
 }
 
 func (s *stringField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
