@@ -15,6 +15,7 @@ var testCases = []struct {
 }{
 	{StringRec{"Test string"}, 0, false},
 	{StringRec{"Test string"}, math.MaxInt64, true},
+	{StringRec{"Test string"}, -1, true},
 }
 
 // Test string deserializer behaviour to check that corrupted string will not generate a panic.
@@ -37,12 +38,12 @@ func TestCorruptString(t *testing.T) {
 			if !testCase.expectFailure {
 				t.Error("deserialize failed:", err)
 			}
-			return
+			continue
 		}
 
 		if testCase.expectFailure {
 			t.Error("expecting error on deserialize")
-			return
+			continue
 		}
 
 		checkEqual(testCase.input, output, t)

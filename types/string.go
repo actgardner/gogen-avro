@@ -35,8 +35,8 @@ func readString(r io.Reader) (string, error) {
 
   // makeslice can fail depending on available memory.
   // We arbitrarily limit string size to sane default (~2.2GB).
-	if len > math.MaxInt32 {
-		return "", fmt.Errorf("input string length too large: %d", len)
+	if len < 0 || len > math.MaxInt32 {
+		return "", fmt.Errorf("string length out of range: %d", len)
 	}
 
 	bb := make([]byte, len)
