@@ -116,6 +116,8 @@ func (s *mapField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readString", readStringMethod)
 	p.AddFunction(UTIL_FILE, "", methodName, mapDeserializer)
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, "fmt")
+	p.AddImport(UTIL_FILE, "math")
 }
 
 func (s *mapField) ResolveReferences(n *Namespace) error {
