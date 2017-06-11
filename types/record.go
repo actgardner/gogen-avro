@@ -7,24 +7,26 @@ import (
 	"strconv"
 )
 
-const recordStructDefTemplate = `type %v struct {
+const recordStructDefTemplate = `
+type %v struct {
 %v
 }
 `
 
-const recordSchemaTemplate = `func (r %v) Schema() string {
- return %v
+const recordSchemaTemplate = `
+func (r %v) Schema() string {
+	return %v
 }
 `
 
 const recordConstructorTemplate = `
-	func %v %v {
-		v := &%v{
-			%v
-		}
+func %v %v {
+	v := &%v{
 		%v
-		return v
 	}
+	%v
+	return v
+}
 `
 
 const recordStructPublicSerializerTemplate = `
@@ -34,17 +36,30 @@ func (r %v) Serialize(w io.Writer) error {
 `
 
 const recordStructDeserializerTemplate = `
-func %v(r io.Reader) (%v, error) {
+func %v(writerSchema *types.Field, r io.Reader) (%v, error) {
 	var str = &%v{}
 	var err error
-	%v
+	var fieldDeserializers = %v
+        for _, f := range writerSchema.Fields() {
+		if deserializer, ok := fieldDeserializers[f.AvroName()]; ok {
+			err = deserializer(f, str, r)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			err = f.Skip(r)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
 	return str, nil
 }
 `
 
 const recordStructPublicDeserializerTemplate = `
-func %v(r io.Reader) (%v, error) {
-	return %v(r)
+func %v(writerSchema *types.Field, r io.Reader) (%v, error) {
+	return %v(writerSchema, r)
 }
 `
 
@@ -87,6 +102,10 @@ func (r *RecordDefinition) Aliases() []QualifiedName {
 	return r.aliases
 }
 
+func (r *RecordDefinition) Fields() []*Field {
+	return r.fields
+}
+
 func (r *RecordDefinition) structFields() string {
 	var fieldDefinitions string
 	for _, f := range r.fields {
@@ -106,9 +125,9 @@ func (r *RecordDefinition) fieldSerializers() string {
 func (r *RecordDefinition) fieldDeserializers() string {
 	deserializerMethods := ""
 	for _, f := range r.fields {
-		deserializerMethods += fmt.Sprintf("str.%v, err = %v(r)\nif err != nil {return nil, err}\n", f.GoName(), f.Type().DeserializerMethod())
+		deserializerMethods += fmt.Sprintf("\"%v\": func(writerSchema *types.Field, str %v, r io.Reader) error {\nstr.%v, err = %v(r)\n return err\n},\n", f.Name(), r.GoType(), f.GoName(), f.Type().DeserializerMethod())
 	}
-	return deserializerMethods
+	return fmt.Sprintf("map[string]func(*types.Field, %v, io.Reader) {\n%v\n}", r.GoType(), deserializerMethods)
 }
 
 func (r *RecordDefinition) structDefinition() string {
@@ -209,6 +228,7 @@ func (r *RecordDefinition) AddDeserializer(p *generator.Package) {
 	// Import guard, to avoid circular dependencies
 	if !p.HasFunction(UTIL_FILE, "", r.DeserializerMethod()) {
 		p.AddImport(r.filename(), "io")
+		p.AddImport(UTIL_FILE, "github.com/alanctgardner/gogen-avro/types")
 		p.AddFunction(UTIL_FILE, "", r.DeserializerMethod(), r.deserializerMethodDef())
 		p.AddFunction(r.filename(), "", r.publicDeserializerMethod(), r.publicDeserializerMethodDef())
 		for _, f := range r.fields {
