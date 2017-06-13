@@ -3,16 +3,17 @@ package types
 import (
 	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
+	"io"
 )
 
 const mapSerializerTemplate = `
 func %v(r %v, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
+	err := types.WriteLong(int64(len(r)), w)
 	if err != nil || len(r) == 0 {
 		return err
 	}
 	for k, e := range r {
-		err = writeString(k, w)
+		err = types.WriteString(k, w)
 		if err != nil {
 			return err
 		}
@@ -21,7 +22,7 @@ func %v(r %v, w io.Writer) error {
 			return err
 		}
 	}
-	return writeLong(0, w)
+	return types.WriteLong(0, w)
 }
 `
 
@@ -44,7 +45,7 @@ func %v(r io.Reader) (%v, error) {
 			}
 		}
 		for i := int64(0); i < blkSize; i++ {
-			key, err := readString(r)
+			key, err := types.ReadString(r)
 			if err != nil {
 				return nil, err
 			}
@@ -97,13 +98,9 @@ func (s *mapField) AddSerializer(p *generator.Package) {
 	methodName := s.SerializerMethod()
 	mapSerializer := fmt.Sprintf(mapSerializerTemplate, s.SerializerMethod(), s.GoType(), itemMethodName)
 
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddStruct(UTIL_FILE, "StringWriter", stringWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.AddFunction(UTIL_FILE, "", "writeString", writeStringMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.AddFunction(UTIL_FILE, "", methodName, mapSerializer)
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, gogenavroImport)
 }
 
 func (s *mapField) AddDeserializer(p *generator.Package) {
@@ -112,12 +109,8 @@ func (s *mapField) AddDeserializer(p *generator.Package) {
 	methodName := s.DeserializerMethod()
 	mapDeserializer := fmt.Sprintf(mapDeserializerTemplate, s.DeserializerMethod(), s.GoType(), s.GoType(), itemMethodName)
 
-	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
-	p.AddFunction(UTIL_FILE, "", "readString", readStringMethod)
 	p.AddFunction(UTIL_FILE, "", methodName, mapDeserializer)
-	p.AddImport(UTIL_FILE, "io")
-	p.AddImport(UTIL_FILE, "fmt")
-	p.AddImport(UTIL_FILE, "math")
+	p.AddImport(UTIL_FILE, gogenavroImport)
 }
 
 func (s *mapField) ResolveReferences(n *Namespace) error {
@@ -152,4 +145,34 @@ func (s *mapField) DefaultValue(lvalue string, rvalue interface{}) (string, erro
 		setters += setter + "\n"
 	}
 	return setters, nil
+}
+
+func (s *mapField) Skip(r io.Reader) error {
+	for {
+		blkSize, err := ReadLong(r)
+		if err != nil {
+			return err
+		}
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err := ReadLong(r)
+			if err != nil {
+				return err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			_, err := ReadString(r)
+			if err != nil {
+				return err
+			}
+			err = s.itemType.Skip(r)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

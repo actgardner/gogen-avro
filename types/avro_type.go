@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/alanctgardner/gogen-avro/generator"
+	"io"
 )
 
 type AvroType interface {
@@ -25,4 +26,7 @@ type AvroType interface {
 
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
 	DefaultValue(lvalue string, rvalue interface{}) (string, error)
+
+	// Advance the reader past this field
+	Skip(io.Reader) error
 }

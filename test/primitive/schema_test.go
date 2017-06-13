@@ -3,6 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/alanctgardner/gogen-avro/types"
 	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -18,6 +19,11 @@ const fixtureJson = `
 {"IntField": -2147483647, "LongField": -9223372036854775807, "FloatField": 3.402823e-38, "DoubleField": 2.2250738585072014e-308, "StringField": "", "BoolField": true, "BytesField": ""}
 ]
 `
+
+var (
+	primitive = &PrimitiveTestRecord{}
+	schema, _ = types.AvroTypeFromString(primitive.Schema())
+)
 
 func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}) {
 	record := actual.(*goavro.Record)
@@ -78,7 +84,7 @@ func TestRoundTrip(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := DeserializePrimitiveTestRecord(&buf)
+		datum, err := DeserializePrimitiveTestRecord(schema, &buf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -138,7 +144,7 @@ func BenchmarkDeserializePrimitiveRecord(b *testing.B) {
 	recordBytes := buf.Bytes()
 	for i := 0; i < b.N; i++ {
 		bb := bytes.NewBuffer(recordBytes)
-		_, err := DeserializePrimitiveTestRecord(bb)
+		_, err := DeserializePrimitiveTestRecord(schema, bb)
 		if err != nil {
 			b.Fatal(err)
 		}

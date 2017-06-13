@@ -4,9 +4,6 @@ import (
 	"github.com/alanctgardner/gogen-avro/generator"
 )
 
-/*
- * The interface implemented by all Avro field types.
- */
 type Field struct {
 	avroName   string
 	avroType   AvroType

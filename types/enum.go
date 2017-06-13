@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
+	"io"
 )
 
 const enumTypeDef = `
@@ -24,13 +25,13 @@ func (e %v) String() string {
 
 const enumSerializerDef = `
 func %v(r %v, w io.Writer) error {
-	return writeInt(int32(r), w)
+	return types.WriteInt(int32(r), w)
 }
 `
 
 const enumDeserializerDef = `
 func %v(r io.Reader) (%v, error) {
-	val, err := readInt(r)
+	val, err := types.ReadInt(r)
 	return %v(val), err
 }
 `
@@ -118,17 +119,15 @@ func (e *EnumDefinition) AddStruct(p *generator.Package, _ bool) error {
 }
 
 func (e *EnumDefinition) AddSerializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.AddFunction(UTIL_FILE, "", e.SerializerMethod(), e.serializerMethodDef())
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, gogenavroImport)
 }
 
 func (e *EnumDefinition) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "readInt", readIntMethod)
 	p.AddFunction(UTIL_FILE, "", e.DeserializerMethod(), e.deserializerMethodDef())
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, gogenavroImport)
 }
 
 func (s *EnumDefinition) ResolveReferences(n *Namespace) error {
@@ -148,4 +147,9 @@ func (s *EnumDefinition) DefaultValue(lvalue string, rvalue interface{}) (string
 	}
 
 	return fmt.Sprintf("%v = %v", lvalue, generator.ToPublicName(rvalue.(string))), nil
+}
+
+func (s *EnumDefinition) Skip(r io.Reader) error {
+	_, err := ReadInt(r)
+	return err
 }

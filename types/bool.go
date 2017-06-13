@@ -2,62 +2,8 @@ package types
 
 import (
 	"fmt"
-	"github.com/alanctgardner/gogen-avro/generator"
+	"io"
 )
-
-const byteWriterInterface = `
-type ByteWriter interface {
-	Grow(int)
-	WriteByte(byte) error
-} 
-`
-
-const byteReaderInterface = `
-type ByteReader interface {
-	ReadByte() (byte, error)
-} 
-`
-
-const writeBoolMethod = `
-
-func writeBool(r bool, w io.Writer) error {
-	var b byte
-	if r {
-		b = byte(1)
-	}
-
-	var err error
-	if bw, ok := w.(ByteWriter); ok {
-		err = bw.WriteByte(b)
-	} else {
-		bb := make([]byte, 1)
-		bb[0] = b
-		_, err = w.Write(bb)
-	}
-	if err != nil {
-		return err
-	}
-	return nil
-}
-`
-
-const readBoolMethod = `
-func readBool(r io.Reader) (bool, error) {
-	var b byte
-	var err error
-	if br, ok := r.(ByteReader); ok {
-		b, err = br.ReadByte()
-	} else {
-		bs := make([]byte, 1)
-		_, err = io.ReadFull(r, bs)
-		if err != nil {
-			return false, err
-		}
-		b = bs[0]
-	}
-	return b == 1, nil
-}
-`
 
 type boolField struct {
 	primitiveField
@@ -68,21 +14,9 @@ func NewBoolField(definition interface{}) *boolField {
 		definition:         definition,
 		name:               "Bool",
 		goType:             "bool",
-		serializerMethod:   "writeBool",
-		deserializerMethod: "readBool",
+		serializerMethod:   "types.WriteBool",
+		deserializerMethod: "types.ReadBool",
 	}}
-}
-
-func (s *boolField) AddSerializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeBool", writeBoolMethod)
-	p.AddImport(UTIL_FILE, "io")
-}
-
-func (s *boolField) AddDeserializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteReader", byteReaderInterface)
-	p.AddFunction(UTIL_FILE, "", "readBool", readBoolMethod)
-	p.AddImport(UTIL_FILE, "io")
 }
 
 func (s *boolField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -91,4 +25,9 @@ func (s *boolField) DefaultValue(lvalue string, rvalue interface{}) (string, err
 	}
 
 	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
+}
+
+func (s *boolField) Skip(r io.Reader) error {
+	_, err := ReadBool(r)
+	return err
 }

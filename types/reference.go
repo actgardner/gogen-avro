@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
+	"io"
 )
 
 /*
@@ -59,10 +60,18 @@ func (s *Reference) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
+func (s *Reference) AvroType() AvroType {
+	return s.def
+}
+
 func (s *Reference) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	return s.def.Definition(scope)
 }
 
 func (s *Reference) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	return s.def.DefaultValue(lvalue, rvalue)
+}
+
+func (s *Reference) Skip(r io.Reader) error {
+	return s.def.Skip(r)
 }

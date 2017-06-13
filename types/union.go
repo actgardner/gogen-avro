@@ -3,11 +3,12 @@ package types
 import (
 	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
+	"io"
 )
 
 const unionSerializerTemplate = `
 func %v(r %v, w io.Writer) error {
-	err := writeLong(int64(r.UnionType), w)
+	err := types.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
 	}
@@ -20,7 +21,7 @@ func %v(r %v, w io.Writer) error {
 
 const unionDeserializerTemplate = `
 func %v(r io.Reader) (%v, error) {
-	field, err := readLong(r)
+	field, err := types.ReadLong(r)
 	var unionStr %v
 	if err != nil {
 		return unionStr, err
@@ -123,10 +124,9 @@ func (s *unionField) AddStruct(p *generator.Package, containers bool) error {
 func (s *unionField) AddSerializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "fmt")
 	p.AddFunction(UTIL_FILE, "", s.SerializerMethod(), s.unionSerializer())
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, gogenavroImport)
+
 	for _, f := range s.itemType {
 		f.AddSerializer(p)
 	}
@@ -135,8 +135,9 @@ func (s *unionField) AddSerializer(p *generator.Package) {
 func (s *unionField) AddDeserializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "fmt")
 	p.AddFunction(UTIL_FILE, "", s.DeserializerMethod(), s.unionDeserializer())
-	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, gogenavroImport)
+
 	for _, f := range s.itemType {
 		f.AddDeserializer(p)
 	}
@@ -167,4 +168,17 @@ func (s *unionField) Definition(scope map[QualifiedName]interface{}) (interface{
 func (s *unionField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	lvalue = fmt.Sprintf("%v.%v", lvalue, s.itemType[0].Name())
 	return s.itemType[0].DefaultValue(lvalue, rvalue)
+}
+
+func (s *unionField) Skip(r io.Reader) error {
+	field, err := ReadLong(r)
+	if err != nil {
+		return err
+	}
+
+	if field < 0 || int(field) >= len(s.itemType) {
+		return fmt.Errorf("Invalid value for %v", field)
+	}
+
+	return s.itemType[field].Skip(r)
 }

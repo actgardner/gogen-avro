@@ -3,11 +3,12 @@ package types
 import (
 	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
+	"io"
 )
 
 const arraySerializerTemplate = `
 func %v(r %v, w io.Writer) error {
-	err := writeLong(int64(len(r)),w)
+	err := types.WriteLong(int64(len(r)),w)
 	if err != nil || len(r) == 0 {
 		return err
 	}
@@ -17,7 +18,7 @@ func %v(r %v, w io.Writer) error {
 			return err
 		}
 	}
-	return writeLong(0,w)
+	return types.WriteLong(0,w)
 }
 `
 
@@ -27,7 +28,7 @@ func %v(r io.Reader) (%v, error) {
 	var blkSize int64
 	var arr = make(%v, 0)
 	for {
-		blkSize, err = readLong(r)
+		blkSize, err = types.ReadLong(r)
 		if err != nil {
 			return nil, err
 		}
@@ -36,7 +37,7 @@ func %v(r io.Reader) (%v, error) {
 		}
 		if blkSize < 0 {
 			blkSize = -blkSize
-			_, err = readLong(r)
+			_, err = types.ReadLong(r)
 			if err != nil {
 				return nil, err
 			}
@@ -91,10 +92,8 @@ func (s *arrayField) AddSerializer(p *generator.Package) {
 	arraySerializer := fmt.Sprintf(arraySerializerTemplate, s.SerializerMethod(), s.GoType(), itemMethodName)
 	s.itemType.AddSerializer(p)
 	p.AddFunction(UTIL_FILE, "", methodName, arraySerializer)
-	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, gogenavroImport)
 }
 
 func (s *arrayField) AddDeserializer(p *generator.Package) {
@@ -103,8 +102,8 @@ func (s *arrayField) AddDeserializer(p *generator.Package) {
 	arrayDeserializer := fmt.Sprintf(arrayDeserializerTemplate, methodName, s.GoType(), s.GoType(), itemMethodName)
 	s.itemType.AddDeserializer(p)
 	p.AddFunction(UTIL_FILE, "", methodName, arrayDeserializer)
-	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, gogenavroImport)
 }
 
 func (s *arrayField) ResolveReferences(n *Namespace) error {
@@ -145,4 +144,32 @@ func (s *arrayField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 		setters += setter + "\n"
 	}
 	return setters, nil
+}
+
+func (s *arrayField) Skip(r io.Reader) error {
+	var err error
+	var blkSize int64
+	for {
+		blkSize, err = ReadLong(r)
+		if err != nil {
+			return err
+		}
+		if blkSize == 0 {
+			break
+		}
+		if blkSize < 0 {
+			blkSize = -blkSize
+			_, err = ReadLong(r)
+			if err != nil {
+				return err
+			}
+		}
+		for i := int64(0); i < blkSize; i++ {
+			err := s.itemType.Skip(r)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

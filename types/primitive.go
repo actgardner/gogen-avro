@@ -29,6 +29,16 @@ func (s *primitiveField) DeserializerMethod() string {
 	return s.deserializerMethod
 }
 
+func (s *primitiveField) AddSerializer(p *generator.Package) {
+	p.AddImport(UTIL_FILE, gogenavroImport)
+	p.AddImport(UTIL_FILE, "io")
+}
+
+func (s *primitiveField) AddDeserializer(p *generator.Package) {
+	p.AddImport(UTIL_FILE, gogenavroImport)
+	p.AddImport(UTIL_FILE, "io")
+}
+
 func (s *primitiveField) AddStruct(p *generator.Package, _ bool) error {
 	return nil
 }

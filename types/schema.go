@@ -29,6 +29,17 @@ type Schema struct {
 	JSONSchema []byte
 }
 
+func AvroTypeFromString(schema string) (AvroType, error) {
+	namespace := NewNamespace()
+	schemaRoot, err := namespace.TypeForSchema([]byte(schema))
+	if err != nil {
+		return nil, err
+	}
+
+	schemaRoot.ResolveReferences(namespace)
+	return schemaRoot, nil
+}
+
 /*
   Namespace is a mapping of QualifiedNames to their Definitions, used to resolve
   type lookups within a schema.

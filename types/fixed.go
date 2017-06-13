@@ -3,6 +3,8 @@ package types
 import (
 	"fmt"
 	"github.com/alanctgardner/gogen-avro/generator"
+	"io"
+	"io/ioutil"
 )
 
 const writeFixedMethod = `
@@ -84,11 +86,13 @@ func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
 func (s *FixedDefinition) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, gogenavroImport)
 }
 
 func (s *FixedDefinition) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", s.DeserializerMethod(), s.deserializerMethodDef())
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, gogenavroImport)
 }
 
 func (s *FixedDefinition) ResolveReferences(n *Namespace) error {
@@ -108,4 +112,9 @@ func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (strin
 	}
 
 	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue), nil
+}
+
+func (s *FixedDefinition) Skip(r io.Reader) error {
+	_, err := io.CopyN(ioutil.Discard, r, int64(s.sizeBytes))
+	return err
 }
