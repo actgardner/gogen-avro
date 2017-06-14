@@ -1,0 +1,9 @@
+{
+	"type": "record",
+	"name": "LessFields",
+	"fields": [
+		{"name": "IntField", "type": "int"},
+		{"name": "FloatField", "type": "float"},
+		{"name": "StringField", "type": "string"}
+	]
+}

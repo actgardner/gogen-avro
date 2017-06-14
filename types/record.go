@@ -48,7 +48,7 @@ func %v(writerSchema types.AvroType, r io.Reader) (%v, error) {
 		return nil, fmt.Errorf("Reader expected Avro type to be a record but got writer type %%t", recordRef.AvroType())
 	}
 
-	var str = &%v{}
+	var str = %v
 	var err error
 	var fieldDeserializers = %v
         for _, f := range recordSchema.Fields() {
@@ -150,7 +150,7 @@ func (r *RecordDefinition) serializerMethodDef() string {
 }
 
 func (r *RecordDefinition) deserializerMethodDef() string {
-	return fmt.Sprintf(recordStructDeserializerTemplate, r.DeserializerMethod(), r.GoType(), r.Name(), r.fieldDeserializers())
+	return fmt.Sprintf(recordStructDeserializerTemplate, r.DeserializerMethod(), r.GoType(), r.ConstructorMethod(), r.fieldDeserializers())
 }
 
 func (r *RecordDefinition) SerializerMethod() string {

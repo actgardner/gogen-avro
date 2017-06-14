@@ -1,0 +1,12 @@
+{
+	"type": "record",
+	"name": "MoreFields",
+	"fields": [
+		{"name": "IntField", "type": "int", "default": 1},
+		{"name": "LongField", "type": "long", "default": 2},
+		{"name": "FloatField", "type": "float", "default": 3.4},
+		{"name": "DoubleField", "type": "double", "default": 5.6},
+		{"name": "StringField", "type": "string", "default": "defaultValue"},
+		{"name": "BoolField", "type": "boolean", "default": true}
+	]
+}
