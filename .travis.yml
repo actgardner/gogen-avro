@@ -6,7 +6,7 @@ go:
   - 1.7
   - tip
 
-install: go get -t -v ./...
+install: go get -t -v ./gogen-avro
 
 script:
   - go test github.com/alanctgardner/gogen-avro/generator

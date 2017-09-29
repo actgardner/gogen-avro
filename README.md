@@ -3,7 +3,7 @@ gogen-avro
 
 [![Build Status](https://travis-ci.org/alanctgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/alanctgardner/gogen-avro)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/alanctgardner/gogen-avro/master/LICENSE)
-[![Version 4.0.1](https://img.shields.io/badge/version-4.0.1-lightgrey.svg)](https://gopkg.in/alanctgardner/gogen-avro.v4)
+[![Version 5.0.0](https://img.shields.io/badge/version-5.0.0-lightgrey.svg)](https://gopkg.in/alanctgardner/gogen-avro.v5)
 
 Generate Go structures and serializer / deserializer methods from Avro schemas. Generated serializers/deserializers are 2-8x faster than goavro, and you get compile-time safety for getting and setting fields.
 
@@ -13,6 +13,12 @@ gogen-avro is a tool which you install on your system (usually on your GOPATH), 
 
 ```
 go install github.com/alanctgardner/gogen-avro/gogen-avro
+```
+
+Or install a fixed release from gopkg.in:
+
+```
+go install gopkg.in/alanctgardner/gogen-avro.v5
 ```
 
 ### Usage
