@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/alanctgardner/gogen-avro/container"
-	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/linkedin/goavro.v1"
 	"testing"
 )
 

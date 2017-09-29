@@ -3,8 +3,8 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/linkedin/goavro.v1"
 	"io/ioutil"
 	"reflect"
 	"testing"

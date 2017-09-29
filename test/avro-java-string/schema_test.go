@@ -2,8 +2,8 @@ package avro
 
 import (
 	"bytes"
-	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/linkedin/goavro.v1"
 	"testing"
 )
 
