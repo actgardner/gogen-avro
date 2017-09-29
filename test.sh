@@ -9,7 +9,7 @@ run_test() {
 	go test -v github.com/alanctgardner/gogen-avro/$1
 }
 
-go install github.com/alanctgardner/gogen-avro
+go install github.com/alanctgardner/gogen-avro/gogen-avro
 
 if [ $# -eq 0 ]; then
 	for t in test/*/; do
