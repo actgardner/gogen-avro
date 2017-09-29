@@ -11,4 +11,4 @@ GITHUB_REPO="github.com/alanctgardner/gogen-avro"
 VERSION="$1"
 GOPKG_REPO="gopkg.in/alanctgardner/gogen-avro.$VERSION"
 
-sed -i "s|$GITHUB_REPO|$GOPKG_REPO|" container/*.go generator/*.go types/*.go gogen-avro/main.go example/*/*.go test.sh 
+sed -i "s|$GITHUB_REPO|$GOPKG_REPO|" container/*.go generator/*.go types/*.go gogen-avro/main.go example/*/*.go test/*/*.go test.sh 

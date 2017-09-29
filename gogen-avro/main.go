@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/alanctgardner/gogen-avro/generator"
-	"github.com/alanctgardner/gogen-avro/types"
+	"gopkg.in/alanctgardner/gogen-avro.v5/generator"
+	"gopkg.in/alanctgardner/gogen-avro.v5/types"
 )
 
 func main() {
@@ -62,7 +62,7 @@ func main() {
 // invariant: sources > 0
 func codegenComment(sources []string) string {
 	const fileComment = `/*
- * CODE GENERATED AUTOMATICALLY WITH github.com/alanctgardner/gogen-avro
+ * CODE GENERATED AUTOMATICALLY WITH gopkg.in/alanctgardner/gogen-avro.v5
  * THIS FILE SHOULD NOT BE EDITED BY HAND
  *
  * %s

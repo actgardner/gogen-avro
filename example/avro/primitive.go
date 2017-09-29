@@ -1,5 +1,5 @@
 /*
- * CODE GENERATED AUTOMATICALLY WITH github.com/alanctgardner/gogen-avro
+ * CODE GENERATED AUTOMATICALLY WITH gopkg.in/alanctgardner/gogen-avro.v5
  * THIS FILE SHOULD NOT BE EDITED BY HAND
  *
  * SOURCE:

@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-	"github.com/alanctgardner/gogen-avro/generator"
+	"gopkg.in/alanctgardner/gogen-avro.v5/generator"
 )
 
 const writeFixedMethod = `
