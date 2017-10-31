@@ -3,8 +3,10 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/alanctgardner/gogen-avro.v5/generator"
+	"reflect"
 	"strings"
+
+	"gopkg.in/alanctgardner/gogen-avro.v5/generator"
 )
 
 const UTIL_FILE = "primitive.go"
@@ -67,8 +69,10 @@ func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment str
   Add a new type definition to the namespace. Returns an error if the type is already defined.
 */
 func (n *Namespace) RegisterDefinition(d Definition) error {
-	if _, ok := n.Definitions[d.AvroName()]; ok {
-		return fmt.Errorf("Conflicting definitions for %v", d.AvroName())
+	if curDef, ok := n.Definitions[d.AvroName()]; ok {
+		if !reflect.DeepEqual(curDef, d) {
+			return fmt.Errorf("Conflicting definitions for %v", d.AvroName())
+		}
 	}
 	n.Definitions[d.AvroName()] = d
 
