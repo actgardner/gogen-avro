@@ -50,7 +50,7 @@ func TestMapFixture(t *testing.T) {
 		for i := 0; i < value.NumField(); i++ {
 			fieldName := value.Type().Field(i).Name
 			avroVal, ok := record[fieldName]
-			if ok != true {
+			if !ok {
 				t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 			}
 			avroMap := avroVal.(map[string]interface{})

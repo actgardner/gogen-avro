@@ -90,11 +90,11 @@ func TestNestedFixture(t *testing.T) {
 			for j := 0; j < structVal.NumField(); j++ {
 				nestedFieldName := structVal.Type().Field(j).Name
 				avroVal, ok := record[fieldName]
-				if ok != true {
+				if !ok {
 					t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 				}
 				nestedAvroVal, ok := avroVal.(map[string]interface{})[nestedFieldName]
-				if ok != true {
+				if !ok {
 					t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 				}
 				nestedStructVal := structVal.Field(j).Interface()

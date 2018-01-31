@@ -45,7 +45,7 @@ func TestFixedFixture(t *testing.T) {
 		}
 		record := datum.(map[string]interface{})
 		recordVal, ok := record["FixedField"]
-		if ok != true {
+		if !ok {
 			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 		}
 		if !reflect.DeepEqual(recordVal, ([]byte)((f.FixedField)[:])) {

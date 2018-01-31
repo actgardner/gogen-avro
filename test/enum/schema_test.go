@@ -53,7 +53,7 @@ func TestEnumFixture(t *testing.T) {
 		}
 		record := datum.(map[string]interface{})
 		recordVal, ok := record["EnumField"]
-		if ok != true {
+		if !ok {
 			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 		}
 		if got, want := recordVal, f.EnumField.String(); got != want {

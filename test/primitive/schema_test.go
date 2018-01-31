@@ -27,7 +27,7 @@ func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}
 		fieldName := value.Type().Field(i).Name
 		structVal := value.Field(i).Interface()
 		avroVal, ok := record[fieldName]
-		if ok != true {
+		if !ok {
 			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 		}
 		if !reflect.DeepEqual(structVal, avroVal) {

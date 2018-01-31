@@ -55,7 +55,7 @@ func TestArrayFixture(t *testing.T) {
 			fieldName := value.Type().Field(i).Name
 			avroVal, ok := record[fieldName]
 			if got, want := ok, true; got != want {
-				t.Fatal("GOT: %#v; WANT: %#v", got, want)
+				t.Fatalf("GOT: %#v; WANT: %#v", got, want)
 			}
 			avroArray := avroVal.([]interface{})
 			if len(avroArray) != value.Field(i).Len() {

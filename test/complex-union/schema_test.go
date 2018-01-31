@@ -48,7 +48,7 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 		}
 		record := datum.(map[string]interface{})
 		recordField, ok := record["UnionField"]
-		if ok != true {
+		if !ok {
 			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 		}
 		switch f.UnionField.UnionType {
@@ -72,7 +72,7 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 			}
 		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord:
 			v, ok := recordField.(map[string]interface{})["NestedUnionRecord"].(map[string]interface{})["IntField"]
-			if ok != true {
+			if !ok {
 				t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 			}
 			if v.(int32) != f.UnionField.NestedUnionRecord.IntField {
