@@ -3,11 +3,12 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/linkedin/goavro.v1"
 	"io/ioutil"
 	"reflect"
 	"testing"
+
+	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 )
 
 /* Round-trip some primitive values through our serializer and goavro to verify */
@@ -41,17 +42,20 @@ func TestArrayFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := codec.Decode(&buf)
+		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
 		if err != nil {
 			t.Fatal(err)
 		}
-		record := datum.(*goavro.Record)
+		if got, want := len(remaining), 0; got != want {
+			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
+		}
+		record := datum.(map[string]interface{})
 		value := reflect.ValueOf(f)
 		for i := 0; i < value.NumField(); i++ {
 			fieldName := value.Type().Field(i).Name
-			avroVal, err := record.Get(fieldName)
-			if err != nil {
-				t.Fatal(err)
+			avroVal, ok := record[fieldName]
+			if got, want := ok, true; got != want {
+				t.Fatal("GOT: %#v; WANT: %#v", got, want)
 			}
 			avroArray := avroVal.([]interface{})
 			if len(avroArray) != value.Field(i).Len() {
@@ -81,8 +85,10 @@ func TestArrayDefaults(t *testing.T) {
 
 func BenchmarkArrayRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
+	record := ArrayTestRecord{[]int32{1, 2, 3}, []int64{4, 5, 6}, []float64{3.4, 5.6, 7.8}, []string{"abc", "def", "ghi"}, []float32{10.1, 10.2, 10.3}, []bool{true, false}, [][]byte{{1, 2, 3, 4}}}
+
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		record := ArrayTestRecord{[]int32{1, 2, 3}, []int64{4, 5, 6}, []float64{3.4, 5.6, 7.8}, []string{"abc", "def", "ghi"}, []float32{10.1, 10.2, 10.3}, []bool{true, false}, [][]byte{{1, 2, 3, 4}}}
 		err := record.Serialize(buf)
 		if err != nil {
 			b.Fatal(err)
@@ -99,42 +105,20 @@ func BenchmarkArrayGoavro(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	someRecord, err := goavro.NewRecord(goavro.RecordSchema(string(schemaJson)))
-	if err != nil {
-		b.Fatal(err)
+	someRecord := map[string]interface{}{
+		"IntField":    []interface{}{int32(1), int32(2), int32(3)},
+		"LongField":   []interface{}{int64(4), int64(5), int64(6)},
+		"FloatField":  []interface{}{float32(10.1), float32(10.2), float32(10.3)},
+		"DoubleField": []interface{}{float64(3.4), float64(5.6), float64(7.8)},
+		"StringField": []interface{}{"abc", "def", "ghi"},
+		"BoolField":   []interface{}{true, false},
+		"BytesField":  []interface{}{[]byte{1, 2, 3, 4}},
 	}
-	buf := new(bytes.Buffer)
-	for i := 0; i < b.N; i++ {
-		err := someRecord.Set("IntField", []interface{}{int32(1), int32(2), int32(3)})
-		if err != nil {
-			b.Fatal(err)
-		}
-		err = someRecord.Set("LongField", []interface{}{int64(4), int64(5), int64(6)})
-		if err != nil {
-			b.Fatal(err)
-		}
-		err = someRecord.Set("FloatField", []interface{}{float32(10.1), float32(10.2), float32(10.3)})
-		if err != nil {
-			b.Fatal(err)
-		}
-		err = someRecord.Set("DoubleField", []interface{}{float64(3.4), float64(5.6), float64(7.8)})
-		if err != nil {
-			b.Fatal(err)
-		}
-		err = someRecord.Set("StringField", []interface{}{"abc", "def", "ghi"})
-		if err != nil {
-			b.Fatal(err)
-		}
-		err = someRecord.Set("BoolField", []interface{}{true, false})
-		if err != nil {
-			b.Fatal(err)
-		}
-		err = someRecord.Set("BytesField", []interface{}{[]byte{1, 2, 3, 4}})
-		if err != nil {
-			b.Fatal(err)
-		}
+	buf := make([]byte, 0, 1024)
 
-		err = codec.Encode(buf, someRecord)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := codec.BinaryFromNative(buf, someRecord)
 		if err != nil {
 			b.Fatal(err)
 		}

@@ -3,11 +3,12 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/linkedin/goavro"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"reflect"
 	"testing"
+
+	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 )
 
 /* Round-trip some primitive values through our serializer and goavro to verify */
@@ -77,24 +78,27 @@ func TestNestedFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := codec.Decode(&buf)
+		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
 		if err != nil {
 			t.Fatal(err)
 		}
-		record := datum.(*goavro.Record)
+		if got, want := len(remaining), 0; got != want {
+			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
+		}
+		record := datum.(map[string]interface{})
 		value := reflect.ValueOf(f)
 		for i := 0; i < value.NumField(); i++ {
 			fieldName := value.Type().Field(i).Name
 			structVal := reflect.Indirect(value.Field(i))
 			for j := 0; j < structVal.NumField(); j++ {
 				nestedFieldName := structVal.Type().Field(j).Name
-				avroVal, err := record.Get(fieldName)
-				if err != nil {
-					t.Fatal(err)
+				avroVal, ok := record[fieldName]
+				if ok != true {
+					t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 				}
-				nestedAvroVal, err := avroVal.(*goavro.Record).Get(nestedFieldName)
-				if err != nil {
-					t.Fatal(err)
+				nestedAvroVal, ok := avroVal.(map[string]interface{})[nestedFieldName]
+				if ok != true {
+					t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 				}
 				nestedStructVal := structVal.Field(j).Interface()
 				if !reflect.DeepEqual(nestedStructVal, nestedAvroVal) {

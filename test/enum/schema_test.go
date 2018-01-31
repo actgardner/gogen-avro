@@ -3,10 +3,11 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/linkedin/goavro.v1"
 	"io/ioutil"
 	"testing"
+
+	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 )
 
 /* Round-trip some primitive values through our serializer and goavro to verify */
@@ -43,17 +44,20 @@ func TestEnumFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := codec.Decode(&buf)
+		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
 		if err != nil {
 			t.Fatal(err)
 		}
-		record := datum.(*goavro.Record)
-		recordVal, err := record.Get("EnumField")
-		if err != nil {
-			t.Fatal(err)
+		if got, want := len(remaining), 0; got != want {
+			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
 		}
-		if recordVal.(goavro.Enum).Value != f.EnumField.String() {
-			t.Fatalf("EnumField %v is not equal to %v", recordVal, f.EnumField)
+		record := datum.(map[string]interface{})
+		recordVal, ok := record["EnumField"]
+		if ok != true {
+			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
+		}
+		if got, want := recordVal, f.EnumField.String(); got != want {
+			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
 		}
 	}
 }

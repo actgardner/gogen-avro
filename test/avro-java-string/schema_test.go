@@ -2,9 +2,10 @@ package avro
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/linkedin/goavro.v1"
 	"testing"
+
+	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 )
 
 /* Round-trip some primitive values through our serializer and goavro to verify */
@@ -18,10 +19,10 @@ var fixtures = []Event{
 }
 
 func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}) {
-	record := actual.(*goavro.Record)
+	record := actual.(map[string]interface{})
 	fixture := expected.(Event)
-	id, err := record.Get("id")
-	assert.Nil(t, err)
+	id, ok := record["id"]
+	assert.Equal(t, ok, true)
 	assert.Equal(t, id, fixture.Id)
 }
 
@@ -37,9 +38,12 @@ func TestRootUnionFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := codec.Decode(&buf)
+		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
 		if err != nil {
 			t.Fatal(err)
+		}
+		if got, want := len(remaining), 0; got != want {
+			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
 		}
 		compareFixtureGoAvro(t, datum, f)
 	}

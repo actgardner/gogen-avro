@@ -3,11 +3,12 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/linkedin/goavro.v1"
 	"io/ioutil"
 	"reflect"
 	"testing"
+
+	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 )
 
 /* Round-trip some primitive values through our serializer and goavro to verify */
@@ -40,17 +41,17 @@ func TestMapFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := codec.Decode(&buf)
+		datum, _, err := codec.NativeFromBinary(buf.Bytes())
 		if err != nil {
 			t.Fatal(err)
 		}
-		record := datum.(*goavro.Record)
+		record := datum.(map[string]interface{})
 		value := reflect.ValueOf(f)
 		for i := 0; i < value.NumField(); i++ {
 			fieldName := value.Type().Field(i).Name
-			avroVal, err := record.Get(fieldName)
-			if err != nil {
-				t.Fatal(err)
+			avroVal, ok := record[fieldName]
+			if ok != true {
+				t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 			}
 			avroMap := avroVal.(map[string]interface{})
 			if len(avroMap) != value.Field(i).Len() {
@@ -70,8 +71,10 @@ func TestMapFixture(t *testing.T) {
 
 func BenchmarkMapRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
+	record := MapTestRecord{map[string]int32{"value1": 1, "value2": 2, "value3": 3}, map[string]int64{"value1": 1, "value2": 2, "value3": 3}, map[string]float64{"value1": 1, "value2": 2, "value3": 3}, map[string]string{"value1": "12345", "value2": "67890", "value3": "abcdefg"}, map[string]float32{"value1": 1, "value2": 2, "value3": 3}, map[string]bool{"true": true, "false": false}, map[string][]byte{"value1": {1, 2, 3, 4}, "value2": {100, 200, 255}}}
+
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		record := MapTestRecord{map[string]int32{"value1": 1, "value2": 2, "value3": 3}, map[string]int64{"value1": 1, "value2": 2, "value3": 3}, map[string]float64{"value1": 1, "value2": 2, "value3": 3}, map[string]string{"value1": "12345", "value2": "67890", "value3": "abcdefg"}, map[string]float32{"value1": 1, "value2": 2, "value3": 3}, map[string]bool{"true": true, "false": false}, map[string][]byte{"value1": {1, 2, 3, 4}, "value2": {100, 200, 255}}}
 		err := record.Serialize(buf)
 		if err != nil {
 			b.Fatal(err)
@@ -88,23 +91,24 @@ func BenchmarkMapGoavro(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	someRecord, err := goavro.NewRecord(goavro.RecordSchema(string(schemaJson)))
-	if err != nil {
-		b.Fatal(err)
+	someRecord := map[string]interface{}{
+		"IntField":    map[string]interface{}{"value1": int32(1), "value2": int32(2), "value3": int32(3)},
+		"LongField":   map[string]interface{}{"value1": int64(1), "value2": int32(2), "value3": int32(3)},
+		"FloatField":  map[string]interface{}{"value1": float32(1), "value2": float32(2), "value3": float32(3)},
+		"DoubleField": map[string]interface{}{"value1": float32(1), "value2": float32(2), "value3": float32(3)},
+		"StringField": map[string]interface{}{"value1": "12345", "value2": "67890", "value3": "abcdefg"},
+		"BoolField":   map[string]interface{}{"true": true, "false": false},
+		"BytesField":  map[string]interface{}{"value1": []byte{1, 2, 3, 4}, "value2": []byte{100, 200, 255}},
 	}
-	buf := new(bytes.Buffer)
+	buf := make([]byte, 0, 1024)
+
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		someRecord.Set("IntField", map[string]interface{}{"value1": int32(1), "value2": int32(2), "value3": int32(3)})
-		someRecord.Set("LongField", map[string]interface{}{"value1": int64(1), "value2": int32(2), "value3": int32(3)})
-		someRecord.Set("FloatField", map[string]interface{}{"value1": float32(1), "value2": float32(2), "value3": float32(3)})
-		someRecord.Set("DoubleField", map[string]interface{}{"value1": float32(1), "value2": float32(2), "value3": float32(3)})
-		someRecord.Set("StringField", map[string]interface{}{"value1": "12345", "value2": "67890", "value3": "abcdefg"})
-		someRecord.Set("BoolField", map[string]interface{}{"true": true, "false": false})
-		someRecord.Set("BytesField", map[string]interface{}{"value1": []byte{1, 2, 3, 4}, "value2": []byte{100, 200, 255}})
-
-		codec.Encode(buf, someRecord)
+		_, err := codec.BinaryFromNative(buf, someRecord)
+		if err != nil {
+			b.Fatal(err)
+		}
 	}
-
 }
 
 func TestRoundTrip(t *testing.T) {

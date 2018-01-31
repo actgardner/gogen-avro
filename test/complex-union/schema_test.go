@@ -3,10 +3,11 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/linkedin/goavro.v1"
 	"io/ioutil"
 	"testing"
+
+	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 )
 
 /* Round-trip some primitive values through our serializer and goavro to verify */
@@ -41,14 +42,14 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := codec.Decode(&buf)
+		datum, _, err := codec.NativeFromBinary(buf.Bytes())
 		if err != nil {
 			t.Fatal(err)
 		}
-		record := datum.(*goavro.Record)
-		recordField, err := record.Get("UnionField")
-		if err != nil {
-			t.Fatal(err)
+		record := datum.(map[string]interface{})
+		recordField, ok := record["UnionField"]
+		if ok != true {
+			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 		}
 		switch f.UnionField.UnionType {
 		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull:
@@ -56,23 +57,23 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 				t.Fatalf("Expected nil value for union field, got %v", recordField)
 			}
 		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt:
-			arr := recordField.([]interface{})
+			arr := recordField.(map[string]interface{})["array"].([]interface{})
 			for i, v := range arr {
 				if v.(int32) != f.UnionField.ArrayInt[i] {
 					t.Fatalf("Expected int value %v for union field, got %v", f.UnionField.ArrayInt[i], v)
 				}
 			}
 		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt:
-			m := recordField.(map[string]interface{})
+			m := recordField.(map[string]interface{})["map"].(map[string]interface{})
 			for k, v := range m {
 				if v.(int32) != f.UnionField.MapInt[k] {
 					t.Fatalf("Expected int value %v for union map key %v field, got %v", f.UnionField.MapInt[k], k, v)
 				}
 			}
 		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord:
-			v, err := recordField.(*goavro.Record).Get("IntField")
-			if err != nil {
-				t.Fatal(err)
+			v, ok := recordField.(map[string]interface{})["NestedUnionRecord"].(map[string]interface{})["IntField"]
+			if ok != true {
+				t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 			}
 			if v.(int32) != f.UnionField.NestedUnionRecord.IntField {
 				t.Fatalf("Expected int value %v for nested record in union, got %v", f.UnionField.NestedUnionRecord.IntField, v)
