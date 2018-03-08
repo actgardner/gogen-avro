@@ -3,9 +3,10 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/alanctgardner/gogen-avro/container"
-	"gopkg.in/linkedin/goavro.v1"
 	"testing"
+
+	"github.com/alanctgardner/gogen-avro/container"
+	"github.com/linkedin/goavro"
 )
 
 /* Round-trip some primitive values through our container file writer and goavro to verify */
@@ -51,7 +52,7 @@ func roundTripWithCodec(codec container.Codec, t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reader, err := goavro.NewReader(goavro.FromReader(&buf))
+	reader, err := goavro.NewOCFReader(bytes.NewReader(buf.Bytes()))
 	if err != nil {
 		t.Fatal(err)
 	}

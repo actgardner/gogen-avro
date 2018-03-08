@@ -2,11 +2,12 @@ package avro
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/linkedin/goavro.v1"
 	"io/ioutil"
 	"reflect"
 	"testing"
+
+	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 )
 
 /* Round-trip some primitive values through our serializer and goavro to verify */
@@ -38,16 +39,16 @@ func TestFixedFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := codec.Decode(&buf)
+		datum, _, err := codec.NativeFromBinary(buf.Bytes())
 		if err != nil {
 			t.Fatal(err)
 		}
-		record := datum.(*goavro.Record)
-		recordVal, err := record.Get("FixedField")
-		if err != nil {
-			t.Fatal(err)
+		record := datum.(map[string]interface{})
+		recordVal, ok := record["FixedField"]
+		if !ok {
+			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 		}
-		if !reflect.DeepEqual(recordVal.(goavro.Fixed).Value, ([]byte)((f.FixedField)[:])) {
+		if !reflect.DeepEqual(recordVal, ([]byte)((f.FixedField)[:])) {
 			t.Fatalf("FixedField %v is not equal to %v", recordVal.([]byte), ([]byte)((f.FixedField)[:]))
 		}
 	}

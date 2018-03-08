@@ -3,11 +3,12 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/linkedin/goavro.v1"
 	"io/ioutil"
 	"reflect"
 	"testing"
+
+	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 )
 
 /* Round-trip some primitive values through our serializer and goavro to verify */
@@ -20,14 +21,14 @@ const fixtureJson = `
 `
 
 func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}) {
-	record := actual.(*goavro.Record)
+	record := actual.(map[string]interface{})
 	value := reflect.ValueOf(expected)
 	for i := 0; i < value.NumField(); i++ {
 		fieldName := value.Type().Field(i).Name
 		structVal := value.Field(i).Interface()
-		avroVal, err := record.Get(fieldName)
-		if err != nil {
-			t.Fatal(err)
+		avroVal, ok := record[fieldName]
+		if !ok {
+			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
 		}
 		if !reflect.DeepEqual(structVal, avroVal) {
 			t.Fatalf("Field %v not equal: %v != %v", fieldName, structVal, avroVal)
@@ -57,9 +58,12 @@ func TestPrimitiveFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := codec.Decode(&buf)
+		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
 		if err != nil {
 			t.Fatal(err)
+		}
+		if got, want := len(remaining), 0; got != want {
+			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
 		}
 		compareFixtureGoAvro(t, datum, f)
 	}
@@ -88,8 +92,10 @@ func TestRoundTrip(t *testing.T) {
 
 func BenchmarkSerializePrimitiveRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
+	record := PrimitiveTestRecord{1, 2, 3.4, 5.6, "789", true, []byte{1, 2, 3, 4}}
+
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		record := PrimitiveTestRecord{1, 2, 3.4, 5.6, "789", true, []byte{1, 2, 3, 4}}
 		err := record.Serialize(buf)
 		if err != nil {
 			b.Fatal(err)
@@ -106,26 +112,24 @@ func BenchmarkSerializePrimitiveGoavro(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	someRecord, err := goavro.NewRecord(goavro.RecordSchema(string(schemaJson)))
-	if err != nil {
-		b.Fatal(err)
+	someRecord := map[string]interface{}{
+		"IntField":    int32(1),
+		"LongField":   int64(2),
+		"FloatField":  float32(3.4),
+		"DoubleField": float64(5.6),
+		"StringField": "789",
+		"BoolField":   true,
+		"BytesField":  []byte{1, 2, 3, 4},
 	}
-	buf := new(bytes.Buffer)
-	for i := 0; i < b.N; i++ {
-		someRecord.Set("IntField", int32(1))
-		someRecord.Set("LongField", int64(2))
-		someRecord.Set("FloatField", float32(3.4))
-		someRecord.Set("DoubleField", float64(5.6))
-		someRecord.Set("StringField", "789")
-		someRecord.Set("BoolField", true)
-		someRecord.Set("BytesField", []byte{1, 2, 3, 4})
+	buf := make([]byte, 0, 1024)
 
-		err := codec.Encode(buf, someRecord)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := codec.BinaryFromNative(buf, someRecord)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
-
 }
 
 func BenchmarkDeserializePrimitiveRecord(b *testing.B) {
@@ -136,9 +140,10 @@ func BenchmarkDeserializePrimitiveRecord(b *testing.B) {
 		b.Fatal(err)
 	}
 	recordBytes := buf.Bytes()
+
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		bb := bytes.NewBuffer(recordBytes)
-		_, err := DeserializePrimitiveTestRecord(bb)
+		_, err := DeserializePrimitiveTestRecord(bytes.NewReader(recordBytes))
 		if err != nil {
 			b.Fatal(err)
 		}
@@ -154,30 +159,26 @@ func BenchmarkDeserializePrimitiveGoavro(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	someRecord, err := goavro.NewRecord(goavro.RecordSchema(string(schemaJson)))
-	if err != nil {
-		b.Fatal(err)
+	someRecord := map[string]interface{}{
+		"IntField":    int32(1),
+		"LongField":   int64(2),
+		"FloatField":  float32(3.4),
+		"DoubleField": float64(5.6),
+		"StringField": "789",
+		"BoolField":   true,
+		"BytesField":  []byte{1, 2, 3, 4},
 	}
-	buf := new(bytes.Buffer)
-	someRecord.Set("IntField", int32(1))
-	someRecord.Set("LongField", int64(2))
-	someRecord.Set("FloatField", float32(3.4))
-	someRecord.Set("DoubleField", float64(5.6))
-	someRecord.Set("StringField", "789")
-	someRecord.Set("BoolField", true)
-	someRecord.Set("BytesField", []byte{1, 2, 3, 4})
 
-	err = codec.Encode(buf, someRecord)
+	buf, err := codec.BinaryFromNative(nil, someRecord)
 	if err != nil {
 		b.Fatal(err)
 	}
-	recordBytes := buf.Bytes()
+
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		bb := bytes.NewBuffer(recordBytes)
-		_, err := codec.Decode(bb)
+		_, _, err := codec.NativeFromBinary(buf)
 		if err != nil {
 			b.Fatal(err)
 		}
 	}
-
 }

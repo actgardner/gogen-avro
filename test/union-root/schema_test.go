@@ -2,9 +2,10 @@ package avro
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/linkedin/goavro.v1"
 	"testing"
+
+	"github.com/linkedin/goavro"
+	"github.com/stretchr/testify/assert"
 )
 
 /* Round-trip some primitive values through our serializer and goavro to verify */
@@ -22,17 +23,17 @@ var fixtures = []Event{
 }
 
 func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}) {
-	record := actual.(*goavro.Record)
+	record := actual.(map[string]interface{})
 	fixture := expected.(Event)
-	id, err := record.Get("id")
-	assert.Nil(t, err)
+	id, ok := record["id"]
+	assert.Equal(t, ok, true)
 	assert.Equal(t, id, fixture.Id)
-	startIp, err := record.Get("start_ip")
-	assert.Nil(t, err)
-	assert.Equal(t, startIp.(goavro.Fixed).Value, fixture.Start_ip[:])
-	endIp, err := record.Get("end_ip")
-	assert.Nil(t, err)
-	assert.Equal(t, endIp.(goavro.Fixed).Value, fixture.End_ip[:])
+	startIp, ok := record["start_ip"]
+	assert.Equal(t, ok, true)
+	assert.Equal(t, startIp, fixture.Start_ip[:])
+	endIp, ok := record["end_ip"]
+	assert.Equal(t, ok, true)
+	assert.Equal(t, endIp, fixture.End_ip[:])
 }
 
 func TestRootUnionFixture(t *testing.T) {
@@ -47,9 +48,12 @@ func TestRootUnionFixture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := codec.Decode(&buf)
+		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
 		if err != nil {
 			t.Fatal(err)
+		}
+		if got, want := len(remaining), 0; got != want {
+			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
 		}
 		compareFixtureGoAvro(t, datum, f)
 	}
