@@ -125,14 +125,16 @@ func (avroWriter *Writer) Flush() error {
 		fwWriter.Reset(avroWriter.blockBuffer)
 	}
 
-	block := &avro.AvroContainerBlock{
-		NumRecords:  avroWriter.nextBlockRecords,
-		RecordBytes: avroWriter.blockBuffer.Bytes(),
-		Sync:        avroWriter.syncMarker,
-	}
-	err := block.Serialize(avroWriter.writer)
-	if err != nil {
-		return err
+	if avroWriter.nextBlockRecords > 0 {
+		block := &avro.AvroContainerBlock{
+			NumRecords:  avroWriter.nextBlockRecords,
+			RecordBytes: avroWriter.blockBuffer.Bytes(),
+			Sync:        avroWriter.syncMarker,
+		}
+		err := block.Serialize(avroWriter.writer)
+		if err != nil {
+			return err
+		}
 	}
 
 	avroWriter.blockBuffer.Reset()
