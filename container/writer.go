@@ -4,8 +4,9 @@ package container
 import (
 	"bytes"
 	"compress/flate"
-	"github.com/alanctgardner/gogen-avro/container/avro"
 	"io"
+
+	"github.com/alanctgardner/gogen-avro/container/avro"
 )
 
 /*
@@ -114,10 +115,14 @@ func (avroWriter *Writer) WriteRecord(record AvroRecord) error {
 }
 
 /*
-  Write the current block to the file, even if it hasn't been filled.
-  This must be called before the underlying io.Writer is closed.
+  Write the current block to the file if it has been filled.  It is
+  best-practise to always call this before the underlying io.Writer is closed.
 */
 func (avroWriter *Writer) Flush() error {
+	if avroWriter.nextBlockRecords == 0 {
+		return nil
+	}
+
 	// Write out all of the buffered records as a new block
 	// Must be called before closing to ensure the last block is written
 	if fwWriter, ok := avroWriter.compressedWriter.(CloseableResettableWriter); ok {
