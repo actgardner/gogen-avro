@@ -67,7 +67,7 @@ func NewWriter(writer io.Writer, codec Codec, recordsPerBlock int64, schema stri
 		}
 	} else if codec == Snappy {
 		avroWriter.compressedWriter = newSnappyWriter(avroWriter.blockBuffer)
-	} else if codec == Null {
+	} else {
 		avroWriter.compressedWriter = avroWriter.blockBuffer
 	}
 
