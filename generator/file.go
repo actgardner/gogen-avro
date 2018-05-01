@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go/format"
 	"io/ioutil"
-	"os"
 	"sort"
 	"strings"
 )
@@ -50,7 +49,7 @@ func (f *File) WriteFile(pkgName, targetFile string) error {
 	if err != nil {
 		return fmt.Errorf("Error formatting file %v - %v\n\nContents: %v", f.name, err, src)
 	}
-	err = ioutil.WriteFile(targetFile, fileContent, os.ModePerm)
+	err = ioutil.WriteFile(targetFile, fileContent, 0440)
 	if err != nil {
 		return fmt.Errorf("Error writing file %v - %v", f.name, err)
 	}
