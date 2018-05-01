@@ -6,7 +6,7 @@ import (
 	"github.com/actgardner/gogen-avro/example/avro"
 )
 
-/* This example shows serializing and deserializing records as byte buffers */
+// This example shows serializing and deserializing records as byte buffers
 func main() {
 	// Create a new DemoSchema struct
 	demoStruct := avro.DemoSchema{

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-/* Round-trip some primitive values through our serializer and goavro to verify */
+// Round-trip some primitive values through our serializer and goavro to verify 
 const fixtureJson = `
 [
 {"UnionField":{"Int":1, "UnionType":0}},

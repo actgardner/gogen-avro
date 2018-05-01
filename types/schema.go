@@ -11,9 +11,7 @@ import (
 
 const UTIL_FILE = "primitive.go"
 
-/*
-  An Avro qualified name, which includes an optional namespace and the type name.
-*/
+// An Avro qualified name, which includes an optional namespace and the type name.
 type QualifiedName struct {
 	Namespace string
 	Name      string
@@ -31,10 +29,8 @@ type Schema struct {
 	JSONSchema []byte
 }
 
-/*
-  Namespace is a mapping of QualifiedNames to their Definitions, used to resolve
-  type lookups within a schema.
-*/
+//  Namespace is a mapping of QualifiedNames to their Definitions, used to resolve
+//  type lookups within a schema.
 type Namespace struct {
 	Definitions map[QualifiedName]Definition
 	Schemas     []Schema
@@ -65,9 +61,7 @@ func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment str
 	return nil
 }
 
-/*
-  Add a new type definition to the namespace. Returns an error if the type is already defined.
-*/
+// Add a new type definition to the namespace. Returns an error if the type is already defined.
 func (n *Namespace) RegisterDefinition(d Definition) error {
 	if curDef, ok := n.Definitions[d.AvroName()]; ok {
 		if !reflect.DeepEqual(curDef, d) {
@@ -85,11 +79,9 @@ func (n *Namespace) RegisterDefinition(d Definition) error {
 	return nil
 }
 
-/*
-  Parse a name according to the Avro spec:
-  - If the name contains a dot ('.'), the last part is the name and the rest is the namespace
-  - Otherwise, the enclosing namespace is used
-*/
+// Parse a name according to the Avro spec:
+//   - If the name contains a dot ('.'), the last part is the name and the rest is the namespace
+//   - Otherwise, the enclosing namespace is used
 func ParseAvroName(enclosing, name string) QualifiedName {
 	lastIndex := strings.LastIndex(name, ".")
 	if lastIndex != -1 {
@@ -98,14 +90,12 @@ func ParseAvroName(enclosing, name string) QualifiedName {
 	return QualifiedName{enclosing, name}
 }
 
-/*
-  Given an Avro schema as a JSON string, decode it and return the AvroType defined at the top level:
-    - a single record definition (JSON map)
-    - a union of multiple types (JSON array)
-    - an already-defined type (JSON string)
+// Given an Avro schema as a JSON string, decode it and return the AvroType defined at the top level:
+//    - a single record definition (JSON map)
+//    - a union of multiple types (JSON array)
+//    - an already-defined type (JSON string)
 
-The Avro type defined at the top level and all the type definitions beneath it will also be added to this Namespace.
-*/
+// The Avro type defined at the top level and all the type definitions beneath it will also be added to this Namespace.
 func (n *Namespace) TypeForSchema(schemaJson []byte) (AvroType, error) {
 	var schema interface{}
 	if err := json.Unmarshal(schemaJson, &schema); err != nil {
@@ -138,9 +128,7 @@ func (n *Namespace) decodeTypeDefinition(namespace string, schema interface{}) (
 	return nil, NewWrongMapValueTypeError("type", "array, string, map", schema)
 }
 
-/*
-   Given a map representing a record definition, validate the definition and build the RecordDefinition struct.
-*/
+// Given a map representing a record definition, validate the definition and build the RecordDefinition struct.
 func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[string]interface{}) (Definition, error) {
 	typeStr, err := getMapString(schemaMap, "type")
 	if err != nil {
@@ -204,8 +192,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 	return NewRecordDefinition(ParseAvroName(namespace, name), aliases, decodedFields, schemaMap), nil
 }
 
-/* Given a map representing an enum definition, validate the definition and build the EnumDefinition struct.
- */
+// Given a map representing an enum definition, validate the definition and build the EnumDefinition struct.
 func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]interface{}) (Definition, error) {
 	typeStr, err := getMapString(schemaMap, "type")
 	if err != nil {
@@ -246,7 +233,7 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 	return NewEnumDefinition(ParseAvroName(namespace, name), aliases, symbolStr, schemaMap), nil
 }
 
-/* Given a map representing a fixed definition, validate the definition and build the FixedDefinition struct. */
+// Given a map representing a fixed definition, validate the definition and build the FixedDefinition struct.
 func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string]interface{}) (Definition, error) {
 	typeStr, err := getMapString(schemaMap, "type")
 	if err != nil {
@@ -401,10 +388,8 @@ func (n *Namespace) getTypeByName(namespace string, typeStr string, definition i
 	return NewReference(ParseAvroName(namespace, typeStr))
 }
 
-/*
-  Parse out all the aliases from a definition map - returns an empty slice if no aliases exist.
-  Returns an error if the aliases key exists but the value isn't a list of strings.
-*/
+//  Parse out all the aliases from a definition map - returns an empty slice if no aliases exist.
+//  Returns an error if the aliases key exists but the value isn't a list of strings.
 func parseAliases(objectMap map[string]interface{}, namespace string) ([]QualifiedName, error) {
 	aliases, ok := objectMap["aliases"]
 	if !ok {

@@ -8,9 +8,7 @@ import (
 	"strings"
 )
 
-/*
-File represents a Go source file in the output package
-*/
+// File represents a Go source file in the output package
 type File struct {
 	name      string
 	headers   []string
@@ -37,12 +35,12 @@ type FunctionName struct {
 	Name string
 }
 
-/* Write the contents of the file:
-- imports (all in one block)
-- struct definitions (alphabetically)
-- functions (sorted alphabetically by struct to which they're attached, then unattached funcs)
-TODO: It'd be better to group funcs attached to a struct with the struct definition
-*/
+// Write the contents of the file:
+//   - imports (all in one block)
+//   - struct definitions (alphabetically)
+//   - functions (sorted alphabetically by struct to which they're attached, then unattached funcs)
+
+// TODO: It'd be better to group funcs attached to a struct with the struct definition
 func (f *File) WriteFile(pkgName, targetFile string) error {
 	src := fmt.Sprintf("%v\n\npackage %v\n%v\n%v\n%v\n%v\n", f.headerString(), pkgName, f.importString(), f.constantString(), f.structString(), f.functionString())
 	fileContent, err := format.Source([]byte(src))

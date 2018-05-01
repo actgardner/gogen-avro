@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-/* This example shows serializing records in a object container file */
+// This example shows serializing records in a object container file
 func main() {
 	// Create a new DemoSchema struct
 	demoStruct := avro.DemoSchema{

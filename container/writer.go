@@ -9,9 +9,7 @@ import (
 	"github.com/actgardner/gogen-avro/container/avro"
 )
 
-/*
-  A Codec specifies how the blocks within a container file should be compressed.
-*/
+// A Codec specifies how the blocks within a container file should be compressed.
 type Codec string
 
 const (
@@ -28,9 +26,7 @@ type CloseableResettableWriter interface {
 	Reset(io.Writer)
 }
 
-/*
-  Writer wraps an io.Writer and writes the file and block-level framing required for an OCF file
-*/
+// Writer wraps an io.Writer and writes the file and block-level framing required for an OCF file
 type Writer struct {
 	writer           io.Writer
 	syncMarker       [16]byte
@@ -41,13 +37,11 @@ type Writer struct {
 	nextBlockRecords int64
 }
 
-/*
-  Create a new Writer wrapping the provided io.Writer with the given Codec and number of records per block.
-  The Writer will lazily write the container file header when WriteRecord is called the first time.
-  You must call Flush on the Writer before closing the underlying io.Writer, to ensure the final block is written.
-  A schema string must be passed to ensure that a correct header is written even if no records are written. This
-  is required to produce valid empty Avro container files.
-*/
+//  Create a new Writer wrapping the provided io.Writer with the given Codec and number of records per block.
+//  The Writer will lazily write the container file header when WriteRecord is called the first time.
+//  You must call Flush on the Writer before closing the underlying io.Writer, to ensure the final block is written.
+//  A schema string must be passed to ensure that a correct header is written even if no records are written. This
+//  is required to produce valid empty Avro container files.
 func NewWriter(writer io.Writer, codec Codec, recordsPerBlock int64, schema string) (*Writer, error) {
 	blockBytes := make([]byte, 0)
 	blockBuffer := bytes.NewBuffer(blockBytes)
@@ -91,11 +85,9 @@ func (avroWriter *Writer) writeHeader(schema string) error {
 	return header.Serialize(avroWriter.writer)
 }
 
-/*
-  Write an AvroRecord to the container file. All gogen-avro generated structs
-  fulfill the AvroRecord interface. Note that all records in a given container file
-  must be of the same Avro type.
-*/
+//  Write an AvroRecord to the container file. All gogen-avro generated structs
+//  fulfill the AvroRecord interface. Note that all records in a given container file
+//  must be of the same Avro type.
 func (avroWriter *Writer) WriteRecord(record AvroRecord) error {
 	var err error
 	// Serialize the new record into the compressed writer
@@ -114,10 +106,8 @@ func (avroWriter *Writer) WriteRecord(record AvroRecord) error {
 	return nil
 }
 
-/*
-  Write the current block to the file if it has been filled.  It is
-  best-practise to always call this before the underlying io.Writer is closed.
-*/
+//  Write the current block to the file if it has been filled.  It is
+//  best-practise to always call this before the underlying io.Writer is closed.
 func (avroWriter *Writer) Flush() error {
 	if avroWriter.nextBlockRecords == 0 {
 		return nil

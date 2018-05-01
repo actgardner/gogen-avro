@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-/* Round trip some records nested in arrays */
+// Round trip some records nested in arrays 
 const fixtureJson = `
 [
   {"Children": []},

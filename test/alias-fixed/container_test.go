@@ -8,7 +8,7 @@ import (
 	"github.com/linkedin/goavro"
 )
 
-/* Round-trip some primitive values through our container file writer and goavro to verify */
+// Round-trip some primitive values through our container file writer and goavro to verify
 
 func TestNullEncoding(t *testing.T) {
 	roundTripWithCodec(container.Null, t)
