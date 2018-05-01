@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/alanctgardner/gogen-avro/example/avro"
+	"github.com/actgardner/gogen-avro/example/avro"
 )
 
 /* This example shows serializing and deserializing records as byte buffers */

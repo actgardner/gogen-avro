@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-	"github.com/alanctgardner/gogen-avro/generator"
+	"github.com/actgardner/gogen-avro/generator"
 )
 
 const writeFloatMethod = `

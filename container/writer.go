@@ -6,7 +6,7 @@ import (
 	"compress/flate"
 	"io"
 
-	"github.com/alanctgardner/gogen-avro/container/avro"
+	"github.com/actgardner/gogen-avro/container/avro"
 )
 
 /*
