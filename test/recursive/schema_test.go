@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// Round-trip some primitive values through our serializer and goavro to verify 
+// Round-trip some primitive values through our serializer and goavro to verify
 const fixtureJson = `
 [
 {"RecursiveField":{"UnionType":0}},
