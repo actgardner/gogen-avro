@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Round-trip some primitive values through our serializer and goavro to verify 
+// Round-trip some primitive values through our serializer and goavro to verify
 var fixtures = []FixedTestRecord{
 	{
 		FixedField: [12]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},

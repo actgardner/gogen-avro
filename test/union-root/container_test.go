@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Round-trip some primitive values through our container file writer and goavro to verify 
+// Round-trip some primitive values through our container file writer and goavro to verify
 
 func TestNullEncoding(t *testing.T) {
 	roundTripWithCodec(container.Null, t)
@@ -24,7 +24,7 @@ func TestDeflateEncoding(t *testing.T) {
 	roundTripWithCodec(container.Snappy, t)
 }
 
-// Test that extra metadata in the schema is included 
+// Test that extra metadata in the schema is included
 func TestEventSchemaMetadata(t *testing.T) {
 	event := &Event{}
 	var eventJson map[string]interface{}
