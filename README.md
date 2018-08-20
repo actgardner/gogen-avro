@@ -35,6 +35,8 @@ You can also use a `go:generate` directive in a source file ([example](https://g
 //go:generate $GOPATH/bin/gogen-avro . primitives.avsc
 ```
 
+Note: If you want to parse multiple `.avsc` files into a single Go package (a single folder), make sure you put them all in one line. gogen-avro produces a file, `primitive.go`, that will be overwritten if you run it multiple times with different `.avsc` files and the same output folder.
+
 For each record in the provided schemas, gogen-avro will produce a struct, and the following methods:
 
 - `New<RecordType>()` - a constructor to create a new record struct with the default values from the Avro schema
