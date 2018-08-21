@@ -1,0 +1,11 @@
+{
+	"type": "record",
+	"name": "PrimitiveUnionTestRecord",
+	"fields": [
+		{
+                    "name": "UnionField", 
+                    "type": ["int", "long", "float", "double", "string", "boolean", "bytes", "null"],
+                    "default": 1234
+                }
+	]
+}

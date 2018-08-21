@@ -34,12 +34,14 @@ type Schema struct {
 type Namespace struct {
 	Definitions map[QualifiedName]Definition
 	Schemas     []Schema
+	ShortUnions bool
 }
 
-func NewNamespace() *Namespace {
+func NewNamespace(shortUnions bool) *Namespace {
 	return &Namespace{
 		Definitions: make(map[QualifiedName]Definition),
 		Schemas:     make([]Schema, 0),
+		ShortUnions: shortUnions,
 	}
 }
 
@@ -102,7 +104,7 @@ func (n *Namespace) TypeForSchema(schemaJson []byte) (AvroType, error) {
 		return nil, err
 	}
 
-	field, err := n.decodeTypeDefinition("", schema)
+	field, err := n.decodeTypeDefinition("topLevel", "", schema)
 	if err != nil {
 		return nil, err
 	}
@@ -111,17 +113,17 @@ func (n *Namespace) TypeForSchema(schemaJson []byte) (AvroType, error) {
 	return field, nil
 }
 
-func (n *Namespace) decodeTypeDefinition(namespace string, schema interface{}) (AvroType, error) {
+func (n *Namespace) decodeTypeDefinition(name, namespace string, schema interface{}) (AvroType, error) {
 	switch schema.(type) {
 	case string:
 		typeStr := schema.(string)
 		return n.getTypeByName(namespace, typeStr, schema), nil
 
 	case []interface{}:
-		return n.decodeUnionDefinition(namespace, schema.([]interface{}))
+		return n.decodeUnionDefinition(name, namespace, schema.([]interface{}))
 
 	case map[string]interface{}:
-		return n.decodeComplexDefinition(namespace, schema.(map[string]interface{}))
+		return n.decodeComplexDefinition(name, namespace, schema.(map[string]interface{}))
 
 	}
 
@@ -173,7 +175,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 			return nil, NewRequiredMapKeyError("type")
 		}
 
-		fieldType, err := n.decodeTypeDefinition(namespace, t)
+		fieldType, err := n.decodeTypeDefinition(fieldName, namespace, t)
 		if err != nil {
 			return nil, err
 		}
@@ -269,20 +271,26 @@ func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string
 	return NewFixedDefinition(ParseAvroName(namespace, name), aliases, int(sizeBytes), schemaMap), nil
 }
 
-func (n *Namespace) decodeUnionDefinition(namespace string, fieldList []interface{}) (AvroType, error) {
+func (n *Namespace) decodeUnionDefinition(name, namespace string, fieldList []interface{}) (AvroType, error) {
 	unionFields := make([]AvroType, 0)
 	for _, f := range fieldList {
-		fieldDef, err := n.decodeTypeDefinition(namespace, f)
+		fieldDef, err := n.decodeTypeDefinition(name, namespace, f)
 		if err != nil {
 			return nil, err
 		}
 
 		unionFields = append(unionFields, fieldDef)
 	}
-	return NewUnionField(unionFields, fieldList), nil
+
+	if (n.ShortUnions) {
+		name += "Union"
+	} else {
+		name = ""
+	}
+	return NewUnionField(name, unionFields, fieldList), nil
 }
 
-func (n *Namespace) decodeComplexDefinition(namespace string, typeMap map[string]interface{}) (AvroType, error) {
+func (n *Namespace) decodeComplexDefinition(name, namespace string, typeMap map[string]interface{}) (AvroType, error) {
 	typeStr, err := getMapString(typeMap, "type")
 	if err != nil {
 		return nil, err
@@ -294,7 +302,7 @@ func (n *Namespace) decodeComplexDefinition(namespace string, typeMap map[string
 			return nil, NewRequiredMapKeyError("items")
 		}
 
-		fieldType, err := n.decodeTypeDefinition(namespace, items)
+		fieldType, err := n.decodeTypeDefinition(name, namespace, items)
 		if err != nil {
 			return nil, err
 		}
@@ -307,7 +315,7 @@ func (n *Namespace) decodeComplexDefinition(namespace string, typeMap map[string
 			return nil, NewRequiredMapKeyError("values")
 		}
 
-		fieldType, err := n.decodeTypeDefinition(namespace, values)
+		fieldType, err := n.decodeTypeDefinition(name, namespace, values)
 		if err != nil {
 			return nil, err
 		}

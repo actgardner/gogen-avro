@@ -47,7 +47,7 @@ func (f *File) WriteFile(pkgName, targetFile string) error {
 	if err != nil {
 		return fmt.Errorf("Error formatting file %v - %v\n\nContents: %v", f.name, err, src)
 	}
-	err = ioutil.WriteFile(targetFile, fileContent, 0440)
+	err = ioutil.WriteFile(targetFile, fileContent, 0640)
 	if err != nil {
 		return fmt.Errorf("Error writing file %v - %v", f.name, err)
 	}

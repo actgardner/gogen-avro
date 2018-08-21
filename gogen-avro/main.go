@@ -15,10 +15,11 @@ import (
 func main() {
 	packageName := flag.String("package", "avro", "Name of generated package")
 	containers := flag.Bool("containers", false, "Whether to generate container writer methods")
+	shortUnions := flag.Bool("short-unions", false, "Whether to use shorter names for Union types")
 
 	flag.Parse()
 	if flag.NArg() < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--package=<package name>] [--containers] <target directory> <schema files>\n")
+		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--short-unions] [--package=<package name>] [--containers] <target directory> <schema files>\n")
 		os.Exit(1)
 	}
 
@@ -27,7 +28,7 @@ func main() {
 
 	var err error
 	pkg := generator.NewPackage(*packageName)
-	namespace := types.NewNamespace()
+	namespace := types.NewNamespace(*shortUnions)
 
 	for _, fileName := range files {
 		schema, err := ioutil.ReadFile(fileName)
