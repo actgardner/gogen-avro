@@ -77,7 +77,7 @@ go install github.com/actgardner/gogen-avro/example/container
 Gogen-avro converts field and type names to be valid, public Go names by following a few simple steps:
 
 - removing leading underscore characters (`_`)
-- upper-casing the first letter of the name
+- converting the name into capitalized camel case
 
 This minimizes the risk that two fields with different Avro names will have the same Go name.
 

@@ -11,7 +11,11 @@ import (
   The golang spec says valid identifiers start with [A-Za-z_] and contain [A-Za-z0-9], but the first character must be [A-Z] for the field to be public.
 */
 func ToPublicName(name string) string {
-	return strings.Title(strings.Trim(name, "_"))
+	s := strings.Split(strings.Trim(name, "_"), "_")
+	for i := range s {
+		s[i] = strings.Title(s[i])
+	}
+	return strings.Join(s, "")
 }
 
 func concatSortedMap(m map[string]string, sep string) string {

@@ -11,14 +11,14 @@ import (
 // Round-trip some primitive values through our serializer and goavro to verify
 var fixtures = []Event{
 	{
-		Id:       "id1",
-		Start_ip: [16]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
-		End_ip:   [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		Id:      "id1",
+		StartIp: [16]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
+		EndIp:   [16]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	},
 	{
-		Id:       "differentid",
-		Start_ip: [16]byte{0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255},
-		End_ip:   [16]byte{0, 1, 3, 7, 15, 31, 63, 127, 254, 2, 4, 6},
+		Id:      "differentid",
+		StartIp: [16]byte{0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255},
+		EndIp:   [16]byte{0, 1, 3, 7, 15, 31, 63, 127, 254, 2, 4, 6},
 	},
 }
 
@@ -30,10 +30,10 @@ func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}
 	assert.Equal(t, id, fixture.Id)
 	startIp, ok := record["start_ip"]
 	assert.Equal(t, ok, true)
-	assert.Equal(t, startIp, fixture.Start_ip[:])
+	assert.Equal(t, startIp, fixture.StartIp[:])
 	endIp, ok := record["end_ip"]
 	assert.Equal(t, ok, true)
-	assert.Equal(t, endIp, fixture.End_ip[:])
+	assert.Equal(t, endIp, fixture.EndIp[:])
 }
 
 func TestRootUnionFixture(t *testing.T) {
