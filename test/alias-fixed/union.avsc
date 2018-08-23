@@ -16,7 +16,6 @@
           {
               "name": "id",
               "type": "string",
-              "logicalType": "uuid",
               "doc": "Unique ID for this event."
           },
           {
