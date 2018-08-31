@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"github.com/actgardner/gogen-avro/generator"
+	"strings"
 )
 
 const enumTypeDef = `
@@ -18,7 +19,7 @@ func (e %v) String() string {
 	switch e {
 %v
 	}
-	return "Unknown"
+	return "unknown"
 }
 `
 
@@ -70,7 +71,7 @@ func (e *EnumDefinition) GoType() string {
 func (e *EnumDefinition) typeList() string {
 	typeStr := ""
 	for i, t := range e.symbols {
-		typeStr += fmt.Sprintf("%v %v = %v\n", generator.ToPublicName(t), e.GoType(), i)
+		typeStr += fmt.Sprintf("%v %v = %v\n", generator.ToPublicName(e.GoType()+strings.Title(t)), e.GoType(), i)
 	}
 	return typeStr
 }
@@ -78,7 +79,7 @@ func (e *EnumDefinition) typeList() string {
 func (e *EnumDefinition) stringerList() string {
 	stringerStr := ""
 	for _, t := range e.symbols {
-		stringerStr += fmt.Sprintf("case %v:\n return %q\n", generator.ToPublicName(t), t)
+		stringerStr += fmt.Sprintf("case %v:\n return %q\n", generator.ToPublicName(e.GoType()+strings.Title(t)), t)
 	}
 	return stringerStr
 }
@@ -147,5 +148,5 @@ func (s *EnumDefinition) DefaultValue(lvalue string, rvalue interface{}) (string
 		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
 	}
 
-	return fmt.Sprintf("%v = %v", lvalue, generator.ToPublicName(rvalue.(string))), nil
+	return fmt.Sprintf("%v = %v", lvalue, generator.ToPublicName(s.GoType()+strings.Title(rvalue.(string)))), nil
 }
