@@ -6,10 +6,8 @@ import (
 	"unicode"
 )
 
-/*
-  ToPublicName returns a go-idiomatic public name. The Avro spec specifies names must start with [A-Za-z_] and contain [A-Za-z0-9_].
-  The golang spec says valid identifiers start with [A-Za-z_] and contain [A-Za-z0-9], but the first character must be [A-Z] for the field to be public.
-*/
+// ToPublicName returns a go-idiomatic public name. The Avro spec specifies names must start with [A-Za-z_] and contain [A-Za-z0-9_].
+// The golang spec says valid identifiers start with [A-Za-z_] and contain [A-Za-z0-9], but the first character must be [A-Z] for the field to be public.
 func ToPublicName(name string) string {
 	return strings.Title(strings.Trim(name, "_"))
 }
@@ -27,7 +25,7 @@ func concatSortedMap(m map[string]string, sep string) string {
 	return s
 }
 
-// Make filenames snake-case, taken from https://gist.github.com/elwinar/14e1e897fdbe4d3432e1
+// ToSnake makes filenames snake-case, taken from https://gist.github.com/elwinar/14e1e897fdbe4d3432e1
 func ToSnake(in string) string {
 	runes := []rune(in)
 	length := len(runes)
