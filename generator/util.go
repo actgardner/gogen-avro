@@ -1,7 +1,6 @@
 package generator
 
 import (
-	"sort"
 	"strings"
 	"unicode"
 )
@@ -10,19 +9,6 @@ import (
 // The golang spec says valid identifiers start with [A-Za-z_] and contain [A-Za-z0-9], but the first character must be [A-Z] for the field to be public.
 func ToPublicName(name string) string {
 	return strings.Title(strings.Trim(name, "_"))
-}
-
-func concatSortedMap(m map[string]string, sep string) string {
-	keys := make([]string, 0)
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	s := ""
-	for _, k := range keys {
-		s += m[k] + sep
-	}
-	return s
 }
 
 // ToSnake makes filenames snake-case, taken from https://gist.github.com/elwinar/14e1e897fdbe4d3432e1
