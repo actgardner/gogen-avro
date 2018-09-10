@@ -11,7 +11,7 @@ import (
 
 const UTIL_FILE = "primitive.go"
 
-// An Avro qualified name, which includes an optional namespace and the type name.
+// QualifiedName represents an Avro qualified name, which includes an optional namespace and the type name.
 type QualifiedName struct {
 	Namespace string
 	Name      string
@@ -29,8 +29,8 @@ type Schema struct {
 	JSONSchema []byte
 }
 
-//  Namespace is a mapping of QualifiedNames to their Definitions, used to resolve
-//  type lookups within a schema.
+// Namespace is a mapping of QualifiedNames to their Definitions, used to resolve
+// type lookups within a schema.
 type Namespace struct {
 	Definitions map[QualifiedName]Definition
 	Schemas     []Schema
@@ -63,7 +63,7 @@ func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment str
 	return nil
 }
 
-// Add a new type definition to the namespace. Returns an error if the type is already defined.
+// RegisterDefinition adds a new type definition to the namespace. Returns an error if the type is already defined.
 func (n *Namespace) RegisterDefinition(d Definition) error {
 	if curDef, ok := n.Definitions[d.AvroName()]; ok {
 		if !reflect.DeepEqual(curDef, d) {
@@ -81,7 +81,7 @@ func (n *Namespace) RegisterDefinition(d Definition) error {
 	return nil
 }
 
-// Parse a name according to the Avro spec:
+// ParseAvroName parses a name according to the Avro spec:
 //   - If the name contains a dot ('.'), the last part is the name and the rest is the namespace
 //   - Otherwise, the enclosing namespace is used
 func ParseAvroName(enclosing, name string) QualifiedName {
@@ -92,11 +92,10 @@ func ParseAvroName(enclosing, name string) QualifiedName {
 	return QualifiedName{enclosing, name}
 }
 
-// Given an Avro schema as a JSON string, decode it and return the AvroType defined at the top level:
+// TypeForSchema accepts an Avro schema as a JSON string, decode it and return the AvroType defined at the top level:
 //    - a single record definition (JSON map)
 //    - a union of multiple types (JSON array)
 //    - an already-defined type (JSON string)
-
 // The Avro type defined at the top level and all the type definitions beneath it will also be added to this Namespace.
 func (n *Namespace) TypeForSchema(schemaJson []byte) (AvroType, error) {
 	var schema interface{}
@@ -194,7 +193,8 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 	return NewRecordDefinition(ParseAvroName(namespace, name), aliases, decodedFields, schemaMap), nil
 }
 
-// Given a map representing an enum definition, validate the definition and build the EnumDefinition struct.
+// decodeEnumDefinition accepts a namespace and a map representing an enum definition,
+// it validates the definition and build the EnumDefinition struct.
 func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]interface{}) (Definition, error) {
 	typeStr, err := getMapString(schemaMap, "type")
 	if err != nil {
@@ -235,7 +235,8 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 	return NewEnumDefinition(ParseAvroName(namespace, name), aliases, symbolStr, schemaMap), nil
 }
 
-// Given a map representing a fixed definition, validate the definition and build the FixedDefinition struct.
+// decodeFixedDefinition accepts a namespace and a map representing a fixed definition,
+// it validates the definition and build the FixedDefinition struct.
 func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string]interface{}) (Definition, error) {
 	typeStr, err := getMapString(schemaMap, "type")
 	if err != nil {
@@ -282,7 +283,7 @@ func (n *Namespace) decodeUnionDefinition(name, namespace string, fieldList []in
 		unionFields = append(unionFields, fieldDef)
 	}
 
-	if (n.ShortUnions) {
+	if n.ShortUnions {
 		name += "Union"
 	} else {
 		name = ""
@@ -396,8 +397,8 @@ func (n *Namespace) getTypeByName(namespace string, typeStr string, definition i
 	return NewReference(ParseAvroName(namespace, typeStr))
 }
 
-//  Parse out all the aliases from a definition map - returns an empty slice if no aliases exist.
-//  Returns an error if the aliases key exists but the value isn't a list of strings.
+// parseAliases parses out all the aliases from a definition map - returns an empty slice if no aliases exist.
+// Returns an error if the aliases key exists but the value isn't a list of strings.
 func parseAliases(objectMap map[string]interface{}, namespace string) ([]QualifiedName, error) {
 	aliases, ok := objectMap["aliases"]
 	if !ok {

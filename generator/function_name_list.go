@@ -1,6 +1,6 @@
 package generator
 
-// Implement the Sortable interface for FunctionNames
+// FunctionNameList implements the Sortable interface for FunctionNames
 type FunctionNameList []FunctionName
 
 func (f FunctionNameList) Len() int {

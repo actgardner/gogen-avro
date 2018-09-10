@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-// Represents the output package
+// Package represents the output package
 type Package struct {
 	name  string
 	files map[string]*File
