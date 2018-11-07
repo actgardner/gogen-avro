@@ -29,7 +29,7 @@ To generate Go source files from one or more Avro schema files, run:
 gogen-avro [--package=<package name>] [--containers] <output directory> <avro schema files>
 ```
 
-You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
+You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/tree/master/test/primitive)):
 
 ```
 //go:generate $GOPATH/bin/gogen-avro . primitives.avsc
