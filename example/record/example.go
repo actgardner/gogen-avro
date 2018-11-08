@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/actgardner/gogen-avro/example/avro"
+	"gopkg.in/actgardner/gogen-avro.v5/example/avro"
 )
 
 // This example shows serializing and deserializing records as byte buffers
