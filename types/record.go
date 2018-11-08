@@ -3,7 +3,7 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/actgardner/gogen-avro/generator"
+	"gopkg.in/actgardner/gogen-avro.v5/generator"
 	"strconv"
 )
 
@@ -181,7 +181,7 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 		}
 
 		if containers {
-			p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/container")
+			p.AddImport(r.filename(), "gopkg.in/actgardner/gogen-avro.v5/container")
 			p.AddFunction(r.filename(), "", r.recordWriterMethod(), r.recordWriterMethodDef())
 		}
 

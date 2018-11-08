@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/actgardner/gogen-avro/container"
+	"gopkg.in/actgardner/gogen-avro.v5.2/container"
 	"github.com/linkedin/goavro"
 )
 
