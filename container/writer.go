@@ -6,7 +6,7 @@ import (
 	"compress/flate"
 	"io"
 
-	"github.com/actgardner/gogen-avro/container/avro"
+	"gopkg.in/actgardner/gogen-avro.v5/container/avro"
 )
 
 // A Codec specifies how the blocks within a container file should be compressed.
