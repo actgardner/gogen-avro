@@ -7,6 +7,7 @@ import (
 )
 
 const enumTypeDef = `
+%v
 type %v int32
 
 const (
@@ -40,14 +41,16 @@ type EnumDefinition struct {
 	name       QualifiedName
 	aliases    []QualifiedName
 	symbols    []string
+	doc        string
 	definition map[string]interface{}
 }
 
-func NewEnumDefinition(name QualifiedName, aliases []QualifiedName, symbols []string, definition map[string]interface{}) *EnumDefinition {
+func NewEnumDefinition(name QualifiedName, aliases []QualifiedName, symbols []string, doc string, definition map[string]interface{}) *EnumDefinition {
 	return &EnumDefinition{
 		name:       name,
 		aliases:    aliases,
 		symbols:    symbols,
+		doc:        doc,
 		definition: definition,
 	}
 }
@@ -85,7 +88,11 @@ func (e *EnumDefinition) stringerList() string {
 }
 
 func (e *EnumDefinition) structDef() string {
-	return fmt.Sprintf(enumTypeDef, e.GoType(), e.typeList())
+	var doc string
+	if e.doc != "" {
+		doc = fmt.Sprintf("// %v", e.doc)
+	}
+	return fmt.Sprintf(enumTypeDef, doc, e.GoType(), e.typeList())
 }
 
 func (e *EnumDefinition) stringerDef() string {

@@ -248,7 +248,14 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 		return nil, err
 	}
 
-	return NewEnumDefinition(ParseAvroName(namespace, name), aliases, symbolStr, schemaMap), nil
+	var docString string
+	if doc, ok := schemaMap["doc"]; ok {
+		if docString, ok = doc.(string); !ok {
+			return nil, fmt.Errorf("'doc' must be a string")
+		}
+	}
+
+	return NewEnumDefinition(ParseAvroName(namespace, name), aliases, symbolStr, docString, schemaMap), nil
 }
 
 // decodeFixedDefinition accepts a namespace and a map representing a fixed definition,
