@@ -90,6 +90,9 @@ func (r *RecordDefinition) Aliases() []QualifiedName {
 func (r *RecordDefinition) structFields() string {
 	var fieldDefinitions string
 	for _, f := range r.fields {
+		if f.Doc() != "" {
+			fieldDefinitions += fmt.Sprintf("\n// %v\n", f.Doc())
+		}
 		fieldDefinitions += fmt.Sprintf("%v %v\n", f.GoName(), f.Type().GoType())
 	}
 	return fieldDefinitions

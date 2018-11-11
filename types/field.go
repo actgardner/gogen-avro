@@ -4,29 +4,32 @@ import (
 	"github.com/actgardner/gogen-avro/generator"
 )
 
-/*
- * The interface implemented by all Avro field types.
- */
 type Field struct {
 	avroName   string
 	avroType   AvroType
 	defValue   interface{}
 	hasDef     bool
+	doc        string
 	definition map[string]interface{}
 }
 
-func NewField(avroName string, avroType AvroType, defValue interface{}, hasDef bool, definition map[string]interface{}) *Field {
+func NewField(avroName string, avroType AvroType, defValue interface{}, hasDef bool, doc string, definition map[string]interface{}) *Field {
 	return &Field{
 		avroName:   avroName,
 		avroType:   avroType,
 		defValue:   defValue,
 		hasDef:     hasDef,
+		doc:        doc,
 		definition: definition,
 	}
 }
 
 func (f *Field) Name() string {
 	return f.avroName
+}
+
+func (f *Field) Doc() string {
+	return f.doc
 }
 
 func (f *Field) GoName() string {
