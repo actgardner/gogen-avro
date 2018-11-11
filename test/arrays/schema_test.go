@@ -23,50 +23,40 @@ const fixtureJson = `
 func TestArrayFixture(t *testing.T) {
 	fixtures := make([]ArrayTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 
 	schemaJson, err := ioutil.ReadFile("arrays.avsc")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
-		if err != nil {
-			t.Fatal(err)
-		}
-		if got, want := len(remaining), 0; got != want {
-			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
-		}
+		assert.Nil(t, err)
+
+		assert.Equal(t, 0, len(remaining))
 		record := datum.(map[string]interface{})
+
 		value := reflect.ValueOf(f)
 		for i := 0; i < value.NumField(); i++ {
 			fieldName := value.Type().Field(i).Name
 			avroVal, ok := record[fieldName]
-			if got, want := ok, true; got != want {
-				t.Fatalf("GOT: %#v; WANT: %#v", got, want)
-			}
+
+			assert.Equal(t, true, ok)
+
 			avroArray := avroVal.([]interface{})
-			if len(avroArray) != value.Field(i).Len() {
-				t.Fatalf("Got %v elements from goavro but expected %v", len(avroArray), value.Field(i).Len())
-			}
+			assert.Equal(t, len(avroArray), value.Field(i).Len())
+
 			for j := 0; j < value.Field(i).Len(); j++ {
 				avroArrayVal := avroArray[j]
 				structArrayVal := value.Field(i).Index(j).Interface()
-				if !reflect.DeepEqual(avroArrayVal, structArrayVal) {
-					t.Fatalf("Field %v element %v not equal: %v != %v", fieldName, j, avroArrayVal, structArrayVal)
-				}
+				assert.Equal(t, avroArrayVal, structArrayVal)
 			}
 		}
 	}
@@ -90,21 +80,17 @@ func BenchmarkArrayRecord(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		err := record.Serialize(buf)
-		if err != nil {
-			b.Fatal(err)
-		}
+		assert.Nil(b, err)
 	}
 }
 
 func BenchmarkArrayGoavro(b *testing.B) {
 	schemaJson, err := ioutil.ReadFile("arrays.avsc")
-	if err != nil {
-		b.Fatal(err)
-	}
+	assert.Nil(b, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		b.Fatal(err)
-	}
+	assert.Nil(b, err)
+
 	someRecord := map[string]interface{}{
 		"IntField":    []interface{}{int32(1), int32(2), int32(3)},
 		"LongField":   []interface{}{int64(4), int64(5), int64(6)},
@@ -119,29 +105,24 @@ func BenchmarkArrayGoavro(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, err := codec.BinaryFromNative(buf, someRecord)
-		if err != nil {
-			b.Fatal(err)
-		}
+		assert.Nil(b, err)
 	}
 }
 
 func TestRoundTrip(t *testing.T) {
 	fixtures := make([]ArrayTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, err := DeserializeArrayTestRecord(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		assert.Equal(t, *datum, f)
 	}
 }

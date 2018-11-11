@@ -5,7 +5,7 @@ set -e
 run_test() {
 	echo "Running test $t"
 	go generate -v github.com/actgardner/gogen-avro/$1
-	go get -t -v github.com/actgardner/gogen-avro/$1
+	# go get -t -v github.com/actgardner/gogen-avro/$1
 	go test -v github.com/actgardner/gogen-avro/$1
 }
 

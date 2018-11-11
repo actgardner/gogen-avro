@@ -27,44 +27,31 @@ func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}
 		fieldName := value.Type().Field(i).Name
 		structVal := value.Field(i).Interface()
 		avroVal, ok := record[fieldName]
-		if !ok {
-			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
-		}
-		if !reflect.DeepEqual(structVal, avroVal) {
-			t.Fatalf("Field %v not equal: %v != %v", fieldName, structVal, avroVal)
-		}
+		assert.Equal(t, true, ok)
+		assert.Equal(t, structVal, avroVal)
 	}
 }
 
 func TestPrimitiveFixture(t *testing.T) {
 	fixtures := make([]PrimitiveTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 
 	schemaJson, err := ioutil.ReadFile("primitives.avsc")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
-		if err != nil {
-			t.Fatal(err)
-		}
-		if got, want := len(remaining), 0; got != want {
-			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
-		}
+		assert.Nil(t, err)
+		assert.Equal(t, 0, len(remaining))
 		compareFixtureGoAvro(t, datum, f)
 	}
 }
@@ -72,20 +59,17 @@ func TestPrimitiveFixture(t *testing.T) {
 func TestRoundTrip(t *testing.T) {
 	fixtures := make([]PrimitiveTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, err := DeserializePrimitiveTestRecord(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		assert.Equal(t, *datum, f)
 	}
 }
@@ -97,21 +81,17 @@ func BenchmarkSerializePrimitiveRecord(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		err := record.Serialize(buf)
-		if err != nil {
-			b.Fatal(err)
-		}
+		assert.Nil(b, err)
 	}
 }
 
 func BenchmarkSerializePrimitiveGoavro(b *testing.B) {
 	schemaJson, err := ioutil.ReadFile("primitives.avsc")
-	if err != nil {
-		b.Fatal(err)
-	}
+	assert.Nil(b, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		b.Fatal(err)
-	}
+	assert.Nil(b, err)
+
 	someRecord := map[string]interface{}{
 		"IntField":    int32(1),
 		"LongField":   int64(2),
@@ -126,9 +106,7 @@ func BenchmarkSerializePrimitiveGoavro(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, err := codec.BinaryFromNative(buf, someRecord)
-		if err != nil {
-			b.Fatal(err)
-		}
+		assert.Nil(b, err)
 	}
 }
 
@@ -136,29 +114,25 @@ func BenchmarkDeserializePrimitiveRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
 	record := PrimitiveTestRecord{1, 2, 3.4, 5.6, "789", true, []byte{1, 2, 3, 4}}
 	err := record.Serialize(buf)
-	if err != nil {
-		b.Fatal(err)
-	}
+	assert.Nil(b, err)
+
 	recordBytes := buf.Bytes()
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, err := DeserializePrimitiveTestRecord(bytes.NewReader(recordBytes))
-		if err != nil {
-			b.Fatal(err)
-		}
+		assert.Nil(b, err)
+
 	}
 }
 
 func BenchmarkDeserializePrimitiveGoavro(b *testing.B) {
 	schemaJson, err := ioutil.ReadFile("primitives.avsc")
-	if err != nil {
-		b.Fatal(err)
-	}
+	assert.Nil(b, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		b.Fatal(err)
-	}
+	assert.Nil(b, err)
+
 	someRecord := map[string]interface{}{
 		"IntField":    int32(1),
 		"LongField":   int64(2),
@@ -170,15 +144,11 @@ func BenchmarkDeserializePrimitiveGoavro(b *testing.B) {
 	}
 
 	buf, err := codec.BinaryFromNative(nil, someRecord)
-	if err != nil {
-		b.Fatal(err)
-	}
+	assert.Nil(b, err)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, _, err := codec.NativeFromBinary(buf)
-		if err != nil {
-			b.Fatal(err)
-		}
+		assert.Nil(b, err)
 	}
 }

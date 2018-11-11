@@ -25,29 +25,23 @@ var fixtures = []FixedTestRecord{
 
 func TestFixedFixture(t *testing.T) {
 	schemaJson, err := ioutil.ReadFile("fixed.avsc")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, _, err := codec.NativeFromBinary(buf.Bytes())
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		record := datum.(map[string]interface{})
 		recordVal, ok := record["FixedField"]
-		if !ok {
-			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
-		}
+		assert.Equal(t, true, ok)
 		if !reflect.DeepEqual(recordVal, ([]byte)((f.FixedField)[:])) {
 			t.Fatalf("FixedField %v is not equal to %v", recordVal.([]byte), ([]byte)((f.FixedField)[:]))
 		}
@@ -59,13 +53,10 @@ func TestRoundTrip(t *testing.T) {
 	for _, f := range fixtures {
 		buf.Reset()
 		err := f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, err := DeserializeFixedTestRecord(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}
 }

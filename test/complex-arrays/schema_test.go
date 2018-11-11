@@ -19,20 +19,16 @@ const fixtureJson = `
 func TestRoundTrip(t *testing.T) {
 	fixtures := make([]Parent, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, err := DeserializeParent(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}
 }

@@ -29,9 +29,7 @@ func TestCorruptString(t *testing.T) {
 		}
 
 		buffer, err := prepareBuffer(length, testCase.input)
-		if err != nil {
-			t.Error("cannot prepare buffer:", err)
-		}
+		assert.Nil(t, err)
 
 		output, err := DeserializeStringRec(&buffer)
 		if err != nil {
@@ -55,14 +53,10 @@ func prepareBuffer(length int64, input StringRec) (bytes.Buffer, error) {
 	var buffer bytes.Buffer
 
 	err := writeLong(length, &buffer)
-	if err != nil {
-		return buffer, errors.New("cannot generate string length")
-	}
+	assert.Nil(t, err)
 
 	_, err = buffer.Write([]byte(input.ProductName))
-	if err != nil {
-		return buffer, errors.New("cannot append string")
-	}
+	assert.Nil(t, err)
 	return buffer, nil
 }
 

@@ -59,29 +59,23 @@ const fixtureJson = `
 func TestNestedFixture(t *testing.T) {
 	fixtures := make([]NestedTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 
 	schemaJson, err := ioutil.ReadFile("nested.avsc")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, _, err := codec.NativeFromBinary(buf.Bytes())
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		record := datum.(map[string]interface{})
 		value := reflect.ValueOf(f)
 		for i := 0; i < value.NumField(); i++ {
@@ -90,17 +84,13 @@ func TestNestedFixture(t *testing.T) {
 			for j := 0; j < structVal.NumField(); j++ {
 				nestedFieldName := structVal.Type().Field(j).Name
 				avroVal, ok := record[fieldName]
-				if !ok {
-					t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
-				}
+				assert.Equal(t, true, ok)
+
 				nestedAvroVal, ok := avroVal.(map[string]interface{})[nestedFieldName]
-				if !ok {
-					t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
-				}
+				assert.Equal(t, true, ok)
+
 				nestedStructVal := structVal.Field(j).Interface()
-				if !reflect.DeepEqual(nestedStructVal, nestedAvroVal) {
-					t.Fatalf("Field %v not equal: %v != %v", fieldName+"."+nestedFieldName, nestedStructVal, nestedAvroVal)
-				}
+				assert.Equal(t, nestedStructVal, nestedAvroVal)
 			}
 		}
 	}
@@ -109,20 +99,16 @@ func TestNestedFixture(t *testing.T) {
 func TestRoundTrip(t *testing.T) {
 	fixtures := make([]NestedTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, err := DeserializeNestedTestRecord(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}
 }
