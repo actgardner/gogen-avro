@@ -64,6 +64,8 @@ To create a new `container.Writer`, you can specify the schema manually in `cont
 
 An example of how to write a container file can be found in `example/container/example.go`.
 
+**Experimental:** gogen-avro now supports unpacking Object Container Files. There's a `container.Reader` which will unpack the OCF framing and feed the records into a generated struct deserializer. This should only be used when you're 100% sure the reader and writer schemas are identical - you may see panics, corrupt or incomplete data when reading with a different schema than the writer.
+
 [Godocs for the container package](https://godoc.org/github.com/actgardner/gogen-avro/container)
 
 ### Example
