@@ -22,6 +22,9 @@ func readBytes(r io.Reader) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if size == 0 {
+		return []byte{}, nil
+	}
 	bb := make([]byte, size)
 	_, err = io.ReadFull(r, bb)
 	return bb, err

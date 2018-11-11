@@ -39,6 +39,10 @@ func readString(r io.Reader) (string, error) {
 		return "", fmt.Errorf("string length out of range: %d", len)
 	}
 
+	if len == 0 {
+		return "", nil
+	}
+
 	bb := make([]byte, len)
 	_, err = io.ReadFull(r, bb)
 	if err != nil {

@@ -36,14 +36,14 @@ func %v(r io.Reader) (%v, error) {
 `
 
 type unionField struct {
-	name string
+	name       string
 	itemType   []AvroType
 	definition []interface{}
 }
 
 func NewUnionField(name string, itemType []AvroType, definition []interface{}) *unionField {
 	return &unionField{
-		name: name,
+		name:       name,
 		itemType:   itemType,
 		definition: definition,
 	}
@@ -61,9 +61,8 @@ func (s *unionField) Name() string {
 	return s.GoType()
 }
 
-
-func (s *unionField) GoType() string{
-	if (s.name == "") {
+func (s *unionField) GoType() string {
+	if s.name == "" {
 		return generator.ToPublicName(s.compositeFieldName())
 	}
 	return generator.ToPublicName(s.name)
