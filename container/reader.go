@@ -25,7 +25,7 @@ type Reader struct {
 	codec            Codec
 	reader           io.Reader
 	compressedReader io.Reader
-	schemaString     string
+	schemaBytes      []byte
 	schema           types.AvroType
 	sync             avro.Sync
 }
@@ -40,7 +40,7 @@ func NewReader(r io.Reader) (*Reader, error) {
 		return nil, fmt.Errorf("Unexpected magic in header - %v", header.Magic)
 	}
 
-	schemaString, ok := header.Meta["avro.schema"]
+	schemaBytes, ok := header.Meta["avro.schema"]
 	if !ok {
 		return nil, fmt.Errorf("Expected avro.schema in header, not specified in metadata map - %v", header.Meta)
 	}
@@ -50,24 +50,18 @@ func NewReader(r io.Reader) (*Reader, error) {
 		return nil, fmt.Errorf("Expected avro.codec in header, not specified in metadata map - %v", header.Meta)
 	}
 
-	namespace := types.NewNamespace(false)
-	schema, err := namespace.TypeForSchema(schemaString)
-	if err != nil {
-		return nil, err
-	}
-
 	return &Reader{
 		codec:            Codec(codec),
 		reader:           r,
-		schemaString:     schemaString,
+		schemaBytes:      schemaBytes,
 		compressedReader: nil,
-		schema:           schema,
+		schema:           nil,
 		sync:             header.Sync,
 	}, nil
 }
 
-func (r *Reader) AvroContainerSchema() string {
-	return r.schemaString
+func (r *Reader) AvroContainerSchema() []byte {
+	return r.schemaBytes
 }
 
 func (r *Reader) Read(b []byte) (n int, err error) {
