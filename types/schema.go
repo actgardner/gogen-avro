@@ -145,6 +145,14 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		return nil, err
 	}
 
+	var rDocString string
+	if rDoc, ok := schemaMap["doc"]; ok {
+		rDocString, ok = rDoc.(string)
+		if !ok {
+			return nil, NewWrongMapValueTypeError("doc", "string", rDoc)
+		}
+	}
+
 	if _, ok := schemaMap["namespace"]; ok {
 		namespace, err = getMapString(schemaMap, "namespace")
 		if err != nil {
@@ -198,7 +206,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		return nil, err
 	}
 
-	return NewRecordDefinition(ParseAvroName(namespace, name), aliases, decodedFields, schemaMap), nil
+	return NewRecordDefinition(ParseAvroName(namespace, name), aliases, decodedFields, rDocString, schemaMap), nil
 }
 
 // decodeEnumDefinition accepts a namespace and a map representing an enum definition,

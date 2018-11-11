@@ -7,7 +7,9 @@ import (
 	"strconv"
 )
 
-const recordStructDefTemplate = `type %v struct {
+const recordStructDefTemplate = `
+%v
+type %v struct {
 %v
 }
 `
@@ -59,14 +61,16 @@ type RecordDefinition struct {
 	name     QualifiedName
 	aliases  []QualifiedName
 	fields   []*Field
+	doc      string
 	metadata map[string]interface{}
 }
 
-func NewRecordDefinition(name QualifiedName, aliases []QualifiedName, fields []*Field, metadata map[string]interface{}) *RecordDefinition {
+func NewRecordDefinition(name QualifiedName, aliases []QualifiedName, fields []*Field, doc string, metadata map[string]interface{}) *RecordDefinition {
 	return &RecordDefinition{
 		name:     name,
 		aliases:  aliases,
 		fields:   fields,
+		doc:      doc,
 		metadata: metadata,
 	}
 }
@@ -115,7 +119,11 @@ func (r *RecordDefinition) fieldDeserializers() string {
 }
 
 func (r *RecordDefinition) structDefinition() string {
-	return fmt.Sprintf(recordStructDefTemplate, r.Name(), r.structFields())
+	var doc string
+	if r.doc != "" {
+		doc = fmt.Sprintf("// %v", r.doc)
+	}
+	return fmt.Sprintf(recordStructDefTemplate, doc, r.Name(), r.structFields())
 }
 
 func (r *RecordDefinition) serializerMethodDef() string {

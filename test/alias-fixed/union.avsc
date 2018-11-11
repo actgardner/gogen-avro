@@ -11,6 +11,7 @@
   {
       "type": "record",
       "name": "event",
+      "doc": "The test record",
       "subject": "event",
       "fields": [
           {
