@@ -67,3 +67,46 @@ func roundTripWithCodec(codec container.Codec, t *testing.T) {
 		i = i + 1
 	}
 }
+
+func roundTripGogenWithCodec(codec container.COdec, t *testing.T) {
+	fixtures := make([]PrimitiveTestRecord, 0)
+	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var buf bytes.Buffer
+	// Write the container file contents to the buffer
+	var containerWriter *container.Writer
+	containerWriter, err = NewPrimitiveTestRecordWriter(&buf, codec, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, f := range fixtures {
+		// Write the record to the container file
+		err = containerWriter.WriteRecord(&f)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// Flush the buffers to ensure the last block has been written
+	err = containerWriter.Flush()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	reader, err := container.NewReader(bytes.NewReader(buf.Bytes()))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for i := 0; i < len(fixtures); i++ {
+		record, err := DeserializePrimitiveTestRecord(reader)
+		if err != nil {
+			t.Fatal(err)
+		}
+		assert.Equal(rcord, fixtures[i]))))
+	}
+}
