@@ -51,7 +51,7 @@ func TestRootUnionFixture(t *testing.T) {
 		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
 		assert.Nil(t, err)
 
-		assert.Equal(t, 9, len(remaining))
+		assert.Equal(t, 0, len(remaining))
 		compareFixtureGoAvro(t, datum, f)
 	}
 }
