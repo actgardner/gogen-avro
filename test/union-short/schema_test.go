@@ -28,29 +28,23 @@ const fixtureJson = `
 func TestPrimitiveUnionFixture(t *testing.T) {
 	fixtures := make([]PrimitiveUnionTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 
 	schemaJson, err := ioutil.ReadFile("union.avsc")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		if got, want := len(remaining), 0; got != want {
 			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
 		}
@@ -79,20 +73,17 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 func TestRoundTrip(t *testing.T) {
 	fixtures := make([]PrimitiveUnionTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, err := DeserializePrimitiveUnionTestRecord(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		assert.Equal(t, *datum, f)
 	}
 }

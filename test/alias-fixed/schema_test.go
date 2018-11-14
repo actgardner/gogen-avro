@@ -25,12 +25,15 @@ var fixtures = []Event{
 func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}) {
 	record := actual.(map[string]interface{})
 	fixture := expected.(Event)
+
 	id, ok := record["id"]
 	assert.Equal(t, ok, true)
 	assert.Equal(t, id, fixture.Id)
+
 	startIp, ok := record["start_ip"]
 	assert.Equal(t, ok, true)
 	assert.Equal(t, startIp.([]byte), fixture.Start_ip[:])
+
 	endIp, ok := record["end_ip"]
 	assert.Equal(t, ok, true)
 	assert.Equal(t, endIp.([]byte), fixture.End_ip[:])
@@ -38,23 +41,18 @@ func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}
 
 func TestRootUnionFixture(t *testing.T) {
 	codec, err := goavro.NewCodec(fixtures[0].Schema())
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = writeEvent(&f, &buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
-		if err != nil {
-			t.Fatal(err)
-		}
-		if got, want := len(remaining), 0; got != want {
-			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
-		}
+		assert.Nil(t, err)
+
+		assert.Equal(t, 0, len(remaining))
 		compareFixtureGoAvro(t, datum, f)
 	}
 }
@@ -64,13 +62,10 @@ func TestRoundTrip(t *testing.T) {
 	for _, f := range fixtures {
 		buf.Reset()
 		err := writeEvent(&f, &buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, err := readEvent(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
 		assert.Equal(t, datum, &f)
 	}
 }

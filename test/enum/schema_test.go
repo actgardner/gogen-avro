@@ -25,60 +25,44 @@ const fixtureJson = `
 func TestEnumFixture(t *testing.T) {
 	fixtures := make([]EnumTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 
 	schemaJson, err := ioutil.ReadFile("enum.avsc")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
-		if err != nil {
-			t.Fatal(err)
-		}
-		if got, want := len(remaining), 0; got != want {
-			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
-		}
+		assert.Nil(t, err)
+		assert.Equal(t, 0, len(remaining))
+
 		record := datum.(map[string]interface{})
 		recordVal, ok := record["EnumField"]
-		if !ok {
-			t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
-		}
-		if got, want := recordVal, f.EnumField.String(); got != want {
-			t.Fatalf("GOT: %#v; WANT: %#v", got, want)
-		}
+		assert.Equal(t, true, ok)
+		assert.Equal(t, recordVal, f.EnumField.String())
 	}
 }
 
 func TestRoundTrip(t *testing.T) {
 	fixtures := make([]EnumTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, err := DeserializeEnumTestRecord(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}
 }

@@ -22,48 +22,38 @@ const fixtureJson = `
 func TestMapFixture(t *testing.T) {
 	fixtures := make([]MapTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 
 	schemaJson, err := ioutil.ReadFile("maps.avsc")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, _, err := codec.NativeFromBinary(buf.Bytes())
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		record := datum.(map[string]interface{})
 		value := reflect.ValueOf(f)
 		for i := 0; i < value.NumField(); i++ {
 			fieldName := value.Type().Field(i).Name
 			avroVal, ok := record[fieldName]
-			if !ok {
-				t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
-			}
+			assert.Equal(t, true, ok)
+
 			avroMap := avroVal.(map[string]interface{})
-			if len(avroMap) != value.Field(i).Len() {
-				t.Fatalf("Got %v keys from goavro but expected %v", len(avroMap), value.Field(i).Len())
-			}
+			assert.Equal(t, len(avroMap), value.Field(i).Len())
+
 			for _, k := range value.Field(i).MapKeys() {
 				keyString := k.Interface().(string)
 				avroMapVal := avroMap[keyString]
 				structMapVal := value.Field(i).MapIndex(k).Interface()
-				if !reflect.DeepEqual(avroMapVal, structMapVal) {
-					t.Fatalf("Field %v key %v not equal: %v != %v", fieldName, k, avroMapVal, structMapVal)
-				}
+				assert.Equal(t, avroMapVal, structMapVal)
 			}
 		}
 	}
@@ -76,21 +66,17 @@ func BenchmarkMapRecord(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		err := record.Serialize(buf)
-		if err != nil {
-			b.Fatal(err)
-		}
+		assert.Nil(b, err)
 	}
 }
 
 func BenchmarkMapGoavro(b *testing.B) {
 	schemaJson, err := ioutil.ReadFile("maps.avsc")
-	if err != nil {
-		b.Fatal(err)
-	}
+	assert.Nil(b, err)
+
 	codec, err := goavro.NewCodec(string(schemaJson))
-	if err != nil {
-		b.Fatal(err)
-	}
+	assert.Nil(b, err)
+
 	someRecord := map[string]interface{}{
 		"IntField":    map[string]interface{}{"value1": int32(1), "value2": int32(2), "value3": int32(3)},
 		"LongField":   map[string]interface{}{"value1": int64(1), "value2": int32(2), "value3": int32(3)},
@@ -105,29 +91,23 @@ func BenchmarkMapGoavro(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, err := codec.BinaryFromNative(buf, someRecord)
-		if err != nil {
-			b.Fatal(err)
-		}
+		assert.Nil(b, err)
 	}
 }
 
 func TestRoundTrip(t *testing.T) {
 	fixtures := make([]MapTestRecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
+
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
+
 		datum, err := DeserializeMapTestRecord(&buf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}
 }

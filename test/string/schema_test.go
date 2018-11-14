@@ -2,10 +2,11 @@ package avro
 
 import (
 	"bytes"
-	"errors"
 	"math"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var testCases = []struct {
@@ -28,10 +29,8 @@ func TestCorruptString(t *testing.T) {
 			length = int64(len(testCase.input.ProductName))
 		}
 
-		buffer, err := prepareBuffer(length, testCase.input)
-		if err != nil {
-			t.Error("cannot prepare buffer:", err)
-		}
+		buffer, err := prepareBuffer(t, length, testCase.input)
+		assert.Nil(t, err)
 
 		output, err := DeserializeStringRec(&buffer)
 		if err != nil {
@@ -51,18 +50,14 @@ func TestCorruptString(t *testing.T) {
 }
 
 // Manually prepare simple Avro string buffer to generate possibly corrupted string.
-func prepareBuffer(length int64, input StringRec) (bytes.Buffer, error) {
+func prepareBuffer(t *testing.T, length int64, input StringRec) (bytes.Buffer, error) {
 	var buffer bytes.Buffer
 
 	err := writeLong(length, &buffer)
-	if err != nil {
-		return buffer, errors.New("cannot generate string length")
-	}
+	assert.Nil(t, err)
 
 	_, err = buffer.Write([]byte(input.ProductName))
-	if err != nil {
-		return buffer, errors.New("cannot append string")
-	}
+	assert.Nil(t, err)
 	return buffer, nil
 }
 
