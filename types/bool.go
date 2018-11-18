@@ -59,12 +59,12 @@ func readBool(r io.Reader) (bool, error) {
 }
 `
 
-type boolField struct {
-	primitiveField
+type BoolField struct {
+	PrimitiveField
 }
 
-func NewBoolField(definition interface{}) *boolField {
-	return &boolField{primitiveField{
+func NewBoolField(definition interface{}) *BoolField {
+	return &BoolField{PrimitiveField{
 		definition:         definition,
 		name:               "Bool",
 		goType:             "bool",
@@ -73,19 +73,19 @@ func NewBoolField(definition interface{}) *boolField {
 	}}
 }
 
-func (s *boolField) AddSerializer(p *generator.Package) {
+func (s *BoolField) AddSerializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.AddFunction(UTIL_FILE, "", "writeBool", writeBoolMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *boolField) AddDeserializer(p *generator.Package) {
+func (s *BoolField) AddDeserializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteReader", byteReaderInterface)
 	p.AddFunction(UTIL_FILE, "", "readBool", readBoolMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *boolField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+func (s *BoolField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	if _, ok := rvalue.(bool); !ok {
 		return "", fmt.Errorf("Expected bool as default for field %v, got %q", lvalue, rvalue)
 	}

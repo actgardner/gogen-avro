@@ -53,39 +53,39 @@ func %v(r io.Reader) (%v, error) {
 }
 `
 
-type arrayField struct {
+type ArrayField struct {
 	itemType   AvroType
 	definition map[string]interface{}
 }
 
-func NewArrayField(itemType AvroType, definition map[string]interface{}) *arrayField {
-	return &arrayField{
+func NewArrayField(itemType AvroType, definition map[string]interface{}) *ArrayField {
+	return &ArrayField{
 		itemType:   itemType,
 		definition: definition,
 	}
 }
 
-func (s *arrayField) Name() string {
+func (s *ArrayField) Name() string {
 	return "Array" + s.itemType.Name()
 }
 
-func (s *arrayField) GoType() string {
+func (s *ArrayField) GoType() string {
 	return fmt.Sprintf("[]%v", s.itemType.GoType())
 }
 
-func (s *arrayField) SerializerMethod() string {
+func (s *ArrayField) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.Name())
 }
 
-func (s *arrayField) DeserializerMethod() string {
+func (s *ArrayField) DeserializerMethod() string {
 	return fmt.Sprintf("read%v", s.Name())
 }
 
-func (s *arrayField) AddStruct(p *generator.Package, container bool) error {
+func (s *ArrayField) AddStruct(p *generator.Package, container bool) error {
 	return s.itemType.AddStruct(p, container)
 }
 
-func (s *arrayField) AddSerializer(p *generator.Package) {
+func (s *ArrayField) AddSerializer(p *generator.Package) {
 	itemMethodName := s.itemType.SerializerMethod()
 	methodName := s.SerializerMethod()
 	arraySerializer := fmt.Sprintf(arraySerializerTemplate, s.SerializerMethod(), s.GoType(), itemMethodName)
@@ -97,7 +97,7 @@ func (s *arrayField) AddSerializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *arrayField) AddDeserializer(p *generator.Package) {
+func (s *ArrayField) AddDeserializer(p *generator.Package) {
 	itemMethodName := s.itemType.DeserializerMethod()
 	methodName := s.DeserializerMethod()
 	arrayDeserializer := fmt.Sprintf(arrayDeserializerTemplate, methodName, s.GoType(), s.GoType(), itemMethodName)
@@ -107,11 +107,11 @@ func (s *arrayField) AddDeserializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *arrayField) ResolveReferences(n *Namespace) error {
+func (s *ArrayField) ResolveReferences(n *Namespace) error {
 	return s.itemType.ResolveReferences(n)
 }
 
-func (s *arrayField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
+func (s *ArrayField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	var err error
 	s.definition["items"], err = s.itemType.Definition(scope)
 	if err != nil {
@@ -121,11 +121,11 @@ func (s *arrayField) Definition(scope map[QualifiedName]interface{}) (interface{
 	return s.definition, nil
 }
 
-func (s *arrayField) ConstructorMethod() string {
+func (s *ArrayField) ConstructorMethod() string {
 	return fmt.Sprintf("make(%v, 0)", s.GoType())
 }
 
-func (s *arrayField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+func (s *ArrayField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	items, ok := rvalue.([]interface{})
 	if !ok {
 		return "", fmt.Errorf("Expected array as default for %v, got %v", lvalue, rvalue)
