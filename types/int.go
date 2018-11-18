@@ -81,12 +81,12 @@ func readInt(r io.Reader) (int32, error) {
 }
 `
 
-type intField struct {
-	primitiveField
+type IntField struct {
+	PrimitiveField
 }
 
-func NewIntField(definition interface{}) *intField {
-	return &intField{primitiveField{
+func NewIntField(definition interface{}) *IntField {
+	return &IntField{PrimitiveField{
 		definition:         definition,
 		name:               "Int",
 		goType:             "int32",
@@ -95,19 +95,19 @@ func NewIntField(definition interface{}) *intField {
 	}}
 }
 
-func (s *intField) AddSerializer(p *generator.Package) {
+func (s *IntField) AddSerializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.AddFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *intField) AddDeserializer(p *generator.Package) {
+func (s *IntField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readInt", readIntMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *intField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+func (s *IntField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	if _, ok := rvalue.(float64); !ok {
 		return "", fmt.Errorf("Expected number as default for field %v, got %q", lvalue, rvalue)
 	}

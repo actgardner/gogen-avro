@@ -11,9 +11,10 @@ type Field struct {
 	hasDef     bool
 	doc        string
 	definition map[string]interface{}
+	index      int
 }
 
-func NewField(avroName string, avroType AvroType, defValue interface{}, hasDef bool, doc string, definition map[string]interface{}) *Field {
+func NewField(avroName string, avroType AvroType, defValue interface{}, hasDef bool, doc string, definition map[string]interface{}, index int) *Field {
 	return &Field{
 		avroName:   avroName,
 		avroType:   avroType,
@@ -21,11 +22,16 @@ func NewField(avroName string, avroType AvroType, defValue interface{}, hasDef b
 		hasDef:     hasDef,
 		doc:        doc,
 		definition: definition,
+		index:      index,
 	}
 }
 
 func (f *Field) Name() string {
 	return f.avroName
+}
+
+func (f *Field) Index() int {
+	return f.index
 }
 
 func (f *Field) Doc() string {

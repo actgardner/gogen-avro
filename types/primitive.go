@@ -5,7 +5,7 @@ import (
 )
 
 // Common methods for all primitive types
-type primitiveField struct {
+type PrimitiveField struct {
 	definition         interface{}
 	name               string
 	goType             string
@@ -13,30 +13,30 @@ type primitiveField struct {
 	deserializerMethod string
 }
 
-func (s *primitiveField) Name() string {
+func (s *PrimitiveField) Name() string {
 	return s.name
 }
 
-func (s *primitiveField) GoType() string {
+func (s *PrimitiveField) GoType() string {
 	return s.goType
 }
 
-func (s *primitiveField) SerializerMethod() string {
+func (s *PrimitiveField) SerializerMethod() string {
 	return s.serializerMethod
 }
 
-func (s *primitiveField) DeserializerMethod() string {
+func (s *PrimitiveField) DeserializerMethod() string {
 	return s.deserializerMethod
 }
 
-func (s *primitiveField) AddStruct(p *generator.Package, _ bool) error {
+func (s *PrimitiveField) AddStruct(p *generator.Package, _ bool) error {
 	return nil
 }
 
-func (s *primitiveField) ResolveReferences(n *Namespace) error {
+func (s *PrimitiveField) ResolveReferences(n *Namespace) error {
 	return nil
 }
 
-func (s *primitiveField) Definition(_ map[QualifiedName]interface{}) (interface{}, error) {
+func (s *PrimitiveField) Definition(_ map[QualifiedName]interface{}) (interface{}, error) {
 	return s.definition, nil
 }

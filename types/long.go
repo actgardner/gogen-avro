@@ -33,12 +33,12 @@ func readLong(r io.Reader) (int64, error) {
 }
 `
 
-type longField struct {
-	primitiveField
+type LongField struct {
+	PrimitiveField
 }
 
-func NewLongField(definition interface{}) *longField {
-	return &longField{primitiveField{
+func NewLongField(definition interface{}) *LongField {
+	return &LongField{PrimitiveField{
 		definition:         definition,
 		name:               "Long",
 		goType:             "int64",
@@ -47,21 +47,21 @@ func NewLongField(definition interface{}) *longField {
 	}}
 }
 
-func (s *longField) AddSerializer(p *generator.Package) {
+func (s *LongField) AddSerializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *longField) AddDeserializer(p *generator.Package) {
+func (s *LongField) AddDeserializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *longField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+func (s *LongField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	if _, ok := rvalue.(float64); !ok {
-		return "", fmt.Errorf("Expected number as default for field %v, got %q", lvalue, rvalue)
+		return "", fmt.Errorf("Expected number as default for Field %v, got %q", lvalue, rvalue)
 	}
 
 	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil

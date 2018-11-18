@@ -166,7 +166,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 	}
 
 	decodedFields := make([]*Field, 0)
-	for _, f := range fieldList {
+	for i, f := range fieldList {
 		field, ok := f.(map[string]interface{})
 		if !ok {
 			return nil, NewWrongMapValueTypeError("fields", "map[]", field)
@@ -196,7 +196,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		}
 
 		def, hasDef := field["default"]
-		fieldStruct := NewField(fieldName, fieldType, def, hasDef, docString, field)
+		fieldStruct := NewField(fieldName, fieldType, def, hasDef, docString, field, i)
 
 		decodedFields = append(decodedFields, fieldStruct)
 	}

@@ -10,59 +10,59 @@ import (
 */
 
 type Reference struct {
-	typeName QualifiedName
-	def      Definition
+	TypeName QualifiedName
+	Def      Definition
 }
 
 func NewReference(typeName QualifiedName) *Reference {
 	return &Reference{
-		typeName: typeName,
+		TypeName: typeName,
 	}
 }
 
 func (s *Reference) Name() string {
-	return s.def.Name()
+	return s.Def.Name()
 }
 
 func (s *Reference) GoType() string {
-	return s.def.GoType()
+	return s.Def.GoType()
 }
 
 func (s *Reference) SerializerMethod() string {
-	return s.def.SerializerMethod()
+	return s.Def.SerializerMethod()
 }
 
 func (s *Reference) DeserializerMethod() string {
-	return s.def.DeserializerMethod()
+	return s.Def.DeserializerMethod()
 }
 
 func (s *Reference) AddStruct(p *generator.Package, containers bool) error {
-	return s.def.AddStruct(p, containers)
+	return s.Def.AddStruct(p, containers)
 }
 
 func (s *Reference) AddSerializer(p *generator.Package) {
-	s.def.AddSerializer(p)
+	s.Def.AddSerializer(p)
 }
 
 func (s *Reference) AddDeserializer(p *generator.Package) {
-	s.def.AddDeserializer(p)
+	s.Def.AddDeserializer(p)
 }
 
 func (s *Reference) ResolveReferences(n *Namespace) error {
-	if s.def == nil {
+	if s.Def == nil {
 		var ok bool
-		if s.def, ok = n.Definitions[s.typeName]; !ok {
-			return fmt.Errorf("Unable to resolve definition of type %v", s.typeName)
+		if s.Def, ok = n.Definitions[s.TypeName]; !ok {
+			return fmt.Errorf("Unable to resolve definition of type %v", s.TypeName)
 		}
-		return s.def.ResolveReferences(n)
+		return s.Def.ResolveReferences(n)
 	}
 	return nil
 }
 
 func (s *Reference) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
-	return s.def.Definition(scope)
+	return s.Def.Definition(scope)
 }
 
 func (s *Reference) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	return s.def.DefaultValue(lvalue, rvalue)
+	return s.Def.DefaultValue(lvalue, rvalue)
 }
