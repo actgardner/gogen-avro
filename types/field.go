@@ -51,6 +51,9 @@ func (f *Field) Default() interface{} {
 }
 
 func (f *Field) Type() AvroType {
+	if f == nil {
+		return nil
+	}
 	return f.avroType
 }
 

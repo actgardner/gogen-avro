@@ -12,6 +12,8 @@ const (
 	Set
 	Enter
 	Exit
+	BlockStart
+	BlockEnd
 )
 
 func (o Op) String() string {
@@ -26,6 +28,10 @@ func (o Op) String() string {
 		return "enter"
 	case Exit:
 		return "exit"
+	case BlockStart:
+		return "block_start"
+	case BlockEnd:
+		return "block_end"
 	}
 	return "Unknown"
 }
@@ -33,7 +39,7 @@ func (o Op) String() string {
 type Type int
 
 const (
-	Unused = iota
+	Unused Type = iota
 	Null
 	Boolean
 	Int
