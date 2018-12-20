@@ -56,6 +56,21 @@ func (p *Program) compileType(writer, reader types.AvroType, index int) error {
 			return nil
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
+	case *types.ArrayField:
+		if reader != nil {
+			p.add(Enter, Unused, index)
+		}
+		if readerRef, ok := reader.(*types.ArrayField); ok || reader == nil {
+			err := p.compileArray(writer.(*types.ArrayField), readerRef)
+			if err != nil {
+				return err
+			}
+			if reader != nil {
+				p.add(Exit, Unused, NoopField)
+			}
+			return nil
+		}
+		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 	case *types.IntField:
 		p.add(Read, Int, NoopField)
 		if reader != nil {
@@ -96,6 +111,21 @@ func (p *Program) compileMap(writer, reader *types.MapField) error {
 	fmt.Printf("compileMap(%v, %v)\n", writer, reader)
 	p.add(BlockStart, Unused, NoopField)
 	p.add(Read, MapKey, NoopField)
+	var readerType types.AvroType
+	if reader != nil {
+		readerType = reader.ItemType()
+	}
+	err := p.compileType(writer.ItemType(), readerType, 0)
+	if err != nil {
+		return err
+	}
+	p.add(BlockEnd, Unused, NoopField)
+	return nil
+}
+
+func (p *Program) compileArray(writer, reader *types.ArrayField) error {
+	fmt.Printf("compileArray(%v, %v)\n", writer, reader)
+	p.add(BlockStart, Unused, NoopField)
 	var readerType types.AvroType
 	if reader != nil {
 		readerType = reader.ItemType()

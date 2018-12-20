@@ -221,5 +221,50 @@ func TestCompileMap(t *testing.T) {
 	}
 	assert.Equal(t, expectedProgram, program)
 	assert.Nil(t, err)
+}
+
+func TestCompileArray(t *testing.T) {
+	schema := `
+{
+  "type": "record",
+  "name": "test",
+  "fields": [
+    {"name": "first", "type": "string"},
+    {
+      "name": "array", 
+      "type": {
+        "type": "array",
+        "items": "int"
+      }
+    },
+    {"name": "two", "type": "int"}
+  ]
+}
+`
+	readerNs := types.NewNamespace(false)
+	readerType, err := readerNs.TypeForSchema([]byte(schema))
+	assert.Nil(t, err)
+
+	err = readerType.ResolveReferences(readerNs)
+	assert.Nil(t, err)
+
+	program, err := Compile(readerType, readerType)
+
+	expectedProgram := []Instruction{
+		Instruction{Op: Enter, Type: Unused, Field: 0},
+		Instruction{Op: Read, Type: String, Field: 65535},
+		Instruction{Op: Set, Type: String, Field: 0},
+		Instruction{Op: Enter, Type: Unused, Field: 1},
+		Instruction{Op: BlockStart, Type: Unused, Field: 65535},
+		Instruction{Op: Read, Type: Int, Field: 65535},
+		Instruction{Op: Set, Type: Int, Field: 0},
+		Instruction{Op: BlockEnd, Type: Unused, Field: 65535},
+		Instruction{Op: Exit, Type: Unused, Field: 65535},
+		Instruction{Op: Read, Type: Int, Field: 65535},
+		Instruction{Op: Set, Type: Int, Field: 2},
+		Instruction{Op: Exit, Type: Unused, Field: 65535},
+	}
+	assert.Equal(t, expectedProgram, program)
+	assert.Nil(t, err)
 
 }
