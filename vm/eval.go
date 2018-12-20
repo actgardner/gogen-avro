@@ -1,6 +1,9 @@
 package vm
 
-import "io"
+import (
+	"fmt"
+	"io"
+)
 
 type Frame struct {
 	Target Assignable
@@ -13,20 +16,28 @@ type Frame struct {
 	Bytes   []byte
 	String  string
 
-	MapKey    string
-	Length    int64
-	UnionElem int64
+	MapKey     string
+	Length     int64
+	UnionElem  int64
+	BlockStart int
 }
 
-func Eval(r io.Reader, program []Instruction, target Assignable) error {
+func Eval(r io.Reader, program []Instruction, target Assignable) (err error) {
 	stack := make([]Frame, 256)
 	stack[0].Target = target
 	depth := 0
+	pc := 0
 
-	for pc := 0; pc < len(program); pc++ {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("Panic at pc %v - %v", pc, r)
+		}
+	}()
+
+	for pc = 0; pc < len(program); pc++ {
 		inst := program[pc]
 		frame := &stack[depth]
-		var err error
+		fmt.Printf("PC: %v Op: %v frame: %v\n", pc, inst, frame)
 		switch inst.Op {
 		case Read:
 			switch inst.Type {
@@ -100,6 +111,23 @@ func Eval(r io.Reader, program []Instruction, target Assignable) error {
 			break
 		case Exit:
 			depth -= 1
+			break
+		case BlockStart:
+			// If we're starting a block, read the header
+			if frame.Length == 0 {
+				stack[depth].BlockStart = pc
+				frame.Length, err = readLong(r)
+				// If the header is 0, the array/map is over
+				if frame.Length == 0 {
+					for program[pc].Op != BlockEnd {
+						pc += 1
+					}
+				}
+			}
+			frame.Length -= 1
+			break
+		case BlockEnd:
+			pc = stack[depth].BlockStart - 1
 			break
 		}
 

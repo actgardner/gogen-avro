@@ -85,6 +85,10 @@ func (s *ArrayField) AddStruct(p *generator.Package, container bool) error {
 	return s.itemType.AddStruct(p, container)
 }
 
+func (s *ArrayField) ItemType() AvroType {
+	return s.itemType
+}
+
 func (s *ArrayField) AddSerializer(p *generator.Package) {
 	itemMethodName := s.itemType.SerializerMethod()
 	methodName := s.SerializerMethod()
