@@ -7,8 +7,7 @@ import (
 type Op int
 
 const (
-	Init Op = iota
-	Read
+	Read Op = iota
 	Set
 	Enter
 	Exit
@@ -18,8 +17,6 @@ const (
 
 func (o Op) String() string {
 	switch o {
-	case Init:
-		return "init"
 	case Read:
 		return "read"
 	case Set:
@@ -102,9 +99,6 @@ type Assignable interface {
 	SetDouble(field int, v float64)
 	SetBytes(field int, v []byte)
 	SetString(field int, v string)
-
-	// Initialize a nested complex type
-	Init(field int)
 
 	// Get a nested complex type so we can enter it
 	Get(field int) Assignable
