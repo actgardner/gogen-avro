@@ -102,9 +102,6 @@ func Eval(r io.Reader, program []Instruction, target Assignable) (err error) {
 				break
 			}
 			break
-		case Init:
-			frame.Target.Init(inst.Field)
-			break
 		case Enter:
 			depth += 1
 			stack[depth].Target = frame.Target.Get(inst.Field)
