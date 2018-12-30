@@ -3,10 +3,12 @@ package vm
 import (
 	"fmt"
 	"io"
+
+	"github.com/actgardner/gogen-avro/types"
 )
 
 type Frame struct {
-	Target Assignable
+	Target types.Field
 
 	Boolean bool
 	Int     int32
@@ -22,7 +24,7 @@ type Frame struct {
 	BlockStart int
 }
 
-func Eval(r io.Reader, program []Instruction, target Assignable) (err error) {
+func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 	stack := make([]Frame, 256)
 	stack[0].Target = target
 	depth := 0
@@ -76,29 +78,30 @@ func Eval(r io.Reader, program []Instruction, target Assignable) (err error) {
 			}
 			break
 		case Set:
+			target = frame.Target.Get(inst.Field)
 			switch inst.Type {
 			case Null:
 				break
 			case Boolean:
-				frame.Target.SetBoolean(inst.Field, frame.Boolean)
+				target.SetBoolean(frame.Boolean)
 				break
 			case Int:
-				frame.Target.SetInt(inst.Field, frame.Int)
+				target.SetInt(frame.Int)
 				break
 			case Long:
-				frame.Target.SetLong(inst.Field, frame.Long)
+				target.SetLong(frame.Long)
 				break
 			case Float:
-				frame.Target.SetFloat(inst.Field, frame.Float)
+				target.SetFloat(frame.Float)
 				break
 			case Double:
-				frame.Target.SetDouble(inst.Field, frame.Double)
+				target.SetDouble(frame.Double)
 				break
 			case Bytes:
-				frame.Target.SetBytes(inst.Field, frame.Bytes)
+				target.SetBytes(frame.Bytes)
 				break
 			case String:
-				frame.Target.SetString(inst.Field, frame.String)
+				target.SetString(frame.String)
 				break
 			}
 			break

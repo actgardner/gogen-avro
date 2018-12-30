@@ -3,7 +3,7 @@ package vm
 import (
 	"testing"
 
-	"github.com/actgardner/gogen-avro/types"
+	"github.com/actgardner/gogen-avro/schema"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,14 +32,14 @@ func TestCompilePrimitive(t *testing.T) {
 }
 `
 
-	readerNs := types.NewNamespace(false)
+	readerNs := schema.NewNamespace(false)
 	readerType, err := readerNs.TypeForSchema([]byte(reader))
 	assert.Nil(t, err)
 
 	err = readerType.ResolveReferences(readerNs)
 	assert.Nil(t, err)
 
-	writerNs := types.NewNamespace(false)
+	writerNs := schema.NewNamespace(false)
 	writerType, err := writerNs.TypeForSchema([]byte(writer))
 	assert.Nil(t, err)
 
@@ -63,7 +63,7 @@ func TestCompilePrimitive(t *testing.T) {
 
 // The compiler handles nested record types
 func TestCompileNested(t *testing.T) {
-	schema := `
+	schemaStr := `
 {
   "type": "record",
   "name": "test",
@@ -85,8 +85,8 @@ func TestCompileNested(t *testing.T) {
 }
 `
 
-	readerNs := types.NewNamespace(false)
-	readerType, err := readerNs.TypeForSchema([]byte(schema))
+	readerNs := schema.NewNamespace(false)
+	readerType, err := readerNs.TypeForSchema([]byte(schemaStr))
 	assert.Nil(t, err)
 
 	err = readerType.ResolveReferences(readerNs)
@@ -147,14 +147,14 @@ func TestCompileNestedRemoved(t *testing.T) {
 }
 `
 
-	readerNs := types.NewNamespace(false)
+	readerNs := schema.NewNamespace(false)
 	readerType, err := readerNs.TypeForSchema([]byte(reader))
 	assert.Nil(t, err)
 
 	err = readerType.ResolveReferences(readerNs)
 	assert.Nil(t, err)
 
-	writerNs := types.NewNamespace(false)
+	writerNs := schema.NewNamespace(false)
 	writerType, err := writerNs.TypeForSchema([]byte(writer))
 	assert.Nil(t, err)
 
@@ -178,7 +178,7 @@ func TestCompileNestedRemoved(t *testing.T) {
 }
 
 func TestCompileMap(t *testing.T) {
-	schema := `
+	schemaStr := `
 {
   "type": "record",
   "name": "test",
@@ -195,8 +195,8 @@ func TestCompileMap(t *testing.T) {
   ]
 }
 `
-	readerNs := types.NewNamespace(false)
-	readerType, err := readerNs.TypeForSchema([]byte(schema))
+	readerNs := schema.NewNamespace(false)
+	readerType, err := readerNs.TypeForSchema([]byte(schemaStr))
 	assert.Nil(t, err)
 
 	err = readerType.ResolveReferences(readerNs)
@@ -224,7 +224,7 @@ func TestCompileMap(t *testing.T) {
 }
 
 func TestCompileArray(t *testing.T) {
-	schema := `
+	schemaStr := `
 {
   "type": "record",
   "name": "test",
@@ -241,8 +241,8 @@ func TestCompileArray(t *testing.T) {
   ]
 }
 `
-	readerNs := types.NewNamespace(false)
-	readerType, err := readerNs.TypeForSchema([]byte(schema))
+	readerNs := schema.NewNamespace(false)
+	readerType, err := readerNs.TypeForSchema([]byte(schemaStr))
 	assert.Nil(t, err)
 
 	err = readerType.ResolveReferences(readerNs)

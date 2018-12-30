@@ -1,4 +1,4 @@
-package types
+package schema
 
 func getMapString(m map[string]interface{}, key string) (string, error) {
 	val, ok := m[key]

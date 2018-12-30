@@ -1,4 +1,4 @@
-package types
+package schema
 
 import (
 	"github.com/actgardner/gogen-avro/generator"

@@ -13,6 +13,7 @@ const (
 	Exit
 	BlockStart
 	BlockEnd
+	Append
 )
 
 func (o Op) String() string {
@@ -29,6 +30,9 @@ func (o Op) String() string {
 		return "block_start"
 	case BlockEnd:
 		return "block_end"
+	case Append:
+		return "append"
+
 	}
 	return "Unknown"
 }
@@ -88,18 +92,4 @@ type Instruction struct {
 
 func (i Instruction) String() string {
 	return fmt.Sprintf("%s(%s, %v)", i.Op, i.Type, i.Field)
-}
-
-type Assignable interface {
-	// Assign a primitive field
-	SetBoolean(field int, v bool)
-	SetInt(field int, v int32)
-	SetLong(field int, v int64)
-	SetFloat(field int, v float32)
-	SetDouble(field int, v float64)
-	SetBytes(field int, v []byte)
-	SetString(field int, v string)
-
-	// Get a nested complex type so we can enter it
-	Get(field int) Assignable
 }

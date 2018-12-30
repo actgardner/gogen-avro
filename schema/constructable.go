@@ -1,4 +1,4 @@
-package types
+package schema
 
 type Constructable interface {
 	ConstructorMethod() string
