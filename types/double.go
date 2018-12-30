@@ -1,63 +1,43 @@
 package types
 
-import (
-	"fmt"
-	"github.com/actgardner/gogen-avro/generator"
-)
+type Double float64
 
-const writeDoubleMethod = `
-func writeDouble(r float64, w io.Writer) error {
-	bits := uint64(math.Float64bits(r))
-	const byteCount = 8
-	return encodeFloat(w, byteCount, bits)
-}
-`
-
-const readDoubleMethod = `
-func readDouble(r io.Reader) (float64, error) {
-	buf := make([]byte, 8)
-	_, err := io.ReadFull(r, buf)
-	if err != nil {
-		return 0, err
-	}
-	bits := binary.LittleEndian.Uint64(buf)
-	val := math.Float64frombits(bits)
-	return val, nil
-}
-`
-
-type DoubleField struct {
-	PrimitiveField
+func (b *Double) SetBoolean(v bool) {
+	panic("Unable to assign boolean to double field")
 }
 
-func NewDoubleField(definition interface{}) *DoubleField {
-	return &DoubleField{PrimitiveField{
-		definition:         definition,
-		name:               "Double",
-		goType:             "float64",
-		serializerMethod:   "writeDouble",
-		deserializerMethod: "readDouble",
-	}}
+func (b *Double) SetInt(v int32) {
+	*(*float64)(b) = float64(v)
 }
 
-func (s *DoubleField) AddSerializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeDouble", writeDoubleMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeFloat", encodeFloatMethod)
-	p.AddImport(UTIL_FILE, "io")
-	p.AddImport(UTIL_FILE, "math")
+func (b *Double) SetLong(v int64) {
+	*(*float64)(b) = float64(v)
 }
 
-func (s *DoubleField) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "readDouble", readDoubleMethod)
-	p.AddImport(UTIL_FILE, "io")
-	p.AddImport(UTIL_FILE, "math")
-	p.AddImport(UTIL_FILE, "encoding/binary")
+func (b *Double) SetFloat(v float32) {
+	*(*float64)(b) = float64(v)
 }
 
-func (s *DoubleField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	if _, ok := rvalue.(float64); !ok {
-		return "", fmt.Errorf("Expected number as default for field %v, got %q", lvalue, rvalue)
-	}
-	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
+func (b *Double) SetDouble(v float64) {
+	*(*float64)(b) = v
+}
+
+func (b *Double) SetBytes(v []byte) {
+	panic("Unable to assign bytes to double field")
+}
+
+func (b *Double) SetString(v string) {
+	panic("Unable to assign string to double field")
+}
+
+func (b *Double) Get(i int) Field {
+	panic("Unable to get field from double field")
+}
+
+func (b *Double) AppendMap(key string) Field {
+	panic("Unable to append map key to from double field")
+}
+
+func (b *Double) AppendArray() Field {
+	panic("Unable to append array element to from double field")
 }

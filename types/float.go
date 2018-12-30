@@ -1,93 +1,43 @@
 package types
 
-import (
-	"fmt"
-	"github.com/actgardner/gogen-avro/generator"
-)
+type Float float32
 
-const writeFloatMethod = `
-func writeFloat(r float32, w io.Writer) error {
-	bits := uint64(math.Float32bits(r))
-	const byteCount = 4
-	return encodeFloat(w, byteCount, bits)
-}
-`
-
-const encodeFloatMethod = `
-func encodeFloat(w io.Writer, byteCount int, bits uint64) error {
-	var err error
-	var bb []byte
-	bw, ok := w.(ByteWriter)
-	if ok {
-		bw.Grow(byteCount)
-	} else {
-		bb = make([]byte, 0, byteCount)
-	}
-	for i := 0; i < byteCount; i++ {
-		if bw != nil {
-			err = bw.WriteByte(byte(bits & 255))
-			if err != nil {
-				return err
-			}
-		} else {
-			bb = append(bb, byte(bits&255))
-		}
-		bits = bits >> 8
-	}
-	if bw == nil {
-		_, err = w.Write(bb)
-		return err
-	}
-	return nil
-}
-`
-const readFloatMethod = `
-func readFloat(r io.Reader) (float32, error) {
-	buf := make([]byte, 4)
-	_, err := io.ReadFull(r, buf)
-	if err != nil {
-		return 0, err
-	}
-	bits := binary.LittleEndian.Uint32(buf)
-	val := math.Float32frombits(bits)
-	return val, nil
-
-}
-`
-
-type FloatField struct {
-	PrimitiveField
+func (b *Float) SetBoolean(v bool) {
+	panic("Unable to assign boolean to float field")
 }
 
-func NewFloatField(definition interface{}) *FloatField {
-	return &FloatField{PrimitiveField{
-		definition:         definition,
-		name:               "Float",
-		goType:             "float32",
-		serializerMethod:   "writeFloat",
-		deserializerMethod: "readFloat",
-	}}
+func (b *Float) SetInt(v int32) {
+	*(*float32)(b) = float32(v)
 }
 
-func (e *FloatField) AddSerializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeFloat", writeFloatMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeFloat", encodeFloatMethod)
-	p.AddImport(UTIL_FILE, "math")
-	p.AddImport(UTIL_FILE, "io")
+func (b *Float) SetLong(v int64) {
+	*(*float32)(b) = float32(v)
 }
 
-func (e *FloatField) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "readFloat", readFloatMethod)
-	p.AddImport(UTIL_FILE, "math")
-	p.AddImport(UTIL_FILE, "encoding/binary")
-	p.AddImport(UTIL_FILE, "io")
+func (b *Float) SetFloat(v float32) {
+	*(*float32)(b) = v
 }
 
-func (s *FloatField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	if _, ok := rvalue.(float64); !ok {
-		return "", fmt.Errorf("Expected float as default for field %v, got %q", lvalue, rvalue)
-	}
+func (b *Float) SetDouble(v float64) {
+	panic("Unable to assign double to float field")
+}
 
-	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
+func (b *Float) SetBytes(v []byte) {
+	panic("Unable to assign double to float field")
+}
+
+func (b *Float) SetString(v string) {
+	panic("Unable to assign double to float field")
+}
+
+func (b *Float) Get(i int) Field {
+	panic("Unable to get field from float field")
+}
+
+func (b *Float) AppendMap(key string) Field {
+	panic("Unable to append map key to from float field")
+}
+
+func (b *Float) AppendArray() Field {
+	panic("Unable to append array element to from float field")
 }

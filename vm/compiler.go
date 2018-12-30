@@ -3,7 +3,7 @@ package vm
 import (
 	"fmt"
 
-	"github.com/actgardner/gogen-avro/types"
+	"github.com/actgardner/gogen-avro/schema"
 )
 
 type Program struct {
@@ -14,7 +14,7 @@ func (p *Program) add(op Op, t Type, f int) {
 	p.instructions = append(p.instructions, Instruction{op, t, f})
 }
 
-func Compile(writer, reader types.AvroType) ([]Instruction, error) {
+func Compile(writer, reader schema.AvroType) ([]Instruction, error) {
 	program := &Program{make([]Instruction, 0)}
 	err := program.compileType(writer, reader, 0)
 	if err != nil {
@@ -23,15 +23,15 @@ func Compile(writer, reader types.AvroType) ([]Instruction, error) {
 	return program.instructions, nil
 }
 
-func (p *Program) compileType(writer, reader types.AvroType, index int) error {
+func (p *Program) compileType(writer, reader schema.AvroType, index int) error {
 	fmt.Printf("compileType(%v, %v, %v)\n", writer, reader, index)
 	switch writer.(type) {
-	case *types.Reference:
+	case *schema.Reference:
 		if reader != nil {
 			p.add(Enter, Unused, index)
 		}
-		if readerRef, ok := reader.(*types.Reference); ok || reader == nil {
-			err := p.compileRef(writer.(*types.Reference), readerRef)
+		if readerRef, ok := reader.(*schema.Reference); ok || reader == nil {
+			err := p.compileRef(writer.(*schema.Reference), readerRef)
 			if err != nil {
 				return err
 			}
@@ -41,12 +41,12 @@ func (p *Program) compileType(writer, reader types.AvroType, index int) error {
 			return nil
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
-	case *types.MapField:
+	case *schema.MapField:
 		if reader != nil {
 			p.add(Enter, Unused, index)
 		}
-		if readerRef, ok := reader.(*types.MapField); ok || reader == nil {
-			err := p.compileMap(writer.(*types.MapField), readerRef)
+		if readerRef, ok := reader.(*schema.MapField); ok || reader == nil {
+			err := p.compileMap(writer.(*schema.MapField), readerRef)
 			if err != nil {
 				return err
 			}
@@ -56,12 +56,12 @@ func (p *Program) compileType(writer, reader types.AvroType, index int) error {
 			return nil
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
-	case *types.ArrayField:
+	case *schema.ArrayField:
 		if reader != nil {
 			p.add(Enter, Unused, index)
 		}
-		if readerRef, ok := reader.(*types.ArrayField); ok || reader == nil {
-			err := p.compileArray(writer.(*types.ArrayField), readerRef)
+		if readerRef, ok := reader.(*schema.ArrayField); ok || reader == nil {
+			err := p.compileArray(writer.(*schema.ArrayField), readerRef)
 			if err != nil {
 				return err
 			}
@@ -71,13 +71,13 @@ func (p *Program) compileType(writer, reader types.AvroType, index int) error {
 			return nil
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
-	case *types.IntField:
+	case *schema.IntField:
 		p.add(Read, Int, NoopField)
 		if reader != nil {
 			p.add(Set, Int, index)
 		}
 		return nil
-	case *types.StringField:
+	case *schema.StringField:
 		p.add(Read, String, NoopField)
 		if reader != nil {
 			p.add(Set, String, index)
@@ -87,31 +87,31 @@ func (p *Program) compileType(writer, reader types.AvroType, index int) error {
 	return nil
 }
 
-func (p *Program) compileRef(writer, reader *types.Reference) error {
+func (p *Program) compileRef(writer, reader *schema.Reference) error {
 	fmt.Printf("compileRef(%v, %v)\n", writer, reader)
 	if reader != nil && writer.TypeName != reader.TypeName {
 		return fmt.Errorf("Incompatible types by name: %v %v", reader, writer)
 	}
 
 	switch writer.Def.(type) {
-	case *types.RecordDefinition:
-		var readerDef *types.RecordDefinition
+	case *schema.RecordDefinition:
+		var readerDef *schema.RecordDefinition
 		var ok bool
 		if reader != nil {
-			if readerDef, ok = reader.Def.(*types.RecordDefinition); !ok {
+			if readerDef, ok = reader.Def.(*schema.RecordDefinition); !ok {
 				return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 			}
 		}
-		return p.compileRecord(writer.Def.(*types.RecordDefinition), readerDef)
+		return p.compileRecord(writer.Def.(*schema.RecordDefinition), readerDef)
 	}
 	return fmt.Errorf("Unsupported field %v", reader)
 }
 
-func (p *Program) compileMap(writer, reader *types.MapField) error {
+func (p *Program) compileMap(writer, reader *schema.MapField) error {
 	fmt.Printf("compileMap(%v, %v)\n", writer, reader)
 	p.add(BlockStart, Unused, NoopField)
 	p.add(Read, MapKey, NoopField)
-	var readerType types.AvroType
+	var readerType schema.AvroType
 	if reader != nil {
 		readerType = reader.ItemType()
 	}
@@ -123,10 +123,10 @@ func (p *Program) compileMap(writer, reader *types.MapField) error {
 	return nil
 }
 
-func (p *Program) compileArray(writer, reader *types.ArrayField) error {
+func (p *Program) compileArray(writer, reader *schema.ArrayField) error {
 	fmt.Printf("compileArray(%v, %v)\n", writer, reader)
 	p.add(BlockStart, Unused, NoopField)
-	var readerType types.AvroType
+	var readerType schema.AvroType
 	if reader != nil {
 		readerType = reader.ItemType()
 	}
@@ -138,11 +138,11 @@ func (p *Program) compileArray(writer, reader *types.ArrayField) error {
 	return nil
 }
 
-func (p *Program) compileRecord(writer, reader *types.RecordDefinition) error {
+func (p *Program) compileRecord(writer, reader *schema.RecordDefinition) error {
 	// Look up whether there's a corresonding target field and if so, parse the source field into that target
 	fmt.Printf("compileRecord(%v, %v)\n", writer, reader)
 	for _, field := range writer.Fields() {
-		var readerField *types.Field
+		var readerField *schema.Field
 		if reader != nil {
 			readerField = reader.FieldByName(field.Name())
 		}
@@ -154,11 +154,11 @@ func (p *Program) compileRecord(writer, reader *types.RecordDefinition) error {
 	return nil
 }
 
-func (p *Program) compileField(writer, reader *types.Field) error {
+func (p *Program) compileField(writer, reader *schema.Field) error {
 	fmt.Printf("compileField(%v, %v)\n", writer, reader)
 	writerType := writer.Type()
 
-	var readerType types.AvroType
+	var readerType schema.AvroType
 	targetIndex := NoopField
 	if reader != nil {
 		targetIndex = reader.Index()

@@ -2,8 +2,9 @@ package vm
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
+
+	"github.com/actgardner/gogen-avro/types"
 
 	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
@@ -25,31 +26,24 @@ const PrimitiveSchema = `
 }
 `
 
-func (p *PrimitiveStruct) SetBoolean(field int, v bool) {}
-func (p *PrimitiveStruct) SetInt(field int, v int32) {
-	switch field {
-	case 1:
-		p.Two = v
-		return
-	}
-	panic(fmt.Sprintf("Unexpected assignment to field %v with %v", field, v))
-}
-func (p *PrimitiveStruct) SetLong(field int, v int64)     {}
-func (p *PrimitiveStruct) SetFloat(field int, v float32)  {}
-func (p *PrimitiveStruct) SetDouble(field int, v float64) {}
-func (p *PrimitiveStruct) SetBytes(field int, v []byte)   {}
-func (p *PrimitiveStruct) SetString(field int, v string) {
+func (p *PrimitiveStruct) SetBoolean(v bool)   {}
+func (p *PrimitiveStruct) SetInt(v int32)      {}
+func (p *PrimitiveStruct) SetLong(v int64)     {}
+func (p *PrimitiveStruct) SetFloat(v float32)  {}
+func (p *PrimitiveStruct) SetDouble(v float64) {}
+func (p *PrimitiveStruct) SetBytes(v []byte)   {}
+func (p *PrimitiveStruct) SetString(v string)  {}
+func (p *PrimitiveStruct) Get(field int) types.Field {
 	switch field {
 	case 0:
-		p.One = v
-		return
+		return (*types.String)(&p.One)
+	case 1:
+		return (*types.Int)(&p.Two)
 	}
-	panic(fmt.Sprintf("Unexpected assignment to field %v with %v", field, v))
+	panic("Field index out of range!")
 }
-func (p *PrimitiveStruct) Init(field int) {}
-func (p *PrimitiveStruct) Get(field int) Assignable {
-	return nil
-}
+func (p *PrimitiveStruct) AppendMap(v string) types.Field { return nil }
+func (p *PrimitiveStruct) AppendArray() types.Field       { return nil }
 
 func TestEvalPrimitive(t *testing.T) {
 	program := []Instruction{

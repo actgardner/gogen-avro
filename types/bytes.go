@@ -1,68 +1,43 @@
 package types
 
-import (
-	"fmt"
-	"github.com/actgardner/gogen-avro/generator"
-)
+type Bytes []byte
 
-const writeBytesMethod = `
-func writeBytes(r []byte, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(r)
-	return err
-}
-`
-
-const readBytesMethod = `
-func readBytes(r io.Reader) ([]byte, error) {
-	size, err := readLong(r)
-	if err != nil {
-		return nil, err
-	}
-	if size == 0 {
-		return []byte{}, nil
-	}
-	bb := make([]byte, size)
-	_, err = io.ReadFull(r, bb)
-	return bb, err
-}
-`
-
-type BytesField struct {
-	PrimitiveField
+func (b *Bytes) SetBoolean(v bool) {
+	panic("Unable to assign bytes to bytes field")
 }
 
-func NewBytesField(definition interface{}) *BytesField {
-	return &BytesField{PrimitiveField{
-		definition:         definition,
-		name:               "Bytes",
-		goType:             "[]byte",
-		serializerMethod:   "writeBytes",
-		deserializerMethod: "readBytes",
-	}}
+func (b *Bytes) SetInt(v int32) {
+	panic("Unable to assign int to bytes field")
 }
 
-func (s *BytesField) AddSerializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeBytes", writeBytesMethod)
-	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.AddImport(UTIL_FILE, "io")
+func (b *Bytes) SetLong(v int64) {
+	panic("Unable to assign long to bytes field")
 }
 
-func (s *BytesField) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "readBytes", readBytesMethod)
-	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
-	p.AddImport(UTIL_FILE, "io")
+func (b *Bytes) SetFloat(v float32) {
+	panic("Unable to assign float to bytes field")
 }
 
-func (s *BytesField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	if _, ok := rvalue.(string); !ok {
-		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
-	}
+func (b *Bytes) SetDouble(v float64) {
+	panic("Unable to assign double to bytes field")
+}
 
-	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue), nil
+func (b *Bytes) SetBytes(v []byte) {
+	*b = v
+}
+
+func (b *Bytes) SetString(v string) {
+	*b = []byte(v)
+}
+
+func (b *Bytes) Get(i int) Field {
+	panic("Unable to get field from bytes field")
+}
+
+func (b *Bytes) AppendMap(key string) Field {
+	panic("Unable to append map key to from bytes field")
+}
+
+func (b *Bytes) AppendArray() Field {
+	panic("Unable to append array element to from bytes field")
 }
