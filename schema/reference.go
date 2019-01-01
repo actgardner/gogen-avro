@@ -32,20 +32,12 @@ func (s *Reference) SerializerMethod() string {
 	return s.Def.SerializerMethod()
 }
 
-func (s *Reference) DeserializerMethod() string {
-	return s.Def.DeserializerMethod()
-}
-
 func (s *Reference) AddStruct(p *generator.Package, containers bool) error {
 	return s.Def.AddStruct(p, containers)
 }
 
 func (s *Reference) AddSerializer(p *generator.Package) {
 	s.Def.AddSerializer(p)
-}
-
-func (s *Reference) AddDeserializer(p *generator.Package) {
-	s.Def.AddDeserializer(p)
 }
 
 func (s *Reference) ResolveReferences(n *Namespace) error {
@@ -65,4 +57,11 @@ func (s *Reference) Definition(scope map[QualifiedName]interface{}) (interface{}
 
 func (s *Reference) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	return s.Def.DefaultValue(lvalue, rvalue)
+}
+
+func (s *Reference) IsReadableBy(f AvroType) bool {
+	if reader, ok := f.(*Reference); ok {
+		return s.Def.IsReadableBy(reader.Def)
+	}
+	return false
 }

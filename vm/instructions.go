@@ -14,6 +14,9 @@ const (
 	BlockStart
 	BlockEnd
 	Append
+	SwitchStart
+	SwitchCase
+	SwitchEnd
 )
 
 func (o Op) String() string {
@@ -32,7 +35,12 @@ func (o Op) String() string {
 		return "block_end"
 	case Append:
 		return "append"
-
+	case SwitchStart:
+		return "switch_start"
+	case SwitchCase:
+		return "switch_case"
+	case SwitchEnd:
+		return "switch_end"
 	}
 	return "Unknown"
 }

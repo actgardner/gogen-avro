@@ -12,14 +12,7 @@ type ByteWriter interface {
 } 
 `
 
-const byteReaderInterface = `
-type ByteReader interface {
-	ReadByte() (byte, error)
-} 
-`
-
 const writeBoolMethod = `
-
 func writeBool(r bool, w io.Writer) error {
 	var b byte
 	if r {
@@ -41,35 +34,16 @@ func writeBool(r bool, w io.Writer) error {
 }
 `
 
-const readBoolMethod = `
-func readBool(r io.Reader) (bool, error) {
-	var b byte
-	var err error
-	if br, ok := r.(ByteReader); ok {
-		b, err = br.ReadByte()
-	} else {
-		bs := make([]byte, 1)
-		_, err = io.ReadFull(r, bs)
-		if err != nil {
-			return false, err
-		}
-		b = bs[0]
-	}
-	return b == 1, nil
-}
-`
-
 type BoolField struct {
 	PrimitiveField
 }
 
 func NewBoolField(definition interface{}) *BoolField {
 	return &BoolField{PrimitiveField{
-		definition:         definition,
-		name:               "Bool",
-		goType:             "bool",
-		serializerMethod:   "writeBool",
-		deserializerMethod: "readBool",
+		definition:       definition,
+		name:             "Bool",
+		goType:           "bool",
+		serializerMethod: "writeBool",
 	}}
 }
 
@@ -79,16 +53,15 @@ func (s *BoolField) AddSerializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *BoolField) AddDeserializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteReader", byteReaderInterface)
-	p.AddFunction(UTIL_FILE, "", "readBool", readBoolMethod)
-	p.AddImport(UTIL_FILE, "io")
-}
-
 func (s *BoolField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	if _, ok := rvalue.(bool); !ok {
 		return "", fmt.Errorf("Expected bool as default for field %v, got %q", lvalue, rvalue)
 	}
 
 	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
+}
+
+func (s *BoolField) IsReadableBy(f AvroType) bool {
+	_, ok := f.(*BoolField)
+	return ok
 }

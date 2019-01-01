@@ -16,32 +16,16 @@ func writeBytes(r []byte, w io.Writer) error {
 }
 `
 
-const readBytesMethod = `
-func readBytes(r io.Reader) ([]byte, error) {
-	size, err := readLong(r)
-	if err != nil {
-		return nil, err
-	}
-	if size == 0 {
-		return []byte{}, nil
-	}
-	bb := make([]byte, size)
-	_, err = io.ReadFull(r, bb)
-	return bb, err
-}
-`
-
 type BytesField struct {
 	PrimitiveField
 }
 
 func NewBytesField(definition interface{}) *BytesField {
 	return &BytesField{PrimitiveField{
-		definition:         definition,
-		name:               "Bytes",
-		goType:             "[]byte",
-		serializerMethod:   "writeBytes",
-		deserializerMethod: "readBytes",
+		definition:       definition,
+		name:             "Bytes",
+		goType:           "[]byte",
+		serializerMethod: "writeBytes",
 	}}
 }
 
@@ -53,16 +37,20 @@ func (s *BytesField) AddSerializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *BytesField) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "readBytes", readBytesMethod)
-	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
-	p.AddImport(UTIL_FILE, "io")
-}
-
 func (s *BytesField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	if _, ok := rvalue.(string); !ok {
 		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
 	}
 
 	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue), nil
+}
+
+func (s *BytesField) IsReadableBy(f AvroType) bool {
+	if _, ok := f.(*BytesField); ok {
+		return true
+	}
+	if _, ok := f.(*StringField); ok {
+		return true
+	}
+	return false
 }

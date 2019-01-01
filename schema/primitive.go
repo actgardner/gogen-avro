@@ -6,11 +6,10 @@ import (
 
 // Common methods for all primitive types
 type PrimitiveField struct {
-	definition         interface{}
-	name               string
-	goType             string
-	serializerMethod   string
-	deserializerMethod string
+	definition       interface{}
+	name             string
+	goType           string
+	serializerMethod string
 }
 
 func (s *PrimitiveField) Name() string {
@@ -23,10 +22,6 @@ func (s *PrimitiveField) GoType() string {
 
 func (s *PrimitiveField) SerializerMethod() string {
 	return s.serializerMethod
-}
-
-func (s *PrimitiveField) DeserializerMethod() string {
-	return s.deserializerMethod
 }
 
 func (s *PrimitiveField) AddStruct(p *generator.Package, _ bool) error {

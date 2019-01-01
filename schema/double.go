@@ -13,30 +13,16 @@ func writeDouble(r float64, w io.Writer) error {
 }
 `
 
-const readDoubleMethod = `
-func readDouble(r io.Reader) (float64, error) {
-	buf := make([]byte, 8)
-	_, err := io.ReadFull(r, buf)
-	if err != nil {
-		return 0, err
-	}
-	bits := binary.LittleEndian.Uint64(buf)
-	val := math.Float64frombits(bits)
-	return val, nil
-}
-`
-
 type DoubleField struct {
 	PrimitiveField
 }
 
 func NewDoubleField(definition interface{}) *DoubleField {
 	return &DoubleField{PrimitiveField{
-		definition:         definition,
-		name:               "Double",
-		goType:             "float64",
-		serializerMethod:   "writeDouble",
-		deserializerMethod: "readDouble",
+		definition:       definition,
+		name:             "Double",
+		goType:           "float64",
+		serializerMethod: "writeDouble",
 	}}
 }
 
@@ -48,16 +34,16 @@ func (s *DoubleField) AddSerializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "math")
 }
 
-func (s *DoubleField) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "readDouble", readDoubleMethod)
-	p.AddImport(UTIL_FILE, "io")
-	p.AddImport(UTIL_FILE, "math")
-	p.AddImport(UTIL_FILE, "encoding/binary")
-}
-
 func (s *DoubleField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	if _, ok := rvalue.(float64); !ok {
 		return "", fmt.Errorf("Expected number as default for field %v, got %q", lvalue, rvalue)
 	}
 	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
+}
+
+func (s *DoubleField) IsReadableBy(f AvroType) bool {
+	if _, ok := f.(*DoubleField); ok {
+		return true
+	}
+	return false
 }

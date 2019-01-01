@@ -26,43 +26,16 @@ func writeString(r string, w io.Writer) error {
 }
 `
 
-const readStringMethod = `
-func readString(r io.Reader) (string, error) {
-	len, err := readLong(r)
-	if err != nil {
-		return "", err
-	}
-
-  // makeslice can fail depending on available memory.
-  // We arbitrarily limit string size to sane default (~2.2GB).
-	if len < 0 || len > math.MaxInt32 {
-		return "", fmt.Errorf("string length out of range: %d", len)
-	}
-
-	if len == 0 {
-		return "", nil
-	}
-
-	bb := make([]byte, len)
-	_, err = io.ReadFull(r, bb)
-	if err != nil {
-		return "", err
-	}
-	return string(bb), nil
-}
-`
-
 type StringField struct {
 	PrimitiveField
 }
 
 func NewStringField(definition interface{}) *StringField {
 	return &StringField{PrimitiveField{
-		definition:         definition,
-		name:               "String",
-		goType:             "string",
-		serializerMethod:   "writeString",
-		deserializerMethod: "readString",
+		definition:       definition,
+		name:             "String",
+		goType:           "string",
+		serializerMethod: "writeString",
 	}}
 }
 
@@ -75,18 +48,20 @@ func (s *StringField) AddSerializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *StringField) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
-	p.AddFunction(UTIL_FILE, "", "readString", readStringMethod)
-	p.AddImport(UTIL_FILE, "io")
-	p.AddImport(UTIL_FILE, "fmt")
-	p.AddImport(UTIL_FILE, "math")
-}
-
 func (s *StringField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	if _, ok := rvalue.(string); !ok {
 		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
 	}
 
 	return fmt.Sprintf("%v = %q", lvalue, rvalue), nil
+}
+
+func (s *StringField) IsReadableBy(f AvroType) bool {
+	if _, ok := f.(*BytesField); ok {
+		return true
+	}
+	if _, ok := f.(*StringField); ok {
+		return true
+	}
+	return false
 }

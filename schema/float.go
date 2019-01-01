@@ -41,19 +41,6 @@ func encodeFloat(w io.Writer, byteCount int, bits uint64) error {
 	return nil
 }
 `
-const readFloatMethod = `
-func readFloat(r io.Reader) (float32, error) {
-	buf := make([]byte, 4)
-	_, err := io.ReadFull(r, buf)
-	if err != nil {
-		return 0, err
-	}
-	bits := binary.LittleEndian.Uint32(buf)
-	val := math.Float32frombits(bits)
-	return val, nil
-
-}
-`
 
 type FloatField struct {
 	PrimitiveField
@@ -61,11 +48,10 @@ type FloatField struct {
 
 func NewFloatField(definition interface{}) *FloatField {
 	return &FloatField{PrimitiveField{
-		definition:         definition,
-		name:               "Float",
-		goType:             "float32",
-		serializerMethod:   "writeFloat",
-		deserializerMethod: "readFloat",
+		definition:       definition,
+		name:             "Float",
+		goType:           "float32",
+		serializerMethod: "writeFloat",
 	}}
 }
 
@@ -77,17 +63,20 @@ func (e *FloatField) AddSerializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (e *FloatField) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "readFloat", readFloatMethod)
-	p.AddImport(UTIL_FILE, "math")
-	p.AddImport(UTIL_FILE, "encoding/binary")
-	p.AddImport(UTIL_FILE, "io")
-}
-
 func (s *FloatField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	if _, ok := rvalue.(float64); !ok {
 		return "", fmt.Errorf("Expected float as default for field %v, got %q", lvalue, rvalue)
 	}
 
 	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
+}
+
+func (s *FloatField) IsReadableBy(f AvroType) bool {
+	if _, ok := f.(*FloatField); ok {
+		return true
+	}
+	if _, ok := f.(*DoubleField); ok {
+		return true
+	}
+	return false
 }

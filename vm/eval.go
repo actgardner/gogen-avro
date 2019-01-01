@@ -18,10 +18,11 @@ type Frame struct {
 	Bytes   []byte
 	String  string
 
-	MapKey     string
-	Length     int64
-	UnionElem  int64
+	MapKey string
+	Length int64
+
 	BlockStart int
+	UnionType  int64
 }
 
 func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
@@ -73,7 +74,7 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 				frame.Length, err = readLong(r)
 				break
 			case UnionElem:
-				frame.UnionElem, err = readLong(r)
+				frame.UnionType, err = readLong(r)
 				break
 			}
 			break
@@ -127,7 +128,32 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 			frame.Length -= 1
 			break
 		case BlockEnd:
+			// Loop back to the beginning of the loop
 			pc = stack[depth].BlockStart - 1
+			break
+		case SwitchStart:
+			// Skip to the case matching the UnionType in the frame
+			for {
+				if program[pc].Op == SwitchCase && program[pc].Field == int(stack[depth].UnionType) {
+					break
+				}
+				if program[pc].Op == SwitchEnd {
+					err = fmt.Errorf("No matching case in switch for %v", stack[depth].UnionType)
+				}
+				pc += 1
+			}
+			break
+		case SwitchCase:
+			// Switch cases don't need an explicit break, skip to the end of the block
+			for {
+				if program[pc].Op == SwitchEnd {
+					break
+				}
+				pc += 1
+			}
+			break
+		case SwitchEnd:
+			// The end of the last case, nothing to see here
 			break
 		}
 
