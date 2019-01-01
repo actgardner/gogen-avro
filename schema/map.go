@@ -25,40 +25,6 @@ func %v(r %v, w io.Writer) error {
 }
 `
 
-const mapDeserializerTemplate = `
-func %v(r io.Reader) (%v, error) {
-	m := make(%v)
-	for {
-		blkSize, err := readLong(r)
-		if err != nil {
-			return nil, err
-		}
-		if blkSize == 0 {
-			break
-		}
-		if blkSize < 0 {
-			blkSize = -blkSize
-			_, err := readLong(r)
-			if err != nil {
-				return nil, err
-			}
-		}
-		for i := int64(0); i < blkSize; i++ {
-			key, err := readString(r)
-			if err != nil {
-				return nil, err
-			}
-			val, err := %v(r)
-			if err != nil {
-				return nil, err
-			}
-			m[key] = val
-		}
-	}
-	return m, nil
-}
-`
-
 type MapField struct {
 	itemType   AvroType
 	definition map[string]interface{}
@@ -87,10 +53,6 @@ func (s *MapField) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.Name())
 }
 
-func (s *MapField) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", s.Name())
-}
-
 func (s *MapField) AddStruct(p *generator.Package, containers bool) error {
 	return s.itemType.AddStruct(p, containers)
 }
@@ -108,20 +70,6 @@ func (s *MapField) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.AddFunction(UTIL_FILE, "", methodName, mapSerializer)
 	p.AddImport(UTIL_FILE, "io")
-}
-
-func (s *MapField) AddDeserializer(p *generator.Package) {
-	s.itemType.AddDeserializer(p)
-	itemMethodName := s.itemType.DeserializerMethod()
-	methodName := s.DeserializerMethod()
-	mapDeserializer := fmt.Sprintf(mapDeserializerTemplate, s.DeserializerMethod(), s.GoType(), s.GoType(), itemMethodName)
-
-	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
-	p.AddFunction(UTIL_FILE, "", "readString", readStringMethod)
-	p.AddFunction(UTIL_FILE, "", methodName, mapDeserializer)
-	p.AddImport(UTIL_FILE, "io")
-	p.AddImport(UTIL_FILE, "fmt")
-	p.AddImport(UTIL_FILE, "math")
 }
 
 func (s *MapField) ResolveReferences(n *Namespace) error {
@@ -156,4 +104,11 @@ func (s *MapField) DefaultValue(lvalue string, rvalue interface{}) (string, erro
 		setters += setter + "\n"
 	}
 	return setters, nil
+}
+
+func (s *MapField) IsReadableBy(f AvroType) bool {
+	if reader, ok := f.(*MapField); ok {
+		return s.ItemType().IsReadableBy(reader.ItemType())
+	}
+	return false
 }

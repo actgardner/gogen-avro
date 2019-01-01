@@ -12,14 +12,6 @@ func %v(r %v, w io.Writer) error {
 }
 `
 
-const readFixedMethod = `
-func %v(r io.Reader) (%v, error) {
-	var bb %v
-	_, err := io.ReadFull(r, bb[:])
-	return bb, err
-}
-`
-
 type FixedDefinition struct {
 	name       QualifiedName
 	aliases    []QualifiedName
@@ -56,10 +48,6 @@ func (s *FixedDefinition) serializerMethodDef() string {
 	return fmt.Sprintf(writeFixedMethod, s.SerializerMethod(), s.GoType())
 }
 
-func (s *FixedDefinition) deserializerMethodDef() string {
-	return fmt.Sprintf(readFixedMethod, s.DeserializerMethod(), s.GoType(), s.GoType())
-}
-
 func (s *FixedDefinition) typeDef() string {
 	return fmt.Sprintf("type %v [%v]byte\n", s.GoType(), s.sizeBytes)
 }
@@ -72,10 +60,6 @@ func (s *FixedDefinition) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.GoType())
 }
 
-func (s *FixedDefinition) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", s.GoType())
-}
-
 func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
 	p.AddStruct(s.filename(), s.GoType(), s.typeDef())
 	return nil
@@ -83,11 +67,6 @@ func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
 
 func (s *FixedDefinition) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
-	p.AddImport(UTIL_FILE, "io")
-}
-
-func (s *FixedDefinition) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", s.DeserializerMethod(), s.deserializerMethodDef())
 	p.AddImport(UTIL_FILE, "io")
 }
 
@@ -109,4 +88,11 @@ func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (strin
 	}
 
 	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue), nil
+}
+
+func (s *FixedDefinition) IsReadableBy(d Definition) bool {
+	if fixed, ok := d.(*FixedDefinition); ok {
+		return fixed.sizeBytes == s.sizeBytes
+	}
+	return false
 }

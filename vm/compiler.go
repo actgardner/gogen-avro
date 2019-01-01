@@ -71,6 +71,11 @@ func (p *Program) compileType(writer, reader schema.AvroType, index int) error {
 			return nil
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
+	case *schema.UnionField:
+		err := p.compileUnion(writer.(*schema.UnionField), reader, index)
+		if err != nil {
+			return nil
+		}
 	case *schema.IntField:
 		p.add(Read, Int, NoopField)
 		if reader != nil {
@@ -166,4 +171,36 @@ func (p *Program) compileField(writer, reader *schema.Field) error {
 	}
 
 	return p.compileType(writerType, readerType, targetIndex)
+}
+
+func (p *Program) compileUnion(writer *schema.UnionField, reader schema.AvroType, index int) error {
+	fmt.Printf("compileUnion(%v, %v)\n", writer, reader)
+
+	p.add(Read, UnionElem, NoopField)
+	p.add(SwitchStart, Unused, NoopField)
+writer:
+	for i, t := range writer.AvroTypes() {
+		p.add(SwitchCase, Unused, i)
+		if unionReader, ok := reader.(*schema.UnionField); ok {
+			for _, r := range unionReader.AvroTypes() {
+				if t.IsReadableBy(r) {
+					err := p.compileType(t, r, index)
+					if err != nil {
+						return err
+					}
+					continue writer
+				}
+			}
+			return fmt.Errorf("Incompatible types: %v %v", reader, writer)
+		} else if t.IsReadableBy(reader) {
+			err := p.compileType(t, reader, index)
+			if err != nil {
+				return err
+			}
+		} else {
+			return fmt.Errorf("Incompatible types: %v %v", reader, writer)
+		}
+	}
+	p.add(SwitchEnd, Unused, NoopField)
+	return nil
 }

@@ -30,13 +30,6 @@ func %v(r %v, w io.Writer) error {
 }
 `
 
-const enumDeserializerDef = `
-func %v(r io.Reader) (%v, error) {
-	val, err := readInt(r)
-	return %v(val), err
-}
-`
-
 type EnumDefinition struct {
 	name       QualifiedName
 	aliases    []QualifiedName
@@ -107,14 +100,6 @@ func (e *EnumDefinition) SerializerMethod() string {
 	return "write" + e.GoType()
 }
 
-func (e *EnumDefinition) deserializerMethodDef() string {
-	return fmt.Sprintf(enumDeserializerDef, e.DeserializerMethod(), e.GoType(), e.GoType())
-}
-
-func (e *EnumDefinition) DeserializerMethod() string {
-	return "read" + e.GoType()
-}
-
 func (e *EnumDefinition) filename() string {
 	return generator.ToSnake(e.GoType()) + ".go"
 }
@@ -130,12 +115,6 @@ func (e *EnumDefinition) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.AddFunction(UTIL_FILE, "", e.SerializerMethod(), e.serializerMethodDef())
-	p.AddImport(UTIL_FILE, "io")
-}
-
-func (e *EnumDefinition) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "readInt", readIntMethod)
-	p.AddFunction(UTIL_FILE, "", e.DeserializerMethod(), e.deserializerMethodDef())
 	p.AddImport(UTIL_FILE, "io")
 }
 
@@ -157,4 +136,9 @@ func (s *EnumDefinition) DefaultValue(lvalue string, rvalue interface{}) (string
 	}
 
 	return fmt.Sprintf("%v = %v", lvalue, generator.ToPublicName(s.GoType()+strings.Title(rvalue.(string)))), nil
+}
+
+func (s *EnumDefinition) IsReadableBy(d Definition) bool {
+	_, ok := d.(*EnumDefinition)
+	return ok
 }

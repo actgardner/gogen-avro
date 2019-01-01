@@ -14,36 +14,16 @@ func writeLong(r int64, w io.Writer) error {
 }
 `
 
-const readLongMethod = `
-func readLong(r io.Reader) (int64, error) {
-	var v uint64
-	buf := make([]byte, 1)
-	for shift := uint(0); ; shift += 7 {
-		if _, err := io.ReadFull(r, buf); err != nil {
-			return 0, err
-		}
-		b := buf[0]
-		v |= uint64(b&127) << shift
-		if b&128 == 0 {
-			break
-		}
-	}
-	datum := (int64(v>>1) ^ -int64(v&1))
-	return datum, nil
-}
-`
-
 type LongField struct {
 	PrimitiveField
 }
 
 func NewLongField(definition interface{}) *LongField {
 	return &LongField{PrimitiveField{
-		definition:         definition,
-		name:               "Long",
-		goType:             "int64",
-		serializerMethod:   "writeLong",
-		deserializerMethod: "readLong",
+		definition:       definition,
+		name:             "Long",
+		goType:           "int64",
+		serializerMethod: "writeLong",
 	}}
 }
 
@@ -54,15 +34,23 @@ func (s *LongField) AddSerializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
 }
 
-func (s *LongField) AddDeserializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
-	p.AddImport(UTIL_FILE, "io")
-}
-
 func (s *LongField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	if _, ok := rvalue.(float64); !ok {
 		return "", fmt.Errorf("Expected number as default for Field %v, got %q", lvalue, rvalue)
 	}
 
 	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
+}
+
+func (s *LongField) IsReadableBy(f AvroType) bool {
+	if _, ok := f.(*LongField); ok {
+		return true
+	}
+	if _, ok := f.(*FloatField); ok {
+		return true
+	}
+	if _, ok := f.(*DoubleField); ok {
+		return true
+	}
+	return false
 }

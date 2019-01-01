@@ -21,38 +21,6 @@ func %v(r %v, w io.Writer) error {
 }
 `
 
-const arrayDeserializerTemplate = `
-func %v(r io.Reader) (%v, error) {
-	var err error
-	var blkSize int64
-	var arr = make(%v, 0)
-	for {
-		blkSize, err = readLong(r)
-		if err != nil {
-			return nil, err
-		}
-		if blkSize == 0 {
-			break
-		}
-		if blkSize < 0 {
-			blkSize = -blkSize
-			_, err = readLong(r)
-			if err != nil {
-				return nil, err
-			}
-		}
-		for i := int64(0); i < blkSize; i++ {
-			elem, err := %v(r)
-			if err != nil {
-				return nil, err
-			}
-			arr = append(arr, elem)
-		}
-	}
-	return arr, nil
-}
-`
-
 type ArrayField struct {
 	itemType   AvroType
 	definition map[string]interface{}
@@ -77,10 +45,6 @@ func (s *ArrayField) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.Name())
 }
 
-func (s *ArrayField) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", s.Name())
-}
-
 func (s *ArrayField) AddStruct(p *generator.Package, container bool) error {
 	return s.itemType.AddStruct(p, container)
 }
@@ -98,16 +62,6 @@ func (s *ArrayField) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddImport(UTIL_FILE, "io")
-}
-
-func (s *ArrayField) AddDeserializer(p *generator.Package) {
-	itemMethodName := s.itemType.DeserializerMethod()
-	methodName := s.DeserializerMethod()
-	arrayDeserializer := fmt.Sprintf(arrayDeserializerTemplate, methodName, s.GoType(), s.GoType(), itemMethodName)
-	s.itemType.AddDeserializer(p)
-	p.AddFunction(UTIL_FILE, "", methodName, arrayDeserializer)
-	p.AddFunction(UTIL_FILE, "", "readLong", readLongMethod)
 	p.AddImport(UTIL_FILE, "io")
 }
 
@@ -149,4 +103,11 @@ func (s *ArrayField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 		setters += setter + "\n"
 	}
 	return setters, nil
+}
+
+func (s *ArrayField) IsReadableBy(f AvroType) bool {
+	if reader, ok := f.(*ArrayField); ok {
+		return s.ItemType().IsReadableBy(reader.ItemType())
+	}
+	return false
 }

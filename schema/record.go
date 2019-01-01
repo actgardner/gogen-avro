@@ -36,20 +36,6 @@ func (r %v) Serialize(w io.Writer) error {
 }
 `
 
-const recordStructDeserializerTemplate = `
-func %v(r io.Reader) (%v, error) {
-	var str = &%v{}
-	%v
-	return str, nil
-}
-`
-
-const recordStructPublicDeserializerTemplate = `
-func %v(r io.Reader) (%v, error) {
-	return %v(r)
-}
-`
-
 const recordWriterTemplate = `
 func %v(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
 	str := &%v{}
@@ -114,18 +100,6 @@ func (r *RecordDefinition) fieldSerializers() string {
 	return serializerMethods
 }
 
-func (r *RecordDefinition) fieldDeserializers() string {
-	if r.fields == nil || len(r.fields) == 0 {
-		//in case the record has no fields just assign err to nil to work with template defining var err error
-		return ""
-	}
-	deserializerMethods := "var err error\n"
-	for _, f := range r.fields {
-		deserializerMethods += fmt.Sprintf("str.%v, err = %v(r)\nif err != nil {return nil, err}\n", f.GoName(), f.Type().DeserializerMethod())
-	}
-	return deserializerMethods
-}
-
 func (r *RecordDefinition) structDefinition() string {
 	var doc string
 	if r.doc != "" {
@@ -138,20 +112,8 @@ func (r *RecordDefinition) serializerMethodDef() string {
 	return fmt.Sprintf("func %v(r %v, w io.Writer) error {\n%v\nreturn nil\n}", r.SerializerMethod(), r.GoType(), r.fieldSerializers())
 }
 
-func (r *RecordDefinition) deserializerMethodDef() string {
-	return fmt.Sprintf(recordStructDeserializerTemplate, r.DeserializerMethod(), r.GoType(), r.Name(), r.fieldDeserializers())
-}
-
 func (r *RecordDefinition) SerializerMethod() string {
 	return fmt.Sprintf("write%v", r.Name())
-}
-
-func (r *RecordDefinition) DeserializerMethod() string {
-	return fmt.Sprintf("read%v", r.Name())
-}
-
-func (r *RecordDefinition) publicDeserializerMethod() string {
-	return fmt.Sprintf("Deserialize%v", r.Name())
 }
 
 func (r *RecordDefinition) recordWriterMethod() string {
@@ -164,10 +126,6 @@ func (r *RecordDefinition) recordWriterMethodDef() string {
 
 func (r *RecordDefinition) publicSerializerMethodDef() string {
 	return fmt.Sprintf(recordStructPublicSerializerTemplate, r.GoType(), r.SerializerMethod())
-}
-
-func (r *RecordDefinition) publicDeserializerMethodDef() string {
-	return fmt.Sprintf(recordStructPublicDeserializerTemplate, r.publicDeserializerMethod(), r.GoType(), r.DeserializerMethod())
 }
 
 func (r *RecordDefinition) filename() string {
@@ -220,18 +178,6 @@ func (r *RecordDefinition) AddSerializer(p *generator.Package) {
 		p.AddFunction(r.filename(), r.GoType(), "Serialize", r.publicSerializerMethodDef())
 		for _, f := range r.fields {
 			f.Type().AddSerializer(p)
-		}
-	}
-}
-
-func (r *RecordDefinition) AddDeserializer(p *generator.Package) {
-	// Import guard, to avoid circular dependencies
-	if !p.HasFunction(UTIL_FILE, "", r.DeserializerMethod()) {
-		p.AddImport(r.filename(), "io")
-		p.AddFunction(UTIL_FILE, "", r.DeserializerMethod(), r.deserializerMethodDef())
-		p.AddFunction(r.filename(), "", r.publicDeserializerMethod(), r.publicDeserializerMethodDef())
-		for _, f := range r.fields {
-			f.Type().AddDeserializer(p)
 		}
 	}
 }
@@ -333,4 +279,27 @@ func (r *RecordDefinition) DefaultValue(lvalue string, rvalue interface{}) (stri
 
 func (r *RecordDefinition) Fields() []*Field {
 	return r.fields
+}
+
+func (s *RecordDefinition) IsReadableBy(d Definition) bool {
+	reader, ok := d.(*RecordDefinition)
+	if !ok {
+		return false
+	}
+
+reader:
+	for _, readerField := range reader.fields {
+		for _, writerField := range s.fields {
+			if readerField.Name() == writerField.Name() {
+				if !writerField.Type().IsReadableBy(readerField.Type()) {
+					return false
+				}
+				continue reader
+			}
+		}
+		if !readerField.HasDefault() {
+			return false
+		}
+	}
+	return true
 }

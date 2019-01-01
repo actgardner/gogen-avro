@@ -18,12 +18,10 @@ type Definition interface {
 	GoType() string
 
 	SerializerMethod() string
-	DeserializerMethod() string
 
 	// Add the imports and struct for the definition of this type to the generator.Package
 	AddStruct(*generator.Package, bool) error
 	AddSerializer(*generator.Package)
-	AddDeserializer(*generator.Package)
 
 	// Resolve references to user-defined types
 	ResolveReferences(*Namespace) error
@@ -31,4 +29,6 @@ type Definition interface {
 	// A JSON object defining this object, for writing the schema back out
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
 	DefaultValue(lvalue string, rvalue interface{}) (string, error)
+
+	IsReadableBy(f Definition) bool
 }
