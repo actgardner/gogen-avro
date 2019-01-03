@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/types"
+	"github.com/actgardner/gogen-avro/schema"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 
 	var err error
 	pkg := generator.NewPackage(*packageName)
-	namespace := types.NewNamespace(*shortUnions)
+	namespace := schema.NewNamespace(*shortUnions)
 
 	for _, fileName := range files {
 		schema, err := ioutil.ReadFile(fileName)

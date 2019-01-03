@@ -16,80 +16,78 @@ func (p *Program) add(op Op, t Type, f int) {
 
 func Compile(writer, reader schema.AvroType) ([]Instruction, error) {
 	program := &Program{make([]Instruction, 0)}
-	err := program.compileType(writer, reader, 0)
+	err := program.compileType(writer, reader)
 	if err != nil {
 		return nil, err
 	}
 	return program.instructions, nil
 }
 
-func (p *Program) compileType(writer, reader schema.AvroType, index int) error {
-	fmt.Printf("compileType(%v, %v, %v)\n", writer, reader, index)
+func (p *Program) compileType(writer, reader schema.AvroType) error {
+	fmt.Printf("compileType(%v, %v)\n", writer, reader)
 	switch writer.(type) {
 	case *schema.Reference:
-		if reader != nil {
-			p.add(Enter, Unused, index)
-		}
 		if readerRef, ok := reader.(*schema.Reference); ok || reader == nil {
-			err := p.compileRef(writer.(*schema.Reference), readerRef)
-			if err != nil {
-				return err
-			}
-			if reader != nil {
-				p.add(Exit, Unused, NoopField)
-			}
-			return nil
+			return p.compileRef(writer.(*schema.Reference), readerRef)
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 	case *schema.MapField:
-		if reader != nil {
-			p.add(Enter, Unused, index)
-		}
 		if readerRef, ok := reader.(*schema.MapField); ok || reader == nil {
-			err := p.compileMap(writer.(*schema.MapField), readerRef)
-			if err != nil {
-				return err
-			}
-			if reader != nil {
-				p.add(Exit, Unused, NoopField)
-			}
-			return nil
+			return p.compileMap(writer.(*schema.MapField), readerRef)
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 	case *schema.ArrayField:
-		if reader != nil {
-			p.add(Enter, Unused, index)
-		}
 		if readerRef, ok := reader.(*schema.ArrayField); ok || reader == nil {
-			err := p.compileArray(writer.(*schema.ArrayField), readerRef)
-			if err != nil {
-				return err
-			}
-			if reader != nil {
-				p.add(Exit, Unused, NoopField)
-			}
-			return nil
+			return p.compileArray(writer.(*schema.ArrayField), readerRef)
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 	case *schema.UnionField:
-		err := p.compileUnion(writer.(*schema.UnionField), reader, index)
-		if err != nil {
-			return nil
-		}
+		return p.compileUnion(writer.(*schema.UnionField), reader)
 	case *schema.IntField:
 		p.add(Read, Int, NoopField)
 		if reader != nil {
-			p.add(Set, Int, index)
+			p.add(Set, Int, NoopField)
+		}
+		return nil
+	case *schema.LongField:
+		p.add(Read, Long, NoopField)
+		if reader != nil {
+			p.add(Set, Long, NoopField)
 		}
 		return nil
 	case *schema.StringField:
 		p.add(Read, String, NoopField)
 		if reader != nil {
-			p.add(Set, String, index)
+			p.add(Set, String, NoopField)
 		}
 		return nil
+	case *schema.BytesField:
+		p.add(Read, Bytes, NoopField)
+		if reader != nil {
+			p.add(Set, Bytes, NoopField)
+		}
+		return nil
+	case *schema.FloatField:
+		p.add(Read, Float, NoopField)
+		if reader != nil {
+			p.add(Set, Float, NoopField)
+		}
+		return nil
+	case *schema.DoubleField:
+		p.add(Read, Double, NoopField)
+		if reader != nil {
+			p.add(Set, Double, NoopField)
+		}
+		return nil
+	case *schema.BoolField:
+		p.add(Read, Boolean, NoopField)
+		if reader != nil {
+			p.add(Set, Boolean, NoopField)
+		}
+		return nil
+
 	}
-	return nil
+	return fmt.Errorf("Unsupported type: %v", writer)
 }
 
 func (p *Program) compileRef(writer, reader *schema.Reference) error {
@@ -118,11 +116,15 @@ func (p *Program) compileMap(writer, reader *schema.MapField) error {
 	p.add(Read, MapKey, NoopField)
 	var readerType schema.AvroType
 	if reader != nil {
+		p.add(Append, Unused, NoopField)
 		readerType = reader.ItemType()
 	}
-	err := p.compileType(writer.ItemType(), readerType, 0)
+	err := p.compileType(writer.ItemType(), readerType)
 	if err != nil {
 		return err
+	}
+	if reader != nil {
+		p.add(Exit, Unused, NoopField)
 	}
 	p.add(BlockEnd, Unused, NoopField)
 	return nil
@@ -133,11 +135,15 @@ func (p *Program) compileArray(writer, reader *schema.ArrayField) error {
 	p.add(BlockStart, Unused, NoopField)
 	var readerType schema.AvroType
 	if reader != nil {
+		p.add(Append, Unused, NoopField)
 		readerType = reader.ItemType()
 	}
-	err := p.compileType(writer.ItemType(), readerType, 0)
+	err := p.compileType(writer.ItemType(), readerType)
 	if err != nil {
 		return err
+	}
+	if reader != nil {
+		p.add(Exit, Unused, NoopField)
 	}
 	p.add(BlockEnd, Unused, NoopField)
 	return nil
@@ -147,33 +153,27 @@ func (p *Program) compileRecord(writer, reader *schema.RecordDefinition) error {
 	// Look up whether there's a corresonding target field and if so, parse the source field into that target
 	fmt.Printf("compileRecord(%v, %v)\n", writer, reader)
 	for _, field := range writer.Fields() {
+		var readerType schema.AvroType
 		var readerField *schema.Field
 		if reader != nil {
 			readerField = reader.FieldByName(field.Name())
+			if readerField != nil {
+				readerType = readerField.Type()
+				p.add(Enter, Unused, readerField.Index())
+			}
 		}
-		err := p.compileField(field, readerField)
+		err := p.compileType(field.Type(), readerType)
 		if err != nil {
 			return err
+		}
+		if readerField != nil {
+			p.add(Exit, Unused, NoopField)
 		}
 	}
 	return nil
 }
 
-func (p *Program) compileField(writer, reader *schema.Field) error {
-	fmt.Printf("compileField(%v, %v)\n", writer, reader)
-	writerType := writer.Type()
-
-	var readerType schema.AvroType
-	targetIndex := NoopField
-	if reader != nil {
-		targetIndex = reader.Index()
-		readerType = reader.Type()
-	}
-
-	return p.compileType(writerType, readerType, targetIndex)
-}
-
-func (p *Program) compileUnion(writer *schema.UnionField, reader schema.AvroType, index int) error {
+func (p *Program) compileUnion(writer *schema.UnionField, reader schema.AvroType) error {
 	fmt.Printf("compileUnion(%v, %v)\n", writer, reader)
 
 	p.add(Read, UnionElem, NoopField)
@@ -182,18 +182,20 @@ writer:
 	for i, t := range writer.AvroTypes() {
 		p.add(SwitchCase, Unused, i)
 		if unionReader, ok := reader.(*schema.UnionField); ok {
-			for _, r := range unionReader.AvroTypes() {
+			for readerIndex, r := range unionReader.AvroTypes() {
 				if t.IsReadableBy(r) {
-					err := p.compileType(t, r, index)
+					p.add(Enter, Unused, readerIndex)
+					err := p.compileType(t, r)
 					if err != nil {
 						return err
 					}
+					p.add(Exit, Unused, NoopField)
 					continue writer
 				}
 			}
 			return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 		} else if t.IsReadableBy(reader) {
-			err := p.compileType(t, reader, index)
+			err := p.compileType(t, reader)
 			if err != nil {
 				return err
 			}

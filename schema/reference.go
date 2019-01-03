@@ -59,6 +59,10 @@ func (s *Reference) DefaultValue(lvalue string, rvalue interface{}) (string, err
 	return s.Def.DefaultValue(lvalue, rvalue)
 }
 
+func (s *Reference) WrapperType() string {
+	return ""
+}
+
 func (s *Reference) IsReadableBy(f AvroType) bool {
 	if reader, ok := f.(*Reference); ok {
 		return s.Def.IsReadableBy(reader.Def)

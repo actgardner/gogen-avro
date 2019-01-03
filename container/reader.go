@@ -9,7 +9,7 @@ import (
 	"github.com/golang/snappy"
 
 	"github.com/actgardner/gogen-avro/container/avro"
-	"github.com/actgardner/gogen-avro/types"
+	"github.com/actgardner/gogen-avro/schema"
 )
 
 /**
@@ -26,7 +26,7 @@ type Reader struct {
 	reader           io.Reader
 	compressedReader io.Reader
 	schemaBytes      []byte
-	schema           types.AvroType
+	schema           schema.AvroType
 	sync             avro.Sync
 }
 

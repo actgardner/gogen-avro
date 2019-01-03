@@ -90,6 +90,10 @@ func (s *IntField) DefaultValue(lvalue string, rvalue interface{}) (string, erro
 	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
 }
 
+func (s *IntField) WrapperType() string {
+	return "types.Int"
+}
+
 func (s *IntField) IsReadableBy(f AvroType) bool {
 	if _, ok := f.(*IntField); ok {
 		return true

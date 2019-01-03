@@ -105,6 +105,10 @@ func (s *ArrayField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 	return setters, nil
 }
 
+func (s *ArrayField) WrapperType() string {
+	return fmt.Sprintf("%vWrapper", s.Name())
+}
+
 func (s *ArrayField) IsReadableBy(f AvroType) bool {
 	if reader, ok := f.(*ArrayField); ok {
 		return s.ItemType().IsReadableBy(reader.ItemType())

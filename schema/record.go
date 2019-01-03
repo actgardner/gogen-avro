@@ -21,13 +21,13 @@ const recordSchemaTemplate = `func (r %v) Schema() string {
 `
 
 const recordConstructorTemplate = `
-	func %v %v {
-		v := &%v{
-			%v
-		}
+func %v %v {
+	v := &%v{
 		%v
-		return v
 	}
+	%v
+	return v
+}
 `
 
 const recordStructPublicSerializerTemplate = `
@@ -41,6 +41,24 @@ func %v(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*contai
 	str := &%v{}
 	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
 }
+`
+
+const recordFieldTemplate = `
+func (_ %[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ %[1]v) SetInt(v int32) { panic("Unsupported operation") }
+func (_ %[1]v) SetLong(v int64) { panic("Unsupported operation") }
+func (_ %[1]v) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ %[1]v) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ %[1]v) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ %[1]v) SetString(v string) { panic("Unsupported operation") }
+func (r %[1]v) Get(i int) types.Field {
+	switch (i) {
+		%[2]v
+	}
+	panic("Unknown field index")
+}
+func (_ %[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ %[1]v) AppendArray() types.Field { panic("Unsupported operation") }
 `
 
 type RecordDefinition struct {
@@ -162,6 +180,8 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 			p.AddFunction(r.filename(), "", r.recordWriterMethod(), r.recordWriterMethodDef())
 		}
 
+		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/types")
+		p.AddFunction(r.filename(), r.GoType(), "fieldTemplate", r.FieldsMethodDef())
 		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
 		for _, f := range r.fields {
 			f.Type().AddStruct(p, containers)
@@ -237,6 +257,18 @@ func (r *RecordDefinition) defaultValues() (string, error) {
 		}
 	}
 	return defaults, nil
+}
+
+func (r *RecordDefinition) FieldsMethodDef() string {
+	getBody := ""
+	for i, f := range r.fields {
+		if f.Type().WrapperType() == "" {
+			getBody += fmt.Sprintf("case %v:\nreturn r.%v\nbreak\n", i, f.Name())
+		} else {
+			getBody += fmt.Sprintf("case %v:\nreturn (*%v)(&r.%v)\nbreak\n", i, f.Type().WrapperType(), f.Name())
+		}
+	}
+	return fmt.Sprintf(recordFieldTemplate, r.GoType(), getBody)
 }
 
 func (r *RecordDefinition) ConstructorMethodDef() (string, error) {
