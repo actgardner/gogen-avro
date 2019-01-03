@@ -42,6 +42,10 @@ func (s *LongField) DefaultValue(lvalue string, rvalue interface{}) (string, err
 	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
 }
 
+func (s *LongField) WrapperType() string {
+	return "types.Long"
+}
+
 func (s *LongField) IsReadableBy(f AvroType) bool {
 	if _, ok := f.(*LongField); ok {
 		return true

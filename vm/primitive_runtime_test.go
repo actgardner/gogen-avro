@@ -36,9 +36,9 @@ func (p *PrimitiveStruct) SetString(v string)  {}
 func (p *PrimitiveStruct) Get(field int) types.Field {
 	switch field {
 	case 0:
-		return (*types.String)(&p.One)
-	case 1:
 		return (*types.Int)(&p.Two)
+	case 1:
+		return (*types.String)(&p.One)
 	}
 	panic("Field index out of range!")
 }
@@ -47,10 +47,14 @@ func (p *PrimitiveStruct) AppendArray() types.Field       { return nil }
 
 func TestEvalPrimitive(t *testing.T) {
 	program := []Instruction{
-		Instruction{Op: Read, Type: Int, Field: 0},
-		Instruction{Op: Set, Type: 3, Field: 1},
-		Instruction{Op: Read, Type: String, Field: 0},
-		Instruction{Op: Set, Type: 8, Field: 0},
+		Instruction{Op: Enter, Type: Unused, Field: 0},
+		Instruction{Op: Read, Type: Int, Field: 65535},
+		Instruction{Op: Set, Type: Int, Field: 65535},
+		Instruction{Op: Exit, Type: Unused, Field: 65535},
+		Instruction{Op: Enter, Type: Unused, Field: 1},
+		Instruction{Op: Read, Type: String, Field: 65535},
+		Instruction{Op: Set, Type: String, Field: 65535},
+		Instruction{Op: Exit, Type: Unused, Field: 65535},
 	}
 
 	codec, err := goavro.NewCodec(PrimitiveSchema)

@@ -61,6 +61,10 @@ func (s *BoolField) DefaultValue(lvalue string, rvalue interface{}) (string, err
 	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
 }
 
+func (s *BoolField) WrapperType() string {
+	return "types.Boolean"
+}
+
 func (s *BoolField) IsReadableBy(f AvroType) bool {
 	_, ok := f.(*BoolField)
 	return ok

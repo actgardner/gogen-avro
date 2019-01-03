@@ -106,6 +106,10 @@ func (s *MapField) DefaultValue(lvalue string, rvalue interface{}) (string, erro
 	return setters, nil
 }
 
+func (s *MapField) WrapperType() string {
+	return fmt.Sprintf("%vWrapper", s.Name())
+}
+
 func (s *MapField) IsReadableBy(f AvroType) bool {
 	if reader, ok := f.(*MapField); ok {
 		return s.ItemType().IsReadableBy(reader.ItemType())

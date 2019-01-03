@@ -56,6 +56,10 @@ func (s *StringField) DefaultValue(lvalue string, rvalue interface{}) (string, e
 	return fmt.Sprintf("%v = %q", lvalue, rvalue), nil
 }
 
+func (s *StringField) WrapperType() string {
+	return "types.String"
+}
+
 func (s *StringField) IsReadableBy(f AvroType) bool {
 	if _, ok := f.(*BytesField); ok {
 		return true

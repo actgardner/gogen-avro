@@ -143,6 +143,10 @@ func (s *UnionField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 	return s.itemType[0].DefaultValue(lvalue, rvalue)
 }
 
+func (s *UnionField) WrapperType() string {
+	return ""
+}
+
 func (s *UnionField) IsReadableBy(f AvroType) bool {
 	// Report if *any* writer type could be deserialized by the reader
 	for _, t := range s.AvroTypes() {

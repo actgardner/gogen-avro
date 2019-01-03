@@ -32,6 +32,10 @@ func (s *NullField) DefaultValue(lvalue string, rvalue interface{}) (string, err
 	return "", nil
 }
 
+func (s *NullField) WrapperType() string {
+	return ""
+}
+
 func (s *NullField) IsReadableBy(f AvroType) bool {
 	_, ok := f.(*IntField)
 	return ok

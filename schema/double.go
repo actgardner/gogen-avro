@@ -41,6 +41,10 @@ func (s *DoubleField) DefaultValue(lvalue string, rvalue interface{}) (string, e
 	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
 }
 
+func (s *DoubleField) WrapperType() string {
+	return "types.Double"
+}
+
 func (s *DoubleField) IsReadableBy(f AvroType) bool {
 	if _, ok := f.(*DoubleField); ok {
 		return true

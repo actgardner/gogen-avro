@@ -40,7 +40,7 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 	for pc = 0; pc < len(program); pc++ {
 		inst := program[pc]
 		frame := &stack[depth]
-		fmt.Printf("PC: %v Op: %v frame: %v\n", pc, inst, frame)
+		//fmt.Printf("PC: %v Op: %v frame: %v\n", pc, inst, frame)
 		switch inst.Op {
 		case Read:
 			switch inst.Type {
@@ -79,30 +79,29 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 			}
 			break
 		case Set:
-			target = frame.Target.Get(inst.Field)
 			switch inst.Type {
 			case Null:
 				break
 			case Boolean:
-				target.SetBoolean(frame.Boolean)
+				frame.Target.SetBoolean(frame.Boolean)
 				break
 			case Int:
-				target.SetInt(frame.Int)
+				frame.Target.SetInt(frame.Int)
 				break
 			case Long:
-				target.SetLong(frame.Long)
+				frame.Target.SetLong(frame.Long)
 				break
 			case Float:
-				target.SetFloat(frame.Float)
+				frame.Target.SetFloat(frame.Float)
 				break
 			case Double:
-				target.SetDouble(frame.Double)
+				frame.Target.SetDouble(frame.Double)
 				break
 			case Bytes:
-				target.SetBytes(frame.Bytes)
+				frame.Target.SetBytes(frame.Bytes)
 				break
 			case String:
-				target.SetString(frame.String)
+				frame.Target.SetString(frame.String)
 				break
 			}
 			break
