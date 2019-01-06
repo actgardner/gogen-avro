@@ -103,6 +103,8 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 			case String:
 				frame.Target.SetString(frame.String)
 				break
+			case UnionElem:
+				frame.Target.SetUnionElem(frame.UnionType)
 			}
 			break
 		case Enter:

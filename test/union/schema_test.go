@@ -53,8 +53,8 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 
 		for i := 0; i < value.NumField(); i++ {
 			fieldName := value.Type().Field(i).Name
-			fieldUnionIndex := int(value.Field(i).FieldByName("UnionType").Int())
-			structVal := value.Field(i).Field(fieldUnionIndex).Interface()
+			fieldUnionIndex := int(value.Field(i).Elem().FieldByName("UnionType").Int())
+			structVal := value.Field(i).Elem().Field(fieldUnionIndex).Interface()
 			var avroVal interface{}
 			top, ok := record[fieldName].(map[string]interface{})
 			if ok {
@@ -84,6 +84,9 @@ func TestRoundTrip(t *testing.T) {
 		datum, err := DeserializePrimitiveUnionTestRecord(&buf)
 		assert.Nil(t, err)
 
+		if f.UnionField.Int == 0 {
+			f.UnionField.Int = 1234
+		}
 		assert.Equal(t, *datum, f)
 	}
 }

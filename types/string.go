@@ -18,6 +18,10 @@ func (b *String) SetFloat(v float32) {
 	panic("Unable to assign float to string field")
 }
 
+func (b *String) SetUnionElem(v int64) {
+	panic("Unable to assign union elem to string field")
+}
+
 func (b *String) SetDouble(v float64) {
 	panic("Unable to assign double to string field")
 }

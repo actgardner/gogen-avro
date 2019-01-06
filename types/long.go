@@ -18,6 +18,10 @@ func (b *Long) SetFloat(v float32) {
 	panic("Unable to assign float to long field")
 }
 
+func (b *Long) SetUnionElem(v int64) {
+	panic("Unable to assign union elem to long field")
+}
+
 func (b *Long) SetDouble(v float64) {
 	panic("Unable to assign double to long field")
 }

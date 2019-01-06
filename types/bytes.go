@@ -22,6 +22,10 @@ func (b *Bytes) SetDouble(v float64) {
 	panic("Unable to assign double to bytes field")
 }
 
+func (b *Bytes) SetUnionElem(v int64) {
+	panic("Unable to assign union elem to bytes field")
+}
+
 func (b *Bytes) SetBytes(v []byte) {
 	*b = v
 }

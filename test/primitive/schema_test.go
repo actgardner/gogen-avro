@@ -64,30 +64,16 @@ func TestRoundTrip(t *testing.T) {
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
 	assert.Nil(t, err)
 
-	schemaJson, err := ioutil.ReadFile("primitives.avsc")
-	assert.Nil(t, err)
-
-	readerNs := schema.NewNamespace(false)
-	readerType, err := readerNs.TypeForSchema(schemaJson)
-	assert.Nil(t, err)
-
-	err = readerType.ResolveReferences(readerNs)
-	assert.Nil(t, err)
-
-	deser, err := vm.Compile(readerType, readerType)
-	assert.Nil(t, err)
-
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
 		err = f.Serialize(&buf)
 		assert.Nil(t, err)
 
-		var target PrimitiveTestRecord
-		err := vm.Eval(&buf, deser, &target)
+		target, err := DeserializePrimitiveTestRecord(&buf)
 		assert.Nil(t, err)
 
-		assert.Equal(t, target, f)
+		assert.Equal(t, target, &f)
 	}
 }
 

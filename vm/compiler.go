@@ -85,7 +85,8 @@ func (p *Program) compileType(writer, reader schema.AvroType) error {
 			p.add(Set, Boolean, NoopField)
 		}
 		return nil
-
+	case *schema.NullField:
+		return nil
 	}
 	return fmt.Errorf("Unsupported type: %v", writer)
 }
@@ -174,14 +175,28 @@ func (p *Program) compileRecord(writer, reader *schema.RecordDefinition) error {
 }
 
 func (p *Program) compileUnion(writer *schema.UnionField, reader schema.AvroType) error {
-	fmt.Printf("compileUnion(%v, %v)\n", writer, reader)
+	fmt.Printf("compileUnion(%t, %t)\n", writer, reader)
 
 	p.add(Read, UnionElem, NoopField)
+	if _, ok := reader.(*schema.UnionField); ok {
+		p.add(Set, UnionElem, NoopField)
+	}
 	p.add(SwitchStart, Unused, NoopField)
 writer:
 	for i, t := range writer.AvroTypes() {
 		p.add(SwitchCase, Unused, i)
 		if unionReader, ok := reader.(*schema.UnionField); ok {
+			// If there's an exact match between the reader and writer preserve type
+			// This avoids weird cases like ["string", "bytes"] which would always resolve to "string"
+			if unionReader.Equals(unionReader) {
+				p.add(Enter, Unused, i)
+				err := p.compileType(t, writer.AvroTypes()[i])
+				if err != nil {
+					return err
+				}
+				p.add(Exit, Unused, NoopField)
+				continue writer
+			}
 			for readerIndex, r := range unionReader.AvroTypes() {
 				if t.IsReadableBy(r) {
 					p.add(Enter, Unused, readerIndex)
@@ -193,7 +208,7 @@ writer:
 					continue writer
 				}
 			}
-			return fmt.Errorf("Incompatible types: %v %v", reader, writer)
+			return fmt.Errorf("Incompatible types, no match for %v in %v", unionReader, writer)
 		} else if t.IsReadableBy(reader) {
 			err := p.compileType(t, reader)
 			if err != nil {

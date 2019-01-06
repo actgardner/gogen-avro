@@ -18,7 +18,7 @@ func NewNullField(definition interface{}) *NullField {
 	return &NullField{PrimitiveField{
 		definition:       definition,
 		name:             "Null",
-		goType:           "interface{}",
+		goType:           "*types.NullVal",
 		serializerMethod: "writeNull",
 	}}
 }
@@ -37,6 +37,6 @@ func (s *NullField) WrapperType() string {
 }
 
 func (s *NullField) IsReadableBy(f AvroType) bool {
-	_, ok := f.(*IntField)
+	_, ok := f.(*NullField)
 	return ok
 }
