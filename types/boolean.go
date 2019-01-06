@@ -30,6 +30,10 @@ func (b *Boolean) SetString(v string) {
 	panic("Unable to assign string to boolean field")
 }
 
+func (b *Boolean) SetUnionElem(v int64) {
+	panic("Unable to assign union elem to boolean field")
+}
+
 func (b *Boolean) Get(i int) Field {
 	panic("Unable to get field from boolean field")
 }

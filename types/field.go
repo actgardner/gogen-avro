@@ -9,6 +9,7 @@ type Field interface {
 	SetDouble(v float64)
 	SetBytes(v []byte)
 	SetString(v string)
+	SetUnionElem(v int64)
 
 	// Get a nested field
 	Get(i int) Field

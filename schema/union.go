@@ -18,6 +18,33 @@ func %v(r %v, w io.Writer) error {
 }
 `
 
+const unionConstructorTemplate = `
+func %v %v {
+	return &%v{}
+}
+`
+
+const unionFieldTemplate = `
+func (_ %[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ %[1]v) SetInt(v int32) { panic("Unsupported operation") }
+func (_ %[1]v) SetLong(v int64) { panic("Unsupported operation") }
+func (_ %[1]v) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ %[1]v) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ %[1]v) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ %[1]v) SetString(v string) { panic("Unsupported operation") }
+func (r %[1]v) SetUnionElem(v int64) { 
+	r.UnionType = (%[2]v)(v)
+}
+func (r %[1]v) Get(i int) types.Field {
+	switch (i) {
+		%[3]v
+	}
+	panic("Unknown field index")
+}
+func (_ %[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ %[1]v) AppendArray() types.Field { panic("Unsupported operation") }
+`
+
 type UnionField struct {
 	name       string
 	itemType   []AvroType
@@ -41,7 +68,10 @@ func (s *UnionField) compositeFieldName() string {
 }
 
 func (s *UnionField) Name() string {
-	return s.GoType()
+	if s.name == "" {
+		return generator.ToPublicName(s.compositeFieldName())
+	}
+	return generator.ToPublicName(s.name)
 }
 
 func (s *UnionField) AvroTypes() []AvroType {
@@ -49,10 +79,7 @@ func (s *UnionField) AvroTypes() []AvroType {
 }
 
 func (s *UnionField) GoType() string {
-	if s.name == "" {
-		return generator.ToPublicName(s.compositeFieldName())
-	}
-	return generator.ToPublicName(s.name)
+	return "*" + s.Name()
 }
 
 func (s *UnionField) unionEnumType() string {
@@ -84,8 +111,20 @@ func (s *UnionField) unionSerializer() string {
 	return fmt.Sprintf(unionSerializerTemplate, s.SerializerMethod(), s.GoType(), switchCase, s.GoType())
 }
 
+func (s *UnionField) FieldsMethodDef() string {
+	getBody := ""
+	for i, f := range s.itemType {
+		if f.WrapperType() == "" {
+			getBody += fmt.Sprintf("case %v:\nreturn r.%v\nbreak\n", i, f.Name())
+		} else {
+			getBody += fmt.Sprintf("case %v:\nreturn (*%v)(&r.%v)\nbreak\n", i, f.WrapperType(), f.Name())
+		}
+	}
+	return fmt.Sprintf(unionFieldTemplate, s.GoType(), s.unionEnumType(), getBody)
+}
+
 func (s *UnionField) filename() string {
-	return generator.ToSnake(s.GoType()) + ".go"
+	return generator.ToSnake(s.Name()) + ".go"
 }
 
 func (s *UnionField) SerializerMethod() string {
@@ -95,12 +134,16 @@ func (s *UnionField) SerializerMethod() string {
 func (s *UnionField) AddStruct(p *generator.Package, containers bool) error {
 	p.AddStruct(s.filename(), s.unionEnumType(), s.unionEnumDef())
 	p.AddStruct(s.filename(), s.Name(), s.unionTypeDef())
+	p.AddFunction(s.filename(), s.GoType(), s.ConstructorMethod(), s.constructorMethodDef())
 	for _, f := range s.itemType {
 		err := f.AddStruct(p, containers)
 		if err != nil {
 			return err
 		}
 	}
+	p.AddImport(s.filename(), "github.com/actgardner/gogen-avro/types")
+	p.AddFunction(s.filename(), s.GoType(), "fieldTemplate", s.FieldsMethodDef())
+
 	return nil
 }
 
@@ -163,4 +206,34 @@ func (s *UnionField) IsReadableBy(f AvroType) bool {
 		}
 	}
 	return false
+}
+
+func (s *UnionField) ConstructorMethod() string {
+	return fmt.Sprintf("New%v()", s.Name())
+}
+
+func (s *UnionField) constructorMethodDef() string {
+	return fmt.Sprintf(unionConstructorTemplate, s.ConstructorMethod(), s.GoType(), s.Name())
+}
+
+func (s *UnionField) Equals(reader *UnionField) bool {
+	if len(reader.AvroTypes()) != len(s.AvroTypes()) {
+		return false
+	}
+
+	for i, t := range s.AvroTypes() {
+		readerType := reader.AvroTypes()[i]
+		if writerRef, ok := t.(*Reference); ok {
+			if readerRef, ok := readerType.(*Reference); ok {
+				if readerRef.TypeName != writerRef.TypeName {
+					return false
+				}
+			} else {
+				return false
+			}
+		} else if t != readerType {
+			return false
+		}
+	}
+	return true
 }

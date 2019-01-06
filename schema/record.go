@@ -36,10 +36,45 @@ func (r %v) Serialize(w io.Writer) error {
 }
 `
 
+const recordStructPublicDeserializerTemplate = `
+func %v(r io.Reader) (%v, error) {
+	t := %v
+        readerNs := schema.NewNamespace(false)
+	readerType, err := readerNs.TypeForSchema([]byte(t.Schema()))
+        if err != nil {
+		return nil, err
+	}
+
+	err = readerType.ResolveReferences(readerNs)
+        if err != nil {
+		return nil, err
+	}
+
+	deser, err := vm.Compile(readerType, readerType)
+	if err != nil {
+		return nil, err
+	}
+
+
+	fmt.Printf("%%v", deser)
+        err = vm.Eval(r, deser, t)
+	return t, err
+}
+`
+
 const recordWriterTemplate = `
 func %v(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
 	str := &%v{}
 	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+}
+`
+
+const recordStructDeserializerTemplate = `
+func %v(r io.Reader) (%v, error) {
+	var str = &%v{}
+	var err error
+	%v
+	return str, nil
 }
 `
 
@@ -51,6 +86,7 @@ func (_ %[1]v) SetFloat(v float32) { panic("Unsupported operation") }
 func (_ %[1]v) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ %[1]v) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ %[1]v) SetString(v string) { panic("Unsupported operation") }
+func (_ %[1]v) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r %[1]v) Get(i int) types.Field {
 	switch (i) {
 		%[2]v
@@ -160,6 +196,14 @@ func (r *RecordDefinition) schemaMethodDef() (string, error) {
 	return fmt.Sprintf(recordSchemaTemplate, r.GoType(), strconv.Quote(string(schemaJson))), nil
 }
 
+func (r *RecordDefinition) publicDeserializerMethod() string {
+	return fmt.Sprintf("Deserialize%v", r.Name())
+}
+
+func (r *RecordDefinition) publicDeserializerMethodDef() string {
+	return fmt.Sprintf(recordStructPublicDeserializerTemplate, r.publicDeserializerMethod(), r.GoType(), r.ConstructorMethod())
+}
+
 func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) error {
 	// Import guard, to avoid circular dependencies
 	if !p.HasStruct(r.filename(), r.GoType()) {
@@ -181,8 +225,12 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 		}
 
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/types")
+		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm")
+		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/schema")
+		p.AddImport(r.filename(), "fmt")
 		p.AddFunction(r.filename(), r.GoType(), "fieldTemplate", r.FieldsMethodDef())
 		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
+		p.AddFunction(r.filename(), r.GoType(), r.publicDeserializerMethod(), r.publicDeserializerMethodDef())
 		for _, f := range r.fields {
 			f.Type().AddStruct(p, containers)
 		}
