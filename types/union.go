@@ -14,7 +14,7 @@ func %v(r %v, w io.Writer) error {
 	switch r.UnionType{
 		%v
 	}
-	return fmt.Errorf("Invalid value for %v")
+	return fmt.Errorf("invalid value for %v")
 }
 `
 
@@ -29,7 +29,7 @@ func %v(r io.Reader) (%v, error) {
 	switch unionStr.UnionType {
 		%v
 	default:	
-		return unionStr, fmt.Errorf("Invalid value for %v")
+		return unionStr, fmt.Errorf("invalid value for %v")
 	}
 	return unionStr, nil
 }
