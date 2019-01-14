@@ -3,8 +3,9 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/actgardner/gogen-avro/generator"
 	"strconv"
+
+	"github.com/actgardner/gogen-avro/generator"
 )
 
 const recordStructDefTemplate = `
@@ -103,6 +104,10 @@ func (r *RecordDefinition) structFields() string {
 }
 
 func (r *RecordDefinition) fieldSerializers() string {
+	if len(r.fields) == 0 {
+		//in case the record has no fields just return empty fieldSerializers
+		return ""
+	}
 	serializerMethods := "var err error\n"
 	for _, f := range r.fields {
 		serializerMethods += fmt.Sprintf("err = %v(r.%v, w)\nif err != nil {return err}\n", f.Type().SerializerMethod(), f.GoName())
