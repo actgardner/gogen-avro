@@ -39,7 +39,6 @@ func (r %v) Serialize(w io.Writer) error {
 const recordStructDeserializerTemplate = `
 func %v(r io.Reader) (%v, error) {
 	var str = &%v{}
-	var err error
 	%v
 	return str, nil
 }
@@ -104,7 +103,7 @@ func (r *RecordDefinition) structFields() string {
 }
 
 func (r *RecordDefinition) fieldSerializers() string {
-	if len(r.fields) == 0 {
+	if r.fields == nil || len(r.fields) == 0 {
 		//in case the record has no fields just return empty fieldSerializers
 		return ""
 	}
@@ -116,7 +115,11 @@ func (r *RecordDefinition) fieldSerializers() string {
 }
 
 func (r *RecordDefinition) fieldDeserializers() string {
-	deserializerMethods := ""
+	if r.fields == nil || len(r.fields) == 0 {
+		//in case the record has no fields just assign err to nil to work with template defining var err error
+		return ""
+	}
+	deserializerMethods := "var err error\n"
 	for _, f := range r.fields {
 		deserializerMethods += fmt.Sprintf("str.%v, err = %v(r)\nif err != nil {return nil, err}\n", f.GoName(), f.Type().DeserializerMethod())
 	}
