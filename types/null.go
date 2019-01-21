@@ -45,3 +45,5 @@ func (b *NullVal) AppendMap(key string) Field {
 func (b *NullVal) AppendArray() Field {
 	panic("Unable to append array element to from null field")
 }
+
+func (b *NullVal) Finalize() {}

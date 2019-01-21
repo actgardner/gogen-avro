@@ -45,3 +45,5 @@ func (b *Boolean) AppendMap(key string) Field {
 func (b *Boolean) AppendArray() Field {
 	panic("Unable to append array element to from boolean field")
 }
+
+func (b *Boolean) Finalize() {}

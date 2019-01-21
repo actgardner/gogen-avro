@@ -45,3 +45,5 @@ func (b *Bytes) AppendMap(key string) Field {
 func (b *Bytes) AppendArray() Field {
 	panic("Unable to append array element to from bytes field")
 }
+
+func (b *Bytes) Finalize() {}

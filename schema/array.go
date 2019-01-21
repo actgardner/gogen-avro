@@ -21,6 +21,28 @@ func %v(r %v, w io.Writer) error {
 }
 `
 
+const arrayWrapperTemplate = `
+type %[1]v %[2]v
+
+func (_ *%[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *%[1]v) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *%[1]v) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *%[1]v) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *%[1]v) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *%[1]v) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *%[1]v) SetString(v string) { panic("Unsupported operation") }
+func (_ *%[1]v) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *%[1]v) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *%[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *%[1]v) Finalize() { }
+func (r *%[1]v) AppendArray() types.Field {
+	var v %[3]v
+        %[5]v
+	*r = append(*r, v)
+	return %[4]v
+}
+`
+
 type ArrayField struct {
 	itemType   AvroType
 	definition map[string]interface{}
@@ -61,6 +83,8 @@ func (s *ArrayField) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", methodName, arraySerializer)
 	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/types")
+	p.AddFunction(UTIL_FILE, s.WrapperType(), "", s.appendMethodDef())
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.AddImport(UTIL_FILE, "io")
 }
@@ -114,4 +138,18 @@ func (s *ArrayField) IsReadableBy(f AvroType) bool {
 		return s.ItemType().IsReadableBy(reader.ItemType())
 	}
 	return false
+}
+
+func (s *ArrayField) appendMethodDef() string {
+	constructElem := ""
+	ret := ""
+	if constructor, ok := getConstructableForType(s.itemType); ok {
+		constructElem = fmt.Sprintf("v = %v\n", constructor.ConstructorMethod())
+	}
+	if s.itemType.WrapperType() != "" {
+		ret = fmt.Sprintf("(*%v)(&(*r)[len(*r)-1])", s.itemType.WrapperType())
+	} else {
+		ret = fmt.Sprintf("(*r)[len(*r)-1]")
+	}
+	return fmt.Sprintf(arrayWrapperTemplate, s.WrapperType(), s.GoType(), s.itemType.GoType(), ret, constructElem)
 }
