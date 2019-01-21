@@ -7,11 +7,11 @@ import (
 
 const mapSerializerTemplate = `
 func %v(r %v, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil || len(r) == 0 {
+	err := writeLong(int64(len(r.M)), w)
+	if err != nil || len(r.M) == 0 {
 		return err
 	}
-	for k, e := range r {
+	for k, e := range r.M {
 		err = writeString(k, w)
 		if err != nil {
 			return err
@@ -23,6 +23,47 @@ func %v(r %v, w io.Writer) error {
 	}
 	return writeLong(0, w)
 }
+`
+
+const mapWrapperTemplate = `
+type %[1]v struct {
+	keys []string
+	values []%[3]v
+	M map[string]%[2]v
+}
+
+func New%[1]v() *%[1]v {
+	return &%[1]v {
+		keys: make([]string, 0),
+		values: make([]%[3]v, 0),
+		M: make(map[string]%[2]v),
+	}
+}
+
+func (_ *%[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *%[1]v) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *%[1]v) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *%[1]v) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *%[1]v) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *%[1]v) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *%[1]v) SetString(v string) { panic("Unsupported operation") }
+func (_ *%[1]v) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *%[1]v) Get(i int) types.Field { panic("Unsupported operation") }
+func (r *%[1]v) Finalize() { 
+	for i := range r.keys {
+		r.M[r.keys[i]] = r.values[i]
+	}
+}
+
+func (r *%[1]v) AppendMap(key string) types.Field { 
+	r.keys = append(r.keys, key)
+	var v %[3]v
+        %[5]v
+	r.values = append(r.values, v)
+	return %[4]v
+}
+
+func (_ *%[1]v) AppendArray() types.Field { panic("Unsupported operation") }
 `
 
 type MapField struct {
@@ -46,7 +87,7 @@ func (s *MapField) Name() string {
 }
 
 func (s *MapField) GoType() string {
-	return fmt.Sprintf("map[string]%v", s.itemType.GoType())
+	return fmt.Sprintf("*%v", s.Name())
 }
 
 func (s *MapField) SerializerMethod() string {
@@ -69,6 +110,9 @@ func (s *MapField) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "writeString", writeStringMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.AddFunction(UTIL_FILE, "", methodName, mapSerializer)
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/types")
+	p.AddFunction(UTIL_FILE, s.GoType(), "", s.appendMethodDef())
+
 	p.AddImport(UTIL_FILE, "io")
 }
 
@@ -86,7 +130,7 @@ func (s *MapField) Definition(scope map[QualifiedName]interface{}) (interface{},
 }
 
 func (s *MapField) ConstructorMethod() string {
-	return fmt.Sprintf("make(%v)", s.GoType())
+	return fmt.Sprintf("New%v()", s.Name())
 }
 
 func (s *MapField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -107,7 +151,7 @@ func (s *MapField) DefaultValue(lvalue string, rvalue interface{}) (string, erro
 }
 
 func (s *MapField) WrapperType() string {
-	return fmt.Sprintf("%vWrapper", s.Name())
+	return ""
 }
 
 func (s *MapField) IsReadableBy(f AvroType) bool {
@@ -115,4 +159,18 @@ func (s *MapField) IsReadableBy(f AvroType) bool {
 		return s.ItemType().IsReadableBy(reader.ItemType())
 	}
 	return false
+}
+
+func (s *MapField) appendMethodDef() string {
+	constructElem := ""
+	ret := ""
+	if constructor, ok := getConstructableForType(s.itemType); ok {
+		constructElem = fmt.Sprintf("v = %v\n", constructor.ConstructorMethod())
+	}
+	if s.itemType.WrapperType() != "" {
+		ret = fmt.Sprintf("(*%v)(&r.values[len(r.values)-1])", s.itemType.WrapperType())
+	} else {
+		ret = fmt.Sprintf("&r.values[len(r.values)-1]", s.GoType())
+	}
+	return fmt.Sprintf(mapWrapperTemplate, s.Name(), s.itemType.GoType(), s.itemType.GoType(), ret, constructElem)
 }

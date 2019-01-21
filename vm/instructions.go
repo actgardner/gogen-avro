@@ -13,10 +13,12 @@ const (
 	Exit
 	BlockStart
 	BlockEnd
-	Append
+	AppendArray
+	AppendMap
 	SwitchStart
 	SwitchCase
 	SwitchEnd
+	SetDefaults
 )
 
 func (o Op) String() string {
@@ -33,14 +35,19 @@ func (o Op) String() string {
 		return "block_start"
 	case BlockEnd:
 		return "block_end"
-	case Append:
-		return "append"
+	case AppendArray:
+		return "append_array"
+	case AppendMap:
+		return "append_map"
 	case SwitchStart:
 		return "switch_start"
 	case SwitchCase:
 		return "switch_case"
 	case SwitchEnd:
 		return "switch_end"
+	case SetDefaults:
+		return "set_defaults"
+
 	}
 	return "Unknown"
 }

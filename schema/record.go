@@ -22,11 +22,7 @@ const recordSchemaTemplate = `func (r %v) Schema() string {
 
 const recordConstructorTemplate = `
 func %v %v {
-	v := &%v{
-		%v
-	}
-	%v
-	return v
+	return &%v{}
 }
 `
 
@@ -56,7 +52,7 @@ func %v(r io.Reader) (%v, error) {
 	}
 
 
-	fmt.Printf("%%v", deser)
+	//fmt.Printf("%%v", deser)
         err = vm.Eval(r, deser, t)
 	return t, err
 }
@@ -95,6 +91,7 @@ func (r %[1]v) Get(i int) types.Field {
 }
 func (_ %[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ %[1]v) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ %[1]v) Finalize() { }
 `
 
 type RecordDefinition struct {
@@ -227,7 +224,7 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/types")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/schema")
-		p.AddImport(r.filename(), "fmt")
+		//p.AddImport(r.filename(), "fmt")
 		p.AddFunction(r.filename(), r.GoType(), "fieldTemplate", r.FieldsMethodDef())
 		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
 		p.AddFunction(r.filename(), r.GoType(), r.publicDeserializerMethod(), r.publicDeserializerMethodDef())
@@ -310,27 +307,21 @@ func (r *RecordDefinition) defaultValues() (string, error) {
 func (r *RecordDefinition) FieldsMethodDef() string {
 	getBody := ""
 	for i, f := range r.fields {
+		getBody += fmt.Sprintf("case %v:\n", i)
+		if constructor, ok := getConstructableForType(f.Type()); ok {
+			getBody += fmt.Sprintf("r.%v = %v\n", f.GoName(), constructor.ConstructorMethod())
+		}
 		if f.Type().WrapperType() == "" {
-			getBody += fmt.Sprintf("case %v:\nreturn r.%v\nbreak\n", i, f.Name())
+			getBody += fmt.Sprintf("return r.%v\nbreak\n", f.Name())
 		} else {
-			getBody += fmt.Sprintf("case %v:\nreturn (*%v)(&r.%v)\nbreak\n", i, f.Type().WrapperType(), f.Name())
+			getBody += fmt.Sprintf("return (*%v)(&r.%v)\nbreak\n", f.Type().WrapperType(), f.GoName())
 		}
 	}
 	return fmt.Sprintf(recordFieldTemplate, r.GoType(), getBody)
 }
 
 func (r *RecordDefinition) ConstructorMethodDef() (string, error) {
-	defaults, err := r.defaultValues()
-	if err != nil {
-		return "", err
-	}
-
-	fieldConstructors, err := r.fieldConstructors()
-	if err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf(recordConstructorTemplate, r.ConstructorMethod(), r.GoType(), r.Name(), fieldConstructors, defaults), nil
+	return fmt.Sprintf(recordConstructorTemplate, r.ConstructorMethod(), r.GoType(), r.Name()), nil
 }
 
 func (r *RecordDefinition) FieldByName(name string) *Field {

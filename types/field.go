@@ -17,4 +17,7 @@ type Field interface {
 	// Append a new value to a map or array and enter it
 	AppendMap(key string) Field
 	AppendArray() Field
+
+	// Finalize a field if necessary
+	Finalize()
 }

@@ -45,3 +45,5 @@ func (b *Double) AppendMap(key string) Field {
 func (b *Double) AppendArray() Field {
 	panic("Unable to append array element to from double field")
 }
+
+func (b *Double) Finalize() {}

@@ -40,7 +40,7 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 	for pc = 0; pc < len(program); pc++ {
 		inst := program[pc]
 		frame := &stack[depth]
-		//fmt.Printf("PC: %v Op: %v frame: %v\n", pc, inst, frame)
+		//		fmt.Printf("PC: %v Op: %v frame: %v\n", pc, inst, frame)
 		switch inst.Op {
 		case Read:
 			switch inst.Type {
@@ -112,18 +112,31 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 			stack[depth].Target = frame.Target.Get(inst.Field)
 			break
 		case Exit:
+			stack[depth].Target.Finalize()
 			depth -= 1
+			break
+		case AppendArray:
+			depth += 1
+			stack[depth].Target = frame.Target.AppendArray()
+			break
+		case AppendMap:
+			depth += 1
+			stack[depth].Target = frame.Target.AppendMap(stack[depth-1].MapKey)
 			break
 		case BlockStart:
 			// If we're starting a block, read the header
 			if frame.Length == 0 {
 				stack[depth].BlockStart = pc
 				frame.Length, err = readLong(r)
+				if err != nil {
+					break
+				}
 				// If the header is 0, the array/map is over
 				if frame.Length == 0 {
 					for program[pc].Op != BlockEnd {
 						pc += 1
 					}
+					continue
 				}
 			}
 			frame.Length -= 1
@@ -156,6 +169,8 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 		case SwitchEnd:
 			// The end of the last case, nothing to see here
 			break
+		default:
+			err = fmt.Errorf("Unknown instruction %v", program[pc])
 		}
 
 		if err != nil {
