@@ -12,7 +12,7 @@ Generate Go structures and serializer / deserializer methods from Avro schemas. 
 gogen-avro is a tool which you install on your system (usually on your GOPATH), and run as part of your build process. To install gogen-avro to `$GOPATH/bin/`, first download the repository:
 
 ```
-go get github.com/actgardner/gogen-avro
+go get -d github.com/actgardner/gogen-avro
 ```
 
 Then run:
@@ -24,8 +24,8 @@ go install github.com/actgardner/gogen-avro/gogen-avro
 Or download and install a fixed release from gopkg.in:
 
 ```
-go get gopkg.in/actgardner/gogen-avro.v5
-go install gopkg.in/actgardner/gogen-avro.v5
+go get -d gopkg.in/actgardner/gogen-avro.v5
+go install gopkg.in/actgardner/gogen-avro.v5/gogen-avro
 ```
 
 ### Usage
