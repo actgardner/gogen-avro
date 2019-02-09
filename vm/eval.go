@@ -40,7 +40,7 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 	for pc = 0; pc < len(program); pc++ {
 		inst := program[pc]
 		frame := &stack[depth]
-		//		fmt.Printf("PC: %v Op: %v frame: %v\n", pc, inst, frame)
+		runtimeLog("PC: %v\tD:%v\tOp: %v", pc, depth, inst)
 		switch inst.Op {
 		case Read:
 			switch inst.Type {
@@ -151,21 +151,36 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 			break
 		case SwitchStart:
 			// Skip to the case matching the UnionType in the frame
+			switchDepth := 1
 			for {
-				if program[pc].Op == SwitchCase && program[pc].Field == int(stack[depth].UnionType) {
+				pc += 1
+				if program[pc].Op == SwitchStart {
+					switchDepth += 1
+				}
+				if program[pc].Op == SwitchCase && program[pc].Field == int(stack[depth].UnionType) && switchDepth == 1 {
 					break
 				}
 				if program[pc].Op == SwitchEnd {
-					err = fmt.Errorf("No matching case in switch for %v", stack[depth].UnionType)
+					switchDepth -= 1
+					if switchDepth == 0 {
+						err = fmt.Errorf("No matching case in switch for %v", stack[depth].UnionType)
+						break
+					}
 				}
-				pc += 1
 			}
 			break
 		case SwitchCase:
 			// Switch cases don't need an explicit break, skip to the end of the block
+			switchDepth := 1
 			for {
+				if program[pc].Op == SwitchStart {
+					switchDepth += 1
+				}
 				if program[pc].Op == SwitchEnd {
-					break
+					switchDepth -= 1
+					if switchDepth == 0 {
+						break
+					}
 				}
 				pc += 1
 			}

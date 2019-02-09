@@ -53,6 +53,8 @@ func (r *%[1]v) Finalize() {
 	for i := range r.keys {
 		r.M[r.keys[i]] = r.values[i]
 	}
+	r.keys = nil
+	r.values = nil
 }
 
 func (r *%[1]v) AppendMap(key string) types.Field { 

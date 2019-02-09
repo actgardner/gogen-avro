@@ -97,7 +97,7 @@ func (t Type) String() string {
 	case Fixed:
 		return "Fixed"
 	}
-	return "Unknown"
+	return "-"
 }
 
 const NoopField = 65535
@@ -109,5 +109,13 @@ type Instruction struct {
 }
 
 func (i Instruction) String() string {
-	return fmt.Sprintf("%s(%s, %v)", i.Op, i.Type, i.Field)
+	if i.Field == NoopField {
+		if i.Type.String() == "-" {
+			return i.Op.String()
+		}
+		return fmt.Sprintf("%v(%v)", i.Op, i.Type)
+	} else if i.Type.String() == "-" {
+		return fmt.Sprintf("%v(%v)", i.Op, i.Field)
+	}
+	return fmt.Sprintf("%v(%v, %v)", i.Op, i.Type, i.Field)
 }
