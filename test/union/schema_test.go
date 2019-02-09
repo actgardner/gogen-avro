@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/actgardner/gogen-avro/types"
 	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
 )
@@ -63,7 +64,7 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 					break
 				}
 			}
-			if !reflect.DeepEqual(structVal, avroVal) {
+			if !reflect.DeepEqual(structVal, avroVal) && !(structVal == types.NullVal{} && avroVal == nil) {
 				t.Fatalf("Field %v not equal: %v != %v", fieldName, structVal, avroVal)
 			}
 		}
@@ -84,14 +85,6 @@ func TestRoundTrip(t *testing.T) {
 		datum, err := DeserializePrimitiveUnionTestRecord(&buf)
 		assert.Nil(t, err)
 
-		if f.UnionField.Int == 0 {
-			f.UnionField.Int = 1234
-		}
 		assert.Equal(t, *datum, f)
 	}
-}
-
-func TestDefault(t *testing.T) {
-	record := NewPrimitiveUnionTestRecord()
-	assert.Equal(t, record.UnionField.Int, int32(1234))
 }
