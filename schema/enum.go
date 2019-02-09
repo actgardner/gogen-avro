@@ -142,3 +142,7 @@ func (s *EnumDefinition) IsReadableBy(d Definition) bool {
 	_, ok := d.(*EnumDefinition)
 	return ok
 }
+
+func (s *EnumDefinition) WrapperType() string {
+	return "types.Int"
+}

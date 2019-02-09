@@ -76,6 +76,10 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 			case UnionElem:
 				frame.UnionType, err = readLong(r)
 				break
+			case Fixed:
+				frame.Bytes, err = readFixed(r, inst.Field)
+				break
+
 			}
 			break
 		case Set:

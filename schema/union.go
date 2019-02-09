@@ -43,6 +43,7 @@ func (r %[1]v) Get(i int) types.Field {
 }
 func (_ %[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ %[1]v) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ %[1]v) Finalize()  { }
 `
 
 type UnionField struct {

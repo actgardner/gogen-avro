@@ -88,7 +88,7 @@ func (p *Program) compileType(writer, reader schema.AvroType) error {
 	case *schema.NullField:
 		return nil
 	}
-	return fmt.Errorf("Unsupported type: %v", writer)
+	return fmt.Errorf("Unsupported type: %t", writer)
 }
 
 func (p *Program) compileRef(writer, reader *schema.Reference) error {
@@ -107,8 +107,26 @@ func (p *Program) compileRef(writer, reader *schema.Reference) error {
 			}
 		}
 		return p.compileRecord(writer.Def.(*schema.RecordDefinition), readerDef)
+	case *schema.FixedDefinition:
+		var readerDef *schema.FixedDefinition
+		var ok bool
+		if reader != nil {
+			if readerDef, ok = reader.Def.(*schema.FixedDefinition); !ok {
+				return fmt.Errorf("Incompatible types: %v %v", reader, writer)
+			}
+		}
+		return p.compileFixed(writer.Def.(*schema.FixedDefinition), readerDef)
+	case *schema.EnumDefinition:
+		var readerDef *schema.EnumDefinition
+		var ok bool
+		if reader != nil {
+			if readerDef, ok = reader.Def.(*schema.EnumDefinition); !ok {
+				return fmt.Errorf("Incompatible types: %v %v", reader, writer)
+			}
+		}
+		return p.compileEnum(writer.Def.(*schema.EnumDefinition), readerDef)
 	}
-	return fmt.Errorf("Unsupported field %v", reader)
+	return fmt.Errorf("Unsupported reference type %t", reader)
 }
 
 func (p *Program) compileMap(writer, reader *schema.MapField) error {
@@ -170,6 +188,23 @@ func (p *Program) compileRecord(writer, reader *schema.RecordDefinition) error {
 		if readerField != nil {
 			p.add(Exit, Unused, NoopField)
 		}
+	}
+	return nil
+}
+
+func (p *Program) compileEnum(writer, reader *schema.EnumDefinition) error {
+	//fmt.Printf("compileEnum(%v, %v)\n", writer, reader)
+	p.add(Read, Int, NoopField)
+	if reader != nil {
+		p.add(Set, Int, NoopField)
+	}
+	return nil
+}
+
+func (p *Program) compileFixed(writer, reader *schema.FixedDefinition) error {
+	p.add(Read, Fixed, writer.SizeBytes())
+	if reader != nil {
+		p.add(Set, Bytes, NoopField)
 	}
 	return nil
 }

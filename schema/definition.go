@@ -31,4 +31,5 @@ type Definition interface {
 	DefaultValue(lvalue string, rvalue interface{}) (string, error)
 
 	IsReadableBy(f Definition) bool
+	WrapperType() string
 }

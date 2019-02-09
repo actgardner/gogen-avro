@@ -60,7 +60,7 @@ func (s *Reference) DefaultValue(lvalue string, rvalue interface{}) (string, err
 }
 
 func (s *Reference) WrapperType() string {
-	return ""
+	return s.Def.WrapperType()
 }
 
 func (s *Reference) IsReadableBy(f AvroType) bool {
