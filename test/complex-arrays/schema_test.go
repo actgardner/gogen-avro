@@ -32,9 +32,3 @@ func TestRoundTrip(t *testing.T) {
 		assert.Equal(t, *datum, f)
 	}
 }
-
-func TestDefaults(t *testing.T) {
-	record := NewParent()
-	assert.Equal(t, record.Children[0].Name, "record1")
-	assert.Equal(t, record.Children[1].Name, "record2")
-}

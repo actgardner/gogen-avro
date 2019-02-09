@@ -307,7 +307,7 @@ func (r *RecordDefinition) FieldsMethodDef() string {
 			getBody += fmt.Sprintf("r.%v = %v\n", f.GoName(), constructor.ConstructorMethod())
 		}
 		if f.Type().WrapperType() == "" {
-			getBody += fmt.Sprintf("return r.%v\nbreak\n", f.Name())
+			getBody += fmt.Sprintf("return r.%v\nbreak\n", f.GoName())
 		} else {
 			getBody += fmt.Sprintf("return (*%v)(&r.%v)\nbreak\n", f.Type().WrapperType(), f.GoName())
 		}
@@ -368,4 +368,8 @@ reader:
 		}
 	}
 	return true
+}
+
+func (s *RecordDefinition) WrapperType() string {
+	return ""
 }

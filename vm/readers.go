@@ -120,3 +120,9 @@ func readString(r io.Reader) (string, error) {
 	}
 	return string(bb), nil
 }
+
+func readFixed(r io.Reader, size int) ([]byte, error) {
+	bb := make([]byte, size)
+	_, err := io.ReadFull(r, bb)
+	return bb, err
+}

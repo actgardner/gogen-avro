@@ -68,12 +68,13 @@ func (n *Namespace) RegisterDefinition(d Definition) error {
 		if !reflect.DeepEqual(curDef, d) {
 			return fmt.Errorf("Conflicting definitions for %v", d.AvroName())
 		}
+		return nil
 	}
 	n.Definitions[d.AvroName()] = d
 
 	for _, alias := range d.Aliases() {
-		if _, ok := n.Definitions[alias]; ok {
-			return fmt.Errorf("Conflicting alias for %v - %v", d.AvroName(), alias)
+		if existing, ok := n.Definitions[alias]; ok {
+			return fmt.Errorf("Alias for %q is %q, but %q is already aliased with that name", d.AvroName(), alias, existing.AvroName())
 		}
 		n.Definitions[alias] = d
 	}

@@ -12,6 +12,23 @@ func %v(r %v, w io.Writer) error {
 }
 `
 
+const fixedFieldTemplate = `
+func (_ %[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ %[1]v) SetInt(v int32) { panic("Unsupported operation") }
+func (_ %[1]v) SetLong(v int64) { panic("Unsupported operation") }
+func (_ %[1]v) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ %[1]v) SetDouble(v float64) { panic("Unsupported operation") }
+func (r %[1]v) SetBytes(v []byte) { 
+	copy(r[:], v)
+}
+func (_ %[1]v) SetString(v string) { panic("Unsupported operation") }
+func (_ %[1]v) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ %[1]v) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ %[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ %[1]v) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ %[1]v) Finalize() { }
+`
+
 type FixedDefinition struct {
 	name       QualifiedName
 	aliases    []QualifiedName
@@ -44,6 +61,10 @@ func (s *FixedDefinition) GoType() string {
 	return generator.ToPublicName(s.name.Name)
 }
 
+func (s *FixedDefinition) SizeBytes() int {
+	return s.sizeBytes
+}
+
 func (s *FixedDefinition) serializerMethodDef() string {
 	return fmt.Sprintf(writeFixedMethod, s.SerializerMethod(), s.GoType())
 }
@@ -66,12 +87,18 @@ func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
 }
 
 func (s *FixedDefinition) AddSerializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
 	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/types")
+	p.AddFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
+	p.AddFunction(UTIL_FILE, s.GoType(), "fieldTemplate", s.FieldsMethodDef())
 }
 
 func (s *FixedDefinition) ResolveReferences(n *Namespace) error {
 	return nil
+}
+
+func (s *FixedDefinition) FieldsMethodDef() string {
+	return fmt.Sprintf(fixedFieldTemplate, "*"+s.GoType(), s.sizeBytes)
 }
 
 func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
@@ -94,4 +121,8 @@ func (s *FixedDefinition) IsReadableBy(d Definition) bool {
 		return fixed.sizeBytes == s.sizeBytes
 	}
 	return false
+}
+
+func (s *FixedDefinition) WrapperType() string {
+	return ""
 }

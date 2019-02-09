@@ -67,6 +67,7 @@ const (
 	MapKey
 	Length
 	UnionElem
+	Fixed
 )
 
 func (t Type) String() string {
@@ -93,6 +94,8 @@ func (t Type) String() string {
 		return "Length"
 	case UnionElem:
 		return "UnionElem"
+	case Fixed:
+		return "Fixed"
 	}
 	return "Unknown"
 }
