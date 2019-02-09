@@ -87,8 +87,3 @@ func TestRoundTrip(t *testing.T) {
 		assert.Equal(t, *datum, f)
 	}
 }
-
-func TestDefault(t *testing.T) {
-	record := NewPrimitiveUnionTestRecord()
-	assert.Equal(t, record.UnionField.Int, int32(1234))
-}
