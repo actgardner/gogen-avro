@@ -13,20 +13,22 @@ func %v(r %v, w io.Writer) error {
 `
 
 const fixedFieldTemplate = `
-func (_ %[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ %[1]v) SetInt(v int32) { panic("Unsupported operation") }
-func (_ %[1]v) SetLong(v int64) { panic("Unsupported operation") }
-func (_ %[1]v) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ %[1]v) SetDouble(v float64) { panic("Unsupported operation") }
-func (r %[1]v) SetBytes(v []byte) { 
-	copy(r[:], v)
+type %[1]v %[2]v
+
+func (_ *%[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *%[1]v) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *%[1]v) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *%[1]v) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *%[1]v) SetDouble(v float64) { panic("Unsupported operation") }
+func (r *%[1]v) SetBytes(v []byte) { 
+	copy((*r)[:], v)
 }
-func (_ %[1]v) SetString(v string) { panic("Unsupported operation") }
-func (_ %[1]v) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ %[1]v) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ %[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ %[1]v) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ %[1]v) Finalize() { }
+func (_ *%[1]v) SetString(v string) { panic("Unsupported operation") }
+func (_ *%[1]v) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *%[1]v) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *%[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *%[1]v) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *%[1]v) Finalize() { }
 `
 
 type FixedDefinition struct {
@@ -98,7 +100,7 @@ func (s *FixedDefinition) ResolveReferences(n *Namespace) error {
 }
 
 func (s *FixedDefinition) FieldsMethodDef() string {
-	return fmt.Sprintf(fixedFieldTemplate, "*"+s.GoType(), s.sizeBytes)
+	return fmt.Sprintf(fixedFieldTemplate, s.WrapperType(), s.GoType(), s.sizeBytes)
 }
 
 func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
@@ -124,5 +126,5 @@ func (s *FixedDefinition) IsReadableBy(d Definition) bool {
 }
 
 func (s *FixedDefinition) WrapperType() string {
-	return ""
+	return fmt.Sprintf("%vWrapper", s.GoType())
 }
