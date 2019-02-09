@@ -115,11 +115,16 @@ func (s *UnionField) unionSerializer() string {
 func (s *UnionField) FieldsMethodDef() string {
 	getBody := ""
 	for i, f := range s.itemType {
-		if f.WrapperType() == "" {
-			getBody += fmt.Sprintf("case %v:\nreturn r.%v\nbreak\n", i, f.Name())
-		} else {
-			getBody += fmt.Sprintf("case %v:\nreturn (*%v)(&r.%v)\nbreak\n", i, f.WrapperType(), f.Name())
+		getBody += fmt.Sprintf("case %v:\n", i)
+		if constructor, ok := getConstructableForType(f); ok {
+			getBody += fmt.Sprintf("r.%v = %v\n", f.Name(), constructor.ConstructorMethod())
 		}
+		if f.WrapperType() == "" {
+			getBody += fmt.Sprintf("return r.%v", f.Name())
+		} else {
+			getBody += fmt.Sprintf("return (*%v)(&r.%v)", f.WrapperType(), f.Name())
+		}
+		getBody += "\nbreak\n"
 	}
 	return fmt.Sprintf(unionFieldTemplate, s.GoType(), s.unionEnumType(), getBody)
 }

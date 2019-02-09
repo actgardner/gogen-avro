@@ -10,21 +10,40 @@ type Program struct {
 	instructions []Instruction
 }
 
+func (p *Program) String() string {
+	s := ""
+	depth := ""
+	for i, inst := range p.instructions {
+		if inst.Op == BlockEnd || inst.Op == SwitchEnd || inst.Op == Exit || inst.Op == SwitchCase {
+			depth = depth[0 : len(depth)-3]
+		}
+		s += fmt.Sprintf("%v:\t%v%v\n", i, depth, inst)
+
+		if inst.Op == BlockStart || inst.Op == SwitchStart || inst.Op == Enter || inst.Op == SwitchCase || inst.Op == AppendArray || inst.Op == AppendMap {
+			depth += "|  "
+		}
+	}
+	return s
+}
+
 func (p *Program) add(op Op, t Type, f int) {
 	p.instructions = append(p.instructions, Instruction{op, t, f})
 }
 
 func Compile(writer, reader schema.AvroType) ([]Instruction, error) {
+	compilerLog("Compile()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	program := &Program{make([]Instruction, 0)}
 	err := program.compileType(writer, reader)
 	if err != nil {
 		return nil, err
 	}
+
+	compileOutputLog("%v", program)
 	return program.instructions, nil
 }
 
 func (p *Program) compileType(writer, reader schema.AvroType) error {
-	//fmt.Printf("compileType(%v, %v)\n", writer, reader)
+	compilerLog("compileType()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	switch writer.(type) {
 	case *schema.Reference:
 		if readerRef, ok := reader.(*schema.Reference); ok || reader == nil {
@@ -92,7 +111,7 @@ func (p *Program) compileType(writer, reader schema.AvroType) error {
 }
 
 func (p *Program) compileRef(writer, reader *schema.Reference) error {
-	//fmt.Printf("compileRef(%v, %v)\n", writer, reader)
+	compilerLog("compileRef()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	if reader != nil && writer.TypeName != reader.TypeName {
 		return fmt.Errorf("Incompatible types by name: %v %v", reader, writer)
 	}
@@ -130,7 +149,7 @@ func (p *Program) compileRef(writer, reader *schema.Reference) error {
 }
 
 func (p *Program) compileMap(writer, reader *schema.MapField) error {
-	//fmt.Printf("compileMap(%v, %v)\n", writer, reader)
+	compilerLog("compileMap()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	p.add(BlockStart, Unused, NoopField)
 	p.add(Read, MapKey, NoopField)
 	var readerType schema.AvroType
@@ -150,7 +169,7 @@ func (p *Program) compileMap(writer, reader *schema.MapField) error {
 }
 
 func (p *Program) compileArray(writer, reader *schema.ArrayField) error {
-	//fmt.Printf("compileArray(%v, %v)\n", writer, reader)
+	compilerLog("compileArray()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	p.add(BlockStart, Unused, NoopField)
 	var readerType schema.AvroType
 	if reader != nil {
@@ -170,7 +189,7 @@ func (p *Program) compileArray(writer, reader *schema.ArrayField) error {
 
 func (p *Program) compileRecord(writer, reader *schema.RecordDefinition) error {
 	// Look up whether there's a corresonding target field and if so, parse the source field into that target
-	//fmt.Printf("compileRecord(%v, %v)\n", writer, reader)
+	compilerLog("compileRecord()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	for _, field := range writer.Fields() {
 		var readerType schema.AvroType
 		var readerField *schema.Field
@@ -193,7 +212,7 @@ func (p *Program) compileRecord(writer, reader *schema.RecordDefinition) error {
 }
 
 func (p *Program) compileEnum(writer, reader *schema.EnumDefinition) error {
-	//fmt.Printf("compileEnum(%v, %v)\n", writer, reader)
+	compilerLog("compileEnum()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	p.add(Read, Int, NoopField)
 	if reader != nil {
 		p.add(Set, Int, NoopField)
@@ -202,6 +221,7 @@ func (p *Program) compileEnum(writer, reader *schema.EnumDefinition) error {
 }
 
 func (p *Program) compileFixed(writer, reader *schema.FixedDefinition) error {
+	compilerLog("compileFixed()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	p.add(Read, Fixed, writer.SizeBytes())
 	if reader != nil {
 		p.add(Set, Bytes, NoopField)
@@ -210,7 +230,7 @@ func (p *Program) compileFixed(writer, reader *schema.FixedDefinition) error {
 }
 
 func (p *Program) compileUnion(writer *schema.UnionField, reader schema.AvroType) error {
-	//fmt.Printf("compileUnion(%t, %t)\n", writer, reader)
+	compilerLog("compileUnion()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 
 	p.add(Read, UnionElem, NoopField)
 	if _, ok := reader.(*schema.UnionField); ok {
