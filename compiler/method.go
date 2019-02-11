@@ -41,6 +41,21 @@ func (p *IRMethod) addBlockEnd(id int) {
 	p.body = append(p.body, &BlockEndIRInstruction{id})
 }
 
+func (p *IRMethod) addSwitchStart(size int) int {
+	id := len(p.program.switches)
+	p.program.switches = append(p.program.switches, &IRSwitch{0, make(map[int]int), 0})
+	p.body = append(p.body, &SwitchStartIRInstruction{id, size})
+	return id
+}
+
+func (p *IRMethod) addSwitchCase(id int, value int) {
+	p.body = append(p.body, &SwitchCaseIRInstruction{id, value})
+}
+
+func (p *IRMethod) addSwitchEnd(id int) {
+	p.body = append(p.body, &SwitchEndIRInstruction{id})
+}
+
 func (p *IRMethod) VMLength() int {
 	len := 0
 	for _, inst := range p.body {
@@ -250,14 +265,14 @@ func (p *IRMethod) compileFixed(writer, reader *schema.FixedDefinition) error {
 func (p *IRMethod) compileUnion(writer *schema.UnionField, reader schema.AvroType) error {
 	log("compileUnion()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 
-	p.addLiteral(vm.Read, vm.UnionElem, vm.NoopField)
+	p.addLiteral(vm.Read, vm.Long, vm.NoopField)
 	if _, ok := reader.(*schema.UnionField); ok {
-		p.addLiteral(vm.Set, vm.UnionElem, vm.NoopField)
+		p.addLiteral(vm.Set, vm.Long, vm.NoopField)
 	}
-	p.addLiteral(vm.SwitchStart, vm.Unused, vm.NoopField)
+	switchId := p.addSwitchStart(len(writer.AvroTypes()))
 writer:
 	for i, t := range writer.AvroTypes() {
-		p.addLiteral(vm.SwitchCase, vm.Unused, i)
+		p.addSwitchCase(switchId, i)
 		if unionReader, ok := reader.(*schema.UnionField); ok {
 			// If there's an exact match between the reader and writer preserve type
 			// This avoids weird cases like ["string", "bytes"] which would always resolve to "string"
@@ -291,6 +306,6 @@ writer:
 			return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 		}
 	}
-	p.addLiteral(vm.SwitchEnd, vm.Unused, vm.NoopField)
+	p.addSwitchEnd(switchId)
 	return nil
 }
