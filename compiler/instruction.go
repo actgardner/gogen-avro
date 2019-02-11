@@ -53,7 +53,7 @@ func (b *BlockStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, e
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
 		vm.Instruction{vm.Read, vm.Long, vm.NoopField},
-		vm.Instruction{vm.ZeroJump, vm.Unused, block.end + 2},
+		vm.Instruction{vm.ZeroJump, vm.Unused, block.end + 3},
 	}, nil
 }
 
@@ -71,7 +71,7 @@ func (b *BlockEndIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, err
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
 		vm.Instruction{vm.DecrLong, vm.Unused, vm.NoopField},
-		vm.Instruction{vm.ZeroJump, vm.Unused, block.start - 1},
-		vm.Instruction{vm.Jump, vm.Unused, block.start + 1},
+		vm.Instruction{vm.ZeroJump, vm.Unused, block.start},
+		vm.Instruction{vm.Jump, vm.Unused, block.start + 2},
 	}, nil
 }
