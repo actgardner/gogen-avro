@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/schema"
 	"github.com/actgardner/gogen-avro/vm"
 
@@ -131,7 +132,7 @@ func BenchmarkDeserializePrimitiveRecord(b *testing.B) {
 	err = readerType.ResolveReferences(readerNs)
 	assert.Nil(b, err)
 
-	deser, err := vm.Compile(readerType, readerType)
+	deser, err := compiler.Compile(readerType, readerType)
 	assert.Nil(b, err)
 
 	var target PrimitiveTestRecord

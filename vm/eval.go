@@ -25,10 +25,14 @@ type Frame struct {
 	UnionType  int64
 }
 
-func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
+func Eval(r io.Reader, program *Program, target types.Field) (err error) {
+	callStack := make([]int, 256)
+	callStackDepth := 0
+
 	stack := make([]Frame, 256)
 	stack[0].Target = target
 	depth := 0
+
 	pc := 0
 
 	defer func() {
@@ -37,10 +41,10 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 		}
 	}()
 
-	for pc = 0; pc < len(program); pc++ {
-		inst := program[pc]
+	for pc = 0; pc < len(program.Instructions); pc++ {
+		inst := program.Instructions[pc]
 		frame := &stack[depth]
-		runtimeLog("PC: %v\tD:%v\tOp: %v", pc, depth, inst)
+		log("PC: %v\tD:%v\tOp: %v", pc, depth, inst)
 		switch inst.Op {
 		case Read:
 			switch inst.Type {
@@ -137,7 +141,7 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 				}
 				// If the header is 0, the array/map is over
 				if frame.Length == 0 {
-					for program[pc].Op != BlockEnd {
+					for program.Instructions[pc].Op != BlockEnd {
 						pc += 1
 					}
 					continue
@@ -154,13 +158,13 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 			switchDepth := 1
 			for {
 				pc += 1
-				if program[pc].Op == SwitchStart {
+				if program.Instructions[pc].Op == SwitchStart {
 					switchDepth += 1
 				}
-				if program[pc].Op == SwitchCase && program[pc].Field == int(stack[depth].UnionType) && switchDepth == 1 {
+				if program.Instructions[pc].Op == SwitchCase && program.Instructions[pc].Field == int(stack[depth].UnionType) && switchDepth == 1 {
 					break
 				}
-				if program[pc].Op == SwitchEnd {
+				if program.Instructions[pc].Op == SwitchEnd {
 					switchDepth -= 1
 					if switchDepth == 0 {
 						err = fmt.Errorf("No matching case in switch for %v", stack[depth].UnionType)
@@ -173,10 +177,10 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 			// Switch cases don't need an explicit break, skip to the end of the block
 			switchDepth := 1
 			for {
-				if program[pc].Op == SwitchStart {
+				if program.Instructions[pc].Op == SwitchStart {
 					switchDepth += 1
 				}
-				if program[pc].Op == SwitchEnd {
+				if program.Instructions[pc].Op == SwitchEnd {
 					switchDepth -= 1
 					if switchDepth == 0 {
 						break
@@ -188,8 +192,17 @@ func Eval(r io.Reader, program []Instruction, target types.Field) (err error) {
 		case SwitchEnd:
 			// The end of the last case, nothing to see here
 			break
+		case Call:
+			callStack[callStackDepth] = pc
+			callStackDepth += 1
+			pc = inst.Field - 1
+		case Return:
+			pc = callStack[callStackDepth-1]
+			callStackDepth -= 1
+		case Halt:
+			return nil
 		default:
-			err = fmt.Errorf("Unknown instruction %v", program[pc])
+			err = fmt.Errorf("Unknown instruction %v", program.Instructions[pc])
 		}
 
 		if err != nil {

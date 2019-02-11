@@ -18,7 +18,10 @@ const (
 	SwitchStart
 	SwitchCase
 	SwitchEnd
-	SetDefaults
+	Call
+	Return
+	Halt
+	Jump
 )
 
 func (o Op) String() string {
@@ -45,9 +48,14 @@ func (o Op) String() string {
 		return "switch_case"
 	case SwitchEnd:
 		return "switch_end"
-	case SetDefaults:
-		return "set_defaults"
-
+	case Call:
+		return "call"
+	case Return:
+		return "return"
+	case Halt:
+		return "halt"
+	case Jump:
+		return "jump"
 	}
 	return "Unknown"
 }
@@ -118,4 +126,24 @@ func (i Instruction) String() string {
 		return fmt.Sprintf("%v(%v)", i.Op, i.Field)
 	}
 	return fmt.Sprintf("%v(%v, %v)", i.Op, i.Type, i.Field)
+}
+
+type Program struct {
+	Instructions []Instruction
+}
+
+func (p *Program) String() string {
+	s := ""
+	depth := ""
+	for i, inst := range p.Instructions {
+		if inst.Op == BlockEnd || inst.Op == SwitchEnd || inst.Op == Exit || inst.Op == SwitchCase {
+			depth = depth[0 : len(depth)-3]
+		}
+		s += fmt.Sprintf("%v:\t%v%v\n", i, depth, inst)
+
+		if inst.Op == BlockStart || inst.Op == SwitchStart || inst.Op == Enter || inst.Op == SwitchCase || inst.Op == AppendArray || inst.Op == AppendMap {
+			depth += "|  "
+		}
+	}
+	return s
 }
