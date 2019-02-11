@@ -12,9 +12,10 @@ import (
 // control with jumps to absolute offsets.
 
 type IRProgram struct {
-	main    *IRMethod
-	methods map[string]*IRMethod
-	blocks  []*IRBlock
+	main     *IRMethod
+	methods  map[string]*IRMethod
+	blocks   []*IRBlock
+	switches []*IRSwitch
 }
 
 type IRBlock struct {
@@ -24,6 +25,16 @@ type IRBlock struct {
 
 func (b *IRBlock) String() string {
 	return fmt.Sprintf("%v - %v", b.start, b.end)
+}
+
+type IRSwitch struct {
+	start int
+	cases map[int]int
+	end   int
+}
+
+func (b *IRSwitch) String() string {
+	return fmt.Sprintf("%v - %v - %v", b.start, b.cases, b.end)
 }
 
 func (p *IRProgram) createMethod(name string) *IRMethod {
@@ -46,12 +57,12 @@ func (p *IRProgram) CompileToVM() (*vm.Program, error) {
 
 	for _, method := range p.methods {
 		method.offset = vmLength
-		vmLength += method.VMLength()
 		method.addLiteral(vm.Return, vm.Unused, vm.NoopField)
+		vmLength += method.VMLength()
 		irProgram = append(irProgram, method.body...)
 	}
 
-	p.findBlocks(irProgram)
+	p.findOffsets(irProgram)
 	log("Found blocks: %v", p.blocks)
 
 	vmProgram := make([]vm.Instruction, 0)
@@ -68,17 +79,25 @@ func (p *IRProgram) CompileToVM() (*vm.Program, error) {
 	}, nil
 }
 
-// Add the start and end in terms of VM instruction offsets for every block
-func (p *IRProgram) findBlocks(inst []IRInstruction) {
+func (p *IRProgram) findOffsets(inst []IRInstruction) {
 	offset := 0
 	for _, instruction := range inst {
 		switch v := instruction.(type) {
 		case *BlockStartIRInstruction:
-			log("findBlocks() block %v - start %v", v.blockId, offset)
+			log("findOffsets() block %v - start %v", v.blockId, offset)
 			p.blocks[v.blockId].start = offset
 		case *BlockEndIRInstruction:
-			log("findBlocks() block %v - end %v", v.blockId, offset)
+			log("findOffsets() block %v - end %v", v.blockId, offset)
 			p.blocks[v.blockId].end = offset
+		case *SwitchStartIRInstruction:
+			log("findOffsets() block %v - start %v", v.switchId, offset)
+			p.switches[v.switchId].start = offset
+		case *SwitchCaseIRInstruction:
+			log("findOffsets() block %v - start %v", v.switchId, offset)
+			p.switches[v.switchId].cases[v.value] = offset
+		case *SwitchEndIRInstruction:
+			log("findOffsets() block %v - end %v", v.switchId, offset)
+			p.switches[v.switchId].end = offset
 		}
 		offset += instruction.VMLength()
 	}

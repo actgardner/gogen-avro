@@ -5,13 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/stretchr/testify/assert"
 )
-
-func init() {
-	compiler.LoggingEnabled = true
-}
 
 // Round-trip some primitive values through our serializer and goavro to verify
 const fixtureJson = `

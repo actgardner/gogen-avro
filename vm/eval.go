@@ -18,8 +18,7 @@ type Frame struct {
 	Bytes   []byte
 	String  string
 
-	MapKey    string
-	UnionType int64
+	MapKey string
 }
 
 func Eval(r io.Reader, program *Program, target types.Field) (err error) {
@@ -71,9 +70,6 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			case MapKey:
 				frame.MapKey, err = readString(r)
 				break
-			case UnionElem:
-				frame.UnionType, err = readLong(r)
-				break
 			case Fixed:
 				frame.Bytes, err = readFixed(r, inst.Field)
 				break
@@ -104,8 +100,6 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			case String:
 				frame.Target.SetString(frame.String)
 				break
-			case UnionElem:
-				frame.Target.SetUnionElem(frame.UnionType)
 			}
 			break
 		case Enter:
@@ -124,45 +118,6 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			depth += 1
 			stack[depth].Target = frame.Target.AppendMap(stack[depth-1].MapKey)
 			break
-		case SwitchStart:
-			// Skip to the case matching the UnionType in the frame
-			switchDepth := 1
-			for {
-				pc += 1
-				if program.Instructions[pc].Op == SwitchStart {
-					switchDepth += 1
-				}
-				if program.Instructions[pc].Op == SwitchCase && program.Instructions[pc].Field == int(stack[depth].UnionType) && switchDepth == 1 {
-					break
-				}
-				if program.Instructions[pc].Op == SwitchEnd {
-					switchDepth -= 1
-					if switchDepth == 0 {
-						err = fmt.Errorf("No matching case in switch for %v", stack[depth].UnionType)
-						break
-					}
-				}
-			}
-			break
-		case SwitchCase:
-			// Switch cases don't need an explicit break, skip to the end of the block
-			switchDepth := 1
-			for {
-				if program.Instructions[pc].Op == SwitchStart {
-					switchDepth += 1
-				}
-				if program.Instructions[pc].Op == SwitchEnd {
-					switchDepth -= 1
-					if switchDepth == 0 {
-						break
-					}
-				}
-				pc += 1
-			}
-			break
-		case SwitchEnd:
-			// The end of the last case, nothing to see here
-			break
 		case Call:
 			callStack[callStackDepth] = pc
 			callStackDepth += 1
@@ -172,12 +127,12 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			callStackDepth -= 1
 		case Jump:
 			pc = inst.Field - 1
-		case ZeroJump:
-			if frame.Long == 0 {
-				pc = inst.Field - 1
+		case CondJump:
+			if frame.Long != int64(inst.Field) {
+				pc += 1
 			}
-		case DecrLong:
-			frame.Long -= 1
+		case AddLong:
+			frame.Long += int64(inst.Field)
 		case Halt:
 			if inst.Field == 0 {
 				return nil

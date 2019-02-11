@@ -27,12 +27,11 @@ func %v %v {
 const unionFieldTemplate = `
 func (_ %[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
 func (_ %[1]v) SetInt(v int32) { panic("Unsupported operation") }
-func (_ %[1]v) SetLong(v int64) { panic("Unsupported operation") }
 func (_ %[1]v) SetFloat(v float32) { panic("Unsupported operation") }
 func (_ %[1]v) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ %[1]v) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ %[1]v) SetString(v string) { panic("Unsupported operation") }
-func (r %[1]v) SetUnionElem(v int64) { 
+func (r %[1]v) SetLong(v int64) { 
 	r.UnionType = (%[2]v)(v)
 }
 func (r %[1]v) Get(i int) types.Field {

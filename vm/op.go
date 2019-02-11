@@ -9,15 +9,12 @@ const (
 	Exit
 	AppendArray
 	AppendMap
-	SwitchStart
-	SwitchCase
-	SwitchEnd
 	Call
 	Return
 	Halt
 	Jump
-	ZeroJump
-	DecrLong
+	CondJump
+	AddLong
 )
 
 func (o Op) String() string {
@@ -34,12 +31,6 @@ func (o Op) String() string {
 		return "append_array"
 	case AppendMap:
 		return "append_map"
-	case SwitchStart:
-		return "switch_start"
-	case SwitchCase:
-		return "switch_case"
-	case SwitchEnd:
-		return "switch_end"
 	case Call:
 		return "call"
 	case Return:
@@ -48,10 +39,10 @@ func (o Op) String() string {
 		return "halt"
 	case Jump:
 		return "jump"
-	case ZeroJump:
-		return "zero_jump"
-	case DecrLong:
-		return "decr_long"
+	case CondJump:
+		return "cond_jump"
+	case AddLong:
+		return "add_long"
 	}
 	return "Unknown"
 }
