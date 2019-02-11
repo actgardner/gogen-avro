@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/actgardner/gogen-avro/types"
 	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
 )
@@ -53,8 +54,8 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 
 		for i := 0; i < value.NumField(); i++ {
 			fieldName := value.Type().Field(i).Name
-			fieldUnionIndex := int(value.Field(i).FieldByName("UnionType").Int())
-			structVal := value.Field(i).Field(fieldUnionIndex).Interface()
+			fieldUnionIndex := int(value.Field(i).Elem().FieldByName("UnionType").Int())
+			structVal := value.Field(i).Elem().Field(fieldUnionIndex).Interface()
 			var avroVal interface{}
 			top, ok := record[fieldName].(map[string]interface{})
 			if ok {
@@ -63,8 +64,15 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 					break
 				}
 			}
-			if !reflect.DeepEqual(structVal, avroVal) {
-				t.Fatalf("Field %v not equal: %v != %v", fieldName, structVal, avroVal)
+			switch structVal.(type) {
+			case *types.NullVal:
+				if avroVal != nil {
+					t.Fatalf("Field %v not equal: %t != %t", fieldName, structVal, avroVal)
+				}
+			default:
+				if !reflect.DeepEqual(structVal, avroVal) {
+					t.Fatalf("Field %v not equal: %t != %t", fieldName, structVal, avroVal)
+				}
 			}
 		}
 	}

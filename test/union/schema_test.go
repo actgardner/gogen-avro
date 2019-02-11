@@ -64,8 +64,15 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 					break
 				}
 			}
-			if !reflect.DeepEqual(structVal, avroVal) && !(structVal == types.NullVal{} && avroVal == nil) {
-				t.Fatalf("Field %v not equal: %v != %v", fieldName, structVal, avroVal)
+			switch structVal.(type) {
+			case *types.NullVal:
+				if avroVal != nil {
+					t.Fatalf("Field %v not equal: %t != %t", fieldName, structVal, avroVal)
+				}
+			default:
+				if !reflect.DeepEqual(structVal, avroVal) {
+					t.Fatalf("Field %v not equal: %t != %t", fieldName, structVal, avroVal)
+				}
 			}
 		}
 	}
