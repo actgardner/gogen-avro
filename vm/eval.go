@@ -77,7 +77,6 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			case Fixed:
 				frame.Bytes, err = readFixed(r, inst.Field)
 				break
-
 			}
 			break
 		case Set:
@@ -175,7 +174,7 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			pc = inst.Field - 1
 		case ZeroJump:
 			if frame.Long == 0 {
-				pc = inst.Field
+				pc = inst.Field - 1
 			}
 		case DecrLong:
 			frame.Long -= 1
