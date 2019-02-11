@@ -18,11 +18,8 @@ type Frame struct {
 	Bytes   []byte
 	String  string
 
-	MapKey string
-	Length int64
-
-	BlockStart int
-	UnionType  int64
+	MapKey    string
+	UnionType int64
 }
 
 func Eval(r io.Reader, program *Program, target types.Field) (err error) {
@@ -73,9 +70,6 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 				break
 			case MapKey:
 				frame.MapKey, err = readString(r)
-				break
-			case Length:
-				frame.Length, err = readLong(r)
 				break
 			case UnionElem:
 				frame.UnionType, err = readLong(r)
@@ -131,28 +125,6 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			depth += 1
 			stack[depth].Target = frame.Target.AppendMap(stack[depth-1].MapKey)
 			break
-		case BlockStart:
-			// If we're starting a block, read the header
-			if frame.Length == 0 {
-				stack[depth].BlockStart = pc
-				frame.Length, err = readLong(r)
-				if err != nil {
-					break
-				}
-				// If the header is 0, the array/map is over
-				if frame.Length == 0 {
-					for program.Instructions[pc].Op != BlockEnd {
-						pc += 1
-					}
-					continue
-				}
-			}
-			frame.Length -= 1
-			break
-		case BlockEnd:
-			// Loop back to the beginning of the loop
-			pc = stack[depth].BlockStart - 1
-			break
 		case SwitchStart:
 			// Skip to the case matching the UnionType in the frame
 			switchDepth := 1
@@ -199,8 +171,20 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 		case Return:
 			pc = callStack[callStackDepth-1]
 			callStackDepth -= 1
+		case Jump:
+			pc = inst.Field - 1
+		case ZeroJump:
+			if frame.Long == 0 {
+				pc = inst.Field
+			}
+		case DecrLong:
+			frame.Long -= 1
 		case Halt:
-			return nil
+			if inst.Field == 0 {
+				return nil
+			} else {
+				return fmt.Errorf("Runtime error: %v", program.Errors[inst.Field])
+			}
 		default:
 			err = fmt.Errorf("Unknown instruction %v", program.Instructions[pc])
 		}
