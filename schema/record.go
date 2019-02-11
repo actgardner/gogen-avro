@@ -45,13 +45,11 @@ func %v(r io.Reader) (%v, error) {
 		return nil, err
 	}
 
-	deser, err := vm.Compile(readerType, readerType)
+	deser, err := compiler.Compile(readerType, readerType)
 	if err != nil {
 		return nil, err
 	}
 
-
-	//fmt.Printf("%%v", deser)
         err = vm.Eval(r, deser, t)
 	return t, err
 }
@@ -218,8 +216,8 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/types")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm")
+		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/compiler")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/schema")
-		//p.AddImport(r.filename(), "fmt")
 		p.AddFunction(r.filename(), r.GoType(), "fieldTemplate", r.FieldsMethodDef())
 		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
 		p.AddFunction(r.filename(), r.GoType(), r.publicDeserializerMethod(), r.publicDeserializerMethodDef())
