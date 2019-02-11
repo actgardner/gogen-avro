@@ -30,6 +30,25 @@ func (p *IRMethod) addMethodCall(method string) {
 	p.body = append(p.body, &MethodCallIRInstruction{method})
 }
 
+func (p *IRMethod) addBlockStart() int {
+	id := len(p.program.blocks)
+	p.program.blocks = append(p.program.blocks, &IRBlock{})
+	p.body = append(p.body, &BlockStartIRInstruction{id})
+	return id
+}
+
+func (p *IRMethod) addBlockEnd(id int) {
+	p.body = append(p.body, &BlockEndIRInstruction{id})
+}
+
+func (p *IRMethod) VMLength() int {
+	len := 0
+	for _, inst := range p.body {
+		len += inst.VMLength()
+	}
+	return len
+}
+
 func (p *IRMethod) compileType(writer, reader schema.AvroType) error {
 	log("compileType()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	switch writer.(type) {
@@ -149,7 +168,7 @@ func (p *IRMethod) compileRef(writer, reader *schema.Reference) error {
 
 func (p *IRMethod) compileMap(writer, reader *schema.MapField) error {
 	log("compileMap()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	p.addLiteral(vm.BlockStart, vm.Unused, vm.NoopField)
+	blockId := p.addBlockStart()
 	p.addLiteral(vm.Read, vm.MapKey, vm.NoopField)
 	var readerType schema.AvroType
 	if reader != nil {
@@ -163,13 +182,13 @@ func (p *IRMethod) compileMap(writer, reader *schema.MapField) error {
 	if reader != nil {
 		p.addLiteral(vm.Exit, vm.Unused, vm.NoopField)
 	}
-	p.addLiteral(vm.BlockEnd, vm.Unused, vm.NoopField)
+	p.addBlockEnd(blockId)
 	return nil
 }
 
 func (p *IRMethod) compileArray(writer, reader *schema.ArrayField) error {
 	log("compileArray()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	p.addLiteral(vm.BlockStart, vm.Unused, vm.NoopField)
+	blockId := p.addBlockStart()
 	var readerType schema.AvroType
 	if reader != nil {
 		p.addLiteral(vm.AppendArray, vm.Unused, vm.NoopField)
@@ -182,7 +201,7 @@ func (p *IRMethod) compileArray(writer, reader *schema.ArrayField) error {
 	if reader != nil {
 		p.addLiteral(vm.Exit, vm.Unused, vm.NoopField)
 	}
-	p.addLiteral(vm.BlockEnd, vm.Unused, vm.NoopField)
+	p.addBlockEnd(blockId)
 	return nil
 }
 
