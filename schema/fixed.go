@@ -90,7 +90,7 @@ func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
 
 func (s *FixedDefinition) AddSerializer(p *generator.Package) {
 	p.AddImport(UTIL_FILE, "io")
-	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/types")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm/types")
 	p.AddFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
 	p.AddFunction(UTIL_FILE, s.GoType(), "fieldTemplate", s.FieldsMethodDef())
 }

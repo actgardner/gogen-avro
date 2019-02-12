@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/actgardner/gogen-avro/types"
+	"github.com/actgardner/gogen-avro/vm/types"
 )
 
 type Frame struct {

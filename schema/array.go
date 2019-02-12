@@ -83,7 +83,7 @@ func (s *ArrayField) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", methodName, arraySerializer)
 	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/types")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm/types")
 	p.AddFunction(UTIL_FILE, s.WrapperType(), "", s.appendMethodDef())
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.AddImport(UTIL_FILE, "io")

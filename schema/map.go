@@ -112,7 +112,7 @@ func (s *MapField) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", "writeString", writeStringMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
 	p.AddFunction(UTIL_FILE, "", methodName, mapSerializer)
-	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/types")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm/types")
 	p.AddFunction(UTIL_FILE, s.GoType(), "", s.appendMethodDef())
 
 	p.AddImport(UTIL_FILE, "io")
