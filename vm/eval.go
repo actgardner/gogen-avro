@@ -130,25 +130,29 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 		case Jump:
 			pc = inst.Operand - 1
 			break
-		case EvalLess:
-			frame.Condition = (frame.Long < inst.Operand)
+		case EvalGreater:
+			frame.Condition = (frame.Long > int64(inst.Operand))
 			break
 		case EvalEqual:
-			frame.Condition = (frame.Long == inst.Operand)
+			frame.Condition = (frame.Long == int64(inst.Operand))
 			break
 		case CondJump:
-			if frame.Long != int64(inst.Operand) {
-				pc += 1
+			if frame.Condition {
+				pc = inst.Operand
 			}
 			break
 		case AddLong:
 			frame.Long += int64(inst.Operand)
 			break
+		case MultLong:
+			frame.Long *= int64(inst.Operand)
+			break
+
 		case Halt:
 			if inst.Operand == 0 {
 				return nil
 			}
-			return fmt.Errorf("Runtime error: %v", program.Errors[inst.Operand-1])
+			return fmt.Errorf("Runtime error: %v, frame: %v, pc: %v", program.Errors[inst.Operand-1], frame, pc)
 		default:
 			return fmt.Errorf("Unknown instruction %v", program.Instructions[pc])
 		}

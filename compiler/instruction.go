@@ -44,7 +44,7 @@ type BlockStartIRInstruction struct {
 }
 
 func (b *BlockStartIRInstruction) VMLength() int {
-	return 9
+	return 7
 }
 
 // At the beginning of a block, read the length into the Long register
@@ -54,13 +54,11 @@ func (b *BlockStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, e
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
 		vm.Instruction{vm.Read, vm.Long},
-		vm.Instruction{vm.LongEqual, 0},
-		vm.Instruction{vm.Cond, vm.NoopField},
-		vm.Instruction{vm.Jump, block.end + 5},
+		vm.Instruction{vm.EvalEqual, 0},
+		vm.Instruction{vm.CondJump, block.end + 4},
 		vm.Instruction{vm.EvalGreater, 0},
-		vm.Instruction{vm.Cond, vm.NoopField},
-		vm.Instruction{vm.Jump, block.start + 9},
-		vm.Instruction{vm.Read, UnusedLong},
+		vm.Instruction{vm.CondJump, block.start + 7},
+		vm.Instruction{vm.Read, vm.UnusedLong},
 		vm.Instruction{vm.MultLong, -1},
 	}, nil
 }
@@ -70,7 +68,7 @@ type BlockEndIRInstruction struct {
 }
 
 func (b *BlockEndIRInstruction) VMLength() int {
-	return 5
+	return 4
 }
 
 // At the end of a block, decrement the block count. If it's zero, go back to the very
@@ -80,8 +78,7 @@ func (b *BlockEndIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, err
 	return []vm.Instruction{
 		vm.Instruction{vm.AddLong, -1},
 		vm.Instruction{vm.EvalEqual, 0},
-		vm.Instruction{vm.Cond, vm.NoopField},
-		vm.Instruction{vm.Jump, block.start},
+		vm.Instruction{vm.CondJump, block.start},
 		vm.Instruction{vm.Jump, block.start + 4},
 	}, nil
 }
@@ -100,8 +97,8 @@ func (s *SwitchStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, 
 	sw := p.switches[s.switchId]
 	body := []vm.Instruction{}
 	for value, offset := range sw.cases {
-		body = append(body, vm.Instruction{vm.CondJump, value})
-		body = append(body, vm.Instruction{vm.Jump, offset + 1})
+		body = append(body, vm.Instruction{vm.EvalEqual, value})
+		body = append(body, vm.Instruction{vm.CondJump, offset})
 	}
 
 	body = append(body, vm.Instruction{vm.Halt, s.errId})

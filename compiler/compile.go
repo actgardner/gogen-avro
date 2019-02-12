@@ -10,6 +10,7 @@ func Compile(writer, reader schema.AvroType) (*vm.Program, error) {
 
 	program := &IRProgram{
 		methods: make(map[string]*IRMethod),
+		errors:  make([]string, 0),
 	}
 	program.main = NewIRMethod("main", program)
 

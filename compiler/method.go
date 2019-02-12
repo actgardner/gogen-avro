@@ -41,10 +41,10 @@ func (p *IRMethod) addBlockEnd(id int) {
 	p.body = append(p.body, &BlockEndIRInstruction{id})
 }
 
-func (p *IRMethod) addSwitchStart(size int) int {
+func (p *IRMethod) addSwitchStart(size, errorId int) int {
 	id := len(p.program.switches)
 	p.program.switches = append(p.program.switches, &IRSwitch{0, make(map[int]int), 0})
-	p.body = append(p.body, &SwitchStartIRInstruction{id, size})
+	p.body = append(p.body, &SwitchStartIRInstruction{id, size, errorId})
 	return id
 }
 
@@ -275,8 +275,8 @@ func (p *IRMethod) compileUnion(writer *schema.UnionField, reader schema.AvroTyp
 	if _, ok := reader.(*schema.UnionField); ok {
 		p.addLiteral(vm.Set, vm.Long)
 	}
-	switchId := p.addSwitchStart(len(writer.AvroTypes()))
 	errId := p.addError("Unsupported type for union")
+	switchId := p.addSwitchStart(len(writer.AvroTypes()), errId)
 writer:
 	for i, t := range writer.AvroTypes() {
 		p.addSwitchCase(switchId, i)

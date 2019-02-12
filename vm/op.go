@@ -40,8 +40,8 @@ const (
 	// Evaluate whether the Long register is greater than the operand, and set the condition register to the result
 	EvalGreater
 
-	// If the condition register is true, evaluate the next instruction. Otherwise skip to the following instruction
-	Cond
+	// If the condition register is true, jump to the operand instruction
+	CondJump
 
 	// Add the operand value to the Long register
 	AddLong
@@ -74,10 +74,10 @@ func (o Op) String() string {
 		return "jump"
 	case EvalEqual:
 		return "eval_equal"
-	case EvalLess:
-		return "eval_less"
-	case Cond:
-		return "cond"
+	case EvalGreater:
+		return "eval_greater"
+	case CondJump:
+		return "cond_jump"
 	case AddLong:
 		return "add_long"
 	case MultLong:

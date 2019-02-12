@@ -16,6 +16,7 @@ type IRProgram struct {
 	methods  map[string]*IRMethod
 	blocks   []*IRBlock
 	switches []*IRSwitch
+	errors   []string
 }
 
 type IRBlock struct {
