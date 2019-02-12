@@ -7,9 +7,16 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/vm"
 	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	compiler.LoggingEnabled = true
+	vm.LoggingEnabled = true
+}
 
 // Round-trip some primitive values through our serializer and goavro to verify
 const fixtureJson = `

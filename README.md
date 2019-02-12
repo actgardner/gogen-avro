@@ -27,7 +27,7 @@ Changes between the current master and GADGT:
    * [Installation](#installation)
    * [Usage](#usage)
    * [Generated Methods](#generated-methods)
-   * [Working with Object COntainer Files (OCF)](#working-with-object-container-files-(ocf))
+   * [Working with Object Container Files (OCF)](#working-with-object-container-files-(ocf))
    * [Examples](#examples)
    * [Naming](#naming)
    * [Type Conversion](#type-conversion)
@@ -216,7 +216,7 @@ import (
 
 func init() {
 	compiler.LoggingEnabled = true
-	vm .LoggingEnabled = true
+	vm.LoggingEnabled = true
 }
 ```
 

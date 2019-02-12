@@ -12,15 +12,6 @@ import (
 	"github.com/actgardner/gogen-avro/schema"
 )
 
-/**
- * Reader provides an experimental Object Container File reader to load Avro container files. You can
- * give this an OCF and it'll transparently decode a block at a time, so you can pass this to your
- * generated deserializers. See `test/primitive/container_test.go` for an example.
- *
- * Note: This is experimental and the interface may change or be deprecated. Right now gogen-avro
- *       only supports deserializing with the exact schema you used to serialize - there is no
- *       support for adding/removing fields or changing types.
- */
 type Reader struct {
 	codec            Codec
 	reader           io.Reader
@@ -44,11 +35,13 @@ func NewReader(r io.Reader) (*Reader, error) {
 	if !ok {
 		return nil, fmt.Errorf("Expected avro.schema in header, not specified in metadata map - %v", header.Meta)
 	}
+	log("Got OCF schema from header: %v", string(schemaBytes))
 
 	codec, ok := header.Meta["avro.codec"]
 	if !ok {
 		return nil, fmt.Errorf("Expected avro.codec in header, not specified in metadata map - %v", header.Meta)
 	}
+	log("Got OCF codec from header: %v", string(codec))
 
 	return &Reader{
 		codec:            Codec(codec),
@@ -66,6 +59,7 @@ func (r *Reader) AvroContainerSchema() []byte {
 
 func (r *Reader) Read(b []byte) (n int, err error) {
 	if r.compressedReader == nil {
+		log("OCF reader opening new block")
 		if err := r.openBlock(); err != nil {
 			return 0, err
 		}
@@ -73,11 +67,13 @@ func (r *Reader) Read(b []byte) (n int, err error) {
 
 	for {
 		n, err := r.compressedReader.Read(b)
+		log("OCF container read: %v %v", n, err)
 		if n > 0 {
 			return n, nil
 		}
 
 		if err == io.EOF {
+			log("OCF EOF, opening new block")
 			if err := r.openBlock(); err != nil {
 				return 0, err
 			}
@@ -93,6 +89,7 @@ func (r *Reader) openBlock() error {
 		return err
 	}
 
+	log("OCF block size: %v", len(header.RecordBytes))
 	if header.Sync != r.sync {
 		return fmt.Errorf("Unexpected sync marker %q, expected %q", header.Sync, r.sync)
 	}

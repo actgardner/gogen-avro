@@ -35,19 +35,9 @@ func (r %v) Serialize(w io.Writer) error {
 const recordStructPublicDeserializerTemplate = `
 func %v(r io.Reader) (%v, error) {
 	t := %v
-        readerNs := schema.NewNamespace(false)
-	readerType, err := readerNs.TypeForSchema([]byte(t.Schema()))
-        if err != nil {
-		return nil, err
-	}
 
-	err = readerType.ResolveReferences(readerNs)
+	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
         if err != nil {
-		return nil, err
-	}
-
-	deser, err := compiler.Compile(readerType, readerType)
-	if err != nil {
 		return nil, err
 	}
 
@@ -90,6 +80,37 @@ func (r %[1]v) Get(i int) types.Field {
 func (_ %[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ %[1]v) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ %[1]v) Finalize() { }
+`
+
+const recordReaderTemplate = `
+type %[1]v struct {
+	r io.Reader
+	p *vm.Program
+}
+
+func New%[1]v(r io.Reader) (*%[1]v, error){
+	containerReader, err := container.NewReader(r)
+	if err != nil {
+		return nil, err
+	}
+
+	t := %[3]v
+	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	return &%[1]v{
+		r: containerReader,
+		p: deser,
+	}, nil
+}
+
+func (r *%[1]v) Read() (%[2]v, error) {
+	t := %[3]v
+        err := vm.Eval(r.r, r.p, t)
+	return t, err
+}
 `
 
 type RecordDefinition struct {
@@ -222,8 +243,8 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm/types")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/compiler")
-		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/schema")
 		p.AddFunction(r.filename(), r.GoType(), "fieldTemplate", r.FieldsMethodDef())
+		p.AddFunction(r.filename(), r.GoType(), "recordReader", r.recordReaderDef())
 		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
 		p.AddFunction(r.filename(), r.GoType(), r.publicDeserializerMethod(), r.publicDeserializerMethodDef())
 		for _, f := range r.fields {
@@ -320,6 +341,14 @@ func (r *RecordDefinition) FieldsMethodDef() string {
 
 func (r *RecordDefinition) ConstructorMethodDef() (string, error) {
 	return fmt.Sprintf(recordConstructorTemplate, r.ConstructorMethod(), r.GoType(), r.Name()), nil
+}
+
+func (r *RecordDefinition) recordReaderTypeName() string {
+	return r.Name() + "Reader"
+}
+
+func (r *RecordDefinition) recordReaderDef() string {
+	return fmt.Sprintf(recordReaderTemplate, r.recordReaderTypeName(), r.GoType(), r.ConstructorMethod())
 }
 
 func (r *RecordDefinition) FieldByName(name string) *Field {
