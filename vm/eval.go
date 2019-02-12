@@ -138,7 +138,7 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			break
 		case CondJump:
 			if frame.Condition {
-				pc = inst.Operand
+				pc = inst.Operand - 1
 			}
 			break
 		case AddLong:

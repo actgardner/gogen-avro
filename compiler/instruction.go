@@ -79,7 +79,7 @@ func (b *BlockEndIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, err
 		vm.Instruction{vm.AddLong, -1},
 		vm.Instruction{vm.EvalEqual, 0},
 		vm.Instruction{vm.CondJump, block.start},
-		vm.Instruction{vm.Jump, block.start + 4},
+		vm.Instruction{vm.Jump, block.start + 7},
 	}, nil
 }
 
@@ -98,7 +98,7 @@ func (s *SwitchStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, 
 	body := []vm.Instruction{}
 	for value, offset := range sw.cases {
 		body = append(body, vm.Instruction{vm.EvalEqual, value})
-		body = append(body, vm.Instruction{vm.CondJump, offset})
+		body = append(body, vm.Instruction{vm.CondJump, offset + 1})
 	}
 
 	body = append(body, vm.Instruction{vm.Halt, s.errId})
