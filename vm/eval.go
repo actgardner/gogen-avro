@@ -41,7 +41,7 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 		log("PC: %v\tD:%v\tOp: %v", pc, depth, inst)
 		switch inst.Op {
 		case Read:
-			switch inst.Type {
+			switch inst.Operand {
 			case Null:
 				break
 			case Boolean:
@@ -65,16 +65,13 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			case String:
 				frame.String, err = readString(r)
 				break
-			case MapKey:
-				frame.MapKey, err = readString(r)
-				break
-			case Fixed:
-				frame.Bytes, err = readFixed(r, inst.Field)
+			default:
+				frame.Bytes, err = readFixed(r, inst.Operand-10)
 				break
 			}
 			break
 		case Set:
-			switch inst.Type {
+			switch inst.Operand {
 			case Null:
 				break
 			case Boolean:
@@ -102,7 +99,7 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			break
 		case Enter:
 			depth += 1
-			stack[depth].Target = frame.Target.Get(inst.Field)
+			stack[depth].Target = frame.Target.Get(inst.Operand)
 			break
 		case Exit:
 			stack[depth].Target.Finalize()
@@ -119,23 +116,23 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 		case Call:
 			callStack[callStackDepth] = pc
 			callStackDepth += 1
-			pc = inst.Field - 1
+			pc = inst.Operand - 1
 		case Return:
 			pc = callStack[callStackDepth-1]
 			callStackDepth -= 1
 		case Jump:
-			pc = inst.Field - 1
+			pc = inst.Operand - 1
 		case CondJump:
-			if frame.Long != int64(inst.Field) {
+			if frame.Long != int64(inst.Operand) {
 				pc += 1
 			}
 		case AddLong:
-			frame.Long += int64(inst.Field)
+			frame.Long += int64(inst.Operand)
 		case Halt:
-			if inst.Field == 0 {
+			if inst.Operand == 0 {
 				return nil
 			} else {
-				return fmt.Errorf("Runtime error: %v", program.Errors[inst.Field])
+				return fmt.Errorf("Runtime error: %v", program.Errors[inst.Operand])
 			}
 		default:
 			err = fmt.Errorf("Unknown instruction %v", program.Instructions[pc])
