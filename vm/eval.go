@@ -17,8 +17,6 @@ type Frame struct {
 	Double  float64
 	Bytes   []byte
 	String  string
-
-	MapKey string
 }
 
 func Eval(r io.Reader, program *Program, target types.Field) (err error) {
@@ -116,7 +114,7 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			break
 		case AppendMap:
 			depth += 1
-			stack[depth].Target = frame.Target.AppendMap(stack[depth-1].MapKey)
+			stack[depth].Target = frame.Target.AppendMap(stack[depth-1].String)
 			break
 		case Call:
 			callStack[callStackDepth] = pc

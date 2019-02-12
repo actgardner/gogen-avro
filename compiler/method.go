@@ -184,7 +184,7 @@ func (p *IRMethod) compileRef(writer, reader *schema.Reference) error {
 func (p *IRMethod) compileMap(writer, reader *schema.MapField) error {
 	log("compileMap()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	blockId := p.addBlockStart()
-	p.addLiteral(vm.Read, vm.MapKey, vm.NoopField)
+	p.addLiteral(vm.Read, vm.String, vm.NoopField)
 	var readerType schema.AvroType
 	if reader != nil {
 		p.addLiteral(vm.AppendMap, vm.Unused, vm.NoopField)
