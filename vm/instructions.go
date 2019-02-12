@@ -20,6 +20,7 @@ const (
 	Bytes
 	String
 	UnionElem
+	UnusedLong
 )
 
 // Represents a single VM instruction consisting of an opcode and 0 or 1 operands.

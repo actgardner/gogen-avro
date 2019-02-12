@@ -34,11 +34,20 @@ const (
 	// Move the PC to the operand
 	Jump
 
-	// If the value of the Long field in this frame is equal to the operand, run the next instruction. Otherwise run the following instruction
-	CondJump
+	// Evaluate whether the Long register is equal to the operand, and set the condition register to the result
+	EvalEqual
+
+	// Evaluate whether the Long register is greater than the operand, and set the condition register to the result
+	EvalGreater
+
+	// If the condition register is true, evaluate the next instruction. Otherwise skip to the following instruction
+	Cond
 
 	// Add the operand value to the Long register
 	AddLong
+
+	// Multiply the operand value by the Long register
+	MultLong
 )
 
 func (o Op) String() string {
@@ -63,10 +72,16 @@ func (o Op) String() string {
 		return "halt"
 	case Jump:
 		return "jump"
-	case CondJump:
-		return "cond_jump"
+	case EvalEqual:
+		return "eval_equal"
+	case EvalLess:
+		return "eval_less"
+	case Cond:
+		return "cond"
 	case AddLong:
 		return "add_long"
+	case MultLong:
+		return "mult_long"
 	}
 	return "Unknown"
 }

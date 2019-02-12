@@ -44,17 +44,24 @@ type BlockStartIRInstruction struct {
 }
 
 func (b *BlockStartIRInstruction) VMLength() int {
-	return 3
+	return 9
 }
 
 // At the beginning of a block, read the length into the Long register
 // If the block length is 0, jump past the block body because we're done
+// If the block length is negative, read the byte count, throw it away, multiply the length by -1
 func (b *BlockStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
 		vm.Instruction{vm.Read, vm.Long},
-		vm.Instruction{vm.CondJump, 0},
-		vm.Instruction{vm.Jump, block.end + 4},
+		vm.Instruction{vm.LongEqual, 0},
+		vm.Instruction{vm.Cond, vm.NoopField},
+		vm.Instruction{vm.Jump, block.end + 5},
+		vm.Instruction{vm.EvalGreater, 0},
+		vm.Instruction{vm.Cond, vm.NoopField},
+		vm.Instruction{vm.Jump, block.start + 9},
+		vm.Instruction{vm.Read, UnusedLong},
+		vm.Instruction{vm.MultLong, -1},
 	}, nil
 }
 
@@ -63,7 +70,7 @@ type BlockEndIRInstruction struct {
 }
 
 func (b *BlockEndIRInstruction) VMLength() int {
-	return 4
+	return 5
 }
 
 // At the end of a block, decrement the block count. If it's zero, go back to the very
@@ -72,19 +79,21 @@ func (b *BlockEndIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, err
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
 		vm.Instruction{vm.AddLong, -1},
-		vm.Instruction{vm.CondJump, 0},
+		vm.Instruction{vm.EvalEqual, 0},
+		vm.Instruction{vm.Cond, vm.NoopField},
 		vm.Instruction{vm.Jump, block.start},
-		vm.Instruction{vm.Jump, block.start + 3},
+		vm.Instruction{vm.Jump, block.start + 4},
 	}, nil
 }
 
 type SwitchStartIRInstruction struct {
 	switchId int
 	size     int
+	errId    int
 }
 
 func (s *SwitchStartIRInstruction) VMLength() int {
-	return 2 * s.size
+	return 2*s.size + 1
 }
 
 func (s *SwitchStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
@@ -94,6 +103,8 @@ func (s *SwitchStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, 
 		body = append(body, vm.Instruction{vm.CondJump, value})
 		body = append(body, vm.Instruction{vm.Jump, offset + 1})
 	}
+
+	body = append(body, vm.Instruction{vm.Halt, s.errId})
 	return body, nil
 }
 

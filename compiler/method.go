@@ -56,6 +56,12 @@ func (p *IRMethod) addSwitchEnd(id int) {
 	p.body = append(p.body, &SwitchEndIRInstruction{id})
 }
 
+func (p *IRMethod) addError(msg string) int {
+	id := len(p.program.errors)
+	p.program.errors = append(p.program.errors, msg)
+	return id
+}
+
 func (p *IRMethod) VMLength() int {
 	len := 0
 	for _, inst := range p.body {
@@ -270,6 +276,7 @@ func (p *IRMethod) compileUnion(writer *schema.UnionField, reader schema.AvroTyp
 		p.addLiteral(vm.Set, vm.Long)
 	}
 	switchId := p.addSwitchStart(len(writer.AvroTypes()))
+	errId := p.addError("Unsupported type for union")
 writer:
 	for i, t := range writer.AvroTypes() {
 		p.addSwitchCase(switchId, i)

@@ -5,8 +5,11 @@ import (
 )
 
 type Program struct {
+	// The list of instructions that make up the deserializer program
 	Instructions []Instruction
-	Errors       []string
+
+	// A list of errors that can be triggered by halt(x), where x is the index in this array + 1
+	Errors []string
 }
 
 func (p *Program) String() string {
@@ -21,6 +24,10 @@ func (p *Program) String() string {
 		if inst.Op == Enter || inst.Op == AppendArray || inst.Op == AppendMap {
 			depth += "|  "
 		}
+	}
+
+	for i, err := range p.Errors {
+		s += fmt.Sprintf("Error %v:\t%v\n", i+1, err)
 	}
 	return s
 }

@@ -17,6 +17,8 @@ type Frame struct {
 	Double  float64
 	Bytes   []byte
 	String  string
+
+	Condition bool
 }
 
 func Eval(r io.Reader, program *Program, target types.Field) (err error) {
@@ -52,6 +54,9 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 				break
 			case Long:
 				frame.Long, err = readLong(r)
+				break
+			case UnusedLong:
+				_, err = readLong(r)
 				break
 			case Float:
 				frame.Float, err = readFloat(r)
@@ -117,25 +122,35 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			callStack[callStackDepth] = pc
 			callStackDepth += 1
 			pc = inst.Operand - 1
+			break
 		case Return:
 			pc = callStack[callStackDepth-1]
 			callStackDepth -= 1
+			break
 		case Jump:
 			pc = inst.Operand - 1
+			break
+		case EvalLess:
+			frame.Condition = (frame.Long < inst.Operand)
+			break
+		case EvalEqual:
+			frame.Condition = (frame.Long == inst.Operand)
+			break
 		case CondJump:
 			if frame.Long != int64(inst.Operand) {
 				pc += 1
 			}
+			break
 		case AddLong:
 			frame.Long += int64(inst.Operand)
+			break
 		case Halt:
 			if inst.Operand == 0 {
 				return nil
-			} else {
-				return fmt.Errorf("Runtime error: %v", program.Errors[inst.Operand])
 			}
+			return fmt.Errorf("Runtime error: %v", program.Errors[inst.Operand-1])
 		default:
-			err = fmt.Errorf("Unknown instruction %v", program.Instructions[pc])
+			return fmt.Errorf("Unknown instruction %v", program.Instructions[pc])
 		}
 
 		if err != nil {
