@@ -80,7 +80,7 @@ func (r *RecordDefinition) AvroName() QualifiedName {
 }
 
 func (r *RecordDefinition) Name() string {
-	return generator.ToPublicName(r.name.Name)
+	return generator.ToPublicName(r.name.String())
 }
 
 func (r *RecordDefinition) GoType() string {
