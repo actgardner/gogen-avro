@@ -1,11 +1,41 @@
-gogen-avro
-===
+## gogen-avro
+
 
 [![Build Status](https://travis-ci.org/actgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/actgardner/gogen-avro)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/actgardner/gogen-avro/master/LICENSE)
 [![Version 5.2.0](https://img.shields.io/badge/version-5.2.0-lightgrey.svg)](https://gopkg.in/actgardner/gogen-avro.v5)
 
-Generate Go structures and serializer / deserializer methods from Avro schemas. Generated serializers/deserializers are 2-8x faster than goavro, and you get compile-time safety for getting and setting fields.
+Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules. 
+
+### GADGT Note
+
+**This branch is a beta aimed at completely refactoring gogen-avro to support schema evolution. Bugs are expected - if you experience issues, please [report them](#reporting-issues) **
+
+Changes between the current master and GADGT:
+
+- the `container` flag has been removed - container code is always generated
+- `New<RecordType>()` no longer sets fields to their default values 
+- Avro `map``fields now generate a struct with a single field, `M`, which contains the map values
+- defaults are not currently supported in schema evolution - this is a known issue
+
+
+### Table of contents
+
+<!--ts-->
+   * [GADGT Note](#GADGT-note)
+   * [Table of contents](#table-of-contents)
+   * [Installation](#installation)
+   * [Usage](#usage)
+   * [Generated Methods](#generated-methods)
+   * [Working with Object COntainer Files (OCF)](#working-with-object-container-files-(ocf))
+   * [Examples](#examples)
+   * [Naming](#naming)
+   * [Type Conversion](#type-conversion)
+   * [Versioning](#Versioning)
+   * [Reporting Issues](#reporting-issues)
+   * [Thanks](#thanks)
+<!--te-->
+
 
 ### Installation
 
@@ -44,27 +74,26 @@ You can also use a `go:generate` directive in a source file ([example](https://g
 
 Note: If you want to parse multiple `.avsc` files into a single Go package (a single folder), make sure you put them all in one line. gogen-avro produces a file, `primitive.go`, that will be overwritten if you run it multiple times with different `.avsc` files and the same output folder.
 
+
+### Generated Methods 
+
 For each record in the provided schemas, gogen-avro will produce a struct, and the following methods:
 
-- `New<RecordType>()` - a constructor to create a new record struct with the default values from the Avro schema
-- `<RecordType>.Serialize(io.Writer)` - a method to encode the contents of the struct into the given `io.Writer`
-- `Deserialize<RecordType>(io.Reader)` - a method to read a struct from the given `io.Reader`
+#### `New<RecordType>()` 
+A constructor to create a new record struct, with no values set.
 
-Passing the `--containers` flag also generates a method `New<RecordType>Writer(w io.Writer, codec Codec, batchSize int)` for each record type.
-This is a convenience method to generate a new container writer.
+#### `<RecordType>.Serialize(io.Writer)
+Encode the contents of the struct into the given `io.Writer` with no Avro Object Container File (OCF) framing.
 
-The containers flag is disabled by default, because the generated files have to import the containers package. 
+#### `Deserialize<RecordType>(io.Reader)
+Read the Avro object from the given `io.Reader` and deserialize it into the generated struct. This assumes the schema used to write the data is identical to the schema used to generate the struct. This method assumes there's no OCF framing.
 
-### Container File Support
+#### `New<RecordTypeWriter>(writer io.Writer, codec container.Codec, recordsPerBlock int64)
+Creates a new `container.Writer` which writes generated structs to `writer` with Avro OCF format. This is the method you want if you're writing Avro to files. `codec` supports Identity, Deflate and Snappy encodings per the Avro spec.
 
-gogen-avro generates a struct definition for each record type defined in the supplied schemas. 
-The `WriteRecord` method in `container.Writer` accepts an `AvroRecord`, an interface implemented by every generated record struct.
+### Working with Object Container Files (OCF)
 
-To create a new `container.Writer`, you can specify the schema manually in `container.NewWriter`, or you can use the `--containers` flag to generate methods for each record type. 
-
-An example of how to write a container file can be found in `example/container/example.go`.
-
-**Experimental:** gogen-avro now supports unpacking Object Container Files. There's a `container.Reader` which will unpack the OCF framing and feed the records into a generated struct deserializer. This should only be used when you're 100% sure the reader and writer schemas are identical - you may see panics, corrupt or incomplete data when reading with a different schema than the writer.
+An example of how to write a container file can be found in `example/container/example.go .
 
 [Godocs for the container package](https://godoc.org/github.com/actgardner/gogen-avro/container)
 
@@ -108,9 +137,9 @@ Gogen-avro produces a Go struct which reflects the structure of your Avro schema
 | string        | string            |                                                                                                                      |
 | enum          | custom type       | Generates a type with a constant for each symbol                                                                     |
 | array<type>   | []<type>          |                                                                                                                      |
-| map<type>     | map[string]<type> |                                                                                                                      |
+| map<type>     | custom struct | Generates a struct with a field `M`, `M` has the type map[string]<type>                                                  |
 | fixed         | [<n>]byte         | Fixed fields are given a custom type, which is an alias for an appropriately sized byte array                        |
-| union         | custom type       | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
+| union         | custom struc      | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
 
 `union` is more complicated than primitive types. We generate a struct and enum whose name is uniquely determined by the types in the union. For a field whose type is `["null", "int"]` we generate the following:
 
@@ -165,6 +194,24 @@ This means that source files generated with the same major release may differ, b
 ---
 - Initial release
 - No longer supported - no more bugfixes are being backported
+
+### Reporting Issues
+
+When reporting issues with the GADGT branch, please include the output from the compiler and VM logs by adding this to one of your source files:
+
+```
+import (
+	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/vm"
+)
+
+func init() {
+	compiler.LoggingEnabled = true
+	vm .LoggingEnabled = true
+}
+```
+
+The logs will be printed on stdout.
 
 ### Thanks
 

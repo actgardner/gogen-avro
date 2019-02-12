@@ -1,3 +1,3 @@
 package avro
 
-//go:generate $GOPATH/bin/gogen-avro --containers . recursive.avsc
+//go:generate $GOPATH/bin/gogen-avro . recursive.avsc

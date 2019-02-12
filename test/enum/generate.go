@@ -1,3 +1,3 @@
 package avro
 
-//go:generate $GOPATH/bin/gogen-avro --containers . enum.avsc
+//go:generate $GOPATH/bin/gogen-avro . enum.avsc

@@ -1,3 +1,3 @@
 package avro
 
-//go:generate $GOPATH/bin/gogen-avro --containers . maps.avsc
+//go:generate $GOPATH/bin/gogen-avro . maps.avsc
