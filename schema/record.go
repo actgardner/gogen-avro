@@ -219,7 +219,7 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 			p.AddFunction(r.filename(), "", r.recordWriterMethod(), r.recordWriterMethodDef())
 		}
 
-		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/types")
+		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm/types")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/compiler")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/schema")

@@ -146,7 +146,7 @@ func (s *UnionField) AddStruct(p *generator.Package, containers bool) error {
 			return err
 		}
 	}
-	p.AddImport(s.filename(), "github.com/actgardner/gogen-avro/types")
+	p.AddImport(s.filename(), "github.com/actgardner/gogen-avro/vm/types")
 	p.AddFunction(s.filename(), s.GoType(), "fieldTemplate", s.FieldsMethodDef())
 
 	return nil
