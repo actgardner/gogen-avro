@@ -1,6 +1,6 @@
 {
 	"type": "record",
-	"name": "test",
+	"name": "testrecord",
 	"namespace": "com.avro.test",
 	"doc": "GoGen test",
 	"fields": [{
