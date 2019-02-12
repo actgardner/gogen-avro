@@ -39,7 +39,9 @@ Changes between the current master and GADGT:
 
 ### Installation
 
-gogen-avro is a tool which you install on your system (usually on your GOPATH), and run as part of your build process. To install gogen-avro to `$GOPATH/bin/`, first download the repository:
+gogen-avro has two parts: a tool which you install on your system (usually on your GOPATH) to generate code, and a runtime. 
+
+To install the gogen-avro executable to `$GOPATH/bin/` and generate structs, first download the repository:
 
 ```
 go get -d github.com/actgardner/gogen-avro
@@ -51,19 +53,23 @@ Then run:
 go install github.com/actgardner/gogen-avro/gogen-avro
 ```
 
-Or download and install a fixed release from gopkg.in:
+Or download and install a fixed release version from gopkg.in:
 
 ```
 go get -d gopkg.in/actgardner/gogen-avro.v5
 go install gopkg.in/actgardner/gogen-avro.v5/gogen-avro
 ```
 
+You can also use [https://github.com/twitchtv/retool](retool) to manage your Go toolchain and pin specific SHAs and versions of tools.
+
+For the runtime component, you should manage the dependency on this repo using Godep or a similar tool, like any other library.
+
 ### Usage
 
 To generate Go source files from one or more Avro schema files, run:
 
 ```
-gogen-avro [--package=<package name>] [--containers] <output directory> <avro schema files>
+gogen-avro [--package=<package name>] <output directory> <avro schema files>
 ```
 
 You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
@@ -82,14 +88,17 @@ For each record in the provided schemas, gogen-avro will produce a struct, and t
 #### `New<RecordType>()` 
 A constructor to create a new record struct, with no values set.
 
-#### `<RecordType>.Serialize(io.Writer)
-Encode the contents of the struct into the given `io.Writer` with no Avro Object Container File (OCF) framing.
-
-#### `Deserialize<RecordType>(io.Reader)
-Read the Avro object from the given `io.Reader` and deserialize it into the generated struct. This assumes the schema used to write the data is identical to the schema used to generate the struct. This method assumes there's no OCF framing.
-
-#### `New<RecordTypeWriter>(writer io.Writer, codec container.Codec, recordsPerBlock int64)
+#### `New<RecordType>Writer(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error)`
 Creates a new `container.Writer` which writes generated structs to `writer` with Avro OCF format. This is the method you want if you're writing Avro to files. `codec` supports Identity, Deflate and Snappy encodings per the Avro spec.
+
+#### `New<RecordType>Reader(reader io.Reader) (<RecordTypeReader>, error)`
+Creates a new `<RecordTypeReader>` which reads data in the Avro OCF format into generated structs. This is the method you want if you're reading Avro data from files. It will handle the codec and schema evolution for you based on the OCF headers and the reader schema used to generate the structs. 
+
+#### `<RecordType>.Serialize(io.Writer) error`
+Write the contents of the struct into the given `io.Writer` in the Avro binary format, with no Avro Object Container File (OCF) framing.
+
+#### `Deserialize<RecordType>(io.Reader) (<RecordType>, error)`
+Read Avro data from the given `io.Reader` and deserialize it into the generated struct. This assumes the schema used to write the data is identical to the schema used to generate the struct. This method assumes there's no OCF framing. This method is also slow because it re-compiles the bytecode for your type every time - if you need performance you should call `compiler.Compile` once and then `vm.Eval` for each record. 
 
 ### Working with Object Container Files (OCF)
 
