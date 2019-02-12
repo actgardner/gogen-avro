@@ -12,7 +12,6 @@ const (
 	Double
 	Bytes
 	String
-	MapKey
 	UnionElem
 	Fixed
 )
@@ -35,8 +34,6 @@ func (t Type) String() string {
 		return "Bytes"
 	case String:
 		return "String"
-	case MapKey:
-		return "MapKey"
 	case UnionElem:
 		return "UnionElem"
 	case Fixed:
