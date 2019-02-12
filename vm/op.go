@@ -1,19 +1,43 @@
 package vm
 
+// OP represents an opcode for the VM. Operations take 0 or 1 operands.
 type Op int
 
 const (
+	// Read a value of the operand type from the wire and put itin the frame
 	Read Op = iota
+
+	// Set the current target to the value of the operand type from the frame
 	Set
+
+	// Allocate a new frame and make the target the field with the operand index
 	Enter
+
+	// Move to the previous frame
 	Exit
+
+	// Append a value to the current target and enter the new value
 	AppendArray
+
+	// Append a new key-value pair (where the key is the String value in the current frame) to the current target and enter the new value
 	AppendMap
+
+	// Push the current address onto the call stack and move the PC to the operand address
 	Call
+
+	// Pop the top value frmm the call stack and set the PC to that address
 	Return
+
+	// Stop the VM. If the operand is greater than zero, look up the corresponding error message and return it
 	Halt
+
+	// Move the PC to the operand
 	Jump
+
+	// If the value of the Long field in this frame is equal to the operand, run the next instruction. Otherwise run the following instruction
 	CondJump
+
+	// Add the operand value to the Long register
 	AddLong
 )
 

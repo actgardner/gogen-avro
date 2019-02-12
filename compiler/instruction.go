@@ -36,7 +36,7 @@ func (b *MethodCallIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, e
 	if !ok {
 		return nil, fmt.Errorf("Unable to call unknown method %q", b.method)
 	}
-	return []vm.Instruction{vm.Instruction{vm.Call, vm.Unused, method.offset}}, nil
+	return []vm.Instruction{vm.Instruction{vm.Call, method.offset}}, nil
 }
 
 type BlockStartIRInstruction struct {
@@ -52,9 +52,9 @@ func (b *BlockStartIRInstruction) VMLength() int {
 func (b *BlockStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
-		vm.Instruction{vm.Read, vm.Long, vm.NoopField},
-		vm.Instruction{vm.CondJump, vm.Unused, 0},
-		vm.Instruction{vm.Jump, vm.Unused, block.end + 4},
+		vm.Instruction{vm.Read, vm.Long},
+		vm.Instruction{vm.CondJump, 0},
+		vm.Instruction{vm.Jump, block.end + 4},
 	}, nil
 }
 
@@ -71,10 +71,10 @@ func (b *BlockEndIRInstruction) VMLength() int {
 func (b *BlockEndIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
-		vm.Instruction{vm.AddLong, vm.Unused, -1},
-		vm.Instruction{vm.CondJump, vm.Unused, 0},
-		vm.Instruction{vm.Jump, vm.Unused, block.start},
-		vm.Instruction{vm.Jump, vm.Unused, block.start + 3},
+		vm.Instruction{vm.AddLong, -1},
+		vm.Instruction{vm.CondJump, 0},
+		vm.Instruction{vm.Jump, block.start},
+		vm.Instruction{vm.Jump, block.start + 3},
 	}, nil
 }
 
@@ -91,8 +91,8 @@ func (s *SwitchStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, 
 	sw := p.switches[s.switchId]
 	body := []vm.Instruction{}
 	for value, offset := range sw.cases {
-		body = append(body, vm.Instruction{vm.CondJump, vm.Unused, value})
-		body = append(body, vm.Instruction{vm.Jump, vm.Unused, offset + 1})
+		body = append(body, vm.Instruction{vm.CondJump, value})
+		body = append(body, vm.Instruction{vm.Jump, offset + 1})
 	}
 	return body, nil
 }
@@ -109,7 +109,7 @@ func (s *SwitchCaseIRInstruction) VMLength() int {
 func (s *SwitchCaseIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
 	sw := p.switches[s.switchId]
 	return []vm.Instruction{
-		vm.Instruction{vm.Jump, vm.Unused, sw.end},
+		vm.Instruction{vm.Jump, sw.end},
 	}, nil
 }
 
