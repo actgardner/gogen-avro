@@ -99,6 +99,7 @@ func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (inter
 	if _, ok := scope[s.name]; ok {
 		return s.name.String(), nil
 	}
+	scope[s.name] = 1
 	return s.definition, nil
 }
 
