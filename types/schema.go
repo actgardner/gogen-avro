@@ -87,11 +87,7 @@ func (n *Namespace) RegisterDefinition(d Definition) error {
 func ParseAvroName(enclosing, name string) QualifiedName {
 	lastIndex := strings.LastIndex(name, ".")
 	if lastIndex != -1 {
-		if enclosing == "" {
-			enclosing = name[:lastIndex]
-		} else {
-			enclosing = enclosing + "." + name[:lastIndex]
-		}
+		enclosing = name[:lastIndex]
 	}
 	return QualifiedName{enclosing, name[lastIndex+1:]}
 }
