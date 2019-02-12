@@ -9,7 +9,7 @@ Generates type-safe Go code based on your Avro schemas, including serializers an
 
 ### GADGT Note
 
-**This branch is a beta aimed at completely refactoring gogen-avro to support schema evolution. Bugs are expected - if you experience issues, please [report them](#reporting-issues) **
+**This branch is a beta aimed at completely refactoring gogen-avro to support schema evolution. Bugs are expected - if you experience issues, please [report them](#reporting-issues)**
 
 Changes between the current master and GADGT:
 
