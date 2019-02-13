@@ -72,24 +72,24 @@ func (p *irMethod) VMLength() int {
 
 func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 	log("compileType()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	switch writer.(type) {
+	switch v := writer.(type) {
 	case *schema.Reference:
 		if readerRef, ok := reader.(*schema.Reference); ok || reader == nil {
-			return p.compileRef(writer.(*schema.Reference), readerRef)
+			return p.compileRef(v, readerRef)
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 	case *schema.MapField:
 		if readerRef, ok := reader.(*schema.MapField); ok || reader == nil {
-			return p.compileMap(writer.(*schema.MapField), readerRef)
+			return p.compileMap(v, readerRef)
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 	case *schema.ArrayField:
 		if readerRef, ok := reader.(*schema.ArrayField); ok || reader == nil {
-			return p.compileArray(writer.(*schema.ArrayField), readerRef)
+			return p.compileArray(v, readerRef)
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 	case *schema.UnionField:
-		return p.compileUnion(writer.(*schema.UnionField), reader)
+		return p.compileUnion(v, reader)
 	case *schema.IntField:
 		p.addLiteral(vm.Read, vm.Int)
 		if reader != nil {
@@ -229,6 +229,17 @@ func (p *irMethod) compileArray(writer, reader *schema.ArrayField) error {
 func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error {
 	// Look up whether there's a corresonding target field and if so, parse the source field into that target
 	log("compileRecord()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
+	if reader != nil {
+		for _, field := range reader.Fields() {
+			if writerField := writer.FieldByName(field.Name()); writerField == nil {
+				if !field.HasDefault() {
+					return fmt.Errorf("Incompatible schemas: field %v in reader is not present in writer and has no default value", field.Name())
+				}
+				p.addLiteral(vm.SetDefault, field.Index())
+			}
+		}
+	}
+
 	for _, field := range writer.Fields() {
 		var readerType schema.AvroType
 		var readerField *schema.Field
@@ -261,7 +272,7 @@ func (p *irMethod) compileEnum(writer, reader *schema.EnumDefinition) error {
 
 func (p *irMethod) compileFixed(writer, reader *schema.FixedDefinition) error {
 	log("compileFixed()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	p.addLiteral(vm.Read, 10+writer.SizeBytes())
+	p.addLiteral(vm.Read, 11+writer.SizeBytes())
 	if reader != nil {
 		p.addLiteral(vm.Set, vm.Bytes)
 	}

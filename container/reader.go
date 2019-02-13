@@ -12,6 +12,8 @@ import (
 	"github.com/actgardner/gogen-avro/schema"
 )
 
+// Reader is a low-level primitive for reading the OCF framing of a file.
+// Generally you can create a Reader using the `New<RecordType>Reader` method generate for every record type.
 type Reader struct {
 	codec            Codec
 	reader           io.Reader

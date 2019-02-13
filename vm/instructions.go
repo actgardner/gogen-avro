@@ -30,6 +30,32 @@ type Instruction struct {
 }
 
 func (i Instruction) String() string {
+	if i.Op == Read || i.Op == Set {
+		switch i.Operand {
+		case 0:
+			return fmt.Sprintf("%v(unused)", i.Op)
+		case 1:
+			return fmt.Sprintf("%v(null)", i.Op)
+		case 2:
+			return fmt.Sprintf("%v(boolean)", i.Op)
+		case 3:
+			return fmt.Sprintf("%v(int)", i.Op)
+		case 4:
+			return fmt.Sprintf("%v(long)", i.Op)
+		case 5:
+			return fmt.Sprintf("%v(float)", i.Op)
+		case 6:
+			return fmt.Sprintf("%v(double)", i.Op)
+		case 7:
+			return fmt.Sprintf("%v(bytes)", i.Op)
+		case 8:
+			return fmt.Sprintf("%v(string)", i.Op)
+		case 9:
+			return fmt.Sprintf("%v(union)", i.Op)
+		case 10:
+			return fmt.Sprintf("%v(UnusedLong)", i.Op)
+		}
+	}
 	if i.Operand == NoopField {
 		return fmt.Sprintf("%v()", i.Op)
 	}

@@ -42,6 +42,7 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 		inst := program.Instructions[pc]
 		frame := &stack[depth]
 		log("PC: %v\tD:%v\tOp: %v", pc, depth, inst)
+		log("Frame: %v", frame)
 		switch inst.Op {
 		case Read:
 			switch inst.Operand {
@@ -72,7 +73,7 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 				frame.String, err = readString(r)
 				break
 			default:
-				frame.Bytes, err = readFixed(r, inst.Operand-10)
+				frame.Bytes, err = readFixed(r, inst.Operand-11)
 				break
 			}
 			break

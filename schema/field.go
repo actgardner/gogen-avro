@@ -44,7 +44,7 @@ func (f *Field) GoName() string {
 }
 
 func (f *Field) HasDefault() bool {
-	return f.defValue == nil
+	return f.hasDef
 }
 
 func (f *Field) Default() interface{} {
