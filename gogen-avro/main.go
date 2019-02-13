@@ -20,7 +20,7 @@ func main() {
 
 	flag.Parse()
 	if flag.NArg() < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--short-unions] [--package=<package name>] [--containers] <target directory> <schema files>\n")
+		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--namespaced-names] [--short-unions] [--package=<package name>] [--containers] <target directory> <schema files>\n")
 		os.Exit(1)
 	}
 
