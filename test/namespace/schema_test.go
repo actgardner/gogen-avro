@@ -12,13 +12,13 @@ import (
 const fixtureJson = `
 [
 {"Header": {"UnionType": 0}},
-{"Header": {"UnionType": 1, "Headerworks_CoreHeader": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}},
-{"Header": {"UnionType": 1, "Headerworks_CoreHeader": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 1, "String": "HostnameString"}, "Trace": {"UnionType": 0}}}}
+{"Header": {"UnionType": 1, "HeaderworksCoreHeader": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}},
+{"Header": {"UnionType": 1, "HeaderworksCoreHeader": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 1, "String": "HostnameString"}, "Trace": {"UnionType": 0}}}}
 ]
 `
 
 func TestRoundTrip(t *testing.T) {
-	fixtures := make([]Com_avro_test_testrecord, 0)
+	fixtures := make([]ComAvroTestTestrecord, 0)
 	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
 	assert.Nil(t, err)
 
@@ -28,7 +28,7 @@ func TestRoundTrip(t *testing.T) {
 		err = f.Serialize(&buf)
 		assert.Nil(t, err)
 
-		datum, err := DeserializeCom_avro_test_testrecord(&buf)
+		datum, err := DeserializeComAvroTestTestrecord(&buf)
 		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}
