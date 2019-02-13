@@ -1,5 +1,8 @@
+// Wrappers for Avro primitive types implementing the methods required by GADGT
 package types
 
+// The interface neeed by GADGT to enter and set fields on a type
+// Most types only need to implement a subset
 type Field interface {
 	// Assign a primitive field
 	SetBoolean(v bool)

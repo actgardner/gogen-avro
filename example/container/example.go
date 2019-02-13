@@ -1,3 +1,4 @@
+// This example shows serializing and deserializing records in a object container file
 package main
 
 import (
@@ -9,7 +10,6 @@ import (
 	"github.com/actgardner/gogen-avro/example/avro"
 )
 
-// This example shows serializing and deserializing records in a object container file
 func main() {
 	// Create a new DemoSchema struct
 	demoStruct := avro.DemoSchema{

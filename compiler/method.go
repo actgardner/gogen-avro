@@ -7,62 +7,62 @@ import (
 	"github.com/actgardner/gogen-avro/vm"
 )
 
-type IRMethod struct {
+type irMethod struct {
 	name    string
 	offset  int
-	body    []IRInstruction
-	program *IRProgram
+	body    []irInstruction
+	program *irProgram
 }
 
-func NewIRMethod(name string, program *IRProgram) *IRMethod {
-	return &IRMethod{
+func newIRMethod(name string, program *irProgram) *irMethod {
+	return &irMethod{
 		name:    name,
-		body:    make([]IRInstruction, 0),
+		body:    make([]irInstruction, 0),
 		program: program,
 	}
 }
 
-func (p *IRMethod) addLiteral(op vm.Op, operand int) {
-	p.body = append(p.body, &LiteralIRInstruction{vm.Instruction{op, operand}})
+func (p *irMethod) addLiteral(op vm.Op, operand int) {
+	p.body = append(p.body, &literalIRInstruction{vm.Instruction{op, operand}})
 }
 
-func (p *IRMethod) addMethodCall(method string) {
-	p.body = append(p.body, &MethodCallIRInstruction{method})
+func (p *irMethod) addMethodCall(method string) {
+	p.body = append(p.body, &methodCallIRInstruction{method})
 }
 
-func (p *IRMethod) addBlockStart() int {
+func (p *irMethod) addBlockStart() int {
 	id := len(p.program.blocks)
-	p.program.blocks = append(p.program.blocks, &IRBlock{})
-	p.body = append(p.body, &BlockStartIRInstruction{id})
+	p.program.blocks = append(p.program.blocks, &irBlock{})
+	p.body = append(p.body, &blockStartIRInstruction{id})
 	return id
 }
 
-func (p *IRMethod) addBlockEnd(id int) {
-	p.body = append(p.body, &BlockEndIRInstruction{id})
+func (p *irMethod) addBlockEnd(id int) {
+	p.body = append(p.body, &blockEndIRInstruction{id})
 }
 
-func (p *IRMethod) addSwitchStart(size, errorId int) int {
+func (p *irMethod) addSwitchStart(size, errorId int) int {
 	id := len(p.program.switches)
-	p.program.switches = append(p.program.switches, &IRSwitch{0, make(map[int]int), 0})
-	p.body = append(p.body, &SwitchStartIRInstruction{id, size, errorId})
+	p.program.switches = append(p.program.switches, &irSwitch{0, make(map[int]int), 0})
+	p.body = append(p.body, &switchStartIRInstruction{id, size, errorId})
 	return id
 }
 
-func (p *IRMethod) addSwitchCase(id int, value int) {
-	p.body = append(p.body, &SwitchCaseIRInstruction{id, value})
+func (p *irMethod) addSwitchCase(id int, value int) {
+	p.body = append(p.body, &switchCaseIRInstruction{id, value})
 }
 
-func (p *IRMethod) addSwitchEnd(id int) {
-	p.body = append(p.body, &SwitchEndIRInstruction{id})
+func (p *irMethod) addSwitchEnd(id int) {
+	p.body = append(p.body, &switchEndIRInstruction{id})
 }
 
-func (p *IRMethod) addError(msg string) int {
+func (p *irMethod) addError(msg string) int {
 	id := len(p.program.errors)
 	p.program.errors = append(p.program.errors, msg)
 	return id
 }
 
-func (p *IRMethod) VMLength() int {
+func (p *irMethod) VMLength() int {
 	len := 0
 	for _, inst := range p.body {
 		len += inst.VMLength()
@@ -70,7 +70,7 @@ func (p *IRMethod) VMLength() int {
 	return len
 }
 
-func (p *IRMethod) compileType(writer, reader schema.AvroType) error {
+func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 	log("compileType()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	switch writer.(type) {
 	case *schema.Reference:
@@ -138,7 +138,7 @@ func (p *IRMethod) compileType(writer, reader schema.AvroType) error {
 	return fmt.Errorf("Unsupported type: %t", writer)
 }
 
-func (p *IRMethod) compileRef(writer, reader *schema.Reference) error {
+func (p *irMethod) compileRef(writer, reader *schema.Reference) error {
 	log("compileRef()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	if reader != nil && writer.TypeName != reader.TypeName {
 		return fmt.Errorf("Incompatible types by name: %v %v", reader, writer)
@@ -187,7 +187,7 @@ func (p *IRMethod) compileRef(writer, reader *schema.Reference) error {
 	return fmt.Errorf("Unsupported reference type %t", reader)
 }
 
-func (p *IRMethod) compileMap(writer, reader *schema.MapField) error {
+func (p *irMethod) compileMap(writer, reader *schema.MapField) error {
 	log("compileMap()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	blockId := p.addBlockStart()
 	p.addLiteral(vm.Read, vm.String)
@@ -207,7 +207,7 @@ func (p *IRMethod) compileMap(writer, reader *schema.MapField) error {
 	return nil
 }
 
-func (p *IRMethod) compileArray(writer, reader *schema.ArrayField) error {
+func (p *irMethod) compileArray(writer, reader *schema.ArrayField) error {
 	log("compileArray()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	blockId := p.addBlockStart()
 	var readerType schema.AvroType
@@ -226,7 +226,7 @@ func (p *IRMethod) compileArray(writer, reader *schema.ArrayField) error {
 	return nil
 }
 
-func (p *IRMethod) compileRecord(writer, reader *schema.RecordDefinition) error {
+func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error {
 	// Look up whether there's a corresonding target field and if so, parse the source field into that target
 	log("compileRecord()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	for _, field := range writer.Fields() {
@@ -250,7 +250,7 @@ func (p *IRMethod) compileRecord(writer, reader *schema.RecordDefinition) error 
 	return nil
 }
 
-func (p *IRMethod) compileEnum(writer, reader *schema.EnumDefinition) error {
+func (p *irMethod) compileEnum(writer, reader *schema.EnumDefinition) error {
 	log("compileEnum()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	p.addLiteral(vm.Read, vm.Int)
 	if reader != nil {
@@ -259,7 +259,7 @@ func (p *IRMethod) compileEnum(writer, reader *schema.EnumDefinition) error {
 	return nil
 }
 
-func (p *IRMethod) compileFixed(writer, reader *schema.FixedDefinition) error {
+func (p *irMethod) compileFixed(writer, reader *schema.FixedDefinition) error {
 	log("compileFixed()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	p.addLiteral(vm.Read, 10+writer.SizeBytes())
 	if reader != nil {
@@ -268,7 +268,7 @@ func (p *IRMethod) compileFixed(writer, reader *schema.FixedDefinition) error {
 	return nil
 }
 
-func (p *IRMethod) compileUnion(writer *schema.UnionField, reader schema.AvroType) error {
+func (p *irMethod) compileUnion(writer *schema.UnionField, reader schema.AvroType) error {
 	log("compileUnion()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 
 	p.addLiteral(vm.Read, vm.Long)

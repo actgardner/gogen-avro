@@ -6,32 +6,32 @@ import (
 	"github.com/actgardner/gogen-avro/vm"
 )
 
-type IRInstruction interface {
+type irInstruction interface {
 	VMLength() int
-	CompileToVM(*IRProgram) ([]vm.Instruction, error)
+	CompileToVM(*irProgram) ([]vm.Instruction, error)
 }
 
-type LiteralIRInstruction struct {
+type literalIRInstruction struct {
 	instruction vm.Instruction
 }
 
-func (b *LiteralIRInstruction) VMLength() int {
+func (b *literalIRInstruction) VMLength() int {
 	return 1
 }
 
-func (b *LiteralIRInstruction) CompileToVM(_ *IRProgram) ([]vm.Instruction, error) {
+func (b *literalIRInstruction) CompileToVM(_ *irProgram) ([]vm.Instruction, error) {
 	return []vm.Instruction{b.instruction}, nil
 }
 
-type MethodCallIRInstruction struct {
+type methodCallIRInstruction struct {
 	method string
 }
 
-func (b *MethodCallIRInstruction) VMLength() int {
+func (b *methodCallIRInstruction) VMLength() int {
 	return 1
 }
 
-func (b *MethodCallIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
+func (b *methodCallIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	method, ok := p.methods[b.method]
 	if !ok {
 		return nil, fmt.Errorf("Unable to call unknown method %q", b.method)
@@ -39,18 +39,18 @@ func (b *MethodCallIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, e
 	return []vm.Instruction{vm.Instruction{vm.Call, method.offset}}, nil
 }
 
-type BlockStartIRInstruction struct {
+type blockStartIRInstruction struct {
 	blockId int
 }
 
-func (b *BlockStartIRInstruction) VMLength() int {
+func (b *blockStartIRInstruction) VMLength() int {
 	return 7
 }
 
 // At the beginning of a block, read the length into the Long register
 // If the block length is 0, jump past the block body because we're done
 // If the block length is negative, read the byte count, throw it away, multiply the length by -1
-func (b *BlockStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
+func (b *blockStartIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
 		vm.Instruction{vm.Read, vm.Long},
@@ -63,17 +63,17 @@ func (b *BlockStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, e
 	}, nil
 }
 
-type BlockEndIRInstruction struct {
+type blockEndIRInstruction struct {
 	blockId int
 }
 
-func (b *BlockEndIRInstruction) VMLength() int {
+func (b *blockEndIRInstruction) VMLength() int {
 	return 4
 }
 
 // At the end of a block, decrement the block count. If it's zero, go back to the very
 // top to read a new block. otherwise jump to start + 2, which is the beginning of the body
-func (b *BlockEndIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
+func (b *blockEndIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
 		vm.Instruction{vm.AddLong, -1},
@@ -83,17 +83,17 @@ func (b *BlockEndIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, err
 	}, nil
 }
 
-type SwitchStartIRInstruction struct {
+type switchStartIRInstruction struct {
 	switchId int
 	size     int
 	errId    int
 }
 
-func (s *SwitchStartIRInstruction) VMLength() int {
+func (s *switchStartIRInstruction) VMLength() int {
 	return 2*s.size + 1
 }
 
-func (s *SwitchStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
+func (s *switchStartIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	sw := p.switches[s.switchId]
 	body := []vm.Instruction{}
 	for value, offset := range sw.cases {
@@ -105,30 +105,30 @@ func (s *SwitchStartIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, 
 	return body, nil
 }
 
-type SwitchCaseIRInstruction struct {
+type switchCaseIRInstruction struct {
 	switchId int
 	value    int
 }
 
-func (s *SwitchCaseIRInstruction) VMLength() int {
+func (s *switchCaseIRInstruction) VMLength() int {
 	return 1
 }
 
-func (s *SwitchCaseIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
+func (s *switchCaseIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	sw := p.switches[s.switchId]
 	return []vm.Instruction{
 		vm.Instruction{vm.Jump, sw.end},
 	}, nil
 }
 
-type SwitchEndIRInstruction struct {
+type switchEndIRInstruction struct {
 	switchId int
 }
 
-func (s *SwitchEndIRInstruction) VMLength() int {
+func (s *switchEndIRInstruction) VMLength() int {
 	return 0
 }
 
-func (s *SwitchEndIRInstruction) CompileToVM(p *IRProgram) ([]vm.Instruction, error) {
+func (s *switchEndIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	return []vm.Instruction{}, nil
 }

@@ -1,3 +1,4 @@
+// The GADGT VM implementation and instruction set
 package vm
 
 import (
@@ -7,7 +8,7 @@ import (
 	"github.com/actgardner/gogen-avro/vm/types"
 )
 
-type Frame struct {
+type frame struct {
 	Target types.Field
 
 	Boolean bool
@@ -25,7 +26,7 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 	callStack := make([]int, 256)
 	callStackDepth := 0
 
-	stack := make([]Frame, 256)
+	stack := make([]frame, 256)
 	stack[0].Target = target
 	depth := 0
 

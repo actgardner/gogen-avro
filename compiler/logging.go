@@ -5,6 +5,7 @@ import (
 )
 
 var (
+	// Enable this to get debug logs for the compilation process
 	LoggingEnabled = false
 )
 

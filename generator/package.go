@@ -1,3 +1,4 @@
+// Utility methods for managing and writing generated code
 package generator
 
 import (

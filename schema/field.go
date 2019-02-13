@@ -1,3 +1,4 @@
+// gogen-avro's internal representation of Avro schemas, and templates for code generation
 package schema
 
 import (
