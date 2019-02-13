@@ -95,7 +95,7 @@ func (p *irProgram) findOffsets(inst []irInstruction) {
 			p.switches[v.switchId].start = offset
 		case *switchCaseIRInstruction:
 			log("findOffsets() block %v - start %v", v.switchId, offset)
-			p.switches[v.switchId].cases[v.value] = offset
+			p.switches[v.switchId].cases[v.writerIndex] = offset
 		case *switchEndIRInstruction:
 			log("findOffsets() block %v - end %v", v.switchId, offset)
 			p.switches[v.switchId].end = offset

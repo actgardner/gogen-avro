@@ -21,8 +21,7 @@ const fixtureJson = `
 {"UnionField":{"Double":5.6, "UnionType":3}},
 {"UnionField":{"String":"testString", "UnionType":4}},
 {"UnionField":{"Bool":true, "UnionType":5}},
-{"UnionField":{"Bytes":"VGhpcyBpcyBhIHRlc3Qgc3RyaW5n", "UnionType":6}},
-{"UnionField":{"UnionType":7}}
+{"UnionField":{"UnionType":6}}
 ]
 `
 

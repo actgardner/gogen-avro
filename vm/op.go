@@ -22,6 +22,9 @@ const (
 	// Append a new key-value pair (where the key is the String value in the current frame) to the current target and enter the new value
 	AppendMap
 
+	// Set the value of the field at the operand index to it's default value
+	SetDefault
+
 	// Push the current address onto the call stack and move the PC to the operand address
 	Call
 

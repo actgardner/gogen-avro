@@ -48,8 +48,8 @@ func (p *irMethod) addSwitchStart(size, errorId int) int {
 	return id
 }
 
-func (p *irMethod) addSwitchCase(id int, value int) {
-	p.body = append(p.body, &switchCaseIRInstruction{id, value})
+func (p *irMethod) addSwitchCase(id, writerIndex, readerIndex int) {
+	p.body = append(p.body, &switchCaseIRInstruction{id, writerIndex, readerIndex})
 }
 
 func (p *irMethod) addSwitchEnd(id int) {
@@ -283,18 +283,15 @@ func (p *irMethod) compileUnion(writer *schema.UnionField, reader schema.AvroTyp
 	log("compileUnion()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 
 	p.addLiteral(vm.Read, vm.Long)
-	if _, ok := reader.(*schema.UnionField); ok {
-		p.addLiteral(vm.Set, vm.Long)
-	}
 	errId := p.addError("Unsupported type for union")
 	switchId := p.addSwitchStart(len(writer.AvroTypes()), errId)
 writer:
 	for i, t := range writer.AvroTypes() {
-		p.addSwitchCase(switchId, i)
 		if unionReader, ok := reader.(*schema.UnionField); ok {
 			// If there's an exact match between the reader and writer preserve type
 			// This avoids weird cases like ["string", "bytes"] which would always resolve to "string"
-			if unionReader.Equals(unionReader) {
+			if unionReader.Equals(writer) {
+				p.addSwitchCase(switchId, i, i)
 				p.addLiteral(vm.Enter, i)
 				err := p.compileType(t, writer.AvroTypes()[i])
 				if err != nil {
@@ -305,6 +302,7 @@ writer:
 			}
 			for readerIndex, r := range unionReader.AvroTypes() {
 				if t.IsReadableBy(r) {
+					p.addSwitchCase(switchId, i, readerIndex)
 					p.addLiteral(vm.Enter, readerIndex)
 					err := p.compileType(t, r)
 					if err != nil {

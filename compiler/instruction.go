@@ -106,18 +106,21 @@ func (s *switchStartIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, 
 }
 
 type switchCaseIRInstruction struct {
-	switchId int
-	value    int
+	switchId    int
+	writerIndex int
+	readerIndex int
 }
 
 func (s *switchCaseIRInstruction) VMLength() int {
-	return 1
+	return 3
 }
 
 func (s *switchCaseIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	sw := p.switches[s.switchId]
 	return []vm.Instruction{
 		vm.Instruction{vm.Jump, sw.end},
+		vm.Instruction{vm.AddLong, s.readerIndex - s.writerIndex},
+		vm.Instruction{vm.Set, vm.Long},
 	}, nil
 }
 
