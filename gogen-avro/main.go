@@ -16,6 +16,7 @@ func main() {
 	packageName := flag.String("package", "avro", "Name of generated package")
 	containers := flag.Bool("containers", false, "Whether to generate container writer methods")
 	shortUnions := flag.Bool("short-unions", false, "Whether to use shorter names for Union types")
+	namespacedNames := flag.Bool("namespaced-names", false, "Whether to generate namespaced names for types")
 
 	flag.Parse()
 	if flag.NArg() < 2 {
@@ -29,6 +30,10 @@ func main() {
 	var err error
 	pkg := generator.NewPackage(*packageName)
 	namespace := types.NewNamespace(*shortUnions)
+
+	if *namespacedNames {
+		generator.SetNamer(generator.NewNamespaceNamer())
+	}
 
 	for _, fileName := range files {
 		schema, err := ioutil.ReadFile(fileName)
