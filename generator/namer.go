@@ -28,16 +28,17 @@ type DefaultNamer struct {
 // NamespaceNamer is like DefaultNamer but taking into account
 // special tokens so namespaced names can be generated safely.
 type NamespaceNamer struct {
-	re *regexp.Regexp
+	shortNames bool
+	re         *regexp.Regexp
 }
 
 var (
 	namer Namer = &DefaultNamer{}
 )
 
-// NewNamespaceNamer returns a namespace-aware namer
-func NewNamespaceNamer() *NamespaceNamer {
-	return &NamespaceNamer{re: regexp.MustCompile(invalidTokensExpr)}
+// NewNamespaceNamer returns a namespace-aware namer.
+func NewNamespaceNamer(shortNames bool) *NamespaceNamer {
+	return &NamespaceNamer{shortNames: shortNames, re: regexp.MustCompile(invalidTokensExpr)}
 }
 
 // SetNamer sets the generator's global namer
@@ -45,17 +46,21 @@ func SetNamer(n Namer) {
 	namer = n
 }
 
-// ToPublicName implements the backwards-compatible name converter in DefaultNamer
+// ToPublicName implements the backwards-compatible name converter in
+// DefaultNamer.
 func (d *DefaultNamer) ToPublicName(name string) string {
-	lastIndex := strings.LastIndex(name, ".")
-	name = name[lastIndex+1:]
-	return strings.Title(strings.Trim(name, "_"))
+	return ToPublicSimpleName(name)
 }
 
 // ToPublicName implements the go-idiomatic public name as in DefaultNamer's
 // struct, but with additional treatment applied in order to remove possible
 // invalid tokens from it. Final string is then converted to camel-case.
 func (n *NamespaceNamer) ToPublicName(name string) string {
-	name = n.re.ReplaceAllString(strings.TrimLeft(name, "0123456789"), " ")
+	if n.shortNames {
+		if parts := strings.Split(name, "."); len(parts) > 2 {
+			name = strings.Join(parts[len(parts)-2:], ".")
+		}
+	}
+	name = n.re.ReplaceAllString(name, " ")
 	return strings.Replace(strings.Title(name), " ", "", -1)
 }
