@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	"github.com/actgardner/gogen-avro/generator"
 )
 
@@ -22,6 +23,10 @@ func NewReference(typeName QualifiedName) *Reference {
 
 func (s *Reference) Name() string {
 	return s.def.Name()
+}
+
+func (s *Reference) SimpleName() string {
+	return s.def.SimpleName()
 }
 
 func (s *Reference) GoType() string {
