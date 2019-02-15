@@ -394,25 +394,7 @@ func (r *RecordDefinition) Fields() []*Field {
 
 func (s *RecordDefinition) IsReadableBy(d Definition) bool {
 	reader, ok := d.(*RecordDefinition)
-	if !ok {
-		return false
-	}
-
-reader:
-	for _, readerField := range reader.fields {
-		for _, writerField := range s.fields {
-			if readerField.Name() == writerField.Name() {
-				if !writerField.Type().IsReadableBy(readerField.Type()) {
-					return false
-				}
-				continue reader
-			}
-		}
-		if !readerField.HasDefault() {
-			return false
-		}
-	}
-	return true
+	return ok && reader.name == s.name
 }
 
 func (s *RecordDefinition) WrapperType() string {

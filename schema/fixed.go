@@ -122,7 +122,7 @@ func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (strin
 
 func (s *FixedDefinition) IsReadableBy(d Definition) bool {
 	if fixed, ok := d.(*FixedDefinition); ok {
-		return fixed.sizeBytes == s.sizeBytes
+		return fixed.sizeBytes == s.sizeBytes && fixed.name == s.name
 	}
 	return false
 }

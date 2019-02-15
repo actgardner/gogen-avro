@@ -139,8 +139,8 @@ func (s *EnumDefinition) DefaultValue(lvalue string, rvalue interface{}) (string
 }
 
 func (s *EnumDefinition) IsReadableBy(d Definition) bool {
-	_, ok := d.(*EnumDefinition)
-	return ok
+	otherEnum, ok := d.(*EnumDefinition)
+	return ok && otherEnum.name == s.name
 }
 
 func (s *EnumDefinition) WrapperType() string {

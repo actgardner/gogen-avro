@@ -288,18 +288,6 @@ func (p *irMethod) compileUnion(writer *schema.UnionField, reader schema.AvroTyp
 writer:
 	for i, t := range writer.AvroTypes() {
 		if unionReader, ok := reader.(*schema.UnionField); ok {
-			// If there's an exact match between the reader and writer preserve type
-			// This avoids weird cases like ["string", "bytes"] which would always resolve to "string"
-			if unionReader.Equals(writer) {
-				p.addSwitchCase(switchId, i, i)
-				p.addLiteral(vm.Enter, i)
-				err := p.compileType(t, writer.AvroTypes()[i])
-				if err != nil {
-					return err
-				}
-				p.addLiteral(vm.Exit, vm.NoopField)
-				continue writer
-			}
 			for readerIndex, r := range unionReader.AvroTypes() {
 				if t.IsReadableBy(r) {
 					p.addSwitchCase(switchId, i, readerIndex)
