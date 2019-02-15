@@ -76,7 +76,7 @@ func (p *irProgram) CompileToVM() (*vm.Program, error) {
 	}
 	return &vm.Program{
 		Instructions: vmProgram,
-		Errors:       make([]string, 0),
+		Errors:       p.errors,
 	}, nil
 }
 

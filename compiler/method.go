@@ -57,7 +57,7 @@ func (p *irMethod) addSwitchEnd(id int) {
 }
 
 func (p *irMethod) addError(msg string) int {
-	id := len(p.program.errors)
+	id := len(p.program.errors) + 1
 	p.program.errors = append(p.program.errors, msg)
 	return id
 }
@@ -300,7 +300,9 @@ writer:
 					continue writer
 				}
 			}
-			return fmt.Errorf("Incompatible types, no match for %v in %v", unionReader, writer)
+			p.addSwitchCase(switchId, i, -1)
+			typedErrId := p.addError(fmt.Sprintf("Cannot read type %v from union", t.Name()))
+			p.addLiteral(vm.Halt, typedErrId)
 		} else if t.IsReadableBy(reader) {
 			err := p.compileType(t, reader)
 			if err != nil {
