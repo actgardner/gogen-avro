@@ -38,6 +38,10 @@ func (b *String) Get(i int) Field {
 	panic("Unable to get field from string field")
 }
 
+func (b *String) SetDefault(i int) {
+	panic("Unable to set default on string field")
+}
+
 func (b *String) AppendMap(key string) Field {
 	panic("Unable to append map key to from string field")
 }

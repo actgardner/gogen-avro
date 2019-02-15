@@ -38,6 +38,10 @@ func (b *Bytes) Get(i int) Field {
 	panic("Unable to get field from bytes field")
 }
 
+func (b *Bytes) SetDefault(i int) {
+	panic("Unable to set default on bytes field")
+}
+
 func (b *Bytes) AppendMap(key string) Field {
 	panic("Unable to append map key to from bytes field")
 }

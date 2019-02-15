@@ -85,6 +85,8 @@ func (o Op) String() string {
 		return "add_long"
 	case MultLong:
 		return "mult_long"
+	case SetDefault:
+		return "set_def"
 	}
 	return "Unknown"
 }

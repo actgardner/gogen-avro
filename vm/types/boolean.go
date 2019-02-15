@@ -38,6 +38,10 @@ func (b *Boolean) Get(i int) Field {
 	panic("Unable to get field from boolean field")
 }
 
+func (b *Boolean) SetDefault(i int) {
+	panic("Unable to set default on boolean field")
+}
+
 func (b *Boolean) AppendMap(key string) Field {
 	panic("Unable to append map key to from boolean field")
 }

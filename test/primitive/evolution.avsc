@@ -8,6 +8,7 @@
 		{"name": "BytesField", "type": "bytes"},
 		{"name": "DoubleField", "type": "double"},
 		{"name": "IntField", "type": "int"},
-		{"name": "BoolField", "type": "boolean"}
+		{"name": "BoolField", "type": "boolean"},
+		{"name": "NewString", "type": "string", "default": "somedefault"}
 	]
 }

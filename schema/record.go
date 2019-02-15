@@ -77,6 +77,12 @@ func (r %[1]v) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (r %[1]v) SetDefault(i int) {
+	switch (i) {
+		%[3]v
+	}
+	panic("Unknown field index")
+}
 func (_ %[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ %[1]v) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ %[1]v) Finalize() { }
@@ -309,21 +315,22 @@ func (r *RecordDefinition) fieldConstructors() (string, error) {
 	return constructors, nil
 }
 
-func (r *RecordDefinition) defaultValues() (string, error) {
+func (r *RecordDefinition) defaultMethodDef() (string, error) {
 	defaults := ""
-	for _, f := range r.fields {
+	for i, f := range r.fields {
 		if f.hasDef {
-			def, err := f.Type().DefaultValue(fmt.Sprintf("v.%v", f.GoName()), f.Default())
+			defaults += fmt.Sprintf("case %v:\n", i)
+			def, err := f.Type().DefaultValue(fmt.Sprintf("r.%v", f.GoName()), f.Default())
 			if err != nil {
 				return "", err
 			}
-			defaults += def + "\n"
+			defaults += def + "\nreturn\n"
 		}
 	}
 	return defaults, nil
 }
 
-func (r *RecordDefinition) FieldsMethodDef() string {
+func (r *RecordDefinition) getMethodDef() string {
 	getBody := ""
 	for i, f := range r.fields {
 		getBody += fmt.Sprintf("case %v:\n", i)
@@ -331,12 +338,18 @@ func (r *RecordDefinition) FieldsMethodDef() string {
 			getBody += fmt.Sprintf("r.%v = %v\n", f.GoName(), constructor.ConstructorMethod())
 		}
 		if f.Type().WrapperType() == "" {
-			getBody += fmt.Sprintf("return r.%v\nbreak\n", f.GoName())
+			getBody += fmt.Sprintf("return r.%v\n", f.GoName())
 		} else {
-			getBody += fmt.Sprintf("return (*%v)(&r.%v)\nbreak\n", f.Type().WrapperType(), f.GoName())
+			getBody += fmt.Sprintf("return (*%v)(&r.%v)\n", f.Type().WrapperType(), f.GoName())
 		}
 	}
-	return fmt.Sprintf(recordFieldTemplate, r.GoType(), getBody)
+	return getBody
+}
+
+func (r *RecordDefinition) FieldsMethodDef() string {
+	getBody := r.getMethodDef()
+	defaultBody, _ := r.defaultMethodDef()
+	return fmt.Sprintf(recordFieldTemplate, r.GoType(), getBody, defaultBody)
 }
 
 func (r *RecordDefinition) ConstructorMethodDef() (string, error) {

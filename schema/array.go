@@ -35,6 +35,7 @@ func (_ *%[1]v) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *%[1]v) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *%[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *%[1]v) Finalize() { }
+func (_ *%[1]v) SetDefault(i int) { panic("Unsupported operation") }
 func (r *%[1]v) AppendArray() types.Field {
 	var v %[3]v
         %[5]v

@@ -104,6 +104,9 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 				break
 			}
 			break
+		case SetDefault:
+			stack[depth].Target.SetDefault(inst.Operand)
+			break
 		case Enter:
 			depth += 1
 			stack[depth].Target = frame.Target.Get(inst.Operand)

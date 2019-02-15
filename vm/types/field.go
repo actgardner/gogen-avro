@@ -15,6 +15,8 @@ type Field interface {
 
 	// Get a nested field
 	Get(i int) Field
+	// Set the default value for a given field
+	SetDefault(i int)
 
 	// Append a new value to a map or array and enter it
 	AppendMap(key string) Field

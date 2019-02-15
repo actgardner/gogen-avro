@@ -29,6 +29,7 @@ func (_ *%[1]v) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *%[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *%[1]v) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *%[1]v) Finalize() { }
+func (_ *%[1]v) SetDefault(i int) { panic("Unsupported operation") }
 `
 
 type FixedDefinition struct {
