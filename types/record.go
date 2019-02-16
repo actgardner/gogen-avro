@@ -80,6 +80,10 @@ func (r *RecordDefinition) AvroName() QualifiedName {
 }
 
 func (r *RecordDefinition) Name() string {
+	return generator.ToPublicName(r.name.String())
+}
+
+func (r *RecordDefinition) SimpleName() string {
 	return generator.ToPublicName(r.name.Name)
 }
 
@@ -97,7 +101,7 @@ func (r *RecordDefinition) structFields() string {
 		if f.Doc() != "" {
 			fieldDefinitions += fmt.Sprintf("\n// %v\n", f.Doc())
 		}
-		fieldDefinitions += fmt.Sprintf("%v %v\n", f.GoName(), f.Type().GoType())
+		fieldDefinitions += fmt.Sprintf("%v %v\n", f.SimpleName(), f.Type().GoType())
 	}
 	return fieldDefinitions
 }

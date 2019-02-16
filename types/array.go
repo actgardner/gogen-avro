@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	"github.com/actgardner/gogen-avro/generator"
 )
 
@@ -67,6 +68,10 @@ func NewArrayField(itemType AvroType, definition map[string]interface{}) *arrayF
 
 func (s *arrayField) Name() string {
 	return "Array" + s.itemType.Name()
+}
+
+func (s *arrayField) SimpleName() string {
+	return s.Name()
 }
 
 func (s *arrayField) GoType() string {

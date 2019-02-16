@@ -28,6 +28,10 @@ func (f *Field) Name() string {
 	return f.avroName
 }
 
+func (f *Field) SimpleName() string {
+	return generator.ToPublicSimpleName(f.avroName)
+}
+
 func (f *Field) Doc() string {
 	return f.doc
 }

@@ -2,8 +2,9 @@ package types
 
 import (
 	"fmt"
-	"github.com/actgardner/gogen-avro/generator"
 	"strings"
+
+	"github.com/actgardner/gogen-avro/generator"
 )
 
 const enumTypeDef = `
@@ -57,6 +58,10 @@ func NewEnumDefinition(name QualifiedName, aliases []QualifiedName, symbols []st
 
 func (e *EnumDefinition) Name() string {
 	return e.GoType()
+}
+
+func (e *EnumDefinition) SimpleName() string {
+	return e.name.Name
 }
 
 func (e *EnumDefinition) AvroName() QualifiedName {

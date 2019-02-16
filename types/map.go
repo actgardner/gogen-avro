@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	"github.com/actgardner/gogen-avro/generator"
 )
 
@@ -73,6 +74,10 @@ func NewMapField(itemType AvroType, definition map[string]interface{}) *mapField
 
 func (s *mapField) Name() string {
 	return "Map" + s.itemType.Name()
+}
+
+func (s *mapField) SimpleName() string {
+	return s.Name()
 }
 
 func (s *mapField) GoType() string {

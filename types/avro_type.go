@@ -6,6 +6,7 @@ import (
 
 type AvroType interface {
 	Name() string
+	SimpleName() string
 	GoType() string
 
 	// The name of the method which writes this field onto the wire
