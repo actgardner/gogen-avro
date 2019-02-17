@@ -20,6 +20,11 @@ const recordSchemaTemplate = `func (r %v) Schema() string {
 }
 `
 
+const recordSchemaNameTemplate = `func (r %v) Name() string {
+ return %v
+}
+`
+
 const recordConstructorTemplate = `
 func %v %v {
 	return &%v{}
@@ -241,6 +246,10 @@ func (r *RecordDefinition) publicDeserializerMethodDef() string {
 	return fmt.Sprintf(recordStructPublicDeserializerTemplate, r.publicDeserializerMethod(), r.GoType(), r.ConstructorMethod())
 }
 
+func (r *RecordDefinition) schemaNameMethodDef() (string, error) {
+	return fmt.Sprintf(recordSchemaNameTemplate, r.GoType(), strconv.Quote(r.name.String())), nil
+}
+
 func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) error {
 	// Import guard, to avoid circular dependencies
 	if !p.HasStruct(r.filename(), r.GoType()) {
@@ -255,6 +264,13 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 		if err != nil {
 			return err
 		}
+
+		schemaNameDef, err := r.schemaNameMethodDef()
+		if err != nil {
+			return err
+		}
+
+		p.AddFunction(r.filename(), r.GoType(), "Name", schemaNameDef)
 
 		if containers {
 			p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/container")
