@@ -20,7 +20,7 @@ const recordSchemaTemplate = `func (r %v) Schema() string {
 }
 `
 
-const recordSchemaNameTemplate = `func (r %v) Name() string {
+const recordSchemaNameTemplate = `func (r %v) SchemaName() string {
  return %v
 }
 `
@@ -270,7 +270,7 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 			return err
 		}
 
-		p.AddFunction(r.filename(), r.GoType(), "Name", schemaNameDef)
+		p.AddFunction(r.filename(), r.GoType(), "SchemaName", schemaNameDef)
 
 		if containers {
 			p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/container")
