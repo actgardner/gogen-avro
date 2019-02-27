@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	"github.com/actgardner/gogen-avro/generator"
 )
 
@@ -61,6 +62,10 @@ func (s *unionField) Name() string {
 	return s.GoType()
 }
 
+func (s *unionField) SimpleName() string {
+	return s.GoType()
+}
+
 func (s *unionField) GoType() string {
 	if s.name == "" {
 		return generator.ToPublicName(s.compositeFieldName())
@@ -83,7 +88,7 @@ func (s *unionField) unionEnumDef() string {
 func (s *unionField) unionTypeDef() string {
 	var unionFields string
 	for _, i := range s.itemType {
-		unionFields += fmt.Sprintf("%v %v\n", i.Name(), i.GoType())
+		unionFields += fmt.Sprintf("%v %v\n", i.SimpleName(), i.GoType())
 	}
 	unionFields += fmt.Sprintf("UnionType %v", s.unionEnumType())
 	return fmt.Sprintf("type %v struct{\n%v\n}\n", s.Name(), unionFields)
@@ -92,7 +97,7 @@ func (s *unionField) unionTypeDef() string {
 func (s *unionField) unionSerializer() string {
 	switchCase := ""
 	for _, t := range s.itemType {
-		switchCase += fmt.Sprintf("case %v:\nreturn %v(r.%v, w)\n", s.unionEnumType()+t.Name(), t.SerializerMethod(), t.Name())
+		switchCase += fmt.Sprintf("case %v:\nreturn %v(r.%v, w)\n", s.unionEnumType()+t.Name(), t.SerializerMethod(), t.SimpleName())
 	}
 	return fmt.Sprintf(unionSerializerTemplate, s.SerializerMethod(), s.GoType(), switchCase, s.GoType())
 }
@@ -100,7 +105,7 @@ func (s *unionField) unionSerializer() string {
 func (s *unionField) unionDeserializer() string {
 	switchCase := ""
 	for _, t := range s.itemType {
-		switchCase += fmt.Sprintf("case %v:\nval, err :=  %v(r)\nif err != nil {return unionStr, err}\nunionStr.%v = val\n", s.unionEnumType()+t.Name(), t.DeserializerMethod(), t.Name())
+		switchCase += fmt.Sprintf("case %v:\nval, err :=  %v(r)\nif err != nil {return unionStr, err}\nunionStr.%v = val\n", s.unionEnumType()+t.Name(), t.DeserializerMethod(), t.SimpleName())
 	}
 	return fmt.Sprintf(unionDeserializerTemplate, s.DeserializerMethod(), s.GoType(), s.GoType(), s.unionEnumType(), switchCase, s.GoType())
 }

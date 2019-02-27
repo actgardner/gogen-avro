@@ -8,5 +8,9 @@
 			"size": 12,
 			"type": "fixed"
 		}
+	},
+	{
+		"name": "AnotherFixed",
+		"type": "TestFixedType"
 	}]
 }

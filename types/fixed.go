@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	"github.com/actgardner/gogen-avro/generator"
 )
 
@@ -38,6 +39,10 @@ func NewFixedDefinition(name QualifiedName, aliases []QualifiedName, sizeBytes i
 
 func (s *FixedDefinition) Name() string {
 	return s.GoType()
+}
+
+func (s *FixedDefinition) SimpleName() string {
+	return generator.ToPublicSimpleName(s.name.Name)
 }
 
 func (s *FixedDefinition) AvroName() QualifiedName {
@@ -99,6 +104,7 @@ func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (inter
 	if _, ok := scope[s.name]; ok {
 		return s.name.String(), nil
 	}
+	scope[s.name] = 1
 	return s.definition, nil
 }
 

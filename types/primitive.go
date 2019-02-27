@@ -17,6 +17,10 @@ func (s *primitiveField) Name() string {
 	return s.name
 }
 
+func (s *primitiveField) SimpleName() string {
+	return s.name
+}
+
 func (s *primitiveField) GoType() string {
 	return s.goType
 }
