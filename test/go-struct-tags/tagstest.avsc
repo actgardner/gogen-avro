@@ -1,0 +1,11 @@
+{
+  "name" : "StructTag",
+  "type" : "record",
+  "fields" : [
+    {
+      "name" : "productName",
+      "type" : "string",
+      "go_tags": "validate:\"true\""
+    }
+  ]
+}
