@@ -3,7 +3,6 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/actgardner/gogen-avro/generator"
@@ -114,7 +113,6 @@ func (r *RecordDefinition) structFields() string {
 
 		definitions += field + "\n"
 	}
-	log.Println(definitions)
 
 	return definitions
 }
