@@ -1,0 +1,9 @@
+github.com/actgardner/gogen-avro v5.2.3+incompatible h1:f7s0H8XyZiUMAm6J2F9fdpw0vQTF2djKy4nQq1rgnBM=
+github.com/actgardner/gogen-avro v5.2.3+incompatible/go.mod h1:N2PzqZtS+5w9xxGp2daeykhWdTL0lBiRhbbvkVj4Yd8=
+github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
+github.com/linkedin/goavro v0.0.0-20181018120728-1beee2a74088/go.mod h1:vL3ODoWTPCBSeKVFgQ+lvSq0VOzTB5TcXvUX+4pU/+Q=
+github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
+gopkg.in/actgardner/gogen-avro.v5 v5.2.3 h1:nGAh5KTyiGcmRJSpG2wcT6Ix9n4AkFY/LpKTEvfW41o=
+gopkg.in/actgardner/gogen-avro.v5 v5.2.3/go.mod h1:+B2uD+rGOOAnHfw4HBetXTaDr4ElnbojngRWtz8MDvE=
