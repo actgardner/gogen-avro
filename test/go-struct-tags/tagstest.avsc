@@ -5,7 +5,7 @@
     {
       "name" : "productName",
       "type" : "string",
-      "go_tags": "validate:\"true\""
+      "tags": "validate:\"true\""
     }
   ]
 }
