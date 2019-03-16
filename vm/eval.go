@@ -8,7 +8,7 @@ import (
 	"github.com/actgardner/gogen-avro/vm/types"
 )
 
-type frame struct {
+type stackFrame struct {
 	Target types.Field
 
 	Boolean bool
@@ -23,10 +23,10 @@ type frame struct {
 }
 
 func Eval(r io.Reader, program *Program, target types.Field) (err error) {
-	callStack := make([]int, 256)
+	callStack := make([]int, 8)
 	callStackDepth := 0
 
-	stack := make([]frame, 256)
+	stack := make([]stackFrame, 8)
 	stack[0].Target = target
 	depth := 0
 
@@ -41,8 +41,6 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 	for pc = 0; pc < len(program.Instructions); pc++ {
 		inst := program.Instructions[pc]
 		frame := &stack[depth]
-		log("PC: %v\tD:%v\tOp: %v", pc, depth, inst)
-		log("Frame: %v", frame)
 		switch inst.Op {
 		case Read:
 			switch inst.Operand {
@@ -109,6 +107,9 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			break
 		case Enter:
 			depth += 1
+			if depth >= len(stack) {
+				stack = append(stack, make([]stackFrame, len(stack))...)
+			}
 			stack[depth].Target = frame.Target.Get(inst.Operand)
 			break
 		case Exit:
@@ -117,15 +118,24 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			break
 		case AppendArray:
 			depth += 1
+			if depth >= len(stack) {
+				stack = append(stack, make([]stackFrame, len(stack))...)
+			}
 			stack[depth].Target = frame.Target.AppendArray()
 			break
 		case AppendMap:
 			depth += 1
+			if depth >= len(stack) {
+				stack = append(stack, make([]stackFrame, len(stack))...)
+			}
 			stack[depth].Target = frame.Target.AppendMap(stack[depth-1].String)
 			break
 		case Call:
 			callStack[callStackDepth] = pc
 			callStackDepth += 1
+			if callStackDepth >= len(callStack) {
+				callStack = append(callStack, make([]int, len(callStack))...)
+			}
 			pc = inst.Operand - 1
 			break
 		case Return:
