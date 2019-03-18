@@ -196,10 +196,10 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		}
 
 		var fieldTags string
-		if tags, ok := field["tags"]; ok {
+		if tags, ok := field["go.tags"]; ok {
 			fieldTags, ok = tags.(string)
 			if !ok {
-				return nil, NewWrongMapValueTypeError("tags", "string", tags)
+				return nil, NewWrongMapValueTypeError("go.tags", "string", tags)
 			}
 		}
 
