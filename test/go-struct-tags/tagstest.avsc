@@ -5,7 +5,7 @@
     {
       "name" : "productName",
       "type" : "string",
-      "tags": "validate:\"true\""
+      "golang.tags": "validate:\"true\""
     }
   ]
 }
