@@ -9,26 +9,28 @@ import (
 )
 
 type stackFrame struct {
-	Target types.Field
-
-	Boolean bool
-	Int     int32
-	Long    int64
-	Float   float32
-	Double  float64
-	Bytes   []byte
-	String  string
-
+	Boolean   bool
+	Int       int32
+	Long      int64
+	Float     float32
+	Double    float64
+	Bytes     []byte
+	String    string
 	Condition bool
 }
 
 func Eval(r io.Reader, program *Program, target types.Field) (err error) {
-	callStack := make([]int, 8)
-	callStackDepth := 0
+	// Stack of pointers for returning from function calls
+	callStack := &intStack{stack: make([]int, 8), pos: -1}
 
-	stack := make([]stackFrame, 8)
-	stack[0].Target = target
-	depth := 0
+	// Stack of loop variables
+	loopStack := &intStack{stack: make([]int, 8), pos: -1}
+
+	// Stack of target Fields for assigning values
+	targetStack := &fieldStack{stack: make([]types.Field, 8), pos: -1}
+	targetStack.push(target)
+
+	frame := stackFrame{}
 
 	pc := 0
 
@@ -40,7 +42,6 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 
 	for pc = 0; pc < len(program.Instructions); pc++ {
 		inst := program.Instructions[pc]
-		frame := &stack[depth]
 		switch inst.Op {
 		case Read:
 			switch inst.Operand {
@@ -80,67 +81,49 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			case Null:
 				break
 			case Boolean:
-				frame.Target.SetBoolean(frame.Boolean)
+				targetStack.peek().SetBoolean(frame.Boolean)
 				break
 			case Int:
-				frame.Target.SetInt(frame.Int)
+				targetStack.peek().SetInt(frame.Int)
 				break
 			case Long:
-				frame.Target.SetLong(frame.Long)
+				targetStack.peek().SetLong(frame.Long)
 				break
 			case Float:
-				frame.Target.SetFloat(frame.Float)
+				targetStack.peek().SetFloat(frame.Float)
 				break
 			case Double:
-				frame.Target.SetDouble(frame.Double)
+				targetStack.peek().SetDouble(frame.Double)
 				break
 			case Bytes:
-				frame.Target.SetBytes(frame.Bytes)
+				targetStack.peek().SetBytes(frame.Bytes)
 				break
 			case String:
-				frame.Target.SetString(frame.String)
+				targetStack.peek().SetString(frame.String)
 				break
 			}
 			break
 		case SetDefault:
-			stack[depth].Target.SetDefault(inst.Operand)
+			targetStack.peek().SetDefault(inst.Operand)
 			break
 		case Enter:
-			depth += 1
-			if depth >= len(stack) {
-				stack = append(stack, make([]stackFrame, len(stack))...)
-			}
-			stack[depth].Target = frame.Target.Get(inst.Operand)
+			targetStack.push(targetStack.peek().Get(inst.Operand))
 			break
 		case Exit:
-			stack[depth].Target.Finalize()
-			depth -= 1
+			targetStack.pop().Finalize()
 			break
 		case AppendArray:
-			depth += 1
-			if depth >= len(stack) {
-				stack = append(stack, make([]stackFrame, len(stack))...)
-			}
-			stack[depth].Target = frame.Target.AppendArray()
+			targetStack.push(targetStack.peek().AppendArray())
 			break
 		case AppendMap:
-			depth += 1
-			if depth >= len(stack) {
-				stack = append(stack, make([]stackFrame, len(stack))...)
-			}
-			stack[depth].Target = frame.Target.AppendMap(stack[depth-1].String)
+			targetStack.push(targetStack.peek().AppendMap(frame.String))
 			break
 		case Call:
-			callStack[callStackDepth] = pc
-			callStackDepth += 1
-			if callStackDepth >= len(callStack) {
-				callStack = append(callStack, make([]int, len(callStack))...)
-			}
+			callStack.push(pc)
 			pc = inst.Operand - 1
 			break
 		case Return:
-			pc = callStack[callStackDepth-1]
-			callStackDepth -= 1
+			pc = callStack.pop()
 			break
 		case Jump:
 			pc = inst.Operand - 1
@@ -162,7 +145,12 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 		case MultLong:
 			frame.Long *= int64(inst.Operand)
 			break
-
+		case PushLoop:
+			loopStack.push(int(frame.Long))
+			break
+		case PopLoop:
+			frame.Long = int64(loopStack.pop())
+			break
 		case Halt:
 			if inst.Operand == 0 {
 				return nil

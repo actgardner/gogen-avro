@@ -44,12 +44,13 @@ type blockStartIRInstruction struct {
 }
 
 func (b *blockStartIRInstruction) VMLength() int {
-	return 7
+	return 8
 }
 
 // At the beginning of a block, read the length into the Long register
 // If the block length is 0, jump past the block body because we're done
 // If the block length is negative, read the byte count, throw it away, multiply the length by -1
+// Once we've figured out the number of iterations, push the loop length onto the loop stack
 func (b *blockStartIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
@@ -60,6 +61,7 @@ func (b *blockStartIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, e
 		vm.Instruction{vm.CondJump, block.start + 7},
 		vm.Instruction{vm.Read, vm.UnusedLong},
 		vm.Instruction{vm.MultLong, -1},
+		vm.Instruction{vm.PushLoop, 0},
 	}, nil
 }
 
@@ -68,14 +70,15 @@ type blockEndIRInstruction struct {
 }
 
 func (b *blockEndIRInstruction) VMLength() int {
-	return 4
+	return 5
 }
 
-// At the end of a block, decrement the block count. If it's zero, go back to the very
-// top to read a new block. otherwise jump to start + 2, which is the beginning of the body
+// At the end of a block, pop the loop count and decrement it. If it's zero, go back to the very
+// top to read a new block. otherwise jump to start + 7, which pushes the value back on the loop stack
 func (b *blockEndIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	block := p.blocks[b.blockId]
 	return []vm.Instruction{
+		vm.Instruction{vm.PopLoop, 0},
 		vm.Instruction{vm.AddLong, -1},
 		vm.Instruction{vm.EvalEqual, 0},
 		vm.Instruction{vm.CondJump, block.start},

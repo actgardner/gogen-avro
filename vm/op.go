@@ -51,6 +51,12 @@ const (
 
 	// Multiply the operand value by the Long register
 	MultLong
+
+	// Push the current Long register value onto the loop stack
+	PushLoop
+
+	// Pop the top of the loop stack and store the value in the Long register
+	PopLoop
 )
 
 func (o Op) String() string {
@@ -87,6 +93,10 @@ func (o Op) String() string {
 		return "mult_long"
 	case SetDefault:
 		return "set_def"
+	case PushLoop:
+		return "push_loop"
+	case PopLoop:
+		return "pop_loop"
 	}
 	return "Unknown"
 }
