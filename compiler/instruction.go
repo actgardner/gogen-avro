@@ -56,7 +56,7 @@ func (b *blockStartIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, e
 	return []vm.Instruction{
 		vm.Instruction{vm.Read, vm.Long},
 		vm.Instruction{vm.EvalEqual, 0},
-		vm.Instruction{vm.CondJump, block.end + 4},
+		vm.Instruction{vm.CondJump, block.end + 5},
 		vm.Instruction{vm.EvalGreater, 0},
 		vm.Instruction{vm.CondJump, block.start + 7},
 		vm.Instruction{vm.Read, vm.UnusedLong},
