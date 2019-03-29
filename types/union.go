@@ -6,6 +6,11 @@ import (
 	"github.com/actgardner/gogen-avro/generator"
 )
 
+const eofCheckerOnNullUnionsTemplate = `if err == io.EOF {
+			unionStr.UnionType = %v
+			err = nil
+		}`
+
 const unionSerializerTemplate = `
 func %v(r %v, w io.Writer) error {
 	err := writeLong(int64(r.UnionType), w)
@@ -24,6 +29,7 @@ func %v(r io.Reader) (%v, error) {
 	field, err := readLong(r)
 	var unionStr %v
 	if err != nil {
+		%v
 		return unionStr, err
 	}
 	unionStr.UnionType = %v(field)
@@ -104,10 +110,14 @@ func (s *unionField) unionSerializer() string {
 
 func (s *unionField) unionDeserializer() string {
 	switchCase := ""
+	eofChecker := ""
 	for _, t := range s.itemType {
+		if _, ok := t.(*nullField); ok {
+			eofChecker = fmt.Sprintf(eofCheckerOnNullUnionsTemplate, s.unionEnumType()+t.Name())
+		}
 		switchCase += fmt.Sprintf("case %v:\nval, err :=  %v(r)\nif err != nil {return unionStr, err}\nunionStr.%v = val\n", s.unionEnumType()+t.Name(), t.DeserializerMethod(), t.SimpleName())
 	}
-	return fmt.Sprintf(unionDeserializerTemplate, s.DeserializerMethod(), s.GoType(), s.GoType(), s.unionEnumType(), switchCase, s.GoType())
+	return fmt.Sprintf(unionDeserializerTemplate, s.DeserializerMethod(), s.GoType(), s.GoType(), eofChecker, s.unionEnumType(), switchCase, s.GoType())
 }
 
 func (s *unionField) filename() string {
