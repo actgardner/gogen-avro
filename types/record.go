@@ -96,14 +96,25 @@ func (r *RecordDefinition) Aliases() []QualifiedName {
 }
 
 func (r *RecordDefinition) structFields() string {
-	var fieldDefinitions string
+	var definitions string
 	for _, f := range r.fields {
+		var field string
+
+		// Prepend doc if exists
 		if f.Doc() != "" {
-			fieldDefinitions += fmt.Sprintf("\n// %v\n", f.Doc())
+			field += fmt.Sprintf("\n// %v\n", f.Doc())
 		}
-		fieldDefinitions += fmt.Sprintf("%v %v\n", f.SimpleName(), f.Type().GoType())
+
+		field += fmt.Sprintf("%v %v", f.SimpleName(), f.Type().GoType())
+
+		if f.Tags() != "" {
+			field += " `" + f.Tags() + "`"
+		}
+
+		definitions += field + "\n"
 	}
-	return fieldDefinitions
+
+	return definitions
 }
 
 func (r *RecordDefinition) fieldSerializers() string {
