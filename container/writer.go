@@ -1,4 +1,4 @@
-// Container provides a Writer which is capable of serializing gogen-avro structs and writing them in the Avro Object Container File (OCF) format
+// Container provides a Reader and Writer which serialize and deserialize gogen-avro structs to the Avro Object Container File (OCF) format. These are low-level primitives you probably don't need to use directly.
 package container
 
 import (
@@ -15,8 +15,10 @@ type Codec string
 const (
 	// No compression
 	Null Codec = "null"
+
 	// Deflate compression
 	Deflate Codec = "deflate"
+
 	// Snappy compression
 	Snappy Codec = "snappy"
 )
@@ -26,7 +28,8 @@ type CloseableResettableWriter interface {
 	Reset(io.Writer)
 }
 
-// Writer wraps an io.Writer and writes the file and block-level framing required for an OCF file
+// Writer wraps an io.Writer and writes the file and block-level framing required for an OCF file.
+// You can create a Writer for a given struct by calling the generated method `New<RecordType>Writer`.
 type Writer struct {
 	writer           io.Writer
 	syncMarker       [16]byte

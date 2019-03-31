@@ -12,9 +12,9 @@ import (
 const fixtureJson = `
 [
 {"Header": {"UnionType": 0}, "Body": {"UnionType": 0}},
-{"Header": {"UnionType": 1, "Data": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}, "Body": {"UnionType": 0}},
-{"Header": {"UnionType": 0}, "Body": {"UnionType": 1, "Data": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}},
-{"Header": {"UnionType": 1, "Data": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}, "Body": {"UnionType": 1, "Data": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}}
+{"Header": {"UnionType": 1, "HeaderworksData": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}, "Body": {"UnionType": 0}},
+{"Header": {"UnionType": 0}, "Body": {"UnionType": 1, "BodyworksData": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}},
+{"Header": {"UnionType": 1, "HeaderworksData": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}, "Body": {"UnionType": 1, "BodyworksData": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}}
 ]`
 
 func TestRoundTrip(t *testing.T) {

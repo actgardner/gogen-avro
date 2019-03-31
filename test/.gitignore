@@ -1,4 +1,5 @@
 */*.go
+*/*/*.go
 !*/schema_test.go
 !*/container_test.go
 !*/generate.go

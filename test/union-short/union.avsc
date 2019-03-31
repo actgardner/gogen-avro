@@ -4,7 +4,7 @@
 	"fields": [
 		{
                     "name": "UnionField", 
-                    "type": ["int", "long", "float", "double", "string", "boolean", "bytes", "null"],
+                    "type": ["int", "long", "float", "double", "string", "boolean", "null"],
                     "default": 1234
                 }
 	]

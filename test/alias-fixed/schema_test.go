@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"testing"
 
+	_ "github.com/actgardner/gogen-avro/compiler"
+	_ "github.com/actgardner/gogen-avro/vm"
 	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
 )
@@ -64,7 +66,7 @@ func TestRoundTrip(t *testing.T) {
 		err := writeEvent(&f, &buf)
 		assert.Nil(t, err)
 
-		datum, err := readEvent(&buf)
+		datum, err := DeserializeEvent(&buf)
 		assert.Nil(t, err)
 		assert.Equal(t, datum, &f)
 	}

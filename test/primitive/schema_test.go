@@ -7,6 +7,10 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema"
+	"github.com/actgardner/gogen-avro/vm"
+
 	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
 )
@@ -67,10 +71,10 @@ func TestRoundTrip(t *testing.T) {
 		err = f.Serialize(&buf)
 		assert.Nil(t, err)
 
-		datum, err := DeserializePrimitiveTestRecord(&buf)
+		target, err := DeserializePrimitiveTestRecord(&buf)
 		assert.Nil(t, err)
 
-		assert.Equal(t, *datum, f)
+		assert.Equal(t, target, &f)
 	}
 }
 
@@ -118,11 +122,25 @@ func BenchmarkDeserializePrimitiveRecord(b *testing.B) {
 
 	recordBytes := buf.Bytes()
 
+	schemaJson, err := ioutil.ReadFile("primitives.avsc")
+	assert.Nil(b, err)
+
+	readerNs := schema.NewNamespace(false)
+	readerType, err := readerNs.TypeForSchema(schemaJson)
+	assert.Nil(b, err)
+
+	err = readerType.ResolveReferences(readerNs)
+	assert.Nil(b, err)
+
+	deser, err := compiler.Compile(readerType, readerType)
+	assert.Nil(b, err)
+
+	var target PrimitiveTestRecord
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, err := DeserializePrimitiveTestRecord(bytes.NewReader(recordBytes))
+		err := vm.Eval(bytes.NewReader(recordBytes), deser, &target)
 		assert.Nil(b, err)
-
 	}
 }
 

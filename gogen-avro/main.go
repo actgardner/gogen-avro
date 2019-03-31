@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/types"
+	"github.com/actgardner/gogen-avro/schema"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 
 	var err error
 	pkg := generator.NewPackage(cfg.packageName)
-	namespace := types.NewNamespace(cfg.shortUnions)
+	namespace := schema.NewNamespace(cfg.shortUnions)
 
 	switch cfg.namespacedNames {
 	case nsShort:
@@ -39,7 +39,7 @@ func main() {
 		}
 	}
 
-	err = namespace.AddToPackage(pkg, codegenComment(cfg.files), cfg.containers)
+	err = namespace.AddToPackage(pkg, codegenComment(cfg.files))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating code for schema - %v\n", err)
 		os.Exit(4)

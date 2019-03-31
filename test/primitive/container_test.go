@@ -25,7 +25,6 @@ func TestSnappyEncoding(t *testing.T) {
 }
 
 // Round-trip some primitive values through our container file writer and reader
-
 func TestGogenNullEncoding(t *testing.T) {
 	roundTripGogenWithCodec(container.Null, t)
 }
@@ -96,13 +95,13 @@ func roundTripGogenWithCodec(codec container.Codec, t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reader, err := container.NewReader(bytes.NewReader(buf.Bytes()))
+	reader, err := NewPrimitiveTestRecordReader(bytes.NewReader(buf.Bytes()))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	for i := 0; i < len(fixtures); i++ {
-		record, err := DeserializePrimitiveTestRecord(reader)
+	for i := range fixtures {
+		record, err := reader.Read()
 		assert.Nil(t, err)
 		assert.Equal(t, record, &fixtures[i])
 	}

@@ -1,3 +1,3 @@
 package avro
 
-//go:generate $GOPATH/bin/gogen-avro --containers . fixed.avsc
+//go:generate $GOPATH/bin/gogen-avro . fixed.avsc
