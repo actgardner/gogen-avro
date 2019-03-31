@@ -7,22 +7,9 @@
 
 Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules. 
 
-### GADGT Note
-
-**This branch is a beta aimed at completely refactoring gogen-avro to support schema evolution. Bugs are expected - if you experience issues, please [report them](#reporting-issues)**
-
-Changes between the current master and GADGT:
-
-- the `container` flag has been removed - container code is always generated
-- `New<RecordType>()` no longer sets fields to their default values 
-- Avro `map``fields now generate a struct with a single field, `M`, which contains the map values
-- defaults are not currently supported in schema evolution - this is a known issue
-
-
 ### Table of contents
 
 <!--ts-->
-   * [GADGT Note](#GADGT-note)
    * [Table of contents](#table-of-contents)
    * [Installation](#installation)
    * [Usage](#usage)
@@ -39,7 +26,7 @@ Changes between the current master and GADGT:
 
 ### Installation
 
-gogen-avro has two parts: a tool which you install on your system (usually on your GOPATH) to generate code, and a runtime. 
+gogen-avro has two parts: a tool which you install on your system (usually on your GOPATH) to generate code, and a runtime library that gets imported.
 
 To install the gogen-avro executable to `$GOPATH/bin/` and generate structs, first download the repository:
 
@@ -53,16 +40,9 @@ Then run:
 go install github.com/actgardner/gogen-avro/gogen-avro
 ```
 
-Or download and install a fixed release version from gopkg.in:
+We recommend pinning a specific SHA of the gogen-avro tool when you compile your schemas with a tool like [https://github.com/twitchtv/retool](retool). This will ensure your builds are repeatable.
 
-```
-go get -d gopkg.in/actgardner/gogen-avro.v5
-go install gopkg.in/actgardner/gogen-avro.v5/gogen-avro
-```
-
-You can also use [https://github.com/twitchtv/retool](retool) to manage your Go toolchain and pin specific SHAs and versions of tools.
-
-For the runtime component, you should manage the dependency on this repo using Godep or a similar tool, like any other library.
+For the library imports, you should manage the dependency on this repo using Godep or a similar tool, like any other library.
 
 ### Usage
 
@@ -171,42 +151,31 @@ const (
 
 ### Versioning
 
-This tool is versioned using [gopkg.in](http://labix.org/gopkg.in).
-The API is guaranteed to be stable within a release. This guarantee applies to:
-- the public members of generated structures
-- the public methods attached to generated structures
-- the command-line arguments of the tool itself
+Until version 6.0 this project used gopkg.in for versioning of both the code generation tool and library. Older versions are still available on gopkg.in.
 
-Only bugfixes will be backported to existing major releases.
-This means that source files generated with the same major release may differ, but they will never break your build.
-
-4.0
----
+#### 4.0
 - Support for writing object container files is no longer experimental
 - `container` package now works with the generated code for any record type
 - Aliases and namespaces are now used properly to resolve types
 - Record structs expose a `Schema` method which includes metadata from the schema definition 
 
-3.0
----
+#### 3.0
 - Experimental support for writing object container files
 - Improved variable and type names
 - Support for custom package names as a command line argument
 
 
-2.0
----
+#### 2.0
 - Bug fixes for arrays and maps with record members
 - Refactored internals significantly
 
-1.0
----
+#### 1.0
 - Initial release
 - No longer supported - no more bugfixes are being backported
 
 ### Reporting Issues
 
-When reporting issues with the GADGT branch, please include the output from the compiler and VM logs by adding this to one of your source files:
+When reporting issues, please include your reader and writer schemas, and the output from the compiler and VM logs by adding this to one of your source files:
 
 ```
 import (
