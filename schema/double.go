@@ -7,19 +7,41 @@ import (
 	"github.com/actgardner/gogen-avro/generator"
 )
 
-const (
-	// WriteDoubleMethodDefinition represents the name definition of a double method writer
-	WriteDoubleMethodDefinition = "writeDouble"
+// FieldName represents a Avro field type name
+type FieldName string
 
-	// WriteDoubleMethod represents a double writer generator method that encodes a given float64 to the passed io.Writer
-	WriteDoubleMethod = `
+// Available field names.
+// TODO: make use of `FieldName` type
+const (
+	NameDoubleField FieldName = "Double"
+)
+
+// Method represents a method that could be passed on to a schema generator
+type Method struct {
+	Name      FieldName // Name of the method
+	Generator string    // Content to be included during generation
+}
+
+// WriteDouble represents a write double method that includes the content to be included during generation
+// TODO: implement method(s)
+var WriteDouble = Method{
+	Name: NameDoubleField,
+	Generator: `
+func writeDouble(r float64, w io.Writer) error {
+	bits := uint64(math.Float64bits(r))
+	const byteCount = 8
+	return encodeFloat(w, byteCount, bits)
+}
+`,
+}
+
+const writeDoubleMethod = `
 func writeDouble(r float64, w io.Writer) error {
 	bits := uint64(math.Float64bits(r))
 	const byteCount = 8
 	return encodeFloat(w, byteCount, bits)
 }
 `
-)
 
 // DoubleField represents a float(64) Avro field.
 type DoubleField struct {
@@ -39,7 +61,7 @@ func NewDoubleField(definition interface{}) *DoubleField {
 // AddSerializer includes the required methods, structs and imports for a `DoubleField` to the given generator package.
 func (s *DoubleField) AddSerializer(p *generator.Package) {
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", WriteDoubleMethodDefinition, WriteDoubleMethod)
+	p.AddFunction(UTIL_FILE, "", "writeDouble", writeDoubleMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeFloat", encodeFloatMethod)
 	p.AddImport(UTIL_FILE, "io")
 	p.AddImport(UTIL_FILE, "math")
