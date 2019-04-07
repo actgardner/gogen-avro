@@ -69,7 +69,7 @@ For each record in the provided schemas, gogen-avro will produce a struct, and t
 A constructor to create a new record struct, with no values set.
 
 #### `New<RecordType>Writer(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error)`
-Creates a new `container.Writer` which writes generated structs to `writer` with Avro OCF format. This is the method you want if you're writing Avro to files. `codec` supports Identity, Deflate and Snappy encodings per the Avro spec.
+Creates a new `container.Writer` which writes generated structs to `writer` with Avro OCF format. This is the method you want if you're writing Avro to files. `codec` supports `Identity`, `Deflate` and `Snappy` encodings per the Avro spec.
 
 #### `New<RecordType>Reader(reader io.Reader) (<RecordTypeReader>, error)`
 Creates a new `<RecordTypeReader>` which reads data in the Avro OCF format into generated structs. This is the method you want if you're reading Avro data from files. It will handle the codec and schema evolution for you based on the OCF headers and the reader schema used to generate the structs. 
@@ -82,7 +82,7 @@ Read Avro data from the given `io.Reader` and deserialize it into the generated 
 
 ### Working with Object Container Files (OCF)
 
-An example of how to write a container file can be found in `example/container/example.go .
+An example of how to write a container file can be found in `example/container/example.go` .
 
 [Godocs for the container package](https://godoc.org/github.com/actgardner/gogen-avro/container)
 
