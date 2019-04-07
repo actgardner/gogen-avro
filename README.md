@@ -175,17 +175,15 @@ Until version 6.0 this project used gopkg.in for versioning of both the code gen
 
 ### Reporting Issues
 
-When reporting issues, please include your reader and writer schemas, and the output from the compiler and VM logs by adding this to one of your source files:
+When reporting issues, please include your reader and writer schemas, and the output from the compiler logs by adding this to one of your source files:
 
 ```
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
 )
 
 func init() {
 	compiler.LoggingEnabled = true
-	vm.LoggingEnabled = true
 }
 ```
 
