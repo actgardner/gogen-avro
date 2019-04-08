@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -56,6 +57,15 @@ func parseCmdLine() config {
 	}
 
 	cfg.targetDir = flag.Arg(0)
-	cfg.files = flag.Args()[1:]
+	cfg.files = make([]string, 0)
+
+	for _, glob := range flag.Args()[1:] {
+		files, err := filepath.Glob(glob)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing input file as glob: %v", err)
+			os.Exit(1)
+		}
+		cfg.files = append(cfg.files, files...)
+	}
 	return cfg
 }
