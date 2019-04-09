@@ -60,20 +60,33 @@ func readFloat(r io.Reader) (float32, error) {
 	bits := binary.LittleEndian.Uint32(buf)
 	val := math.Float32frombits(bits)
 	return val, nil
-
 }
 
 func readInt(r io.Reader) (int32, error) {
 	var v int
-	buf := make([]byte, 1)
-	for shift := uint(0); ; shift += 7 {
-		if _, err := io.ReadFull(r, buf); err != nil {
-			return 0, err
+	var b byte
+	var err error
+	if br, ok := r.(ByteReader); ok {
+		for shift := uint(0); ; shift += 7 {
+			if b, err = br.ReadByte(); err != nil {
+				return 0, err
+			}
+			v |= int(b&127) << shift
+			if b&128 == 0 {
+				break
+			}
 		}
-		b := buf[0]
-		v |= int(b&127) << shift
-		if b&128 == 0 {
-			break
+	} else {
+		buf := make([]byte, 1)
+		for shift := uint(0); ; shift += 7 {
+			if _, err := io.ReadFull(r, buf); err != nil {
+				return 0, err
+			}
+			b = buf[0]
+			v |= int(b&127) << shift
+			if b&128 == 0 {
+				break
+			}
 		}
 	}
 	datum := (int32(v>>1) ^ -int32(v&1))
@@ -82,15 +95,29 @@ func readInt(r io.Reader) (int32, error) {
 
 func readLong(r io.Reader) (int64, error) {
 	var v uint64
-	buf := make([]byte, 1)
-	for shift := uint(0); ; shift += 7 {
-		if _, err := io.ReadFull(r, buf); err != nil {
-			return 0, err
+	var b byte
+	var err error
+	if br, ok := r.(ByteReader); ok {
+		for shift := uint(0); ; shift += 7 {
+			if b, err = br.ReadByte(); err != nil {
+				return 0, err
+			}
+			v |= uint64(b&127) << shift
+			if b&128 == 0 {
+				break
+			}
 		}
-		b := buf[0]
-		v |= uint64(b&127) << shift
-		if b&128 == 0 {
-			break
+	} else {
+		buf := make([]byte, 1)
+		for shift := uint(0); ; shift += 7 {
+			if _, err = io.ReadFull(r, buf); err != nil {
+				return 0, err
+			}
+			b = buf[0]
+			v |= uint64(b&127) << shift
+			if b&128 == 0 {
+				break
+			}
 		}
 	}
 	datum := (int64(v>>1) ^ -int64(v&1))
