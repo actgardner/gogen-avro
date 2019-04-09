@@ -20,28 +20,22 @@ type stackFrame struct {
 }
 
 func Eval(r io.Reader, program *Program, target types.Field) (err error) {
-	// Stack of pointers for returning from function calls
-	callStack := &intStack{stack: make([]int, 8), pos: -1}
-
-	// Stack of loop variables
-	loopStack := &intStack{stack: make([]int, 8), pos: -1}
-
-	// Stack of target Fields for assigning values
-	targetStack := &fieldStack{stack: make([]types.Field, 8), pos: -1}
-	targetStack.push(target)
-
-	frame := stackFrame{}
-
-	pc := 0
-
+	var pc int
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("Panic at pc %v - %v", pc, r)
 		}
 	}()
 
-	for pc = 0; pc < len(program.Instructions); pc++ {
-		inst := program.Instructions[pc]
+	return evalInner(r, program, target, &pc)
+}
+
+func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (err error) {
+	var loop int64
+
+	frame := stackFrame{}
+	for ; *pc < len(program.Instructions); *pc++ {
+		inst := program.Instructions[*pc]
 		switch inst.Op {
 		case Read:
 			switch inst.Operand {
@@ -81,52 +75,64 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			case Null:
 				break
 			case Boolean:
-				targetStack.peek().SetBoolean(frame.Boolean)
+				target.SetBoolean(frame.Boolean)
 				break
 			case Int:
-				targetStack.peek().SetInt(frame.Int)
+				target.SetInt(frame.Int)
 				break
 			case Long:
-				targetStack.peek().SetLong(frame.Long)
+				target.SetLong(frame.Long)
 				break
 			case Float:
-				targetStack.peek().SetFloat(frame.Float)
+				target.SetFloat(frame.Float)
 				break
 			case Double:
-				targetStack.peek().SetDouble(frame.Double)
+				target.SetDouble(frame.Double)
 				break
 			case Bytes:
-				targetStack.peek().SetBytes(frame.Bytes)
+				target.SetBytes(frame.Bytes)
 				break
 			case String:
-				targetStack.peek().SetString(frame.String)
+				target.SetString(frame.String)
 				break
 			}
 			break
 		case SetDefault:
-			targetStack.peek().SetDefault(inst.Operand)
+			target.SetDefault(inst.Operand)
 			break
 		case Enter:
-			targetStack.push(targetStack.peek().Get(inst.Operand))
+			*pc += 1
+			if err = evalInner(r, program, target.Get(inst.Operand), pc); err != nil {
+				return err
+			}
 			break
 		case Exit:
-			targetStack.pop().Finalize()
-			break
+			target.Finalize()
+			return nil
 		case AppendArray:
-			targetStack.push(targetStack.peek().AppendArray())
+			*pc += 1
+			if err = evalInner(r, program, target.AppendArray(), pc); err != nil {
+				return err
+			}
 			break
 		case AppendMap:
-			targetStack.push(targetStack.peek().AppendMap(frame.String))
+			*pc += 1
+			if err = evalInner(r, program, target.AppendMap(frame.String), pc); err != nil {
+				return err
+			}
 			break
 		case Call:
-			callStack.push(pc)
-			pc = inst.Operand - 1
+			curr := *pc
+			*pc = inst.Operand
+			if err = evalInner(r, program, target, pc); err != nil {
+				return err
+			}
+			*pc = curr
 			break
 		case Return:
-			pc = callStack.pop()
-			break
+			return nil
 		case Jump:
-			pc = inst.Operand - 1
+			*pc = inst.Operand - 1
 			break
 		case EvalGreater:
 			frame.Condition = (frame.Long > int64(inst.Operand))
@@ -136,7 +142,7 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			break
 		case CondJump:
 			if frame.Condition {
-				pc = inst.Operand - 1
+				*pc = inst.Operand - 1
 			}
 			break
 		case AddLong:
@@ -146,18 +152,22 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 			frame.Long *= int64(inst.Operand)
 			break
 		case PushLoop:
-			loopStack.push(int(frame.Long))
+			loop = frame.Long
+			*pc += 1
+			if err = evalInner(r, program, target, pc); err != nil {
+				return err
+			}
+			frame.Long = loop
 			break
 		case PopLoop:
-			frame.Long = int64(loopStack.pop())
-			break
+			return nil
 		case Halt:
 			if inst.Operand == 0 {
 				return nil
 			}
 			return fmt.Errorf("Runtime error: %v, frame: %v, pc: %v", program.Errors[inst.Operand-1], frame, pc)
 		default:
-			return fmt.Errorf("Unknown instruction %v", program.Instructions[pc])
+			return fmt.Errorf("Unknown instruction %v", program.Instructions[*pc])
 		}
 
 		if err != nil {
