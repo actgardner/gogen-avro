@@ -14,8 +14,8 @@ Generates type-safe Go code based on your Avro schemas, including serializers an
    * [Installation](#installation)
    * [Usage](#usage)
    * [Generated Methods](#generated-methods)
-   * [Working with Object Container Files (OCF)](#working-with-object-container-files-(ocf))
-   * [Examples](#examples)
+   * [Working with Object Container Files (OCF)](#working-with-object-container-files-ocf)
+   * [Example](#example)
    * [Naming](#naming)
    * [Type Conversion](#type-conversion)
    * [Versioning](#Versioning)
@@ -40,9 +40,9 @@ Then run:
 go install github.com/actgardner/gogen-avro/gogen-avro
 ```
 
-We recommend pinning a specific SHA of the gogen-avro tool when you compile your schemas with a tool like [https://github.com/twitchtv/retool](retool). This will ensure your builds are repeatable.
+We recommend pinning a specific SHA of the gogen-avro tool when you compile your schemas with a tool like [retool](https://github.com/twitchtv/retool). This will ensure your builds are repeatable.
 
-For the library imports, you should manage the dependency on this repo using Godep or a similar tool, like any other library.
+For the library imports, you should manage the dependency on this repo using [dep](https://github.com/golang/dep) or a similar tool, like any other library.
 
 ### Usage
 
@@ -52,7 +52,7 @@ To generate Go source files from one or more Avro schema files, run:
 gogen-avro [--package=<package name>] <output directory> <avro schema files>
 ```
 
-You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/blob/master/test/primitive/schema_test.go)):
+You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/blob/master/test/primitive/generate.go#L3)):
 
 ```
 //go:generate $GOPATH/bin/gogen-avro . primitives.avsc
@@ -82,7 +82,7 @@ Read Avro data from the given `io.Reader` and deserialize it into the generated 
 
 ### Working with Object Container Files (OCF)
 
-An example of how to write a container file can be found in `example/container/example.go` .
+An example of how to write a container file can be found in [example/container/example.go](https://github.com/actgardner/gogen-avro/blob/master/example/container/example.go).
 
 [Godocs for the container package](https://godoc.org/github.com/actgardner/gogen-avro/container)
 
@@ -94,7 +94,7 @@ The `example` directory contains simple example projects with an Avro schema. On
 # Build the Go source files from the Avro schema using the generate directive
 go generate github.com/actgardner/gogen-avro/example
 
-# Install the example projects on the gopath
+# Install the example projects on the GOPATH
 go install github.com/actgardner/gogen-avro/example/record
 go install github.com/actgardner/gogen-avro/example/container
 ```
@@ -120,7 +120,7 @@ Gogen-avro produces a Go struct which reflects the structure of your Avro schema
 |---------------|-------------------|----------------------------------------------------------------------------------------------------------------------|
 | null          | interface{}       | This is just a placeholder, nothing is encoded/decoded                                                               |
 | boolean       | bool              |                                                                                                                      |
-| int, long     | int32,int64       |                                                                                                                      |
+| int, long     | int32, int64      |                                                                                                                      |
 | float, double | float32, float64  |                                                                                                                      |
 | bytes         | []byte            |                                                                                                                      |
 | string        | string            |                                                                                                                      |
@@ -128,7 +128,7 @@ Gogen-avro produces a Go struct which reflects the structure of your Avro schema
 | array<type>   | []<type>          |                                                                                                                      |
 | map<type>     | custom struct | Generates a struct with a field `M`, `M` has the type map[string]<type>                                                  |
 | fixed         | [<n>]byte         | Fixed fields are given a custom type, which is an alias for an appropriately sized byte array                        |
-| union         | custom struc      | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
+| union         | custom struct     | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
 
 `union` is more complicated than primitive types. We generate a struct and enum whose name is uniquely determined by the types in the union. For a field whose type is `["null", "int"]` we generate the following:
 
