@@ -31,7 +31,7 @@ gogen-avro has two parts: a tool which you install on your system (usually on yo
 To install the gogen-avro executable to `$GOPATH/bin/` and generate structs, first download the repository:
 
 ```
-go get -d github.com/actgardner/gogen-avro
+go get -d github.com/actgardner/gogen-avro/gogen-avro
 ```
 
 Then run:
