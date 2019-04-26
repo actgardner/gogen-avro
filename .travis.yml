@@ -1,13 +1,19 @@
+dist: xenial
+
 language: go
 
+env:
+  - GO111MODULE=on
+
 go:
-  - 1.9
-  - "1.10"
-  - "1.11"
+  - "1.12"
   - tip
 
-install: go get -t -v ./gogen-avro
+git:
+  depth: 1
+
+install: true
 
 script:
   - go test github.com/actgardner/gogen-avro/generator
-  - bash test.sh 
+  - bash test.sh

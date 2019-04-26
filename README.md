@@ -3,9 +3,9 @@
 
 [![Build Status](https://travis-ci.org/actgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/actgardner/gogen-avro)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/actgardner/gogen-avro/master/LICENSE)
-[![Version 5.3.0](https://img.shields.io/badge/version-5.3.0-lightgrey.svg)](https://gopkg.in/actgardner/gogen-avro.v5)
+[![Version 5.3.0](https://img.shields.io/badge/version-5.3.0-lightgrey.svg)](https://github.com/actgardner/gogen-avro/releases/v5.3.0)
 
-Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules. 
+Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules.
 
 ### Table of contents
 
@@ -61,24 +61,24 @@ You can also use a `go:generate` directive in a source file ([example](https://g
 Note: If you want to parse multiple `.avsc` files into a single Go package (a single folder), make sure you put them all in one line. gogen-avro produces a file, `primitive.go`, that will be overwritten if you run it multiple times with different `.avsc` files and the same output folder.
 
 
-### Generated Methods 
+### Generated Methods
 
 For each record in the provided schemas, gogen-avro will produce a struct, and the following methods:
 
-#### `New<RecordType>()` 
+#### `New<RecordType>()`
 A constructor to create a new record struct, with no values set.
 
 #### `New<RecordType>Writer(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error)`
 Creates a new `container.Writer` which writes generated structs to `writer` with Avro OCF format. This is the method you want if you're writing Avro to files. `codec` supports `Identity`, `Deflate` and `Snappy` encodings per the Avro spec.
 
 #### `New<RecordType>Reader(reader io.Reader) (<RecordTypeReader>, error)`
-Creates a new `<RecordTypeReader>` which reads data in the Avro OCF format into generated structs. This is the method you want if you're reading Avro data from files. It will handle the codec and schema evolution for you based on the OCF headers and the reader schema used to generate the structs. 
+Creates a new `<RecordTypeReader>` which reads data in the Avro OCF format into generated structs. This is the method you want if you're reading Avro data from files. It will handle the codec and schema evolution for you based on the OCF headers and the reader schema used to generate the structs.
 
 #### `<RecordType>.Serialize(io.Writer) error`
 Write the contents of the struct into the given `io.Writer` in the Avro binary format, with no Avro Object Container File (OCF) framing.
 
 #### `Deserialize<RecordType>(io.Reader) (<RecordType>, error)`
-Read Avro data from the given `io.Reader` and deserialize it into the generated struct. This assumes the schema used to write the data is identical to the schema used to generate the struct. This method assumes there's no OCF framing. This method is also slow because it re-compiles the bytecode for your type every time - if you need performance you should call `compiler.Compile` once and then `vm.Eval` for each record. 
+Read Avro data from the given `io.Reader` and deserialize it into the generated struct. This assumes the schema used to write the data is identical to the schema used to generate the struct. This method assumes there's no OCF framing. This method is also slow because it re-compiles the bytecode for your type every time - if you need performance you should call `compiler.Compile` once and then `vm.Eval` for each record.
 
 ### Working with Object Container Files (OCF)
 
@@ -157,7 +157,7 @@ Until version 6.0 this project used gopkg.in for versioning of both the code gen
 - Support for writing object container files is no longer experimental
 - `container` package now works with the generated code for any record type
 - Aliases and namespaces are now used properly to resolve types
-- Record structs expose a `Schema` method which includes metadata from the schema definition 
+- Record structs expose a `Schema` method which includes metadata from the schema definition
 
 #### 3.0
 - Experimental support for writing object container files
