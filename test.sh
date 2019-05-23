@@ -4,12 +4,12 @@ set -e
 
 run_test() {
 	echo "Running test $t"
-	go generate -v github.com/actgardner/gogen-avro/$1
-	go get -t -v github.com/actgardner/gogen-avro/$1
-	go test -v github.com/actgardner/gogen-avro/$1
+	go generate -v github.com/karol-kokoszka/gogen-avro/$1
+	go get -t -v github.com/karol-kokoszka/gogen-avro/$1
+	go test -v github.com/karol-kokoszka/gogen-avro/$1
 }
 
-go install github.com/actgardner/gogen-avro/gogen-avro
+go install github.com/karol-kokoszka/gogen-avro/gogen-avro
 
 if [ $# -eq 0 ]; then
 	for t in test/*/; do
