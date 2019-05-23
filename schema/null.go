@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"github.com/actgardner/gogen-avro/generator"
+	"github.com/karol-kokoszka/gogen-avro/generator"
 )
 
 const writeNullMethod = `

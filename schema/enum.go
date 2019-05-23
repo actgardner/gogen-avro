@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/actgardner/gogen-avro/generator"
+	"github.com/karol-kokoszka/gogen-avro/generator"
 )
 
 const enumTypeDef = `
