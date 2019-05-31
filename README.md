@@ -1,9 +1,9 @@
 ## gogen-avro
 
 
-[![Build Status](https://travis-ci.org/karol-kokoszka/gogen-avro.svg?branch=master)](https://travis-ci.org/karol-kokoszka/gogen-avro)
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/karol-kokoszka/gogen-avro/master/LICENSE)
-[![Version 5.3.0](https://img.shields.io/badge/version-5.3.0-lightgrey.svg)](https://gopkg.in/karol-kokoszka/gogen-avro.v5)
+[![Build Status](https://travis-ci.org/actgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/actgardner/gogen-avro)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/actgardner/gogen-avro/master/LICENSE)
+[![Version 5.3.0](https://img.shields.io/badge/version-5.3.0-lightgrey.svg)](https://gopkg.in/actgardner/gogen-avro.v5)
 
 Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules. 
 
@@ -31,13 +31,13 @@ gogen-avro has two parts: a tool which you install on your system (usually on yo
 To install the gogen-avro executable to `$GOPATH/bin/` and generate structs, first download the repository:
 
 ```
-go get -d github.com/karol-kokoszka/gogen-avro/gogen-avro
+go get -d github.com/actgardner/gogen-avro/gogen-avro
 ```
 
 Then run:
 
 ```
-go install github.com/karol-kokoszka/gogen-avro/gogen-avro
+go install github.com/actgardner/gogen-avro/gogen-avro
 ```
 
 We recommend pinning a specific SHA of the gogen-avro tool when you compile your schemas with a tool like [retool](https://github.com/twitchtv/retool). This will ensure your builds are repeatable.
@@ -52,7 +52,7 @@ To generate Go source files from one or more Avro schema files, run:
 gogen-avro [--package=<package name>] <output directory> <avro schema files>
 ```
 
-You can also use a `go:generate` directive in a source file ([example](https://github.com/karol-kokoszka/gogen-avro/blob/master/test/primitive/generate.go#L3)):
+You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/blob/master/test/primitive/generate.go#L3)):
 
 ```
 //go:generate $GOPATH/bin/gogen-avro . primitives.avsc
@@ -82,9 +82,9 @@ Read Avro data from the given `io.Reader` and deserialize it into the generated 
 
 ### Working with Object Container Files (OCF)
 
-An example of how to write a container file can be found in [example/container/example.go](https://github.com/karol-kokoszka/gogen-avro/blob/master/example/container/example.go).
+An example of how to write a container file can be found in [example/container/example.go](https://github.com/actgardner/gogen-avro/blob/master/example/container/example.go).
 
-[Godocs for the container package](https://godoc.org/github.com/karol-kokoszka/gogen-avro/container)
+[Godocs for the container package](https://godoc.org/github.com/actgardner/gogen-avro/container)
 
 ### Example
 
@@ -92,11 +92,11 @@ The `example` directory contains simple example projects with an Avro schema. On
 
 ```
 # Build the Go source files from the Avro schema using the generate directive
-go generate github.com/karol-kokoszka/gogen-avro/example
+go generate github.com/actgardner/gogen-avro/example
 
 # Install the example projects on the GOPATH
-go install github.com/karol-kokoszka/gogen-avro/example/record
-go install github.com/karol-kokoszka/gogen-avro/example/container
+go install github.com/actgardner/gogen-avro/example/record
+go install github.com/actgardner/gogen-avro/example/container
 ```
 
 ### Naming
@@ -179,7 +179,7 @@ When reporting issues, please include your reader and writer schemas, and the ou
 
 ```
 import (
-	"github.com/karol-kokoszka/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
 func init() {

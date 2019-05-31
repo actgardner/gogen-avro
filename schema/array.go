@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 
-	"github.com/karol-kokoszka/gogen-avro/generator"
+	"github.com/actgardner/gogen-avro/generator"
 )
 
 const arraySerializerTemplate = `
@@ -85,7 +85,7 @@ func (s *ArrayField) AddSerializer(p *generator.Package) {
 	p.AddFunction(UTIL_FILE, "", methodName, arraySerializer)
 	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
 	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.AddImport(UTIL_FILE, "github.com/karol-kokoszka/gogen-avro/vm/types")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm/types")
 	p.AddFunction(UTIL_FILE, s.WrapperType(), "", s.appendMethodDef())
 	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
 	p.AddImport(UTIL_FILE, "io")

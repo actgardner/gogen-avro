@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/karol-kokoszka/gogen-avro/generator"
+	"github.com/actgardner/gogen-avro/generator"
 )
 
 const recordStructDefTemplate = `
@@ -273,13 +273,13 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 		p.AddFunction(r.filename(), r.GoType(), "SchemaName", schemaNameDef)
 
 		if containers {
-			p.AddImport(r.filename(), "github.com/karol-kokoszka/gogen-avro/container")
+			p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/container")
 			p.AddFunction(r.filename(), "", r.recordWriterMethod(), r.recordWriterMethodDef())
 		}
 
-		p.AddImport(r.filename(), "github.com/karol-kokoszka/gogen-avro/vm/types")
-		p.AddImport(r.filename(), "github.com/karol-kokoszka/gogen-avro/vm")
-		p.AddImport(r.filename(), "github.com/karol-kokoszka/gogen-avro/compiler")
+		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm/types")
+		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm")
+		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/compiler")
 		p.AddFunction(r.filename(), r.GoType(), "fieldTemplate", r.FieldsMethodDef())
 		p.AddFunction(r.filename(), r.GoType(), "recordReader", r.recordReaderDef())
 		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
