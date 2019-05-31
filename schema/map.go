@@ -2,6 +2,7 @@ package schema
 
 import (
 	"fmt"
+
 	"github.com/actgardner/gogen-avro/generator"
 )
 
@@ -173,7 +174,7 @@ func (s *MapField) appendMethodDef() string {
 	if s.itemType.WrapperType() != "" {
 		ret = fmt.Sprintf("(*%v)(&r.values[len(r.values)-1])", s.itemType.WrapperType())
 	} else {
-		ret = fmt.Sprintf("&r.values[len(r.values)-1]", s.GoType())
+		ret = fmt.Sprintf("r.values[len(r.values)-1]")
 	}
 	return fmt.Sprintf(mapWrapperTemplate, s.Name(), s.itemType.GoType(), s.itemType.GoType(), ret, constructElem)
 }

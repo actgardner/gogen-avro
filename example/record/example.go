@@ -4,6 +4,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/actgardner/gogen-avro/example/avro"
 )
 

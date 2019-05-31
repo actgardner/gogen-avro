@@ -7,11 +7,12 @@
 package avro
 
 import (
+	"io"
+
 	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/container"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
-	"io"
 )
 
 type DemoSchema struct {
