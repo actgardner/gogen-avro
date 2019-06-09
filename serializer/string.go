@@ -4,22 +4,19 @@ import (
 	"io"
 )
 
-// String ...
-type String struct {
+// StringWriter Writer implementation of the string primitive.
+type StringWriter struct {
+	HeaderWriter
+	writer io.Writer
 }
 
-// Reader ...
-func (s *String) Reader(r io.Reader) (empty []byte, err error) {
-	return empty, err
-}
-
-// Writer ...
-func (s *String) Writer(i []byte, w io.Writer) error {
-	err := WriteLong(int64(len(i)), w)
+// Write writes the given byte buffer and the expecting message length to the underlaying data stream.
+func (s *StringWriter) Write(i []byte) error {
+	err := s.WriteMessageLength(int64(len(i)))
 	if err != nil {
 		return err
 	}
 
-	_, err = w.Write(i)
+	_, err = s.writer.Write(i)
 	return err
 }
