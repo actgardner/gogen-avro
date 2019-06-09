@@ -2,10 +2,38 @@ package serializer
 
 import "io"
 
-// Primitive ...
+// Reader is the interface that wraps the basic Read method.
+//
+// ReadNext reads the next block of bytes from the underlaying data stream.
+// It returns the bytes read inside a buffer and any error encountered.
+//
+// Implementations define the type of the returned byte buffer.
+type Reader interface {
+	ReadNext() ([]byte, error)
+}
+
+// Writer is the interface that wraps the basic Write method.
+//
+// Write writes len(p) bytes from p to the underlying data stream.
+// A expected length header of len(p) is written before the actual message.
+// It returns the number of bytes written from p (0 <= n <= len(p)) and any error encountered that caused the write to stop early.
+// Write must return a non-nil error if it returns n < len(p). Write must not modify the slice data, even temporarily.
+//
+// Implementations define the type of p.
+type Writer interface {
+	Write(p []byte) error
+}
+
+// Closer The behavior of Close after the first call is undefined. Specific implementations may document their own behavior.
+type Closer interface {
+	Close() error
+}
+
+// Primitive is the interface that groups the basic ReadNext, Write and Close methods.
 type Primitive interface {
-	Read(r io.Reader) ([]byte, error)
-	Write(i []byte, w io.Writer) error
+	Reader
+	Writer
+	Closer
 }
 
 // EncodeInt ...
