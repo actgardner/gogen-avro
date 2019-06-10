@@ -32,8 +32,8 @@ func (s *Byte) Write(i []byte) error {
 	return err
 }
 
-// ReadNext reads the next length header and message block of len(m)
-func (s *Byte) ReadNext() ([]byte, error) {
+// Read reads the next length header and message block of len(m)
+func (s *Byte) Read() ([]byte, error) {
 	length, err := s.ReadMessageLength()
 	if err != nil {
 		return nil, err

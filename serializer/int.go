@@ -26,14 +26,23 @@ func EncodeInt(length int, i uint64) []byte {
 	return bb
 }
 
-// Int Read, Write implementation of the int primitive.
+// NewInt constructs a new int processer for the given stream
+func NewInt(stream Stream) Int {
+	i := Int{
+		Stream: stream,
+	}
+
+	return i
+}
+
+// Int Read, Write implementation of the int (int32) primitive.
 type Int struct {
 	Stream
 }
 
-// ReadNext interperates the next byte of the underlaying data stream as a int.
-func (i *Int) ReadNext() (int32, error) {
-	var v int
+// Read interperates the next byte of the underlaying data stream as a int.
+func (i *Int) Read() (int32, error) {
+	var v uint32
 	buf := make([]byte, 1)
 
 	for shift := uint(0); ; shift += 7 {
@@ -43,7 +52,7 @@ func (i *Int) ReadNext() (int32, error) {
 		}
 
 		b := buf[0]
-		v |= int(b&127) << shift
+		v |= uint32(b&127) << shift
 
 		if b&128 == 0 {
 			break
