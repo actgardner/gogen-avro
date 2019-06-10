@@ -2,10 +2,18 @@ package serializer
 
 import "io"
 
+// NewHeader constructs a new header processer for the given stream
+func NewHeader(stream Stream) Header {
+	h := Header{
+		Stream: stream,
+	}
+
+	return h
+}
+
 // Header writes header messages to the underlaying data stream.
 type Header struct {
-	writer io.Writer
-	reader io.Reader
+	Stream
 }
 
 // WriteMessageLength writes ammount of bytes that could be expected by a consumer for the upcomming message.
@@ -18,7 +26,7 @@ func (h Header) WriteMessageLength(r int64) error {
 	length := uint64((r << 1) ^ (r >> downShift))
 
 	encoded := EncodeInt(maxByteSize, length)
-	_, err := h.writer.Write(encoded)
+	_, err := h.Stream.Write(encoded)
 
 	return err
 }
@@ -31,7 +39,7 @@ func (h Header) ReadMessageLength() (int64, error) {
 	buf := make([]byte, 1)
 
 	for shift := uint(0); ; shift += 7 {
-		if _, err := io.ReadFull(h.reader, buf); err != nil {
+		if _, err := io.ReadFull(h.Stream, buf); err != nil {
 			return 0, err
 		}
 

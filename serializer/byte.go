@@ -4,6 +4,16 @@ import (
 	"io"
 )
 
+// NewByte constructs a new byte processer for the given stream
+func NewByte(stream Stream) Byte {
+	b := Byte{
+		Header: NewHeader(stream),
+		Stream: stream,
+	}
+
+	return b
+}
+
 // Byte low level byte reader, writer implementation.
 // And Read, Writer implementation of the byte primitive.
 type Byte struct {
@@ -18,7 +28,7 @@ func (s *Byte) Write(i []byte) error {
 		return err
 	}
 
-	_, err = s.writer.Write(i)
+	_, err = s.Stream.Write(i)
 	return err
 }
 
@@ -30,7 +40,7 @@ func (s *Byte) ReadNext() ([]byte, error) {
 	}
 
 	bb := make([]byte, length)
-	_, err = io.ReadFull(s.reader, bb)
+	_, err = io.ReadFull(s.Stream, bb)
 	if err != nil {
 		return nil, err
 	}

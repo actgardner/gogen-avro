@@ -37,7 +37,7 @@ func (i *Int) ReadNext() (int32, error) {
 	buf := make([]byte, 1)
 
 	for shift := uint(0); ; shift += 7 {
-		_, err := io.ReadFull(i.Reader, buf)
+		_, err := io.ReadFull(i.Stream, buf)
 		if err != nil {
 			return 0, err
 		}
@@ -62,7 +62,7 @@ func (i *Int) Write(r int32) error {
 	encoded := uint64((uint32(r) << 1) ^ uint32(r>>downShift))
 
 	bb := EncodeInt(maxByteSize, encoded)
-	_, err := i.Writer.Write(bb)
+	_, err := i.Stream.Write(bb)
 
 	return err
 }
