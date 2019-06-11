@@ -15,8 +15,8 @@ type String struct {
 }
 
 // Write writes the given byte buffer and the expecting message length to the underlaying data stream.
-func (s *String) Write(i []byte) error {
-	return s.Byte.Write(i)
+func (s *String) Write(i string) error {
+	return s.Byte.Write([]byte(i))
 }
 
 // Read reads the next length header and message block of len(m)
