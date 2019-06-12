@@ -153,6 +153,12 @@ const (
 
 Until version 6.0 this project used gopkg.in for versioning of both the code generation tool and library. Older versions are still available on gopkg.in.
 
+Releases from 6.0 onward use semver tags (ex. `v6.0.0`) which are compatible with dep and modules.
+
+#### 6.0
+- Support for schema evolution
+- Support for reading Object container files
+
 #### 4.0
 - Support for writing object container files is no longer experimental
 - `container` package now works with the generated code for any record type
