@@ -83,3 +83,29 @@ func BenchmarkWritingString(b *testing.B) {
 		WriteString(w, input)
 	}
 }
+
+func BenchmarkReadingString(b *testing.B) {
+	r, w := io.Pipe()
+
+	go func() {
+		for i := 0; i < b.N; i++ {
+			value := RandStringRunes(100)
+			WriteString(w, value)
+		}
+
+		w.Close()
+	}()
+
+	bb, _ := ioutil.ReadAll(r)
+	r, w = io.Pipe()
+	go w.Write(bb)
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_, err := ReadString(r)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
