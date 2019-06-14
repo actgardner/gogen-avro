@@ -1,27 +1,15 @@
 package serializer
 
-// NewString constructs a new string processer for the given stream
-func NewString(stream Stream) String {
-	s := String{
-		Byte: NewByte(stream),
-	}
+import "io"
 
-	return s
+// WriteString writes the given byte buffer and the expecting message length to the underlaying data stream.
+func WriteString(w io.Writer, i string) error {
+	return WriteByte(w, []byte(i))
 }
 
-// String Read, Writer implementation of the string primitive.
-type String struct {
-	Byte
-}
-
-// Write writes the given byte buffer and the expecting message length to the underlaying data stream.
-func (s *String) Write(i string) error {
-	return s.Byte.Write([]byte(i))
-}
-
-// Read reads the next length header and message block of len(m)
-func (s *String) Read() (string, error) {
-	bb, err := s.Byte.Read()
+// ReadString reads the next length header and message block of len(m)
+func ReadString(r io.Reader) (string, error) {
+	bb, err := ReadByte(r)
 	if err != nil {
 		return "", err
 	}

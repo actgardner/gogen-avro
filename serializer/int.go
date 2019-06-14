@@ -26,27 +26,26 @@ func EncodeInt(length int, i uint64) []byte {
 	return bb
 }
 
-// NewInt constructs a new int processer for the given stream
-func NewInt(stream Stream) Int {
-	i := Int{
-		Stream: stream,
-	}
+// WriteInt writes the given int to the underlaying data stream.
+func WriteInt(w io.Writer, r int32) error {
+	const maxByteSize = 5
 
-	return i
+	downShift := uint32(31)
+	encoded := uint64((uint32(r) << 1) ^ uint32(r>>downShift))
+
+	bb := EncodeInt(maxByteSize, encoded)
+	_, err := w.Write(bb)
+
+	return err
 }
 
-// Int Read, Write implementation of the int (int32) primitive.
-type Int struct {
-	Stream
-}
-
-// Read interperates the next byte of the underlaying data stream as a int.
-func (i *Int) Read() (int32, error) {
+// ReadInt interperates the next byte of the underlaying data stream as a int.
+func ReadInt(r io.Reader) (int32, error) {
 	var v uint32
 	buf := make([]byte, 1)
 
 	for shift := uint(0); ; shift += 7 {
-		_, err := io.ReadFull(i.Stream, buf)
+		_, err := io.ReadFull(r, buf)
 		if err != nil {
 			return 0, err
 		}
@@ -59,19 +58,6 @@ func (i *Int) Read() (int32, error) {
 		}
 	}
 
-	r := (int32(v>>1) ^ -int32(v&1))
-	return r, nil
-}
-
-// Write writes the given int to the underlaying data stream.
-func (i *Int) Write(r int32) error {
-	const maxByteSize = 5
-
-	downShift := uint32(31)
-	encoded := uint64((uint32(r) << 1) ^ uint32(r>>downShift))
-
-	bb := EncodeInt(maxByteSize, encoded)
-	_, err := i.Stream.Write(bb)
-
-	return err
+	i := (int32(v>>1) ^ -int32(v&1))
+	return i, nil
 }

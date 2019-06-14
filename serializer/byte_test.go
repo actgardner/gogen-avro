@@ -1,7 +1,11 @@
 package serializer
 
 import (
+	"io"
+	"io/ioutil"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 func TestReadingBytes(t *testing.T) {
@@ -13,13 +17,12 @@ func TestReadingBytes(t *testing.T) {
 		"up":    []byte{4, 117, 112},
 	}
 
-	s := NewStream()
-	b := NewByte(s)
+	r, w := io.Pipe()
 
 	for expected, input := range inputs {
-		go s.Write(input)
+		go w.Write(input)
 
-		result, err := b.Read()
+		result, err := ReadByte(r)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -27,5 +30,23 @@ func TestReadingBytes(t *testing.T) {
 		if string(result) != expected {
 			t.Fatalf("bytes: %b, are interperated incorrectly expected result %s recieved %s", input, expected, result)
 		}
+	}
+}
+
+func BenchmarkWritingBytes(b *testing.B) {
+	rand.Seed(time.Now().UnixNano())
+	inputs := make([][]byte, b.N)
+
+	for i := 0; i < b.N; i++ {
+		inputs = append(inputs, []byte(RandStringRunes(100)))
+	}
+
+	r, w := io.Pipe()
+	go ioutil.ReadAll(r)
+
+	b.ResetTimer()
+
+	for _, input := range inputs {
+		WriteByte(w, input)
 	}
 }

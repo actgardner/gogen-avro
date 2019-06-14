@@ -1,14 +1,13 @@
 package serializer
 
-import "io"
+import "math/rand"
 
-// NewStream sets up a io.Pipe for streaming tests
-func NewStream() Stream {
-	r, w := io.Pipe()
-	s := Stream{
-		Reader: r,
-		Writer: w,
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func RandStringRunes(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
-
-	return s
+	return string(b)
 }

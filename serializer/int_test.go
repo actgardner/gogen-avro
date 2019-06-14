@@ -1,6 +1,7 @@
 package serializer
 
 import (
+	"io"
 	"testing"
 )
 
@@ -14,13 +15,12 @@ func TestReadingInt(t *testing.T) {
 		15:         []byte{30},
 	}
 
-	s := NewStream()
-	i := NewInt(s)
+	r, w := io.Pipe()
 
 	for expected, input := range inputs {
-		go s.Write(input)
+		go w.Write(input)
 
-		result, err := i.Read()
+		result, err := ReadInt(r)
 		if err != nil {
 			t.Fatal(err)
 		}

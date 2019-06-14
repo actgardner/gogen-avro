@@ -1,6 +1,9 @@
 package serializer
 
-import "testing"
+import (
+	"io"
+	"testing"
+)
 
 func TestReadingLong(t *testing.T) {
 	// expected result - input
@@ -12,13 +15,12 @@ func TestReadingLong(t *testing.T) {
 		15:                  []byte{30},
 	}
 
-	s := NewStream()
-	i := NewLong(s)
+	r, w := io.Pipe()
 
 	for expected, input := range inputs {
-		go s.Write(input)
+		go w.Write(input)
 
-		result, err := i.Read()
+		result, err := ReadLong(r)
 		if err != nil {
 			t.Fatal(err)
 		}

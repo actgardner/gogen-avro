@@ -2,31 +2,17 @@ package serializer
 
 import "io"
 
-// NewHeader constructs a new header processer for the given stream
-func NewHeader(stream Stream) Header {
-	h := Header{
-		Stream: stream,
-	}
-
-	return h
-}
-
-// Header writes header messages to the underlaying data stream.
-type Header struct {
-	Stream
-}
-
 // WriteMessageLength writes ammount of bytes that could be expected by a consumer for the upcomming message.
 // Any error encountered while writing the message header is returned.
 // https://avro.apache.org/docs/1.8.1/spec.html#Message+Framing
-func (h Header) WriteMessageLength(r int64) error {
+func WriteMessageLength(w io.Writer, r int64) error {
 	const maxByteSize = 10
 
 	downShift := uint64(63)
 	length := uint64((r << 1) ^ (r >> downShift))
 
 	encoded := EncodeInt(maxByteSize, length)
-	_, err := h.Stream.Write(encoded)
+	_, err := w.Write(encoded)
 
 	return err
 }
@@ -34,12 +20,12 @@ func (h Header) WriteMessageLength(r int64) error {
 // ReadMessageLength reads the next message header which contains the expecting message length.
 // It returns the total byte length of the upcomming message and any error encountered.
 // https://avro.apache.org/docs/1.8.1/spec.html#Message+Framing
-func (h Header) ReadMessageLength() (int64, error) {
+func ReadMessageLength(r io.Reader) (int64, error) {
 	var l uint64
 	buf := make([]byte, 1)
 
 	for shift := uint(0); ; shift += 7 {
-		if _, err := io.ReadFull(h.Stream, buf); err != nil {
+		if _, err := io.ReadFull(r, buf); err != nil {
 			return 0, err
 		}
 
