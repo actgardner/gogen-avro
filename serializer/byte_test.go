@@ -1,6 +1,7 @@
 package serializer
 
 import (
+	"bytes"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -33,20 +34,68 @@ func TestReadingBytes(t *testing.T) {
 	}
 }
 
+func TestWritingBytes(t *testing.T) {
+	inputs := map[string][]byte{
+		"john": []byte{8, 106, 111, 104, 110},
+		"doe":  []byte{6, 100, 111, 101},
+	}
+
+	for input, expected := range inputs {
+		r, w := io.Pipe()
+
+		go func() {
+			err := WriteByte(w, []byte(input))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			w.Close()
+		}()
+
+		bb, _ := ioutil.ReadAll(r)
+
+		if len(bb) != len(expected) {
+			t.Fatalf("the returned byte buffer has an unexpected length: %b, %b\n", bb, expected)
+		}
+
+		for i, b := range bb {
+			if b != expected[i] {
+				t.Fatalf("unexpected byte encountered: %b, %b\n", b, expected[i])
+			}
+		}
+	}
+}
+
+func BenchmarkReadingBytes(b *testing.B) {
+	bb := bytes.NewBuffer(nil)
+
+	for i := 0; i < b.N; i++ {
+		value := RandStringRunes(100)
+		WriteString(bb, value)
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_, err := ReadByte(bb)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func BenchmarkWritingBytes(b *testing.B) {
 	rand.Seed(time.Now().UnixNano())
 	inputs := make([][]byte, b.N)
+	bb := bytes.NewBuffer(nil)
 
 	for i := 0; i < b.N; i++ {
 		inputs = append(inputs, []byte(RandStringRunes(100)))
 	}
 
-	r, w := io.Pipe()
-	go ioutil.ReadAll(r)
-
 	b.ResetTimer()
 
 	for _, input := range inputs {
-		WriteByte(w, input)
+		WriteByte(bb, input)
 	}
 }

@@ -1,6 +1,8 @@
 package serializer
 
-import "io"
+import (
+	"io"
+)
 
 // WriteMessageLength writes ammount of bytes that could be expected by a consumer for the upcomming message.
 // Any error encountered while writing the message header is returned.
@@ -25,7 +27,7 @@ func ReadMessageLength(r io.Reader) (int64, error) {
 	buf := make([]byte, 1)
 
 	for shift := uint(0); ; shift += 7 {
-		if _, err := io.ReadFull(r, buf); err != nil {
+		if _, err := r.Read(buf); err != nil {
 			return 0, err
 		}
 

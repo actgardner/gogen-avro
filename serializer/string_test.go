@@ -1,6 +1,7 @@
 package serializer
 
 import (
+	"bytes"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -69,41 +70,30 @@ func TestWritingString(t *testing.T) {
 func BenchmarkWritingString(b *testing.B) {
 	rand.Seed(time.Now().UnixNano())
 	inputs := make([]string, b.N)
+	bb := bytes.NewBuffer(nil)
 
 	for i := 0; i < b.N; i++ {
 		inputs = append(inputs, RandStringRunes(100))
 	}
 
-	r, w := io.Pipe()
-	go ioutil.ReadAll(r)
-
 	b.ResetTimer()
 
 	for _, input := range inputs {
-		WriteString(w, input)
+		WriteString(bb, input)
 	}
 }
 
 func BenchmarkReadingString(b *testing.B) {
-	r, w := io.Pipe()
+	bb := bytes.NewBuffer(nil)
 
-	go func() {
-		for i := 0; i < b.N; i++ {
-			value := RandStringRunes(100)
-			WriteString(w, value)
-		}
-
-		w.Close()
-	}()
-
-	bb, _ := ioutil.ReadAll(r)
-	r, w = io.Pipe()
-	go w.Write(bb)
+	for i := 0; i < b.N; i++ {
+		WriteString(bb, RandStringRunes(100))
+	}
 
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		_, err := ReadString(r)
+		_, err := ReadString(bb)
 		if err != nil {
 			b.Fatal(err)
 		}

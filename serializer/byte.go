@@ -15,7 +15,7 @@ func WriteByte(w io.Writer, i []byte) error {
 	return err
 }
 
-// ReadByte reads the next length header and message block of len(m)
+// ReadByte reads the next byte message block of len(m)
 func ReadByte(r io.Reader) ([]byte, error) {
 	length, err := ReadMessageLength(r)
 	if err != nil {
@@ -23,7 +23,7 @@ func ReadByte(r io.Reader) ([]byte, error) {
 	}
 
 	bb := make([]byte, length)
-	_, err = io.ReadFull(r, bb)
+	_, err = r.Read(bb)
 	if err != nil {
 		return nil, err
 	}
