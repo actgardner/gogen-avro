@@ -1,0 +1,13 @@
+{
+  "type" : "record",
+  "name" : "UnionRecord",
+  "fields" : [ {
+    "name" : "id",
+    "type" : "string",
+    "default" : "test_id"
+  }, {
+    "name" : "age",
+    "type" : "int",
+    "default" : 100
+  } ]
+}

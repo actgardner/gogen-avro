@@ -189,8 +189,15 @@ func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{
 }
 
 func (s *UnionField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	lvalue = fmt.Sprintf("%v.%v", lvalue, s.itemType[0].Name())
-	return s.itemType[0].DefaultValue(lvalue, rvalue)
+	defaultType := s.itemType[0]
+	init := fmt.Sprintf("%v = %v\n", lvalue, s.ConstructorMethod())
+	lvalue = fmt.Sprintf("%v.%v", lvalue, defaultType.Name())
+	constructorCall := ""
+	if constructor, ok := getConstructableForType(defaultType); ok {
+		constructorCall = fmt.Sprintf("%v = %v\n", lvalue, constructor.ConstructorMethod())
+	}
+	assignment, err := defaultType.DefaultValue(lvalue, rvalue)
+	return init + constructorCall + assignment, err
 }
 
 func (s *UnionField) WrapperType() string {
