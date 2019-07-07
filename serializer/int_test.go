@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
+	"strconv"
 	"testing"
 )
 
@@ -26,7 +27,7 @@ func TestEncodingInt(t *testing.T) {
 
 		for i, b := range bb {
 			if b != expected[i] {
-				t.Fatalf("unexpected byte encountered: %b, %b\n", b, expected[i])
+				t.Fatalf("unexpected byte encountered: %v, %v\n", b, expected[i])
 			}
 		}
 	}
@@ -42,18 +43,20 @@ func TestReadingInt(t *testing.T) {
 		15:         []byte{30},
 	}
 
-	r, w := io.Pipe()
-
 	for expected, input := range inputs {
-		go w.Write(input)
+		bb := bytes.NewBuffer(input)
 
-		result, err := ReadInt(r)
+		result, err := ReadInt(bb)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		if result != expected {
 			t.Fatalf("bytes: %b, are interperated incorrectly expected result %d recieved %d", input, expected, result)
+		}
+
+		if bb.Len() != 0 {
+			t.Fatal("not all bytes have been read from the byte buffer")
 		}
 	}
 }
@@ -88,7 +91,7 @@ func TestWritingInt(t *testing.T) {
 
 		for i, b := range bb {
 			if b != expected[i] {
-				t.Fatalf("unexpected byte encountered: %b, %b\n", b, expected[i])
+				t.Fatalf("unexpected byte encountered: %v, %v at index %d\n", b, expected[i], i)
 			}
 		}
 	}
@@ -129,5 +132,117 @@ func BenchmarkWritingInt(b *testing.B) {
 
 	for _, input := range inputs {
 		WriteInt(bb, input)
+	}
+}
+
+func TestReadingMapInt(t *testing.T) {
+	type run struct {
+		Input  []byte
+		Output map[string]int32
+	}
+
+	inputs := []run{
+		{
+			Input:  []byte{4, 8, 67, 111, 100, 101, 200, 31, 16, 67, 97, 116, 101, 103, 111, 114, 121, 60, 0},
+			Output: map[string]int32{"Category": 30, "Code": 2020},
+		},
+		{
+			Input:  []byte{2, 16, 67, 97, 116, 101, 103, 111, 114, 121, 60, 0},
+			Output: map[string]int32{"Category": 30},
+		},
+	}
+
+	for _, run := range inputs {
+		bb := bytes.NewBuffer(run.Input)
+		mp, err := ReadMapInt(bb)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		for key, expected := range run.Output {
+			val, has := mp[key]
+			if !has {
+				t.Fatalf("read output does not have the expected key: %s\n", key)
+			}
+
+			if val != expected {
+				t.Fatalf("read output value does not match the expected output: %d, %d\n", expected, val)
+			}
+		}
+
+		if bb.Len() != 0 {
+			t.Fatal("not all bytes have been read from the byte buffer")
+		}
+	}
+}
+
+func TestWritingMapInt(t *testing.T) {
+	type run struct {
+		Output []byte
+		Input  map[string]int32
+	}
+
+	inputs := []run{
+		{
+			Output: []byte{4, 8, 67, 111, 100, 101, 200, 31, 16, 67, 97, 116, 101, 103, 111, 114, 121, 60, 0},
+			Input:  map[string]int32{"Code": 2020, "Category": 30},
+		},
+		{
+			Output: []byte{2, 16, 67, 97, 116, 101, 103, 111, 114, 121, 60, 0},
+			Input:  map[string]int32{"Category": 30},
+		},
+	}
+
+	for _, run := range inputs {
+		bb := bytes.NewBuffer(nil)
+		err := WriteMapInt(bb, run.Input)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if bb.Len() != len(run.Output) {
+			t.Fatalf("the returned byte buffer has an unexpected length: %b, %b\n", bb, run.Output)
+		}
+
+		for i, b := range bb.Bytes() {
+			if b != run.Output[i] {
+				t.Fatalf("unexpected byte encountered: %v, %v at index %d\n", b, run.Output[i], i)
+			}
+		}
+	}
+}
+
+func BenchmarkReadingMapInt(b *testing.B) {
+	bb := bytes.NewBuffer(nil)
+
+	for i := 0; i < b.N; i++ {
+		WriteMapInt(bb, map[string]int32{"key": 100})
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_, err := ReadMapInt(bb)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkWritingMapInt(b *testing.B) {
+	inputs := make([]map[string]int32, b.N)
+	bb := bytes.NewBuffer(nil)
+
+	for i := 0; i < b.N; i++ {
+		inp := make(map[string]int32, 1)
+		key := strconv.Itoa(i)
+		inp[key] = 100
+		inputs = append(inputs, inp)
+	}
+
+	b.ResetTimer()
+
+	for _, input := range inputs {
+		WriteMapInt(bb, input)
 	}
 }

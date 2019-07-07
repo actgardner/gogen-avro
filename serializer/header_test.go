@@ -59,7 +59,7 @@ func TestWritingHeaderMessageLength(t *testing.T) {
 
 		for i, b := range bb {
 			if b != expected[i] {
-				t.Fatalf("unexpected byte encountered: %b, %b\n", b, expected[i])
+				t.Fatalf("unexpected byte encountered: %v, %v\n", b, expected[i])
 			}
 		}
 	}

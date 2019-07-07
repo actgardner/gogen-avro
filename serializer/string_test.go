@@ -16,18 +16,20 @@ func TestReadingString(t *testing.T) {
 		"doe":  []byte{6, 100, 111, 101},
 	}
 
-	r, w := io.Pipe()
-
 	for expected, input := range inputs {
-		go w.Write(input)
+		bb := bytes.NewBuffer(input)
 
-		result, err := ReadString(r)
+		result, err := ReadString(bb)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		if result != expected {
 			t.Fatalf("bytes: %b, are interperated incorrectly expected result %s recieved %s", input, expected, result)
+		}
+
+		if bb.Len() != 0 {
+			t.Fatal("not all bytes have been read from the byte buffer")
 		}
 	}
 }
@@ -61,7 +63,7 @@ func TestWritingString(t *testing.T) {
 
 		for i, b := range bb {
 			if b != expected[i] {
-				t.Fatalf("unexpected byte encountered: %b, %b\n", b, expected[i])
+				t.Fatalf("unexpected byte encountered: %v, %v at index %d\n", b, expected[i], i)
 			}
 		}
 	}

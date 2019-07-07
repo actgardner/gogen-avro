@@ -1,6 +1,8 @@
 package serializer
 
-import "io"
+import (
+	"io"
+)
 
 // EncodeInt encodes the given interger using variable-length zig-zag coding.
 // https://avro.apache.org/docs/1.8.1/spec.html#binary_encoding
@@ -13,7 +15,7 @@ func EncodeInt(length int, i uint64) []byte {
 		return bb
 	}
 
-	for i > 0 {
+	for a := 0; i > 0; a++ {
 		b := byte(i & 127)
 		i = i >> 7
 		if !(i == 0) {
@@ -60,4 +62,64 @@ func ReadInt(r io.Reader) (int32, error) {
 
 	i := (int32(v>>1) ^ -int32(v&1))
 	return i, nil
+}
+
+// WriteMapInt interperates the next bytes of the underlaying data stream as a map[string]int
+func WriteMapInt(w io.Writer, m map[string]int32) error {
+	err := WriteMessageLength(w, int64(len(m)))
+	if err != nil || len(m) == 0 {
+		return err
+	}
+
+	for key, val := range m {
+		err = WriteString(w, key)
+		if err != nil {
+			return err
+		}
+
+		err = WriteInt(w, val)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Mark the end of the map
+	err = WriteMessageLength(w, 0)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ReadMapInt interperates the next bytes of the underlaying data stream as a map[string]int
+func ReadMapInt(r io.Reader) (map[string]int32, error) {
+	m := make(map[string]int32)
+
+	for {
+		block, err := ReadLengthNextMapBlock(r)
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		for i := int64(0); i < block; i++ {
+			key, err := ReadString(r)
+			if err != nil {
+				return nil, err
+			}
+
+			val, err := ReadInt(r)
+			if err != nil {
+				return nil, err
+			}
+
+			m[key] = val
+		}
+	}
+
+	return m, nil
 }

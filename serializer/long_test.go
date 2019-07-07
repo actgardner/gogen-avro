@@ -17,18 +17,20 @@ func TestReadingLong(t *testing.T) {
 		15:                  []byte{30},
 	}
 
-	r, w := io.Pipe()
-
 	for expected, input := range inputs {
-		go w.Write(input)
+		bb := bytes.NewBuffer(input)
 
-		result, err := ReadLong(r)
+		result, err := ReadLong(bb)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		if result != expected {
 			t.Fatalf("bytes: %b, are interperated incorrectly expected result %d recieved %d", input, expected, result)
+		}
+
+		if bb.Len() != 0 {
+			t.Fatal("not all bytes have been read from the byte buffer")
 		}
 	}
 }
@@ -63,7 +65,7 @@ func TestWritingLong(t *testing.T) {
 
 		for i, b := range bb {
 			if b != expected[i] {
-				t.Fatalf("unexpected byte encountered: %b, %b\n", b, expected[i])
+				t.Fatalf("unexpected byte encountered: %v, %v at index %d\n", b, expected[i], i)
 			}
 		}
 	}
