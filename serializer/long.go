@@ -39,3 +39,63 @@ func WriteLong(w io.Writer, i int64) error {
 
 	return err
 }
+
+// WriteMapLong writes the given map[string]int64 to the given data stream.
+func WriteMapLong(w io.Writer, m map[string]int64) error {
+	err := WriteMessageLength(w, int64(len(m)))
+	if err != nil || len(m) == 0 {
+		return err
+	}
+
+	for key, val := range m {
+		err = WriteString(w, key)
+		if err != nil {
+			return err
+		}
+
+		err = WriteLong(w, val)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Mark the end of the map
+	err = WriteMessageLength(w, 0)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ReadMapLong interperates the next bytes of the given data stream as a map[string]int64
+func ReadMapLong(r io.Reader) (map[string]int64, error) {
+	m := make(map[string]int64)
+
+	for {
+		block, err := ReadLengthNextMapBlock(r)
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		for i := int64(0); i < block; i++ {
+			key, err := ReadString(r)
+			if err != nil {
+				return nil, err
+			}
+
+			val, err := ReadLong(r)
+			if err != nil {
+				return nil, err
+			}
+
+			m[key] = val
+		}
+	}
+
+	return m, nil
+}

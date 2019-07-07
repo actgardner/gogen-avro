@@ -176,36 +176,35 @@ func TestReadingMapInt(t *testing.T) {
 }
 
 func TestWritingMapInt(t *testing.T) {
-	type run struct {
-		Output []byte
-		Input  map[string]int32
+	inputs := []map[string]int32{
+		{"Code": 2020, "Category": 30},
+		{"Category": 30},
 	}
 
-	inputs := []run{
-		{
-			Output: []byte{4, 8, 67, 111, 100, 101, 200, 31, 16, 67, 97, 116, 101, 103, 111, 114, 121, 60, 0},
-			Input:  map[string]int32{"Code": 2020, "Category": 30},
-		},
-		{
-			Output: []byte{2, 16, 67, 97, 116, 101, 103, 111, 114, 121, 60, 0},
-			Input:  map[string]int32{"Category": 30},
-		},
-	}
-
-	for _, run := range inputs {
+	for _, input := range inputs {
 		bb := bytes.NewBuffer(nil)
-		err := WriteMapInt(bb, run.Input)
+		err := WriteMapInt(bb, input)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if bb.Len() != len(run.Output) {
-			t.Fatalf("the returned byte buffer has an unexpected length: %b, %b\n", bb, run.Output)
+		mp, err := ReadMapInt(bb)
+		if err != nil {
+			t.Fatal(err)
 		}
 
-		for i, b := range bb.Bytes() {
-			if b != run.Output[i] {
-				t.Fatalf("unexpected byte encountered: %v, %v at index %d\n", b, run.Output[i], i)
+		if bb.Len() != 0 {
+			t.Fatal("not all bytes have been read from the byte buffer")
+		}
+
+		for key, expected := range input {
+			val, has := mp[key]
+			if !has {
+				t.Fatalf("an expected key is lost while writing %s\n", key)
+			}
+
+			if val != expected {
+				t.Fatalf("an unexpected value has occured at %s: %d, %d\n", key, expected, val)
 			}
 		}
 	}
