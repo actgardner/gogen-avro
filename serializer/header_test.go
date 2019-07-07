@@ -16,18 +16,20 @@ func TestReadingHeaderMessageLength(t *testing.T) {
 		10: []byte{20},
 	}
 
-	r, w := io.Pipe()
-
 	for expected, input := range inputs {
-		go w.Write(input)
+		bb := bytes.NewBuffer(input)
 
-		result, err := ReadMessageLength(r)
+		result, err := ReadMessageLength(bb)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		if result != expected {
 			t.Fatalf("bytes: %b, are interperated incorrectly expected result %d recieved %d", input, expected, result)
+		}
+
+		if bb.Len() != 0 {
+			t.Fatal("not all bytes have been read from the byte buffer")
 		}
 	}
 }

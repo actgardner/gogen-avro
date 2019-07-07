@@ -1,8 +1,12 @@
 package serializer
 
 import (
+	"errors"
 	"io"
 )
+
+// ErrOutOfBounds is returned when the read message length is out of bounds
+var ErrOutOfBounds = errors.New("length out of bounds")
 
 // WriteMessageLength writes ammount of bytes that could be expected by a consumer for the upcomming message.
 // Any error encountered while writing the message header is returned.
@@ -39,5 +43,9 @@ func ReadMessageLength(r io.Reader) (int64, error) {
 	}
 
 	length := (int64(l>>1) ^ -int64(l&1))
+	if length < 0 {
+		return 0, ErrOutOfBounds
+	}
+
 	return length, nil
 }

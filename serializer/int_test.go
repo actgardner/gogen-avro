@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
-	"strconv"
 	"testing"
 )
 
@@ -234,10 +233,7 @@ func BenchmarkWritingMapInt(b *testing.B) {
 	bb := bytes.NewBuffer(nil)
 
 	for i := 0; i < b.N; i++ {
-		inp := make(map[string]int32, 1)
-		key := strconv.Itoa(i)
-		inp[key] = 100
-		inputs = append(inputs, inp)
+		inputs = append(inputs, map[string]int32{"key": 100})
 	}
 
 	b.ResetTimer()

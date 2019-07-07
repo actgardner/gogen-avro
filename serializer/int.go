@@ -28,7 +28,7 @@ func EncodeInt(length int, i uint64) []byte {
 	return bb
 }
 
-// WriteInt writes the given int to the underlaying data stream.
+// WriteInt writes the given int to the given data stream.
 func WriteInt(w io.Writer, r int32) error {
 	const maxByteSize = 5
 
@@ -41,7 +41,7 @@ func WriteInt(w io.Writer, r int32) error {
 	return err
 }
 
-// ReadInt interperates the next byte of the underlaying data stream as a int.
+// ReadInt interperates the next byte of the given data stream as a int.
 func ReadInt(r io.Reader) (int32, error) {
 	var v uint32
 	buf := make([]byte, 1)
@@ -64,7 +64,7 @@ func ReadInt(r io.Reader) (int32, error) {
 	return i, nil
 }
 
-// WriteMapInt interperates the next bytes of the underlaying data stream as a map[string]int
+// WriteMapInt interperates the next bytes of the given data stream as a map[string]int
 func WriteMapInt(w io.Writer, m map[string]int32) error {
 	err := WriteMessageLength(w, int64(len(m)))
 	if err != nil || len(m) == 0 {
@@ -92,7 +92,7 @@ func WriteMapInt(w io.Writer, m map[string]int32) error {
 	return nil
 }
 
-// ReadMapInt interperates the next bytes of the underlaying data stream as a map[string]int
+// ReadMapInt interperates the next bytes of the given data stream as a map[string]int
 func ReadMapInt(r io.Reader) (map[string]int32, error) {
 	m := make(map[string]int32)
 

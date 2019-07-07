@@ -4,7 +4,7 @@ import (
 	"io"
 )
 
-// WriteByte writes the given byte buffer and the expecting message length to the underlaying data stream.
+// WriteByte writes the given byte buffer and the expecting message length to the given data stream.
 func WriteByte(w io.Writer, i []byte) error {
 	err := WriteMessageLength(w, int64(len(i)))
 	if err != nil {
@@ -15,7 +15,7 @@ func WriteByte(w io.Writer, i []byte) error {
 	return err
 }
 
-// ReadByte reads the next byte message block of len(m)
+// ReadByte reads the next byte message block of len(m) and interperates it as []byte
 func ReadByte(r io.Reader) ([]byte, error) {
 	length, err := ReadMessageLength(r)
 	if err != nil {

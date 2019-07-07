@@ -4,7 +4,7 @@ import (
 	"io"
 )
 
-// ReadLong interperates the next byte of the underlaying data stream as a long int.
+// ReadLong interperates the next byte of the given data stream as a long int.
 func ReadLong(r io.Reader) (int64, error) {
 	var v uint64
 	buf := make([]byte, 1)
@@ -27,7 +27,7 @@ func ReadLong(r io.Reader) (int64, error) {
 	return l, nil
 }
 
-// WriteLong writes the given long int to the underlaying data stream.
+// WriteLong writes the given long int to the given data stream.
 func WriteLong(w io.Writer, i int64) error {
 	const maxByteSize = 10
 
