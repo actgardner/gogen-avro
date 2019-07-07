@@ -204,7 +204,7 @@ func TestWritingMapInt(t *testing.T) {
 			}
 
 			if val != expected {
-				t.Fatalf("an unexpected value has occured at %s: %d, %d\n", key, expected, val)
+				t.Fatalf("an unexpected value has been read at %s: %d, %d\n", key, expected, val)
 			}
 		}
 	}

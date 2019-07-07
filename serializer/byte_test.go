@@ -101,3 +101,115 @@ func BenchmarkWritingBytes(b *testing.B) {
 		WriteByte(bb, input)
 	}
 }
+
+func TestReadingMapByte(t *testing.T) {
+	type run struct {
+		Input  []byte
+		Output map[string][]byte
+	}
+
+	inputs := []run{
+		{
+			Input:  []byte{4, 16, 67, 97, 116, 101, 103, 111, 114, 121, 10, 98, 111, 111, 107, 115, 8, 67, 111, 100, 101, 24, 72, 97, 114, 114, 121, 32, 112, 111, 116, 116, 101, 114, 0},
+			Output: map[string][]byte{"Category": []byte("books"), "Code": []byte("Harry potter")},
+		},
+		{
+			Input:  []byte{2, 16, 67, 97, 116, 101, 103, 111, 114, 121, 10, 98, 111, 111, 107, 115, 0},
+			Output: map[string][]byte{"Category": []byte("books")},
+		},
+	}
+
+	for _, run := range inputs {
+		bb := bytes.NewBuffer(run.Input)
+		mp, err := ReadMapByte(bb)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		for key, expected := range run.Output {
+			val, has := mp[key]
+			if !has {
+				t.Fatalf("read output does not have the expected key: %s\n", key)
+			}
+
+			for i, b := range val {
+				if b != expected[i] {
+					t.Fatalf("an unexpected byte was read at %d: %v, %v\n", i, expected[i], b)
+				}
+			}
+		}
+
+		if bb.Len() != 0 {
+			t.Fatal("not all bytes have been read from the byte buffer")
+		}
+	}
+}
+
+func TestWritingMapByte(t *testing.T) {
+	inputs := []map[string][]byte{
+		{"Category": []byte("books"), "Code": []byte("Harry potter")},
+		{"Category": []byte("books")},
+	}
+
+	for _, input := range inputs {
+		bb := bytes.NewBuffer(nil)
+		err := WriteMapByte(bb, input)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		mp, err := ReadMapByte(bb)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if bb.Len() != 0 {
+			t.Fatal("not all bytes have been read from the byte buffer")
+		}
+
+		for key, expected := range input {
+			val, has := mp[key]
+			if !has {
+				t.Fatalf("an expected key is lost while writing %s\n", key)
+			}
+
+			for i, b := range val {
+				if b != expected[i] {
+					t.Fatalf("an unexpected byte was read at %d: %v, %v\n", i, expected[i], b)
+				}
+			}
+		}
+	}
+}
+
+func BenchmarkReadingMapByte(b *testing.B) {
+	bb := bytes.NewBuffer(nil)
+
+	for i := 0; i < b.N; i++ {
+		WriteMapByte(bb, map[string][]byte{"key": []byte("val")})
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_, err := ReadMapByte(bb)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func BenchmarkWritingMapByte(b *testing.B) {
+	inputs := make([]map[string][]byte, b.N)
+	bb := bytes.NewBuffer(nil)
+
+	for i := 0; i < b.N; i++ {
+		inputs = append(inputs, map[string][]byte{"key": []byte("val")})
+	}
+
+	b.ResetTimer()
+
+	for _, input := range inputs {
+		WriteMapByte(bb, input)
+	}
+}
