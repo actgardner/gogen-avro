@@ -9,6 +9,7 @@ type Field struct {
 	avroName   string
 	avroType   AvroType
 	defValue   interface{}
+	aliases    []string
 	hasDef     bool
 	doc        string
 	definition map[string]interface{}
@@ -16,12 +17,13 @@ type Field struct {
 	index      int
 }
 
-func NewField(avroName string, avroType AvroType, defValue interface{}, hasDef bool, doc string, definition map[string]interface{}, index int, fieldTags string) *Field {
+func NewField(avroName string, avroType AvroType, defValue interface{}, hasDef bool, aliases []string, doc string, definition map[string]interface{}, index int, fieldTags string) *Field {
 	return &Field{
 		avroName:   avroName,
 		avroType:   avroType,
 		defValue:   defValue,
 		hasDef:     hasDef,
+		aliases:    aliases,
 		doc:        doc,
 		definition: definition,
 		fieldTags:  fieldTags,
@@ -52,6 +54,35 @@ func (f *Field) Tags() string {
 
 func (f *Field) GoName() string {
 	return generator.ToPublicName(f.avroName)
+}
+
+// IsSameField checks whether two fields have the same name or any of their aliases are the same, in which case they're the same for purposes of schema evolution
+func (f *Field) IsSameField(otherField *Field) bool {
+	if otherField.NameMatchesAliases(f.avroName) {
+		return true
+	}
+
+	for _, n := range f.aliases {
+		if otherField.NameMatchesAliases(n) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (f *Field) NameMatchesAliases(name string) bool {
+	if name == f.avroName {
+		return true
+	}
+
+	for _, n := range f.aliases {
+		if n == name {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (f *Field) HasDefault() bool {

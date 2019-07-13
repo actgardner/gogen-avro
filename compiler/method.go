@@ -251,7 +251,7 @@ func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error 
 	log("compileRecord()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	if reader != nil {
 		for _, field := range reader.Fields() {
-			if writerField := writer.FieldByName(field.Name()); writerField == nil {
+			if writerField := writer.GetReaderField(field); writerField == nil {
 				if !field.HasDefault() {
 					return fmt.Errorf("Incompatible schemas: field %v in reader is not present in writer and has no default value", field.Name())
 				}
@@ -264,7 +264,7 @@ func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error 
 		var readerType schema.AvroType
 		var readerField *schema.Field
 		if reader != nil {
-			readerField = reader.FieldByName(field.Name())
+			readerField = reader.GetReaderField(field)
 			if readerField != nil {
 				readerType = readerField.Type()
 				p.addLiteral(vm.Enter, readerField.Index())

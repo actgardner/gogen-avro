@@ -1,0 +1,15 @@
+{
+  "type" : "record",
+  "name" : "AliasRecord",
+  "fields" : [ 
+  {
+    "name": "b",
+    "aliases": ["a"],
+    "type": "string"
+  },
+  {
+    "name": "d",
+    "type": "string"
+  } 
+  ]
+}

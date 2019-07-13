@@ -203,8 +203,24 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 			}
 		}
 
+		var fieldAliases []string
+		if aliases, ok := field["aliases"]; ok {
+			aliasList, ok := aliases.([]interface{})
+			if !ok {
+				return nil, NewWrongMapValueTypeError("aliases", "[]string", aliases)
+			}
+
+			for _, aliasVal := range aliasList {
+				aliasStr, ok := aliasVal.(string)
+				if !ok {
+					return nil, NewWrongMapValueTypeError("aliases", "[]string", aliases)
+				}
+				fieldAliases = append(fieldAliases, aliasStr)
+			}
+		}
+
 		def, hasDef := field["default"]
-		fieldStruct := NewField(fieldName, fieldType, def, hasDef, docString, field, i, fieldTags)
+		fieldStruct := NewField(fieldName, fieldType, def, hasDef, fieldAliases, docString, field, i, fieldTags)
 
 		decodedFields = append(decodedFields, fieldStruct)
 	}
