@@ -148,6 +148,9 @@ func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (err 
 		case AddLong:
 			frame.Long += int64(inst.Operand)
 			break
+		case SetLong:
+			frame.Long = int64(inst.Operand)
+			break
 		case MultLong:
 			frame.Long *= int64(inst.Operand)
 			break

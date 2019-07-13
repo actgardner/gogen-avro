@@ -111,18 +111,26 @@ func (s *switchStartIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, 
 type switchCaseIRInstruction struct {
 	switchId    int
 	writerIndex int
+	// If there is no target field, or the target is not a union, the readerIndex is -1
 	readerIndex int
 }
 
 func (s *switchCaseIRInstruction) VMLength() int {
+	if s.readerIndex == -1 {
+		return 1
+	}
 	return 3
 }
 
 func (s *switchCaseIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	sw := p.switches[s.switchId]
+	if s.readerIndex == -1 {
+		return []vm.Instruction{vm.Instruction{vm.Jump, sw.end}}, nil
+	}
+
 	return []vm.Instruction{
 		vm.Instruction{vm.Jump, sw.end},
-		vm.Instruction{vm.AddLong, s.readerIndex - s.writerIndex},
+		vm.Instruction{vm.SetLong, s.readerIndex},
 		vm.Instruction{vm.Set, vm.Long},
 	}, nil
 }

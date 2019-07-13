@@ -46,6 +46,9 @@ const (
 	// If the condition register is true, jump to the operand instruction
 	CondJump
 
+	// Set the Long register to the operand value
+	SetLong
+
 	// Add the operand value to the Long register
 	AddLong
 
@@ -97,6 +100,8 @@ func (o Op) String() string {
 		return "push_loop"
 	case PopLoop:
 		return "pop_loop"
+	case SetLong:
+		return "set_long"
 	}
 	return "Unknown"
 }
