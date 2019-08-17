@@ -121,11 +121,10 @@ func (s *UnionField) FieldsMethodDef() string {
 			getBody += fmt.Sprintf("r.%v = %v\n", f.Name(), constructor.ConstructorMethod())
 		}
 		if f.WrapperType() == "" {
-			getBody += fmt.Sprintf("return r.%v", f.Name())
+			getBody += fmt.Sprintf("return r.%v\n", f.Name())
 		} else {
-			getBody += fmt.Sprintf("return (*%v)(&r.%v)", f.WrapperType(), f.Name())
+			getBody += fmt.Sprintf("return (*%v)(&r.%v)\n", f.WrapperType(), f.Name())
 		}
-		getBody += "\nbreak\n"
 	}
 	return fmt.Sprintf(unionFieldTemplate, s.GoType(), s.unionEnumType(), getBody)
 }
