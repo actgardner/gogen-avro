@@ -122,7 +122,7 @@ func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (strin
 		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
 	}
 
-	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue), nil
+	return fmt.Sprintf("%v = [%i]byte(%q)", s.sizeBytes, lvalue, rvalue), nil
 }
 
 func (s *FixedDefinition) IsReadableBy(d Definition) bool {
