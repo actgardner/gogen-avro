@@ -55,7 +55,7 @@ func TestRoundTrip(t *testing.T) {
 		err := f.Serialize(&buf)
 		assert.Nil(t, err)
 
-		datum, err := DeserializeFixedTestRecord(&buf)
+		datum, err := DeserializeFixedDefaultTestRecord(&buf)
 		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}
