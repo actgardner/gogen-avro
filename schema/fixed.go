@@ -129,7 +129,7 @@ func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (strin
 		sb += strconv.FormatInt(int64(r), 10)
 		sb += ","
 	}
-	return fmt.Sprintf("%v = [%v]byte{%v}", lvalue, s.sizeBytes, sb.String()), nil
+	return fmt.Sprintf("%v = [%v]byte{%v}", lvalue, s.sizeBytes, sb), nil
 }
 
 func (s *FixedDefinition) IsReadableBy(d Definition) bool {
