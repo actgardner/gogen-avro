@@ -1,15 +1,13 @@
 {
-    "name": "Interaction",
-    "type": "record",
-    "fields": [
-        {
-            "name": "ID",
-            "type": {
-                "type": "fixed",
-                "size": 8,
-                "name": "unsignedlong"
-            },
-            "default": "\u0000\u0001\u0007\u0009\u0001\u0003\u0004\u0000"
-        }
-     ]
+	"type": "record",
+	"name": "FixedDefaultTestRecord",
+	"fields": [{
+		"name": "FixedField",
+		"type": {
+			"name": "TestFixedDefaultType",
+			"size": 12,
+			"type": "fixed"
+		},
+    "default" : "\u0000\u0001\u0012\u0000\u0013\u0113\u0000\u0001\u0012\u0000\u0013\u0113"
+	}]
 }
