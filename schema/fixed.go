@@ -2,6 +2,7 @@ package schema
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/actgardner/gogen-avro/generator"
 )
@@ -122,8 +123,13 @@ func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (strin
 		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
 	}
 
-	fmt.Printf("==== %v", rvalue)
-	return fmt.Sprintf("%v = [%v]byte{%v}", lvalue, s.sizeBytes, rvalue), nil
+	var sb strings.Builder
+
+	for _, r := range rvalue.(string) {
+		sb.WriteRune(r)
+	}
+	fmt.Printf("==== %v ===\n", rvalue)
+	return fmt.Sprintf("%v = [%v]byte{%v}", lvalue, s.sizeBytes, sb.String()), nil
 }
 
 func (s *FixedDefinition) IsReadableBy(d Definition) bool {
