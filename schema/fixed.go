@@ -130,7 +130,6 @@ func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (strin
 		sb.Write([]byte(strconv.FormatInt(int64(r), 10)))
 		sb.Write([]byte(","))
 	}
-	fmt.Printf("==== %v ===\n", rvalue)
 	return fmt.Sprintf("%v = [%v]byte{%v}", lvalue, s.sizeBytes, sb.String()), nil
 }
 
