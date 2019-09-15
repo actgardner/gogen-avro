@@ -3,7 +3,6 @@ package schema
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/actgardner/gogen-avro/generator"
 )
