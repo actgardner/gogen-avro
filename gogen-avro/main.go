@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/schema"
+	"github.com/zimbabao/gogen-avro/schema"
 )
 
 func main() {
