@@ -124,11 +124,11 @@ func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (strin
 		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
 	}
 
-	var sb strings.Builder
+	var sb = ""
 
 	for _, r := range rvalue.(string) {
-		sb.Write([]byte(strconv.FormatInt(int64(r), 10)))
-		sb.Write([]byte(","))
+		sb += strconv.FormatInt(int64(r), 10)
+		sb += ","
 	}
 	return fmt.Sprintf("%v = [%v]byte{%v}", lvalue, s.sizeBytes, sb.String()), nil
 }
