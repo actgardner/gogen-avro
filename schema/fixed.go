@@ -2,6 +2,7 @@ package schema
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/actgardner/gogen-avro/generator"
@@ -126,7 +127,8 @@ func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (strin
 	var sb strings.Builder
 
 	for _, r := range rvalue.(string) {
-		sb.WriteRune(r)
+		sb.Write([]byte(strconv.FormatInt(int64(r), 10)))
+		sb.Write([]byte(","))
 	}
 	fmt.Printf("==== %v ===\n", rvalue)
 	return fmt.Sprintf("%v = [%v]byte{%v}", lvalue, s.sizeBytes, sb.String()), nil
