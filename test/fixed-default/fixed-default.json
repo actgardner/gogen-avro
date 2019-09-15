@@ -1,0 +1,15 @@
+{
+    "name": "Interaction",
+    "type": "record",
+    "fields": [
+        {
+            "name": "ID",
+            "type": {
+                "type": "fixed",
+                "size": 8,
+                "name": "unsignedlong"
+            },
+            "default": "\u0000\u0001\u0007\u0009\u0001\u0003\u0004\u0000"
+        }
+     ]
+}
