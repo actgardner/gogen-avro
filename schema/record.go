@@ -304,14 +304,11 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 }
 
 func (r *RecordDefinition) AddSerializer(p *generator.Package) {
-	// Import guard, to avoid circular dependencies
-	if !p.HasFunction(UTIL_FILE, "", GENERIC_DESERIALIZER_FUNC) {
-		p.AddImport(UTIL_FILE, "io")
-		p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm/types")
-		p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm")
-		p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/compiler")
-		p.AddFunction(UTIL_FILE, "", GENERIC_DESERIALIZER_FUNC, genericDeserializerTemplate)
-	}
+	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm/types")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/compiler")
+	p.AddFunction(UTIL_FILE, "", GENERIC_DESERIALIZER_FUNC, genericDeserializerTemplate)
 
 	if !p.HasFunction(UTIL_FILE, "", r.SerializerMethod()) {
 		p.AddImport(r.filename(), "io")
