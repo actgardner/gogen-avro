@@ -38,16 +38,28 @@ func (r %v) Serialize(w io.Writer) error {
 `
 
 const recordStructPublicDeserializerTemplate = `
-func %v(r io.Reader) (%v, error) {
-	t := %v
-
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-        if err != nil {
-		return nil, err
-	}
-
-        err = vm.Eval(r, deser, t)
+func %[1]v(r io.Reader) (%[2]v, error) {
+	t := %[3]v
+	err := deserializeField(r, t.Schema(), t.Schema(), t)
 	return t, err
+}
+
+func %[1]vFromSchema(r io.Reader, schema string) (%[2]v, error) {
+	t := %[3]v
+	err := deserializeField(r, schema, t.Schema(), t)
+	return t, err
+}
+
+`
+
+const GENERIC_DESERIALIZER_FUNC = "deserializeField"
+const genericDeserializerTemplate = `
+func deserializeField(r io.Reader, fromSchema, toSchema string, field types.Field) error {
+	deser, err := compiler.CompileSchemaBytes([]byte(fromSchema), []byte(toSchema))
+	if err != nil {
+		return err
+	}
+	return vm.Eval(r, deser, field)
 }
 `
 
@@ -292,7 +304,12 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 }
 
 func (r *RecordDefinition) AddSerializer(p *generator.Package) {
-	// Import guard, to avoid circular dependencies
+	p.AddImport(UTIL_FILE, "io")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm/types")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm")
+	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/compiler")
+	p.AddFunction(UTIL_FILE, "", GENERIC_DESERIALIZER_FUNC, genericDeserializerTemplate)
+
 	if !p.HasFunction(UTIL_FILE, "", r.SerializerMethod()) {
 		p.AddImport(r.filename(), "io")
 		p.AddFunction(UTIL_FILE, "", r.SerializerMethod(), r.serializerMethodDef())
