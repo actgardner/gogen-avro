@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/actgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/actgardner/gogen-avro)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/actgardner/gogen-avro/master/LICENSE)
-[![Version 6.2.0](https://img.shields.io/badge/version-5.3.0-lightgrey.svg)](https://gopkg.in/actgardner/gogen-avro.v5)
+[![Version 6.2.0](https://img.shields.io/badge/version-6.2.0-lightgrey.svg)](https://github.com/actgardner/gogen-avro/releases)
 
 Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules. 
 
