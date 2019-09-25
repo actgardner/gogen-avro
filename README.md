@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/actgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/actgardner/gogen-avro)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/actgardner/gogen-avro/master/LICENSE)
-[![Version 5.3.0](https://img.shields.io/badge/version-5.3.0-lightgrey.svg)](https://gopkg.in/actgardner/gogen-avro.v5)
+[![Version 6.2.0](https://img.shields.io/badge/version-5.3.0-lightgrey.svg)](https://gopkg.in/actgardner/gogen-avro.v5)
 
 Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules. 
 
@@ -118,17 +118,17 @@ Gogen-avro produces a Go struct which reflects the structure of your Avro schema
 
 | Avro Type     | Go Type           | Notes                                                                                                                |
 |---------------|-------------------|----------------------------------------------------------------------------------------------------------------------|
-| null          | interface{}       | This is just a placeholder, nothing is encoded/decoded                                                               |
-| boolean       | bool              |                                                                                                                      |
-| int, long     | int32, int64      |                                                                                                                      |
-| float, double | float32, float64  |                                                                                                                      |
-| bytes         | []byte            |                                                                                                                      |
-| string        | string            |                                                                                                                      |
-| enum          | custom type       | Generates a type with a constant for each symbol                                                                     |
-| array<type>   | []<type>          |                                                                                                                      |
-| map<type>     | custom struct | Generates a struct with a field `M`, `M` has the type map[string]<type>                                                  |
-| fixed         | [<n>]byte         | Fixed fields are given a custom type, which is an alias for an appropriately sized byte array                        |
-| union         | custom struct     | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
+| `null`          | `interface{}`       | This is just a placeholder, nothing is encoded/decoded                                                               |
+| `boolean`       | `bool`              |                                                                                                                      |
+| `int, long`     | `int32, int64`      |                                                                                                                      |
+| `float, double` | `float32, float64`  |                                                                                                                      |
+| `bytes`         | `[]byte`            |                                                                                                                      |
+| `string`        | `string`            |                                                                                                                      |
+| `enum`          | custom type       | Generates a type with a constant for each symbol                                                                     |
+| `array<type>`   | `[]<type>`          |                                                                                                                      |
+| `map<type>`     | custom struct | Generates a struct with a field `M`, `M` has the type `map[string]<type>`                                                  |
+| `fixed`         | `[<n>]byte`         | Fixed fields are given a custom type, which is an alias for an appropriately sized byte array                        |
+| `union`         | custom struct     | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
 
 `union` is more complicated than primitive types. We generate a struct and enum whose name is uniquely determined by the types in the union. For a field whose type is `["null", "int"]` we generate the following:
 
@@ -153,31 +153,7 @@ const (
 
 Until version 6.0 this project used gopkg.in for versioning of both the code generation tool and library. Older versions are still available on gopkg.in.
 
-Releases from 6.0 onward use semver tags (ex. `v6.0.0`) which are compatible with dep and modules.
-
-#### 6.0
-- Support for schema evolution
-- Support for reading Object container files
-
-#### 4.0
-- Support for writing object container files is no longer experimental
-- `container` package now works with the generated code for any record type
-- Aliases and namespaces are now used properly to resolve types
-- Record structs expose a `Schema` method which includes metadata from the schema definition 
-
-#### 3.0
-- Experimental support for writing object container files
-- Improved variable and type names
-- Support for custom package names as a command line argument
-
-
-#### 2.0
-- Bug fixes for arrays and maps with record members
-- Refactored internals significantly
-
-#### 1.0
-- Initial release
-- No longer supported - no more bugfixes are being backported
+Releases from 6.0 onward use semver tags (ex. `v6.0.0`) which are compatible with dep and modules. See [Releases](https://github.com/actgardner/gogen-avro/releases).
 
 ### Reporting Issues
 
