@@ -1,140 +1,14 @@
 package schema
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"strconv"
+	"text/template"
 
 	"github.com/actgardner/gogen-avro/generator"
+	"github.com/actgardner/gogen-avro/schema/templates"
 )
-
-const recordStructDefTemplate = `
-%v
-type %v struct {
-%v
-}
-`
-
-const recordSchemaTemplate = `func (r %v) Schema() string {
- return %v
-}
-`
-
-const recordSchemaNameTemplate = `func (r %v) SchemaName() string {
- return %v
-}
-`
-
-const recordConstructorTemplate = `
-func %v %v {
-	return &%v{}
-}
-`
-
-const recordStructPublicSerializerTemplate = `
-func (r %v) Serialize(w io.Writer) error {
-	return %v(r, w)
-}
-`
-
-const recordStructPublicDeserializerTemplate = `
-func %[1]v(r io.Reader) (%[2]v, error) {
-	t := %[3]v
-	err := deserializeField(r, t.Schema(), t.Schema(), t)
-	return t, err
-}
-
-func %[1]vFromSchema(r io.Reader, schema string) (%[2]v, error) {
-	t := %[3]v
-	err := deserializeField(r, schema, t.Schema(), t)
-	return t, err
-}
-
-`
-
-const GENERIC_DESERIALIZER_FUNC = "deserializeField"
-const genericDeserializerTemplate = `
-func deserializeField(r io.Reader, fromSchema, toSchema string, field types.Field) error {
-	deser, err := compiler.CompileSchemaBytes([]byte(fromSchema), []byte(toSchema))
-	if err != nil {
-		return err
-	}
-	return vm.Eval(r, deser, field)
-}
-`
-
-const recordWriterTemplate = `
-func %v(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := &%v{}
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
-}
-`
-
-const recordStructDeserializerTemplate = `
-func %v(r io.Reader) (%v, error) {
-	var str = &%v{}
-	var err error
-	%v
-	return str, nil
-}
-`
-
-const recordFieldTemplate = `
-func (_ %[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ %[1]v) SetInt(v int32) { panic("Unsupported operation") }
-func (_ %[1]v) SetLong(v int64) { panic("Unsupported operation") }
-func (_ %[1]v) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ %[1]v) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ %[1]v) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ %[1]v) SetString(v string) { panic("Unsupported operation") }
-func (_ %[1]v) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (r %[1]v) Get(i int) types.Field {
-	switch (i) {
-		%[2]v
-	}
-	panic("Unknown field index")
-}
-func (r %[1]v) SetDefault(i int) {
-	switch (i) {
-		%[3]v
-	}
-	panic("Unknown field index")
-}
-func (_ %[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ %[1]v) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ %[1]v) Finalize() { }
-`
-
-const recordReaderTemplate = `
-type %[1]v struct {
-	r io.Reader
-	p *vm.Program
-}
-
-func New%[1]v(r io.Reader) (*%[1]v, error){
-	containerReader, err := container.NewReader(r)
-	if err != nil {
-		return nil, err
-	}
-
-	t := %[3]v
-	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
-	}
-
-	return &%[1]v{
-		r: containerReader,
-		p: deser,
-	}, nil
-}
-
-func (r *%[1]v) Read() (%[2]v, error) {
-	t := %[3]v
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
-}
-`
 
 type RecordDefinition struct {
 	name     QualifiedName
@@ -174,128 +48,44 @@ func (r *RecordDefinition) Aliases() []QualifiedName {
 	return r.aliases
 }
 
-func (r *RecordDefinition) structFields() string {
-	var definitions string
-	for _, f := range r.fields {
-		var field string
-
-		// Prepend doc if exists
-		if f.Doc() != "" {
-			field += fmt.Sprintf("\n// %v\n", f.Doc())
-		}
-
-		field += fmt.Sprintf("%v %v", f.SimpleName(), f.Type().GoType())
-
-		if f.Tags() != "" {
-			field += " `" + f.Tags() + "`"
-		}
-
-		definitions += field + "\n"
-	}
-
-	return definitions
-}
-
-func (r *RecordDefinition) fieldSerializers() string {
-	if r.fields == nil || len(r.fields) == 0 {
-		//in case the record has no fields just return empty fieldSerializers
-		return ""
-	}
-	serializerMethods := "var err error\n"
-	for _, f := range r.fields {
-		serializerMethods += fmt.Sprintf("err = %v(r.%v, w)\nif err != nil {return err}\n", f.Type().SerializerMethod(), f.GoName())
-	}
-	return serializerMethods
-}
-
-func (r *RecordDefinition) structDefinition() string {
-	var doc string
-	if r.doc != "" {
-		doc = fmt.Sprintf("// %v", r.doc)
-	}
-	return fmt.Sprintf(recordStructDefTemplate, doc, r.Name(), r.structFields())
-}
-
-func (r *RecordDefinition) serializerMethodDef() string {
-	return fmt.Sprintf("func %v(r %v, w io.Writer) error {\n%v\nreturn nil\n}", r.SerializerMethod(), r.GoType(), r.fieldSerializers())
-}
-
 func (r *RecordDefinition) SerializerMethod() string {
 	return fmt.Sprintf("write%v", r.Name())
 }
 
-func (r *RecordDefinition) recordWriterMethod() string {
+func (r *RecordDefinition) NewWriterMethod() string {
 	return fmt.Sprintf("New%vWriter", r.Name())
-}
-
-func (r *RecordDefinition) recordWriterMethodDef() string {
-	return fmt.Sprintf(recordWriterTemplate, r.recordWriterMethod(), r.Name())
-}
-
-func (r *RecordDefinition) publicSerializerMethodDef() string {
-	return fmt.Sprintf(recordStructPublicSerializerTemplate, r.GoType(), r.SerializerMethod())
 }
 
 func (r *RecordDefinition) filename() string {
 	return generator.ToSnake(r.Name()) + ".go"
 }
 
-func (r *RecordDefinition) schemaMethodDef() (string, error) {
-	def, err := r.Definition(make(map[QualifiedName]interface{}))
+func (r *RecordDefinition) structDefinition() (string, error) {
+	buf := &bytes.Buffer{}
+	t, err := template.New("record").Parse(templates.RecordTemplate)
 	if err != nil {
 		return "", err
 	}
-
-	schemaJson, _ := json.Marshal(def)
-	return fmt.Sprintf(recordSchemaTemplate, r.GoType(), strconv.Quote(string(schemaJson))), nil
-}
-
-func (r *RecordDefinition) publicDeserializerMethod() string {
-	return fmt.Sprintf("Deserialize%v", r.Name())
-}
-
-func (r *RecordDefinition) publicDeserializerMethodDef() string {
-	return fmt.Sprintf(recordStructPublicDeserializerTemplate, r.publicDeserializerMethod(), r.GoType(), r.ConstructorMethod())
-}
-
-func (r *RecordDefinition) schemaNameMethodDef() (string, error) {
-	return fmt.Sprintf(recordSchemaNameTemplate, r.GoType(), strconv.Quote(r.name.String())), nil
+	err = t.Execute(buf, r)
+	return buf.String(), err
 }
 
 func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) error {
 	// Import guard, to avoid circular dependencies
 	if !p.HasStruct(r.filename(), r.GoType()) {
-		p.AddStruct(r.filename(), r.GoType(), r.structDefinition())
-		schemaDef, err := r.schemaMethodDef()
+		def, err := r.structDefinition()
 		if err != nil {
-			return err
+			fmt.Printf("Error: %v\n", err)
+			panic(err)
 		}
 
-		p.AddFunction(r.filename(), r.GoType(), "Schema", schemaDef)
-		constructorMethodDef, err := r.ConstructorMethodDef()
-		if err != nil {
-			return err
-		}
+		p.AddStruct(r.filename(), r.GoType(), def)
 
-		schemaNameDef, err := r.schemaNameMethodDef()
-		if err != nil {
-			return err
-		}
-
-		p.AddFunction(r.filename(), r.GoType(), "SchemaName", schemaNameDef)
-
-		if containers {
-			p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/container")
-			p.AddFunction(r.filename(), "", r.recordWriterMethod(), r.recordWriterMethodDef())
-		}
-
+		p.AddImport(r.filename(), "io")
+		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/container")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm/types")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm")
 		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/compiler")
-		p.AddFunction(r.filename(), r.GoType(), "fieldTemplate", r.FieldsMethodDef())
-		p.AddFunction(r.filename(), r.GoType(), "recordReader", r.recordReaderDef())
-		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
-		p.AddFunction(r.filename(), r.GoType(), r.publicDeserializerMethod(), r.publicDeserializerMethodDef())
 		for _, f := range r.fields {
 			f.Type().AddStruct(p, containers)
 		}
@@ -304,16 +94,8 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 }
 
 func (r *RecordDefinition) AddSerializer(p *generator.Package) {
-	p.AddImport(UTIL_FILE, "io")
-	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm/types")
-	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm")
-	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/compiler")
-	p.AddFunction(UTIL_FILE, "", GENERIC_DESERIALIZER_FUNC, genericDeserializerTemplate)
-
-	if !p.HasFunction(UTIL_FILE, "", r.SerializerMethod()) {
-		p.AddImport(r.filename(), "io")
-		p.AddFunction(UTIL_FILE, "", r.SerializerMethod(), r.serializerMethodDef())
-		p.AddFunction(r.filename(), r.GoType(), "Serialize", r.publicSerializerMethodDef())
+	if !p.HasFunction(r.filename(), "", "AvoidCircular") {
+		p.AddFunction(r.filename(), "", "AvoidCircular", "")
 		for _, f := range r.fields {
 			f.Type().AddSerializer(p)
 		}
@@ -353,63 +135,19 @@ func (r *RecordDefinition) ConstructorMethod() string {
 	return fmt.Sprintf("New%v()", r.Name())
 }
 
-func (r *RecordDefinition) fieldConstructors() (string, error) {
-	constructors := ""
-	for _, f := range r.fields {
-		if constructor, ok := getConstructableForType(f.Type()); ok {
-			constructors += fmt.Sprintf("%v: %v,\n", f.GoName(), constructor.ConstructorMethod())
-		}
+func (r *RecordDefinition) DefaultForField(f *Field) (string, error) {
+	return f.Type().DefaultValue(fmt.Sprintf("r.%v", f.GoName()), f.Default())
+}
+
+func (r *RecordDefinition) ConstructableForField(f *Field) string {
+	if constructor, ok := getConstructableForType(f.Type()); ok {
+		return fmt.Sprintf("r.%v = %v\n", f.GoName(), constructor.ConstructorMethod())
 	}
-	return constructors, nil
+	return ""
 }
 
-func (r *RecordDefinition) defaultMethodDef() (string, error) {
-	defaults := ""
-	for i, f := range r.fields {
-		if f.hasDef {
-			defaults += fmt.Sprintf("case %v:\n", i)
-			def, err := f.Type().DefaultValue(fmt.Sprintf("r.%v", f.GoName()), f.Default())
-			if err != nil {
-				return "", err
-			}
-			defaults += def + "\nreturn\n"
-		}
-	}
-	return defaults, nil
-}
-
-func (r *RecordDefinition) getMethodDef() string {
-	getBody := ""
-	for i, f := range r.fields {
-		getBody += fmt.Sprintf("case %v:\n", i)
-		if constructor, ok := getConstructableForType(f.Type()); ok {
-			getBody += fmt.Sprintf("r.%v = %v\n", f.GoName(), constructor.ConstructorMethod())
-		}
-		if f.Type().WrapperType() == "" {
-			getBody += fmt.Sprintf("return r.%v\n", f.GoName())
-		} else {
-			getBody += fmt.Sprintf("return (*%v)(&r.%v)\n", f.Type().WrapperType(), f.GoName())
-		}
-	}
-	return getBody
-}
-
-func (r *RecordDefinition) FieldsMethodDef() string {
-	getBody := r.getMethodDef()
-	defaultBody, _ := r.defaultMethodDef()
-	return fmt.Sprintf(recordFieldTemplate, r.GoType(), getBody, defaultBody)
-}
-
-func (r *RecordDefinition) ConstructorMethodDef() (string, error) {
-	return fmt.Sprintf(recordConstructorTemplate, r.ConstructorMethod(), r.GoType(), r.Name()), nil
-}
-
-func (r *RecordDefinition) recordReaderTypeName() string {
+func (r *RecordDefinition) RecordReaderTypeName() string {
 	return r.Name() + "Reader"
-}
-
-func (r *RecordDefinition) recordReaderDef() string {
-	return fmt.Sprintf(recordReaderTemplate, r.recordReaderTypeName(), r.GoType(), r.ConstructorMethod())
 }
 
 func (r *RecordDefinition) GetReaderField(writerField *Field) *Field {
@@ -456,4 +194,19 @@ func (s *RecordDefinition) IsReadableBy(d Definition) bool {
 
 func (s *RecordDefinition) WrapperType() string {
 	return ""
+}
+
+func (s *RecordDefinition) Doc() string {
+	return s.doc
+}
+
+func (s *RecordDefinition) Schema() (string, error) {
+	def, err := s.Definition(make(map[QualifiedName]interface{}))
+	if err != nil {
+		return "", err
+	}
+
+	jsonBytes, err := json.Marshal(def)
+	return string(jsonBytes), err
+
 }
