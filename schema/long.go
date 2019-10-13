@@ -2,18 +2,7 @@ package schema
 
 import (
 	"fmt"
-
-	"github.com/actgardner/gogen-avro/generator"
 )
-
-const writeLongMethod = `
-func writeLong(r int64, w io.Writer) error {
-	downShift := uint64(63)
-	encoded := uint64((r << 1) ^ (r >> downShift))
-	const maxByteSize = 10
-	return encodeInt(w, maxByteSize, encoded)
-}
-`
 
 type LongField struct {
 	PrimitiveField
@@ -24,15 +13,8 @@ func NewLongField(definition interface{}) *LongField {
 		definition:       definition,
 		name:             "Long",
 		goType:           "int64",
-		serializerMethod: "writeLong",
+		serializerMethod: "vm.WriteLong",
 	}}
-}
-
-func (s *LongField) AddSerializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.AddImport(UTIL_FILE, "io")
 }
 
 func (s *LongField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {

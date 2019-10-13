@@ -75,31 +75,17 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 	if !p.HasStruct(r.filename(), r.GoType()) {
 		def, err := r.structDefinition()
 		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-			panic(err)
+			return err
 		}
 
 		p.AddStruct(r.filename(), r.GoType(), def)
-
-		p.AddImport(r.filename(), "io")
-		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/container")
-		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm/types")
-		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/vm")
-		p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/compiler")
 		for _, f := range r.fields {
-			f.Type().AddStruct(p, containers)
+			if err := f.Type().AddStruct(p, containers); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
-}
-
-func (r *RecordDefinition) AddSerializer(p *generator.Package) {
-	if !p.HasFunction(r.filename(), "", "AvoidCircular") {
-		p.AddFunction(r.filename(), "", "AvoidCircular", "")
-		for _, f := range r.fields {
-			f.Type().AddSerializer(p)
-		}
-	}
 }
 
 func (r *RecordDefinition) ResolveReferences(n *Namespace) error {

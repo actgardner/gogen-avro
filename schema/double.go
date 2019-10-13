@@ -2,17 +2,7 @@ package schema
 
 import (
 	"fmt"
-
-	"github.com/actgardner/gogen-avro/generator"
 )
-
-const writeDoubleMethod = `
-func writeDouble(r float64, w io.Writer) error {
-	bits := uint64(math.Float64bits(r))
-	const byteCount = 8
-	return encodeFloat(w, byteCount, bits)
-}
-`
 
 type DoubleField struct {
 	PrimitiveField
@@ -23,16 +13,8 @@ func NewDoubleField(definition interface{}) *DoubleField {
 		definition:       definition,
 		name:             "Double",
 		goType:           "float64",
-		serializerMethod: "writeDouble",
+		serializerMethod: "vm.WriteDouble",
 	}}
-}
-
-func (s *DoubleField) AddSerializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeDouble", writeDoubleMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeFloat", encodeFloatMethod)
-	p.AddImport(UTIL_FILE, "io")
-	p.AddImport(UTIL_FILE, "math")
 }
 
 func (s *DoubleField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {

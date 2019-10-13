@@ -1,35 +1,14 @@
 package schema
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
+	"text/template"
 
 	"github.com/actgardner/gogen-avro/generator"
+	"github.com/actgardner/gogen-avro/schema/templates"
 )
-
-const enumTypeDef = `
-%v
-type %v int32
-
-const (
-%v
-)
-`
-
-const enumTypeStringer = `
-func (e %v) String() string {
-	switch e {
-%v
-	}
-	return "unknown"
-}
-`
-
-const enumSerializerDef = `
-func %v(r %v, w io.Writer) error {
-	return writeInt(int32(r), w)
-}
-`
 
 type EnumDefinition struct {
 	name       QualifiedName
@@ -53,6 +32,10 @@ func (e *EnumDefinition) Name() string {
 	return e.GoType()
 }
 
+func (e *EnumDefinition) Doc() string {
+	return e.doc
+}
+
 func (e *EnumDefinition) SimpleName() string {
 	return e.name.Name
 }
@@ -65,40 +48,16 @@ func (e *EnumDefinition) Aliases() []QualifiedName {
 	return e.aliases
 }
 
+func (e *EnumDefinition) Symbols() []string {
+	return e.symbols
+}
+
+func (e *EnumDefinition) SymbolName(symbol string) string {
+	return generator.ToPublicName(e.GoType() + strings.Title(symbol))
+}
+
 func (e *EnumDefinition) GoType() string {
 	return generator.ToPublicName(e.name.Name)
-}
-
-func (e *EnumDefinition) typeList() string {
-	typeStr := ""
-	for i, t := range e.symbols {
-		typeStr += fmt.Sprintf("%v %v = %v\n", generator.ToPublicName(e.GoType()+strings.Title(t)), e.GoType(), i)
-	}
-	return typeStr
-}
-
-func (e *EnumDefinition) stringerList() string {
-	stringerStr := ""
-	for _, t := range e.symbols {
-		stringerStr += fmt.Sprintf("case %v:\n return %q\n", generator.ToPublicName(e.GoType()+strings.Title(t)), t)
-	}
-	return stringerStr
-}
-
-func (e *EnumDefinition) structDef() string {
-	var doc string
-	if e.doc != "" {
-		doc = fmt.Sprintf("// %v", e.doc)
-	}
-	return fmt.Sprintf(enumTypeDef, doc, e.GoType(), e.typeList())
-}
-
-func (e *EnumDefinition) stringerDef() string {
-	return fmt.Sprintf(enumTypeStringer, e.GoType(), e.stringerList())
-}
-
-func (e *EnumDefinition) serializerMethodDef() string {
-	return fmt.Sprintf(enumSerializerDef, e.SerializerMethod(), e.GoType())
 }
 
 func (e *EnumDefinition) SerializerMethod() string {
@@ -109,18 +68,25 @@ func (e *EnumDefinition) filename() string {
 	return generator.ToSnake(e.GoType()) + ".go"
 }
 
-func (e *EnumDefinition) AddStruct(p *generator.Package, _ bool) error {
-	p.AddStruct(e.filename(), e.GoType(), e.structDef())
-	p.AddFunction(e.filename(), e.GoType(), "String", e.stringerDef())
-	return nil
+func (e *EnumDefinition) structDefinition() (string, error) {
+	buf := &bytes.Buffer{}
+	t, err := template.New("enum").Parse(templates.EnumTemplate)
+	if err != nil {
+		return "", err
+	}
+	err = t.Execute(buf, e)
+	return buf.String(), err
 }
 
-func (e *EnumDefinition) AddSerializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeInt", writeIntMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.AddFunction(UTIL_FILE, "", e.SerializerMethod(), e.serializerMethodDef())
-	p.AddImport(UTIL_FILE, "io")
+func (e *EnumDefinition) AddStruct(p *generator.Package, _ bool) error {
+	def, err := e.structDefinition()
+	if err != nil {
+		panic(err)
+		return err
+	}
+
+	p.AddStruct(e.filename(), e.GoType(), def)
+	return nil
 }
 
 func (s *EnumDefinition) ResolveReferences(n *Namespace) error {

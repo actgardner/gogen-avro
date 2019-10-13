@@ -14,8 +14,6 @@ type AvroType interface {
 
 	// Add the imports and struct for the definition of this type to the generator.Package
 	AddStruct(*generator.Package, bool) error
-	// Add the imports, methods and structs required for the serializer to the generator.Package
-	AddSerializer(*generator.Package)
 
 	// Attempt to resolve references to named structs, enums or fixed fields
 	ResolveReferences(*Namespace) error

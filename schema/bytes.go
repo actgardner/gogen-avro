@@ -2,20 +2,7 @@ package schema
 
 import (
 	"fmt"
-
-	"github.com/actgardner/gogen-avro/generator"
 )
-
-const writeBytesMethod = `
-func writeBytes(r []byte, w io.Writer) error {
-	err := writeLong(int64(len(r)), w)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(r)
-	return err
-}
-`
 
 type BytesField struct {
 	PrimitiveField
@@ -26,16 +13,8 @@ func NewBytesField(definition interface{}) *BytesField {
 		definition:       definition,
 		name:             "Bytes",
 		goType:           "[]byte",
-		serializerMethod: "writeBytes",
+		serializerMethod: "vm.WriteBytes",
 	}}
-}
-
-func (s *BytesField) AddSerializer(p *generator.Package) {
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddFunction(UTIL_FILE, "", "writeBytes", writeBytesMethod)
-	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.AddImport(UTIL_FILE, "io")
 }
 
 func (s *BytesField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {

@@ -1,49 +1,13 @@
 package schema
 
 import (
+	"bytes"
 	"fmt"
+	"text/template"
 
 	"github.com/actgardner/gogen-avro/generator"
+	"github.com/actgardner/gogen-avro/schema/templates"
 )
-
-const arraySerializerTemplate = `
-func %v(r %v, w io.Writer) error {
-	err := writeLong(int64(len(r)),w)
-	if err != nil || len(r) == 0 {
-		return err
-	}
-	for _, e := range r {
-		err = %v(e, w)
-		if err != nil {
-			return err
-		}
-	}
-	return writeLong(0,w)
-}
-`
-
-const arrayWrapperTemplate = `
-type %[1]v %[2]v
-
-func (_ *%[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *%[1]v) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *%[1]v) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *%[1]v) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *%[1]v) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *%[1]v) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *%[1]v) SetString(v string) { panic("Unsupported operation") }
-func (_ *%[1]v) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *%[1]v) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *%[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *%[1]v) Finalize() { }
-func (_ *%[1]v) SetDefault(i int) { panic("Unsupported operation") }
-func (r *%[1]v) AppendArray() types.Field {
-	var v %[3]v
-        %[5]v
-	*r = append(*r, v)
-	return %[4]v
-}
-`
 
 type ArrayField struct {
 	itemType   AvroType
@@ -61,6 +25,10 @@ func (s *ArrayField) Name() string {
 	return "Array" + s.itemType.Name()
 }
 
+func (r *ArrayField) filename() string {
+	return generator.ToSnake(r.Name()) + ".go"
+}
+
 func (s *ArrayField) GoType() string {
 	return fmt.Sprintf("[]%v", s.itemType.GoType())
 }
@@ -69,26 +37,29 @@ func (s *ArrayField) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.Name())
 }
 
+func (s *ArrayField) structDefinition() (string, error) {
+	buf := &bytes.Buffer{}
+	t, err := template.New("array").Parse(templates.ArrayTemplate)
+	if err != nil {
+		return "", err
+	}
+	err = t.Execute(buf, s)
+	return buf.String(), err
+}
+
 func (s *ArrayField) AddStruct(p *generator.Package, container bool) error {
+	def, err := s.structDefinition()
+	if err != nil {
+		panic(err)
+		return err
+	}
+	p.AddStruct(s.filename(), s.GoType(), def)
+
 	return s.itemType.AddStruct(p, container)
 }
 
 func (s *ArrayField) ItemType() AvroType {
 	return s.itemType
-}
-
-func (s *ArrayField) AddSerializer(p *generator.Package) {
-	itemMethodName := s.itemType.SerializerMethod()
-	methodName := s.SerializerMethod()
-	arraySerializer := fmt.Sprintf(arraySerializerTemplate, s.SerializerMethod(), s.GoType(), itemMethodName)
-	s.itemType.AddSerializer(p)
-	p.AddFunction(UTIL_FILE, "", methodName, arraySerializer)
-	p.AddFunction(UTIL_FILE, "", "writeLong", writeLongMethod)
-	p.AddFunction(UTIL_FILE, "", "encodeInt", encodeIntMethod)
-	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm/types")
-	p.AddFunction(UTIL_FILE, s.WrapperType(), "", s.appendMethodDef())
-	p.AddStruct(UTIL_FILE, "ByteWriter", byteWriterInterface)
-	p.AddImport(UTIL_FILE, "io")
 }
 
 func (s *ArrayField) ResolveReferences(n *Namespace) error {
@@ -146,16 +117,9 @@ func (s *ArrayField) SimpleName() string {
 	return s.Name()
 }
 
-func (s *ArrayField) appendMethodDef() string {
-	constructElem := ""
-	ret := ""
+func (s *ArrayField) ItemConstructable() string {
 	if constructor, ok := getConstructableForType(s.itemType); ok {
-		constructElem = fmt.Sprintf("v = %v\n", constructor.ConstructorMethod())
+		return fmt.Sprintf("v = %v\n", constructor.ConstructorMethod())
 	}
-	if s.itemType.WrapperType() != "" {
-		ret = fmt.Sprintf("(*%v)(&(*r)[len(*r)-1])", s.itemType.WrapperType())
-	} else {
-		ret = fmt.Sprintf("(*r)[len(*r)-1]")
-	}
-	return fmt.Sprintf(arrayWrapperTemplate, s.WrapperType(), s.GoType(), s.itemType.GoType(), ret, constructElem)
+	return ""
 }

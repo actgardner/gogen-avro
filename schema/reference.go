@@ -41,10 +41,6 @@ func (s *Reference) AddStruct(p *generator.Package, containers bool) error {
 	return s.Def.AddStruct(p, containers)
 }
 
-func (s *Reference) AddSerializer(p *generator.Package) {
-	s.Def.AddSerializer(p)
-}
-
 func (s *Reference) ResolveReferences(n *Namespace) error {
 	if s.Def == nil {
 		var ok bool

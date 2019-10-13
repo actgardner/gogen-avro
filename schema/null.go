@@ -1,15 +1,5 @@
 package schema
 
-import (
-	"github.com/actgardner/gogen-avro/generator"
-)
-
-const writeNullMethod = `
-func writeNull(_ interface{}, _ io.Writer) error {
-	return nil
-}
-`
-
 type NullField struct {
 	PrimitiveField
 }
@@ -19,13 +9,8 @@ func NewNullField(definition interface{}) *NullField {
 		definition:       definition,
 		name:             "Null",
 		goType:           "*types.NullVal",
-		serializerMethod: "writeNull",
+		serializerMethod: "vm.WriteNull",
 	}}
-}
-
-func (s *NullField) AddSerializer(p *generator.Package) {
-	p.AddFunction(UTIL_FILE, "", "writeNull", writeNullMethod)
-	p.AddImport(UTIL_FILE, "io")
 }
 
 func (s *NullField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {

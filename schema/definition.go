@@ -22,7 +22,6 @@ type Definition interface {
 
 	// Add the imports and struct for the definition of this type to the generator.Package
 	AddStruct(*generator.Package, bool) error
-	AddSerializer(*generator.Package)
 
 	// Resolve references to user-defined types
 	ResolveReferences(*Namespace) error

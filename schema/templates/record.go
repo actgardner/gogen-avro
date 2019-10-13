@@ -1,6 +1,14 @@
 package templates
 
 const RecordTemplate = `
+import (
+	"io"
+	"github.com/actgardner/gogen-avro/container"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
+)
+
 {{ if ne .Doc "" }}
 // {{ .Doc}}
 {{ end }}  
@@ -110,6 +118,7 @@ func (r {{ .GoType }}) SetDefault(i int) {
         {{ if .HasDefault }}
 	case {{ $i }}:
        	 	{{ $.DefaultForField $field }}
+		return
 	{{ end }}
 	{{ end }}
 	}

@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/actgardner/gogen-avro/vm"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -53,7 +54,7 @@ func TestCorruptString(t *testing.T) {
 func prepareBuffer(t *testing.T, length int64, input StringRec) (bytes.Buffer, error) {
 	var buffer bytes.Buffer
 
-	err := writeLong(length, &buffer)
+	err := vm.WriteLong(length, &buffer)
 	assert.Nil(t, err)
 
 	_, err = buffer.Write([]byte(input.ProductName))

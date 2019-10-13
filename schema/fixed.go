@@ -1,37 +1,13 @@
 package schema
 
 import (
+	"bytes"
 	"fmt"
+	"text/template"
 
 	"github.com/actgardner/gogen-avro/generator"
+	"github.com/actgardner/gogen-avro/schema/templates"
 )
-
-const writeFixedMethod = `
-func %v(r %v, w io.Writer) error {
-	_, err := w.Write(r[:])
-	return err
-}
-`
-
-const fixedFieldTemplate = `
-type %[1]v %[2]v
-
-func (_ *%[1]v) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *%[1]v) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *%[1]v) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *%[1]v) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *%[1]v) SetDouble(v float64) { panic("Unsupported operation") }
-func (r *%[1]v) SetBytes(v []byte) { 
-	copy((*r)[:], v)
-}
-func (_ *%[1]v) SetString(v string) { panic("Unsupported operation") }
-func (_ *%[1]v) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *%[1]v) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *%[1]v) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *%[1]v) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *%[1]v) Finalize() { }
-func (_ *%[1]v) SetDefault(i int) { panic("Unsupported operation") }
-`
 
 type FixedDefinition struct {
 	name       QualifiedName
@@ -73,14 +49,6 @@ func (s *FixedDefinition) SizeBytes() int {
 	return s.sizeBytes
 }
 
-func (s *FixedDefinition) serializerMethodDef() string {
-	return fmt.Sprintf(writeFixedMethod, s.SerializerMethod(), s.GoType())
-}
-
-func (s *FixedDefinition) typeDef() string {
-	return fmt.Sprintf("type %v [%v]byte\n", s.GoType(), s.sizeBytes)
-}
-
 func (s *FixedDefinition) filename() string {
 	return generator.ToSnake(s.GoType()) + ".go"
 }
@@ -89,24 +57,28 @@ func (s *FixedDefinition) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.GoType())
 }
 
-func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
-	p.AddStruct(s.filename(), s.GoType(), s.typeDef())
-	return nil
+func (s *FixedDefinition) structDefinition() (string, error) {
+	buf := &bytes.Buffer{}
+	t, err := template.New("fixed").Parse(templates.FixedTemplate)
+	if err != nil {
+		return "", err
+	}
+	err = t.Execute(buf, s)
+	return buf.String(), err
 }
 
-func (s *FixedDefinition) AddSerializer(p *generator.Package) {
-	p.AddImport(UTIL_FILE, "io")
-	p.AddImport(UTIL_FILE, "github.com/actgardner/gogen-avro/vm/types")
-	p.AddFunction(UTIL_FILE, "", s.SerializerMethod(), s.serializerMethodDef())
-	p.AddFunction(UTIL_FILE, s.GoType(), "fieldTemplate", s.FieldsMethodDef())
+func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
+	def, err := s.structDefinition()
+	if err != nil {
+		return err
+	}
+
+	p.AddStruct(s.filename(), s.GoType(), def)
+	return nil
 }
 
 func (s *FixedDefinition) ResolveReferences(n *Namespace) error {
 	return nil
-}
-
-func (s *FixedDefinition) FieldsMethodDef() string {
-	return fmt.Sprintf(fixedFieldTemplate, s.WrapperType(), s.GoType(), s.sizeBytes)
 }
 
 func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {

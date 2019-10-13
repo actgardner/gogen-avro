@@ -53,7 +53,6 @@ func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment str
 		}
 
 		schema.Root.AddStruct(p, true)
-		schema.Root.AddSerializer(p)
 	}
 
 	for _, f := range p.Files() {
