@@ -86,15 +86,13 @@ func (s *UnionField) structDefinition() (string, error) {
 func (s *UnionField) AddStruct(p *generator.Package, containers bool) error {
 	def, err := s.structDefinition()
 	if err != nil {
-		panic(err)
 		return err
 	}
 
 	p.AddStruct(s.filename(), s.GoType(), def)
 
 	for _, f := range s.itemType {
-		err := f.AddStruct(p, containers)
-		if err != nil {
+		if err := f.AddStruct(p, containers); err != nil {
 			return err
 		}
 	}

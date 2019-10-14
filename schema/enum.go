@@ -81,7 +81,6 @@ func (e *EnumDefinition) structDefinition() (string, error) {
 func (e *EnumDefinition) AddStruct(p *generator.Package, _ bool) error {
 	def, err := e.structDefinition()
 	if err != nil {
-		panic(err)
 		return err
 	}
 

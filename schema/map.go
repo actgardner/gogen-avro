@@ -44,7 +44,6 @@ func (s *MapField) filename() string {
 func (s *MapField) AddStruct(p *generator.Package, containers bool) error {
 	def, err := s.structDefinition()
 	if err != nil {
-		panic(err)
 		return err
 	}
 

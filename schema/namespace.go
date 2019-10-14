@@ -47,12 +47,13 @@ func NewNamespace(shortUnions bool) *Namespace {
 
 func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment string) error {
 	for _, schema := range namespace.Schemas {
-		err := schema.Root.ResolveReferences(namespace)
-		if err != nil {
+		if err := schema.Root.ResolveReferences(namespace); err != nil {
 			return err
 		}
 
-		schema.Root.AddStruct(p, true)
+		if err := schema.Root.AddStruct(p, true); err != nil {
+			return err
+		}
 	}
 
 	for _, f := range p.Files() {
