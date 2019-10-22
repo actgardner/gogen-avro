@@ -140,3 +140,9 @@ func (avroWriter *Writer) Flush() error {
 
 	return nil
 }
+
+// Get the current block buffer size.
+// caller might trigger an early Flush if current block size gets huge.
+func (avroWriter *Writer) BlockBufferSize() int {
+	return avroWriter.blockBuffer.Len()
+}
