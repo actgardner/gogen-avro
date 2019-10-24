@@ -20,9 +20,11 @@ func main() {
 
 	switch cfg.namespacedNames {
 	case nsShort:
-		generator.SetNamer(generator.NewNamespaceNamer(true))
+		generator.SetNamer(generator.NewNamespaceNamer(true, cfg.nameCase))
 	case nsFull:
-		generator.SetNamer(generator.NewNamespaceNamer(false))
+		generator.SetNamer(generator.NewNamespaceNamer(false, cfg.nameCase))
+	case nsNone:
+		generator.SetNamer(generator.NewDefaultNamer(cfg.nameCase))
 	}
 
 	for _, fileName := range cfg.files {

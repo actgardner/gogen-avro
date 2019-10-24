@@ -36,7 +36,7 @@ func (f *Field) Name() string {
 }
 
 func (f *Field) SimpleName() string {
-	return generator.ToPublicSimpleName(f.avroName)
+	return generator.ToPublicName(f.avroName)
 }
 
 func (f *Field) Index() int {

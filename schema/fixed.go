@@ -30,7 +30,7 @@ func (s *FixedDefinition) Name() string {
 }
 
 func (s *FixedDefinition) SimpleName() string {
-	return generator.ToPublicSimpleName(s.name.Name)
+	return generator.ToPublicName(s.name.Name)
 }
 
 func (s *FixedDefinition) AvroName() QualifiedName {

@@ -18,6 +18,14 @@
   revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
+  branch = "master"
+  digest = "1:be3bd107094de27145a9a92e9e5e2b3eb03d3d92a5dec68da31b8eba4e4c6ae2"
+  name = "github.com/iancoleman/strcase"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e506e3ef73653e84c592ba44aab577a46678f68c"
+
+[[projects]]
   digest = "1:dcc04c4f8d4133c33153289cbf6b329b68518579a5ed9277640eb4b502e5d02b"
   name = "github.com/linkedin/goavro"
   packages = ["."]
@@ -46,6 +54,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/golang/snappy",
+    "github.com/iancoleman/strcase",
     "github.com/linkedin/goavro",
     "github.com/stretchr/testify/assert",
   ]

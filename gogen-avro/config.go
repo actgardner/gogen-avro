@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/actgardner/gogen-avro/generator"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,6 +18,7 @@ const (
 	defaultContainers      = false
 	defaultShortUnions     = false
 	defaultNamespacedNames = nsNone
+	defaultNameCase        = generator.CaseTitle
 )
 
 type config struct {
@@ -24,6 +26,7 @@ type config struct {
 	containers      bool
 	shortUnions     bool
 	namespacedNames string
+	nameCase        string
 	targetDir       string
 	files           []string
 }
@@ -37,6 +40,7 @@ func parseCmdLine() config {
 	flag.BoolVar(&cfg.containers, "containers", defaultContainers, "Whether to generate container writer methods.")
 	flag.BoolVar(&cfg.shortUnions, "short-unions", defaultShortUnions, "Whether to use shorter names for Union types.")
 	flag.StringVar(&cfg.namespacedNames, "namespaced-names", defaultNamespacedNames, "Whether to generate namespaced names for types. Default is \"none\"; \"short\" uses the last part of the namespace (last word after a separator); \"full\" uses all namespace string.")
+	flag.StringVar(&cfg.nameCase, "name-case", defaultNameCase, "Case to use for generated names. Default is \"title\"; \"camel\" generates upper camel cased names.")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [flags] <target directory> <schema files>\n\nWhere 'flags' are:\n", os.Args[0])
@@ -53,6 +57,14 @@ func parseCmdLine() config {
 	case nsNone, nsShort, nsFull:
 	default:
 		fmt.Fprintf(os.Stderr, "namespaced-names: invalid value '%s'\n\n", cfg.namespacedNames)
+		flag.Usage()
+	}
+
+	cfg.nameCase = strings.ToLower(cfg.nameCase)
+	switch cfg.nameCase {
+	case generator.CaseTitle, generator.CaseCamel:
+	default:
+		fmt.Fprintf(os.Stderr, "name-case: invalid value '%s'\n\n", cfg.nameCase)
 		flag.Usage()
 	}
 
