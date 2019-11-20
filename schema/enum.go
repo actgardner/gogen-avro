@@ -64,6 +64,10 @@ func (e *EnumDefinition) SerializerMethod() string {
 	return "write" + e.GoType()
 }
 
+func (e *EnumDefinition) FromStringMethod() string {
+	return "New" + e.GoType() + "Value"
+}
+
 func (e *EnumDefinition) filename() string {
 	return generator.ToSnake(e.GoType()) + ".go"
 }

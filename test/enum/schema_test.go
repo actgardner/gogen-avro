@@ -47,6 +47,10 @@ func TestEnumFixture(t *testing.T) {
 		recordVal, ok := record["EnumField"]
 		assert.Equal(t, true, ok)
 		assert.Equal(t, recordVal, f.EnumField.String())
+
+		enumified, err := NewTestEnumTypeValue(f.EnumField.String())
+		assert.Nil(t, err)
+		assert.Equal(t, f.EnumField, enumified)
 	}
 }
 
@@ -65,4 +69,10 @@ func TestRoundTrip(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}
+}
+
+func TestInvalidStringConversion(t *testing.T) {
+	enumified, err := NewTestEnumTypeValue("bogus")
+	assert.Error(t, err)
+	assert.Equal(t, TestEnumType(-1), enumified)
 }
