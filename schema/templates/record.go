@@ -3,7 +3,6 @@ package templates
 const RecordTemplate = `
 import (
 	"io"
-	"github.com/actgardner/gogen-avro/container"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
@@ -73,11 +72,6 @@ func (r {{ .GoType }}) Serialize(w io.Writer) error {
 	return {{ .SerializerMethod }}(r, w)
 }
 
-func {{ .NewWriterMethod }}(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := {{ .ConstructorMethod }}
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
-}
-
 func (r {{ .GoType }}) Schema() string {
 	return {{ printf "%q" .Schema }}
 }
@@ -128,34 +122,4 @@ func (r {{ .GoType }}) SetDefault(i int) {
 func (_ {{ .GoType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) Finalize() { }
-
-// container reader
-type {{ .RecordReaderTypeName }} struct {
-	r io.Reader
-	p *vm.Program
-}
-
-func New{{ .RecordReaderTypeName }}(r io.Reader) (*{{ .RecordReaderTypeName }}, error){
-	containerReader, err := container.NewReader(r)
-	if err != nil {
-		return nil, err
-	}
-
-	t := {{ .ConstructorMethod }}
-	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
-	}
-
-	return &{{ .RecordReaderTypeName }} {
-		r: containerReader,
-		p: deser,
-	}, nil
-}
-
-func (r {{ .RecordReaderTypeName }}) Read() ({{ .GoType }}, error) {
-	t := {{ .ConstructorMethod }}
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
-}
 `

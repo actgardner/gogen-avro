@@ -60,9 +60,23 @@ func (r *RecordDefinition) filename() string {
 	return generator.ToSnake(r.Name()) + ".go"
 }
 
+func (r *RecordDefinition) containerFilename() string {
+	return generator.ToSnake(r.Name()) + "_container.go"
+}
+
 func (r *RecordDefinition) structDefinition() (string, error) {
 	buf := &bytes.Buffer{}
 	t, err := template.New("record").Parse(templates.RecordTemplate)
+	if err != nil {
+		return "", err
+	}
+	err = t.Execute(buf, r)
+	return buf.String(), err
+}
+
+func (r *RecordDefinition) containerDefinition() (string, error) {
+	buf := &bytes.Buffer{}
+	t, err := template.New("record_container").Parse(templates.RecordContainerTemplate)
 	if err != nil {
 		return "", err
 	}
@@ -79,6 +93,16 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 		}
 
 		p.AddStruct(r.filename(), r.GoType(), def)
+
+		if containers {
+			containerDef, err := r.containerDefinition()
+			if err != nil {
+				return err
+			}
+
+			p.AddStruct(r.containerFilename(), r.GoType(), containerDef)
+		}
+
 		for _, f := range r.fields {
 			if err := f.Type().AddStruct(p, containers); err != nil {
 				return err

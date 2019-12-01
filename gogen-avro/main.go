@@ -39,7 +39,7 @@ func main() {
 		}
 	}
 
-	err = namespace.AddToPackage(pkg, codegenComment(cfg.files))
+	err = namespace.AddToPackage(pkg, codegenComment(cfg.files), cfg.containers)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating code for schema - %v\n", err)
 		os.Exit(4)

@@ -45,13 +45,13 @@ func NewNamespace(shortUnions bool) *Namespace {
 	}
 }
 
-func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment string) error {
+func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment string, containers bool) error {
 	for _, schema := range namespace.Schemas {
 		if err := schema.Root.ResolveReferences(namespace); err != nil {
 			return err
 		}
 
-		if err := schema.Root.AddStruct(p, true); err != nil {
+		if err := schema.Root.AddStruct(p, containers); err != nil {
 			return err
 		}
 	}

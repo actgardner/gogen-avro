@@ -33,13 +33,13 @@ func NewReader(r io.Reader) (*Reader, error) {
 		return nil, fmt.Errorf("Unexpected magic in header - %v", header.Magic)
 	}
 
-	schemaBytes, ok := header.Meta["avro.schema"]
+	schemaBytes, ok := header.Meta.M["avro.schema"]
 	if !ok {
 		return nil, fmt.Errorf("Expected avro.schema in header, not specified in metadata map - %v", header.Meta)
 	}
 	log("Got OCF schema from header: %v", string(schemaBytes))
 
-	codec, ok := header.Meta["avro.codec"]
+	codec, ok := header.Meta.M["avro.codec"]
 	if !ok {
 		return nil, fmt.Errorf("Expected avro.codec in header, not specified in metadata map - %v", header.Meta)
 	}
