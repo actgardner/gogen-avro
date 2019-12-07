@@ -1,5 +1,42 @@
 package templates
 
+type MapContext struct {
+	Field *schema.MapField
+}
+
+func (s *MapContext) GoType() string {
+	return fmt.Sprintf("*%v", s.Name())
+}
+
+func (s *MapContext) SerializerMethod() string {
+	return fmt.Sprintf("write%v", s.Field.Name())
+}
+
+func (s *MapContext) ConstructorMethod() string {
+	return fmt.Sprintf("make(%v)", s.Field.Name())
+}
+
+func (s *MapContext) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	items, ok := rvalue.(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("Expected map as default for %v, got %v", lvalue, rvalue)
+	}
+	setters := ""
+
+	for k, v := range items {
+		setter, err := s.itemType.DefaultValue(fmt.Sprintf("%v[%q]", lvalue, k), v)
+		if err != nil {
+			return "", err
+		}
+		setters += setter + "\n"
+	}
+	return setters, nil
+}
+
+func (a *MapContext) Template() string {
+	return mapTemplate
+}
+
 const MapTemplate = `
 import (
 	"io"

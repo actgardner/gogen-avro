@@ -32,86 +32,6 @@ func (r *RecordDefinition) AvroName() QualifiedName {
 	return r.name
 }
 
-func (r *RecordDefinition) Name() string {
-	return generator.ToPublicName(r.name.String())
-}
-
-func (r *RecordDefinition) SimpleName() string {
-	return generator.ToPublicName(r.name.Name)
-}
-
-func (r *RecordDefinition) GoType() string {
-	return fmt.Sprintf("*%v", r.Name())
-}
-
-func (r *RecordDefinition) Aliases() []QualifiedName {
-	return r.aliases
-}
-
-func (r *RecordDefinition) SerializerMethod() string {
-	return fmt.Sprintf("write%v", r.Name())
-}
-
-func (r *RecordDefinition) NewWriterMethod() string {
-	return fmt.Sprintf("New%vWriter", r.Name())
-}
-
-func (r *RecordDefinition) filename() string {
-	return generator.ToSnake(r.Name()) + ".go"
-}
-
-func (r *RecordDefinition) containerFilename() string {
-	return generator.ToSnake(r.Name()) + "_container.go"
-}
-
-func (r *RecordDefinition) structDefinition() (string, error) {
-	buf := &bytes.Buffer{}
-	t, err := template.New("record").Parse(templates.RecordTemplate)
-	if err != nil {
-		return "", err
-	}
-	err = t.Execute(buf, r)
-	return buf.String(), err
-}
-
-func (r *RecordDefinition) containerDefinition() (string, error) {
-	buf := &bytes.Buffer{}
-	t, err := template.New("record_container").Parse(templates.RecordContainerTemplate)
-	if err != nil {
-		return "", err
-	}
-	err = t.Execute(buf, r)
-	return buf.String(), err
-}
-
-func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) error {
-	// Import guard, to avoid circular dependencies
-	if !p.HasFile(r.filename()) {
-		def, err := r.structDefinition()
-		if err != nil {
-			return err
-		}
-
-		p.AddFile(r.filename(), def)
-
-		if containers {
-			containerDef, err := r.containerDefinition()
-			if err != nil {
-				return err
-			}
-
-			p.AddFile(r.containerFilename(), containerDef)
-		}
-
-		for _, f := range r.fields {
-			if err := f.Type().AddStruct(p, containers); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
 func (r *RecordDefinition) ResolveReferences(n *Namespace) error {
 	var err error
 	for _, f := range r.fields {
@@ -141,25 +61,6 @@ func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) (inte
 	return r.metadata, nil
 }
 
-func (r *RecordDefinition) ConstructorMethod() string {
-	return fmt.Sprintf("New%v()", r.Name())
-}
-
-func (r *RecordDefinition) DefaultForField(f *Field) (string, error) {
-	return f.Type().DefaultValue(fmt.Sprintf("r.%v", f.GoName()), f.Default())
-}
-
-func (r *RecordDefinition) ConstructableForField(f *Field) string {
-	if constructor, ok := getConstructableForType(f.Type()); ok {
-		return fmt.Sprintf("r.%v = %v\n", f.GoName(), constructor.ConstructorMethod())
-	}
-	return ""
-}
-
-func (r *RecordDefinition) RecordReaderTypeName() string {
-	return r.Name() + "Reader"
-}
-
 func (r *RecordDefinition) GetReaderField(writerField *Field) *Field {
 	for _, f := range r.fields {
 		if f.IsSameField(writerField) {
@@ -178,21 +79,6 @@ func (r *RecordDefinition) FieldByName(field string) *Field {
 	return nil
 }
 
-func (r *RecordDefinition) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	items := rvalue.(map[string]interface{})
-	fieldSetters := ""
-	for k, v := range items {
-		field := r.FieldByName(k)
-		fieldSetter, err := field.Type().DefaultValue(fmt.Sprintf("%v.%v", lvalue, field.GoName()), v)
-		if err != nil {
-			return "", err
-		}
-
-		fieldSetters += fieldSetter + "\n"
-	}
-	return fieldSetters, nil
-}
-
 func (r *RecordDefinition) Fields() []*Field {
 	return r.fields
 }
@@ -200,10 +86,6 @@ func (r *RecordDefinition) Fields() []*Field {
 func (s *RecordDefinition) IsReadableBy(d Definition) bool {
 	reader, ok := d.(*RecordDefinition)
 	return ok && reader.name == s.name
-}
-
-func (s *RecordDefinition) WrapperType() string {
-	return ""
 }
 
 func (s *RecordDefinition) Doc() string {

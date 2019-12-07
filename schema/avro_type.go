@@ -5,21 +5,12 @@ import (
 )
 
 type AvroType interface {
-	Name() string
-	GoType() string
-
-	// The name of the method which writes this field onto the wire
-	SerializerMethod() string
-
-	// Add the imports and struct for the definition of this type to the generator.Package
-	AddStruct(*generator.Package, bool) error
-
 	// Attempt to resolve references to named structs, enums or fixed fields
 	ResolveReferences(*Namespace) error
 
+	// The definition of the type, with all nested type references expanded
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
-	DefaultValue(lvalue string, rvalue interface{}) (string, error)
 
-	WrapperType() string
+	// True if this field can be assigned a value of type f (ex. long can be assigned an int, but not vice-versa)
 	IsReadableBy(f AvroType) bool
 }

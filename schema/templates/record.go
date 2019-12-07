@@ -1,5 +1,63 @@
 package templates
 
+type RecordContext struct {
+	def *model.RecordDefinition
+}
+
+func NewRecordContext(def *model.RecordDefinition) *RecordContext {
+	return &RecordContext{def}
+}
+
+func (r *RecordContext) GoType() string {
+	return fmt.Sprintf("*%v", r.def.Name())
+}
+
+func (r *RecordContext) ConstructorMethod() string {
+	return fmt.Sprintf("New%v()", r.def.Name())
+}
+
+func (r *RecordContext) DefaultForField(f *Field) (string, error) {
+	return f.Type().DefaultValue(fmt.Sprintf("r.%v", f.GoName()), f.Default())
+}
+
+func (r *RecordContext) ConstructableForField(f *Field) string {
+	if constructor, ok := getConstructableForType(f.Type()); ok {
+		return fmt.Sprintf("r.%v = %v\n", f.GoName(), constructor.ConstructorMethod())
+	}
+	return ""
+}
+
+func (s *RecordContext) WrapperType() string {
+	return ""
+}
+
+func (r *RecordDefinition) RecordReaderTypeName() string {
+	return r.Name() + "Reader"
+}
+
+func (r *RecordDefinition) SerializerMethod() string {
+	return fmt.Sprintf("write%v", r.Name())
+}
+
+func (r *RecordDefinition) NewWriterMethod() string {
+	return fmt.Sprintf("New%vWriter", r.Name())
+}
+
+func (r *RecordContext) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	items := rvalue.(map[string]interface{})
+	fieldSetters := ""
+	for k, v := range items {
+		field := r.FieldByName(k)
+		fieldSetter, err := field.Type().DefaultValue(fmt.Sprintf("%v.%v", lvalue, field.GoName()), v)
+		if err != nil {
+			return "", err
+		}
+
+		fieldSetters += fieldSetter + "\n"
+	}
+	return fieldSetters, nil
+}
+
 const RecordTemplate = `
 import (
 	"io"

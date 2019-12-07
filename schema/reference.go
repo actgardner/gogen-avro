@@ -21,26 +21,6 @@ func NewReference(typeName QualifiedName) *Reference {
 	}
 }
 
-func (s *Reference) Name() string {
-	return s.Def.Name()
-}
-
-func (s *Reference) SimpleName() string {
-	return s.Def.SimpleName()
-}
-
-func (s *Reference) GoType() string {
-	return s.Def.GoType()
-}
-
-func (s *Reference) SerializerMethod() string {
-	return s.Def.SerializerMethod()
-}
-
-func (s *Reference) AddStruct(p *generator.Package, containers bool) error {
-	return s.Def.AddStruct(p, containers)
-}
-
 func (s *Reference) ResolveReferences(n *Namespace) error {
 	if s.Def == nil {
 		var ok bool
@@ -54,14 +34,6 @@ func (s *Reference) ResolveReferences(n *Namespace) error {
 
 func (s *Reference) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	return s.Def.Definition(scope)
-}
-
-func (s *Reference) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	return s.Def.DefaultValue(lvalue, rvalue)
-}
-
-func (s *Reference) WrapperType() string {
-	return s.Def.WrapperType()
 }
 
 func (s *Reference) IsReadableBy(f AvroType) bool {

@@ -28,16 +28,8 @@ func NewEnumDefinition(name QualifiedName, aliases []QualifiedName, symbols []st
 	}
 }
 
-func (e *EnumDefinition) Name() string {
-	return e.GoType()
-}
-
 func (e *EnumDefinition) Doc() string {
 	return e.doc
-}
-
-func (e *EnumDefinition) SimpleName() string {
-	return e.name.Name
 }
 
 func (e *EnumDefinition) AvroName() QualifiedName {

@@ -25,10 +25,6 @@ func NewFixedDefinition(name QualifiedName, aliases []QualifiedName, sizeBytes i
 	}
 }
 
-func (s *FixedDefinition) Name() string {
-	return s.GoType()
-}
-
 func (s *FixedDefinition) SimpleName() string {
 	return generator.ToPublicSimpleName(s.name.Name)
 }

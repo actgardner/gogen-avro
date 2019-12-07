@@ -35,10 +35,6 @@ func (f *Field) Name() string {
 	return f.avroName
 }
 
-func (f *Field) SimpleName() string {
-	return generator.ToPublicSimpleName(f.avroName)
-}
-
 func (f *Field) Index() int {
 	return f.index
 }
@@ -50,10 +46,6 @@ func (f *Field) Doc() string {
 // Tags returns a field go struct tags if defined.
 func (f *Field) Tags() string {
 	return f.fieldTags
-}
-
-func (f *Field) GoName() string {
-	return generator.ToPublicName(f.avroName)
 }
 
 // IsSameField checks whether two fields have the same name or any of their aliases are the same, in which case they're the same for purposes of schema evolution

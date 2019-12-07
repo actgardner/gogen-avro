@@ -1,6 +1,61 @@
 package templates
 
-const ArrayTemplate = `
+type ArrayContext struct {
+	Field *schema.ArrayField
+}
+
+func (s *ArrayContext) GoType() string {
+	return fmt.Sprintf("[]%v", ContextForField(s.Field.ItemType()).GoType())
+}
+
+func (s *ArrayContext) SerializerMethod() string {
+	return fmt.Sprintf("write%v", s.Field.Name())
+}
+
+func (s *ArrayContext) ConstructorMethod() string {
+	return fmt.Sprintf("make(%v, 0)", s.GoType())
+}
+
+func (s *ArrayContext) WrapperType() string {
+	return fmt.Sprintf("%vWrapper", s.Field().Name())
+}
+
+func (s *ArrayContext) ItemConstructable() string {
+	itemConstructor := ContextForField(s.Field.ItemType())
+	if itemConstructor != "" {
+		return fmt.Sprintf("v = %v\n")
+	}
+	return ""
+}
+
+func (s *ArrayContext) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
+	items, ok := rvalue.([]interface{})
+	if !ok {
+		return "", fmt.Errorf("Expected array as default for %v, got %v", lvalue, rvalue)
+	}
+
+	setters := fmt.Sprintf("%v = make(%v,%v)\n", lvalue, s.GoType(), len(items))
+	itemConstructor := ContextForField(s.Field.ItemType())
+	for i, item := range items {
+		if itemConstructor != "" {
+			setters += fmt.Sprintf("%v[%v] = %v\n", lvalue, i, itemConstructor)
+		}
+
+		setter, err := s.itemType.DefaultValue(fmt.Sprintf("%v[%v]", lvalue, i), item)
+		if err != nil {
+			return "", err
+		}
+
+		setters += setter + "\n"
+	}
+	return setters, nil
+}
+
+func (a *ArrayContext) Template() string {
+	return arrayTemplate
+}
+
+const arrayTemplate = `
 import (
 	"io"
 
