@@ -86,13 +86,13 @@ func (r *RecordDefinition) containerDefinition() (string, error) {
 
 func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) error {
 	// Import guard, to avoid circular dependencies
-	if !p.HasStruct(r.filename(), r.GoType()) {
+	if !p.HasFile(r.filename()) {
 		def, err := r.structDefinition()
 		if err != nil {
 			return err
 		}
 
-		p.AddStruct(r.filename(), r.GoType(), def)
+		p.AddFile(r.filename(), def)
 
 		if containers {
 			containerDef, err := r.containerDefinition()
@@ -100,7 +100,7 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 				return err
 			}
 
-			p.AddStruct(r.containerFilename(), r.GoType(), containerDef)
+			p.AddFile(r.containerFilename(), containerDef)
 		}
 
 		for _, f := range r.fields {

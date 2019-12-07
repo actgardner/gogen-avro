@@ -15,7 +15,7 @@ func main() {
 	cfg := parseCmdLine()
 
 	var err error
-	pkg := generator.NewPackage(cfg.packageName)
+	pkg := generator.NewPackage(cfg.packageName, codegenComment(cfg.files))
 	namespace := schema.NewNamespace(cfg.shortUnions)
 
 	switch cfg.namespacedNames {
@@ -39,7 +39,7 @@ func main() {
 		}
 	}
 
-	err = namespace.AddToPackage(pkg, codegenComment(cfg.files), cfg.containers)
+	err = namespace.AddToPackage(pkg, cfg.containers)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating code for schema - %v\n", err)
 		os.Exit(4)

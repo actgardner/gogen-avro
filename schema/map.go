@@ -47,7 +47,7 @@ func (s *MapField) AddStruct(p *generator.Package, containers bool) error {
 		return err
 	}
 
-	p.AddStruct(s.filename(), s.GoType(), def)
+	p.AddFile(s.filename(), def)
 
 	return s.itemType.AddStruct(p, containers)
 }

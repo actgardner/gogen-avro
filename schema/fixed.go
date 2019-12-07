@@ -73,7 +73,7 @@ func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
 		return err
 	}
 
-	p.AddStruct(s.filename(), s.GoType(), def)
+	p.AddFile(s.filename(), def)
 	return nil
 }
 

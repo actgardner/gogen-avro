@@ -45,7 +45,7 @@ func NewNamespace(shortUnions bool) *Namespace {
 	}
 }
 
-func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment string, containers bool) error {
+func (namespace *Namespace) AddToPackage(p *generator.Package, containers bool) error {
 	for _, schema := range namespace.Schemas {
 		if err := schema.Root.ResolveReferences(namespace); err != nil {
 			return err
@@ -54,10 +54,6 @@ func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment str
 		if err := schema.Root.AddStruct(p, containers); err != nil {
 			return err
 		}
-	}
-
-	for _, f := range p.Files() {
-		p.AddHeader(f, headerComment)
 	}
 	return nil
 }

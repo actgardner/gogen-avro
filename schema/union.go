@@ -89,7 +89,7 @@ func (s *UnionField) AddStruct(p *generator.Package, containers bool) error {
 		return err
 	}
 
-	p.AddStruct(s.filename(), s.GoType(), def)
+	p.AddFile(s.filename(), def)
 
 	for _, f := range s.itemType {
 		if err := f.AddStruct(p, containers); err != nil {

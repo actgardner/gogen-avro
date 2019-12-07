@@ -53,7 +53,7 @@ func (s *ArrayField) AddStruct(p *generator.Package, container bool) error {
 		panic(err)
 		return err
 	}
-	p.AddStruct(s.filename(), s.GoType(), def)
+	p.AddFile(s.filename(), def)
 
 	return s.itemType.AddStruct(p, container)
 }

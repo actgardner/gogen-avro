@@ -88,7 +88,7 @@ func (e *EnumDefinition) AddStruct(p *generator.Package, _ bool) error {
 		return err
 	}
 
-	p.AddStruct(e.filename(), e.GoType(), def)
+	p.AddFile(e.filename(), def)
 	return nil
 }
 

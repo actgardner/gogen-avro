@@ -2,25 +2,30 @@
 package generator
 
 import (
+	"fmt"
+	"io/ioutil"
 	"path/filepath"
 	"sort"
 )
 
 // Package represents the output package
 type Package struct {
-	name  string
-	files map[string]*File
+	name   string
+	header string
+	files  map[string]string
 }
 
-func NewPackage(name string) *Package {
-	return &Package{name: name, files: make(map[string]*File)}
+func NewPackage(name, header string) *Package {
+	return &Package{name: name, header: header, files: make(map[string]string)}
 }
 
 func (p *Package) WriteFiles(targetDir string) error {
-	for _, f := range p.files {
-		err := f.WriteFile(p.name, filepath.Join(targetDir, f.name))
+	for name, body := range p.files {
+		targetFile := filepath.Join(targetDir, name)
+		fileContent := fmt.Sprintf("%v\npackage %v\n%v", p.header, p.name, body)
+		err := ioutil.WriteFile(targetFile, []byte(fileContent), 0640)
 		if err != nil {
-			return err
+			return fmt.Errorf("Error writing file %v - %v", targetFile, err)
 		}
 	}
 	return nil
@@ -35,80 +40,11 @@ func (p *Package) Files() []string {
 	return files
 }
 
-func (p *Package) File(name string) (*File, bool) {
-	file, ok := p.files[name]
-	return file, ok
-}
-
-func (p *Package) AddHeader(file, header string) {
-	f, ok := p.files[file]
-	if !ok {
-		f = NewFile(file)
-		p.files[file] = f
-	}
-
-	f.headers = append(f.headers, header)
-}
-
-func (p *Package) AddFunction(file, str, name, def string) {
-	f, ok := p.files[file]
-	if !ok {
-		f = NewFile(file)
-		p.files[file] = f
-	}
-	f.functions[FunctionName{str, name}] = def
-}
-
-func (p *Package) AddStruct(file, name, def string) {
-	f, ok := p.files[file]
-	if !ok {
-		f = NewFile(file)
-		p.files[file] = f
-	}
-	f.structs[name] = def
-}
-
-func (p *Package) AddImport(file, name string) {
-	f, ok := p.files[file]
-	if !ok {
-		f = NewFile(file)
-		p.files[file] = f
-	}
-	f.imports[name] = 1
-}
-
-func (p *Package) AddConstant(file, name string, value interface{}) {
-	f, ok := p.files[file]
-	if !ok {
-		f = NewFile(file)
-		p.files[file] = f
-	}
-	f.constants[name] = value
-}
-
-func (p *Package) HasStruct(file, name string) bool {
-	f, ok := p.files[file]
-	if !ok {
-		return false
-	}
-	_, ok = f.structs[name]
+func (p *Package) HasFile(name string) bool {
+	_, ok := p.files[name]
 	return ok
 }
 
-func (p *Package) HasFunction(file, str, name string) bool {
-	f, ok := p.files[file]
-	if !ok {
-		return false
-	}
-	_, ok = f.functions[FunctionName{str, name}]
-	return ok
-}
-
-func (p *Package) HasImport(file, name string) bool {
-	f, ok := p.files[file]
-	if !ok {
-		return false
-	}
-	_, ok = f.imports[name]
-	return ok
+func (p *Package) AddFile(name string, body string) {
+	p.files[name] = body
 }
