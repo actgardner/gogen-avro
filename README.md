@@ -31,13 +31,13 @@ gogen-avro has two parts: a tool which you install on your system (usually on yo
 To install the gogen-avro executable to `$GOPATH/bin/` and generate structs, first download the repository:
 
 ```
-go get -d github.com/actgardner/gogen-avro/gogen-avro
+go get -d github.com/actgardner/gogen-avro/cmd/gogen-avro
 ```
 
 Then run:
 
 ```
-go install github.com/actgardner/gogen-avro/gogen-avro
+go install github.com/actgardner/gogen-avro/cmd/gogen-avro
 ```
 
 We recommend pinning a specific SHA of the gogen-avro tool when you compile your schemas with a tool like [retool](https://github.com/twitchtv/retool). This will ensure your builds are repeatable.
