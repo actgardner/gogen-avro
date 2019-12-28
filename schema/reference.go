@@ -1,11 +1,5 @@
 package schema
 
-import (
-	"fmt"
-
-	"github.com/actgardner/gogen-avro/generator"
-)
-
 /*
   A named Reference to a user-defined type (fixed, enum, record). Just a wrapper with a name around a Definition.
 */
@@ -21,19 +15,8 @@ func NewReference(typeName QualifiedName) *Reference {
 	}
 }
 
-func (s *Reference) ResolveReferences(n *Namespace) error {
-	if s.Def == nil {
-		var ok bool
-		if s.Def, ok = n.Definitions[s.TypeName]; !ok {
-			return fmt.Errorf("Unable to resolve definition of type %v", s.TypeName)
-		}
-		return s.Def.ResolveReferences(n)
-	}
-	return nil
-}
-
-func (s *Reference) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
-	return s.Def.Definition(scope)
+func (s *Reference) Children() []AvroType {
+	return s.Def.Children()
 }
 
 func (s *Reference) IsReadableBy(f AvroType) bool {

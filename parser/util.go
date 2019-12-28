@@ -1,4 +1,4 @@
-package schema
+package parser
 
 func interfaceSliceToStringSlice(iSlice []interface{}) ([]string, bool) {
 	var ok bool

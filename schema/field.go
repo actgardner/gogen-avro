@@ -1,9 +1,4 @@
-// gogen-avro's internal representation of Avro schemas, and templates for code generation
 package schema
-
-import (
-	"github.com/actgardner/gogen-avro/generator"
-)
 
 type Field struct {
 	avroName   string
@@ -90,14 +85,4 @@ func (f *Field) Type() AvroType {
 		return nil
 	}
 	return f.avroType
-}
-
-func (f *Field) Definition(scope map[QualifiedName]interface{}) (map[string]interface{}, error) {
-	var err error
-	f.definition["type"], err = f.avroType.Definition(scope)
-	if err != nil {
-		return nil, err
-	}
-
-	return f.definition, nil
 }

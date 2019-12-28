@@ -1,15 +1,5 @@
 package schema
 
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"text/template"
-
-	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/schema/templates"
-)
-
 type RecordDefinition struct {
 	name     QualifiedName
 	aliases  []QualifiedName
@@ -32,33 +22,16 @@ func (r *RecordDefinition) AvroName() QualifiedName {
 	return r.name
 }
 
-func (r *RecordDefinition) ResolveReferences(n *Namespace) error {
-	var err error
-	for _, f := range r.fields {
-		err = f.Type().ResolveReferences(n)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+func (r *RecordDefinition) Aliases() []QualifiedName {
+	return r.aliases
 }
 
-func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
-	if _, ok := scope[r.name]; ok {
-		return r.name.String(), nil
+func (r *RecordDefinition) Children() []AvroType {
+	children := make([]AvroType, len(r.fields))
+	for i, f := range r.fields {
+		children[i] = f.avroType
 	}
-	scope[r.name] = 1
-	fields := make([]map[string]interface{}, 0)
-	for _, f := range r.fields {
-		def, err := f.Definition(scope)
-		if err != nil {
-			return nil, err
-		}
-		fields = append(fields, def)
-	}
-
-	r.metadata["fields"] = fields
-	return r.metadata, nil
+	return children
 }
 
 func (r *RecordDefinition) GetReaderField(writerField *Field) *Field {
@@ -90,15 +63,4 @@ func (s *RecordDefinition) IsReadableBy(d Definition) bool {
 
 func (s *RecordDefinition) Doc() string {
 	return s.doc
-}
-
-func (s *RecordDefinition) Schema() (string, error) {
-	def, err := s.Definition(make(map[QualifiedName]interface{}))
-	if err != nil {
-		return "", err
-	}
-
-	jsonBytes, err := json.Marshal(def)
-	return string(jsonBytes), err
-
 }

@@ -1,4 +1,4 @@
-package schema
+package parser
 
 import (
 	"encoding/json"
@@ -6,60 +6,33 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/actgardner/gogen-avro/generator"
+	avro_schema "github.com/actgardner/gogen-avro/schema"
 )
 
-const UTIL_FILE = "primitive.go"
-
-// QualifiedName represents an Avro qualified name, which includes an optional namespace and the type name.
-type QualifiedName struct {
-	Namespace string
-	Name      string
-}
-
-func (q QualifiedName) String() string {
-	if q.Namespace == "" {
-		return q.Name
+// ParseAvroName parses a name according to the Avro spec:
+//   - If the name contains a dot ('.'), the last part is the name and the rest is the namespace
+//   - Otherwise, the enclosing namespace is used
+func ParseAvroName(enclosing, name string) avro_schema.QualifiedName {
+	lastIndex := strings.LastIndex(name, ".")
+	if lastIndex != -1 {
+		enclosing = name[:lastIndex]
 	}
-	return q.Namespace + "." + q.Name
+	return avro_schema.QualifiedName{enclosing, name[lastIndex+1:]}
 }
 
-type Schema struct {
-	Root       AvroType
-	JSONSchema []byte
+// Parser decodes Avro type definitions, validates them and accumulates them so the references can be resolved
+type Parser struct {
+	Definitions map[avro_schema.QualifiedName]avro_schema.Definition
 }
 
-// Namespace is a mapping of QualifiedNames to their Definitions, used to resolve
-// type lookups within a schema.
-type Namespace struct {
-	Definitions map[QualifiedName]Definition
-	Schemas     []Schema
-	ShortUnions bool
-}
-
-func NewNamespace(shortUnions bool) *Namespace {
-	return &Namespace{
-		Definitions: make(map[QualifiedName]Definition),
-		Schemas:     make([]Schema, 0),
-		ShortUnions: shortUnions,
+func NewParser() *Parser {
+	return &Parser{
+		Definitions: make(map[avro_schema.QualifiedName]avro_schema.Definition),
 	}
-}
-
-func (namespace *Namespace) AddToPackage(p *generator.Package, containers bool) error {
-	for _, schema := range namespace.Schemas {
-		if err := schema.Root.ResolveReferences(namespace); err != nil {
-			return err
-		}
-
-		if err := schema.Root.AddStruct(p, containers); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // RegisterDefinition adds a new type definition to the namespace. Returns an error if the type is already defined.
-func (n *Namespace) RegisterDefinition(d Definition) error {
+func (n *Parser) RegisterDefinition(d avro_schema.Definition) error {
 	if curDef, ok := n.Definitions[d.AvroName()]; ok {
 		if !reflect.DeepEqual(curDef, d) {
 			return fmt.Errorf("Conflicting definitions for %v", d.AvroName())
@@ -77,23 +50,8 @@ func (n *Namespace) RegisterDefinition(d Definition) error {
 	return nil
 }
 
-// ParseAvroName parses a name according to the Avro spec:
-//   - If the name contains a dot ('.'), the last part is the name and the rest is the namespace
-//   - Otherwise, the enclosing namespace is used
-func ParseAvroName(enclosing, name string) QualifiedName {
-	lastIndex := strings.LastIndex(name, ".")
-	if lastIndex != -1 {
-		enclosing = name[:lastIndex]
-	}
-	return QualifiedName{enclosing, name[lastIndex+1:]}
-}
-
-// TypeForSchema accepts an Avro schema as a JSON string, decode it and return the AvroType defined at the top level:
-//    - a single record definition (JSON map)
-//    - a union of multiple types (JSON array)
-//    - an already-defined type (JSON string)
-// The Avro type defined at the top level and all the type definitions beneath it will also be added to this Namespace.
-func (n *Namespace) TypeForSchema(schemaJson []byte) (AvroType, error) {
+// Parse accepts an Avro schema as a JSON string and adds any type definitions to the given Parser
+func (n *Parser) Parse(schemaJson []byte) (avro_schema.AvroType, error) {
 	var schema interface{}
 	if err := json.Unmarshal(schemaJson, &schema); err != nil {
 		return nil, err
@@ -104,11 +62,10 @@ func (n *Namespace) TypeForSchema(schemaJson []byte) (AvroType, error) {
 		return nil, err
 	}
 
-	n.Schemas = append(n.Schemas, Schema{field, schemaJson})
 	return field, nil
 }
 
-func (n *Namespace) decodeTypeDefinition(name, namespace string, schema interface{}) (AvroType, error) {
+func (n *Parser) decodeTypeDefinition(name, namespace string, schema interface{}) (avro_schema.AvroType, error) {
 	switch schema.(type) {
 	case string:
 		typeStr := schema.(string)
@@ -126,7 +83,7 @@ func (n *Namespace) decodeTypeDefinition(name, namespace string, schema interfac
 }
 
 // Given a map representing a record definition, validate the definition and build the RecordDefinition struct.
-func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[string]interface{}) (Definition, error) {
+func (n *Parser) decodeRecordDefinition(namespace string, schemaMap map[string]interface{}) (avro_schema.Definition, error) {
 	typeStr, err := getMapString(schemaMap, "type")
 	if err != nil {
 		return nil, err
@@ -161,7 +118,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		return nil, err
 	}
 
-	decodedFields := make([]*Field, 0)
+	decodedFields := make([]*avro_schema.Field, 0)
 	for i, f := range fieldList {
 		field, ok := f.(map[string]interface{})
 		if !ok {
@@ -216,7 +173,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		}
 
 		def, hasDef := field["default"]
-		fieldStruct := NewField(fieldName, fieldType, def, hasDef, fieldAliases, docString, field, i, fieldTags)
+		fieldStruct := avro_schema.NewField(fieldName, fieldType, def, hasDef, fieldAliases, docString, field, i, fieldTags)
 
 		decodedFields = append(decodedFields, fieldStruct)
 	}
@@ -226,12 +183,12 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		return nil, err
 	}
 
-	return NewRecordDefinition(ParseAvroName(namespace, name), aliases, decodedFields, rDocString, schemaMap), nil
+	return avro_schema.NewRecordDefinition(ParseAvroName(namespace, name), aliases, decodedFields, rDocString, schemaMap), nil
 }
 
 // decodeEnumDefinition accepts a namespace and a map representing an enum definition,
 // it validates the definition and build the EnumDefinition struct.
-func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]interface{}) (Definition, error) {
+func (n *Parser) decodeEnumDefinition(namespace string, schemaMap map[string]interface{}) (avro_schema.Definition, error) {
 	typeStr, err := getMapString(schemaMap, "type")
 	if err != nil {
 		return nil, err
@@ -275,12 +232,12 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 		}
 	}
 
-	return NewEnumDefinition(ParseAvroName(namespace, name), aliases, symbolStr, docString, schemaMap), nil
+	return avro_schema.NewEnumDefinition(ParseAvroName(namespace, name), aliases, symbolStr, docString, schemaMap), nil
 }
 
 // decodeFixedDefinition accepts a namespace and a map representing a fixed definition,
-// it validates the definition and build the FixedDefinition struct.
-func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string]interface{}) (Definition, error) {
+// it validates the definition and build the Fixedschema.Definition struct.
+func (n *Parser) decodeFixedDefinition(namespace string, schemaMap map[string]interface{}) (avro_schema.Definition, error) {
 	typeStr, err := getMapString(schemaMap, "type")
 	if err != nil {
 		return nil, err
@@ -312,11 +269,11 @@ func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string
 		return nil, err
 	}
 
-	return NewFixedDefinition(ParseAvroName(namespace, name), aliases, int(sizeBytes), schemaMap), nil
+	return avro_schema.NewFixedDefinition(ParseAvroName(namespace, name), aliases, int(sizeBytes), schemaMap), nil
 }
 
-func (n *Namespace) decodeUnionDefinition(name, namespace string, fieldList []interface{}) (AvroType, error) {
-	unionFields := make([]AvroType, 0)
+func (n *Parser) decodeUnionDefinition(name, namespace string, fieldList []interface{}) (avro_schema.AvroType, error) {
+	unionFields := make([]avro_schema.AvroType, 0)
 	for _, f := range fieldList {
 		fieldDef, err := n.decodeTypeDefinition(name, namespace, f)
 		if err != nil {
@@ -326,15 +283,10 @@ func (n *Namespace) decodeUnionDefinition(name, namespace string, fieldList []in
 		unionFields = append(unionFields, fieldDef)
 	}
 
-	if n.ShortUnions {
-		name += "Union"
-	} else {
-		name = ""
-	}
-	return NewUnionField(name, unionFields, fieldList), nil
+	return avro_schema.NewUnionField(unionFields, fieldList), nil
 }
 
-func (n *Namespace) decodeComplexDefinition(name, namespace string, typeMap map[string]interface{}) (AvroType, error) {
+func (n *Parser) decodeComplexDefinition(name, namespace string, typeMap map[string]interface{}) (avro_schema.AvroType, error) {
 	typeStr, err := getMapString(typeMap, "type")
 	if err != nil {
 		return nil, err
@@ -351,7 +303,7 @@ func (n *Namespace) decodeComplexDefinition(name, namespace string, typeMap map[
 			return nil, err
 		}
 
-		return NewArrayField(fieldType, typeMap), nil
+		return avro_schema.NewArrayField(fieldType, typeMap), nil
 
 	case "map":
 		values, ok := typeMap["values"]
@@ -364,7 +316,7 @@ func (n *Namespace) decodeComplexDefinition(name, namespace string, typeMap map[
 			return nil, err
 		}
 
-		return NewMapField(fieldType, typeMap), nil
+		return avro_schema.NewMapField(fieldType, typeMap), nil
 
 	case "enum":
 		definition, err := n.decodeEnumDefinition(namespace, typeMap)
@@ -376,7 +328,7 @@ func (n *Namespace) decodeComplexDefinition(name, namespace string, typeMap map[
 		if err != nil {
 			return nil, err
 		}
-		return NewReference(definition.AvroName()), nil
+		return avro_schema.NewReference(definition.AvroName()), nil
 
 	case "fixed":
 		definition, err := n.decodeFixedDefinition(namespace, typeMap)
@@ -389,7 +341,7 @@ func (n *Namespace) decodeComplexDefinition(name, namespace string, typeMap map[
 			return nil, err
 		}
 
-		return NewReference(definition.AvroName()), nil
+		return avro_schema.NewReference(definition.AvroName()), nil
 
 	case "record":
 		definition, err := n.decodeRecordDefinition(namespace, typeMap)
@@ -402,7 +354,7 @@ func (n *Namespace) decodeComplexDefinition(name, namespace string, typeMap map[
 			return nil, err
 		}
 
-		return NewReference(definition.AvroName()), nil
+		return avro_schema.NewReference(definition.AvroName()), nil
 
 	default:
 		// If the type isn't a special case, it's a primitive or a reference to an existing type
@@ -410,42 +362,42 @@ func (n *Namespace) decodeComplexDefinition(name, namespace string, typeMap map[
 	}
 }
 
-func (n *Namespace) getTypeByName(namespace string, typeStr string, definition interface{}) AvroType {
+func (n *Parser) getTypeByName(namespace string, typeStr string, definition interface{}) avro_schema.AvroType {
 	switch typeStr {
 	case "int":
-		return NewIntField(definition)
+		return avro_schema.NewIntField(definition)
 
 	case "long":
-		return NewLongField(definition)
+		return avro_schema.NewLongField(definition)
 
 	case "float":
-		return NewFloatField(definition)
+		return avro_schema.NewFloatField(definition)
 
 	case "double":
-		return NewDoubleField(definition)
+		return avro_schema.NewDoubleField(definition)
 
 	case "boolean":
-		return NewBoolField(definition)
+		return avro_schema.NewBoolField(definition)
 
 	case "bytes":
-		return NewBytesField(definition)
+		return avro_schema.NewBytesField(definition)
 
 	case "string":
-		return NewStringField(definition)
+		return avro_schema.NewStringField(definition)
 
 	case "null":
-		return NewNullField(definition)
+		return avro_schema.NewNullField(definition)
 	}
 
-	return NewReference(ParseAvroName(namespace, typeStr))
+	return avro_schema.NewReference(ParseAvroName(namespace, typeStr))
 }
 
 // parseAliases parses out all the aliases from a definition map - returns an empty slice if no aliases exist.
 // Returns an error if the aliases key exists but the value isn't a list of strings.
-func parseAliases(objectMap map[string]interface{}, namespace string) ([]QualifiedName, error) {
+func parseAliases(objectMap map[string]interface{}, namespace string) ([]avro_schema.QualifiedName, error) {
 	aliases, ok := objectMap["aliases"]
 	if !ok {
-		return make([]QualifiedName, 0), nil
+		return make([]avro_schema.QualifiedName, 0), nil
 	}
 
 	aliasList, ok := aliases.([]interface{})
@@ -453,7 +405,7 @@ func parseAliases(objectMap map[string]interface{}, namespace string) ([]Qualifi
 		return nil, fmt.Errorf("Field aliases expected to be array, got %v", aliases)
 	}
 
-	qualifiedAliases := make([]QualifiedName, 0, len(aliasList))
+	qualifiedAliases := make([]avro_schema.QualifiedName, 0, len(aliasList))
 
 	for _, alias := range aliasList {
 		aliasString, ok := alias.(string)
