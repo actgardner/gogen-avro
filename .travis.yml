@@ -6,7 +6,7 @@ go:
   - "1.11"
   - tip
 
-install: go get -t -v ./gogen-avro
+install: go get -t -v ./cmd/...
 
 script:
   - go test github.com/actgardner/gogen-avro/generator
