@@ -1,7 +1,6 @@
 package generator
 
 import (
-	"strings"
 	"unicode"
 )
 
@@ -9,17 +8,6 @@ import (
 // configured namer.
 func ToPublicName(name string) string {
 	return namer.ToPublicName(name)
-}
-
-// ToPublicSimpleName returns a go-idiomatic public name. The Avro spec
-// specifies names must start with [A-Za-z_] and contain [A-Za-z0-9_].
-// The golang spec says valid identifiers start with [A-Za-z_] and contain
-// [A-Za-z0-9], but the first character must be [A-Z] for the field to be
-// public.
-func ToPublicSimpleName(name string) string {
-	lastIndex := strings.LastIndex(name, ".")
-	name = name[lastIndex+1:]
-	return strings.Title(strings.Trim(name, "_"))
 }
 
 // ToSnake makes filenames snake-case, taken from https://gist.github.com/elwinar/14e1e897fdbe4d3432e1
