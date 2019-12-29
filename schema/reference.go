@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"fmt"
-
 	"github.com/actgardner/gogen-avro/generator"
 )
 
@@ -41,17 +39,6 @@ func (s *Reference) AddStruct(p *generator.Package, containers bool) error {
 	return s.Def.AddStruct(p, containers)
 }
 
-func (s *Reference) ResolveReferences(n *Namespace) error {
-	if s.Def == nil {
-		var ok bool
-		if s.Def, ok = n.Definitions[s.TypeName]; !ok {
-			return fmt.Errorf("Unable to resolve definition of type %v", s.TypeName)
-		}
-		return s.Def.ResolveReferences(n)
-	}
-	return nil
-}
-
 func (s *Reference) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	return s.Def.Definition(scope)
 }
@@ -69,4 +56,8 @@ func (s *Reference) IsReadableBy(f AvroType) bool {
 		return s.Def.IsReadableBy(reader.Def)
 	}
 	return false
+}
+
+func (s *Reference) Children() []AvroType {
+	return s.Def.Children()
 }

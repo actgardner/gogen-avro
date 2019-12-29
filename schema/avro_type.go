@@ -14,8 +14,7 @@ type AvroType interface {
 	// Add the imports and struct for the definition of this type to the generator.Package
 	AddStruct(*generator.Package, bool) error
 
-	// Attempt to resolve references to named structs, enums or fixed fields
-	ResolveReferences(*Namespace) error
+	Children() []AvroType
 
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
 	DefaultValue(lvalue string, rvalue interface{}) (string, error)

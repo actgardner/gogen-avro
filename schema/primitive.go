@@ -28,14 +28,14 @@ func (s *PrimitiveField) AddStruct(p *generator.Package, _ bool) error {
 	return nil
 }
 
-func (s *PrimitiveField) ResolveReferences(n *Namespace) error {
-	return nil
-}
-
 func (s *PrimitiveField) Definition(_ map[QualifiedName]interface{}) (interface{}, error) {
 	return s.definition, nil
 }
 
 func (s *PrimitiveField) SimpleName() string {
 	return s.name
+}
+
+func (s *PrimitiveField) Children() []AvroType {
+	return []AvroType{}
 }

@@ -52,10 +52,6 @@ func (s *MapField) AddStruct(p *generator.Package, containers bool) error {
 	return s.itemType.AddStruct(p, containers)
 }
 
-func (s *MapField) ResolveReferences(n *Namespace) error {
-	return s.itemType.ResolveReferences(n)
-}
-
 func (s *MapField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	var err error
 	s.definition["values"], err = s.itemType.Definition(scope)
@@ -116,4 +112,8 @@ func (s *MapField) ItemConstructable() string {
 		return fmt.Sprintf("v = %v\n", constructor.ConstructorMethod())
 	}
 	return ""
+}
+
+func (s *MapField) Children() []AvroType {
+	return []AvroType{s.itemType}
 }

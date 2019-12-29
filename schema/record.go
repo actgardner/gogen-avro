@@ -112,17 +112,6 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 	return nil
 }
 
-func (r *RecordDefinition) ResolveReferences(n *Namespace) error {
-	var err error
-	for _, f := range r.fields {
-		err = f.Type().ResolveReferences(n)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	if _, ok := scope[r.name]; ok {
 		return r.name.String(), nil
@@ -218,5 +207,12 @@ func (s *RecordDefinition) Schema() (string, error) {
 
 	jsonBytes, err := json.Marshal(def)
 	return string(jsonBytes), err
+}
 
+func (s *RecordDefinition) Children() []AvroType {
+	children := make([]AvroType, len(s.fields))
+	for i, field := range s.fields {
+		children[i] = field.Type()
+	}
+	return children
 }

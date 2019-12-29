@@ -62,10 +62,6 @@ func (s *ArrayField) ItemType() AvroType {
 	return s.itemType
 }
 
-func (s *ArrayField) ResolveReferences(n *Namespace) error {
-	return s.itemType.ResolveReferences(n)
-}
-
 func (s *ArrayField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	var err error
 	s.definition["items"], err = s.itemType.Definition(scope)
@@ -122,4 +118,8 @@ func (s *ArrayField) ItemConstructable() string {
 		return fmt.Sprintf("v = %v\n", constructor.ConstructorMethod())
 	}
 	return ""
+}
+
+func (s *ArrayField) Children() []AvroType {
+	return []AvroType{s.itemType}
 }

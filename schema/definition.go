@@ -20,11 +20,10 @@ type Definition interface {
 
 	SerializerMethod() string
 
+	Children() []AvroType
+
 	// Add the imports and struct for the definition of this type to the generator.Package
 	AddStruct(*generator.Package, bool) error
-
-	// Resolve references to user-defined types
-	ResolveReferences(*Namespace) error
 
 	// A JSON object defining this object, for writing the schema back out
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)

@@ -99,17 +99,6 @@ func (s *UnionField) AddStruct(p *generator.Package, containers bool) error {
 	return nil
 }
 
-func (s *UnionField) ResolveReferences(n *Namespace) error {
-	var err error
-	for _, f := range s.itemType {
-		err = f.ResolveReferences(n)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	var err error
 	for i, item := range s.itemType {
@@ -183,4 +172,8 @@ func (s *UnionField) Equals(reader *UnionField) bool {
 
 func (s *UnionField) SimpleName() string {
 	return s.GoType()
+}
+
+func (s *UnionField) Children() []AvroType {
+	return s.itemType
 }

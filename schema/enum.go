@@ -92,10 +92,6 @@ func (e *EnumDefinition) AddStruct(p *generator.Package, _ bool) error {
 	return nil
 }
 
-func (s *EnumDefinition) ResolveReferences(n *Namespace) error {
-	return nil
-}
-
 func (s *EnumDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	if _, ok := scope[s.name]; ok {
 		return s.name.String(), nil
@@ -119,4 +115,8 @@ func (s *EnumDefinition) IsReadableBy(d Definition) bool {
 
 func (s *EnumDefinition) WrapperType() string {
 	return "types.Int"
+}
+
+func (s *EnumDefinition) Children() []AvroType {
+	return []AvroType{}
 }

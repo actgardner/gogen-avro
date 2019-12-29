@@ -2,6 +2,8 @@
 package compiler
 
 import (
+	"github.com/actgardner/gogen-avro/parser"
+	"github.com/actgardner/gogen-avro/resolver"
 	"github.com/actgardner/gogen-avro/schema"
 	"github.com/actgardner/gogen-avro/vm"
 )
@@ -25,13 +27,18 @@ func CompileSchemaBytes(writer, reader []byte) (*vm.Program, error) {
 }
 
 func parseSchema(s []byte) (schema.AvroType, error) {
-	ns := schema.NewNamespace(false)
+	ns := parser.NewNamespace(false)
 	sType, err := ns.TypeForSchema(s)
 	if err != nil {
 		return nil, err
 	}
 
-	err = sType.ResolveReferences(ns)
+	err = resolver.ResolveDefinitions(ns.Definitions)
+	if err != nil {
+		return nil, err
+	}
+
+	err = resolver.ResolveTypes(sType, ns.Definitions)
 	if err != nil {
 		return nil, err
 	}

@@ -77,10 +77,6 @@ func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
 	return nil
 }
 
-func (s *FixedDefinition) ResolveReferences(n *Namespace) error {
-	return nil
-}
-
 func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	if _, ok := scope[s.name]; ok {
 		return s.name.String(), nil
@@ -106,4 +102,8 @@ func (s *FixedDefinition) IsReadableBy(d Definition) bool {
 
 func (s *FixedDefinition) WrapperType() string {
 	return fmt.Sprintf("%vWrapper", s.GoType())
+}
+
+func (s *FixedDefinition) Children() []AvroType {
+	return []AvroType{}
 }

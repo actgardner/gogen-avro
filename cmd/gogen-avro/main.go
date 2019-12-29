@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/schema"
+	"github.com/actgardner/gogen-avro/parser"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 
 	var err error
 	pkg := generator.NewPackage(cfg.packageName, codegenComment(cfg.files))
-	namespace := schema.NewNamespace(cfg.shortUnions)
+	namespace := parser.NewNamespace(cfg.shortUnions)
 
 	switch cfg.namespacedNames {
 	case nsShort:
