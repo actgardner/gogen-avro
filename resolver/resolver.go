@@ -6,19 +6,12 @@ import (
 	avro "github.com/actgardner/gogen-avro/schema"
 )
 
-// ResolveTypes ensures that all avro.References in a tree have an avro.Definition associated with them
-func ResolveTypes(rootType avro.AvroType, defs map[avro.QualifiedName]avro.Definition) error {
-	return resolveReferences(rootType, defs)
-}
-
-// ResolveDefinitions resolves the References in each Definition one level deep
-func ResolveDefinitions(defs map[avro.QualifiedName]avro.Definition) error {
-	for _, def := range defs {
-		for _, child := range def.Children() {
-			err := resolveReferences(child, defs)
-			if err != nil {
-				return err
-			}
+// ResolveDefinition resolves the References in a Definition one level deep
+func ResolveDefinition(def avro.Definition, defs map[avro.QualifiedName]avro.Definition) error {
+	for _, child := range def.Children() {
+		err := resolveReferences(child, defs)
+		if err != nil {
+			return err
 		}
 	}
 	return nil

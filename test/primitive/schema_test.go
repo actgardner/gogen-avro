@@ -130,11 +130,10 @@ func BenchmarkDeserializePrimitiveRecord(b *testing.B) {
 	readerType, err := readerNs.TypeForSchema(schemaJson)
 	assert.Nil(b, err)
 
-	err = resolver.ResolveDefinitions(readerNs.Definitions)
-	assert.Nil(b, err)
-
-	err = resolver.ResolveTypes(readerType, readerNs.Definitions)
-	assert.Nil(b, err)
+	for _, def := range readerNs.Roots {
+		err = resolver.ResolveDefinition(def, readerNs.Definitions)
+		assert.Nil(b, err)
+	}
 
 	deser, err := compiler.Compile(readerType, readerType)
 	assert.Nil(b, err)

@@ -11,39 +11,31 @@ import (
 	avro "github.com/actgardner/gogen-avro/schema"
 )
 
-type Schema struct {
-	Root       avro.AvroType
-	JSONSchema []byte
-}
-
 // Namespace is a mapping of avro.QualifiedNames to their Definitions, used to resolve
 // type lookups within a schema.
 type Namespace struct {
 	Definitions map[avro.QualifiedName]avro.Definition
-	Schemas     []Schema
+	Roots       []avro.Definition
 	ShortUnions bool
 }
 
 func NewNamespace(shortUnions bool) *Namespace {
 	return &Namespace{
 		Definitions: make(map[avro.QualifiedName]avro.Definition),
-		Schemas:     make([]Schema, 0),
+		Roots:       make([]avro.Definition, 0),
 		ShortUnions: shortUnions,
 	}
 }
 
 func (namespace *Namespace) AddToPackage(p *generator.Package, containers bool) error {
-	err := resolver.ResolveDefinitions(namespace.Definitions)
-	if err != nil {
-		return err
-	}
-
-	for _, schema := range namespace.Schemas {
-		if err := resolver.ResolveTypes(schema.Root, namespace.Definitions); err != nil {
+	for _, def := range namespace.Roots {
+		if err := resolver.ResolveDefinition(def, namespace.Definitions); err != nil {
 			return err
 		}
+	}
 
-		if err := schema.Root.AddStruct(p, containers); err != nil {
+	for _, def := range namespace.Roots {
+		if err := def.AddStruct(p, containers); err != nil {
 			return err
 		}
 	}
@@ -59,6 +51,7 @@ func (n *Namespace) RegisterDefinition(d avro.Definition) error {
 		return nil
 	}
 	n.Definitions[d.AvroName()] = d
+	n.Roots = append(n.Roots, d)
 
 	for _, alias := range d.Aliases() {
 		if existing, ok := n.Definitions[alias]; ok {
@@ -96,7 +89,8 @@ func (n *Namespace) TypeForSchema(schemaJson []byte) (avro.AvroType, error) {
 		return nil, err
 	}
 
-	n.Schemas = append(n.Schemas, Schema{field, schemaJson})
+	n.Roots = append(n.Roots, &avro.FileRoot{field})
+
 	return field, nil
 }
 

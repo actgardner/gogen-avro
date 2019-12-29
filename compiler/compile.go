@@ -33,14 +33,10 @@ func parseSchema(s []byte) (schema.AvroType, error) {
 		return nil, err
 	}
 
-	err = resolver.ResolveDefinitions(ns.Definitions)
-	if err != nil {
-		return nil, err
-	}
-
-	err = resolver.ResolveTypes(sType, ns.Definitions)
-	if err != nil {
-		return nil, err
+	for _, def := range ns.Roots {
+		if err := resolver.ResolveDefinition(def, ns.Definitions); err != nil {
+			return nil, err
+		}
 	}
 	return sType, nil
 }
