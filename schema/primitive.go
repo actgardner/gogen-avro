@@ -1,9 +1,5 @@
 package schema
 
-import (
-	"github.com/actgardner/gogen-avro/generator"
-)
-
 // Common methods for all primitive types
 type PrimitiveField struct {
 	definition       interface{}
@@ -22,10 +18,6 @@ func (s *PrimitiveField) GoType() string {
 
 func (s *PrimitiveField) SerializerMethod() string {
 	return s.serializerMethod
-}
-
-func (s *PrimitiveField) AddStruct(p *generator.Package, _ bool) error {
-	return nil
 }
 
 func (s *PrimitiveField) Definition(_ map[QualifiedName]interface{}) (interface{}, error) {

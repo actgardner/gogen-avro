@@ -1,13 +1,10 @@
 package schema
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"text/template"
 
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/schema/templates"
 )
 
 type RecordDefinition struct {
@@ -54,62 +51,6 @@ func (r *RecordDefinition) SerializerMethod() string {
 
 func (r *RecordDefinition) NewWriterMethod() string {
 	return fmt.Sprintf("New%vWriter", r.Name())
-}
-
-func (r *RecordDefinition) filename() string {
-	return generator.ToSnake(r.Name()) + ".go"
-}
-
-func (r *RecordDefinition) containerFilename() string {
-	return generator.ToSnake(r.Name()) + "_container.go"
-}
-
-func (r *RecordDefinition) structDefinition() (string, error) {
-	buf := &bytes.Buffer{}
-	t, err := template.New("record").Parse(templates.RecordTemplate)
-	if err != nil {
-		return "", err
-	}
-	err = t.Execute(buf, r)
-	return buf.String(), err
-}
-
-func (r *RecordDefinition) containerDefinition() (string, error) {
-	buf := &bytes.Buffer{}
-	t, err := template.New("record_container").Parse(templates.RecordContainerTemplate)
-	if err != nil {
-		return "", err
-	}
-	err = t.Execute(buf, r)
-	return buf.String(), err
-}
-
-func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) error {
-	// Import guard, to avoid circular dependencies
-	if !p.HasFile(r.filename()) {
-		def, err := r.structDefinition()
-		if err != nil {
-			return err
-		}
-
-		p.AddFile(r.filename(), def)
-
-		if containers {
-			containerDef, err := r.containerDefinition()
-			if err != nil {
-				return err
-			}
-
-			p.AddFile(r.containerFilename(), containerDef)
-		}
-
-		for _, f := range r.fields {
-			if err := f.Type().AddStruct(p, containers); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
 }
 
 func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {

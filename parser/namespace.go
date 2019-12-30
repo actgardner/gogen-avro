@@ -6,8 +6,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/resolver"
 	avro "github.com/actgardner/gogen-avro/schema"
 )
 
@@ -25,21 +23,6 @@ func NewNamespace(shortUnions bool) *Namespace {
 		Roots:       make([]avro.Definition, 0),
 		ShortUnions: shortUnions,
 	}
-}
-
-func (namespace *Namespace) AddToPackage(p *generator.Package, containers bool) error {
-	for _, def := range namespace.Roots {
-		if err := resolver.ResolveDefinition(def, namespace.Definitions); err != nil {
-			return err
-		}
-	}
-
-	for _, def := range namespace.Roots {
-		if err := def.AddStruct(p, containers); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // RegisterDefinition adds a new type definition to the namespace. Returns an error if the type is already defined.

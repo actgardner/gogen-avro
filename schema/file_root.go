@@ -1,9 +1,5 @@
 package schema
 
-import (
-	"github.com/actgardner/gogen-avro/generator"
-)
-
 // FileRoot represents the Avro type at the root of a given schema file, and implements Definition.
 // This is necessary for files which contain a union, array, map, etc. at the top level since these types don't otherwise have a Definition which would result in code being generated.
 type FileRoot struct {
@@ -36,10 +32,6 @@ func (f *FileRoot) SerializerMethod() string {
 
 func (f *FileRoot) Children() []AvroType {
 	return []AvroType{f.Type}
-}
-
-func (f *FileRoot) AddStruct(p *generator.Package, hasContainers bool) error {
-	return f.Type.AddStruct(p, hasContainers)
 }
 
 func (f *FileRoot) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {

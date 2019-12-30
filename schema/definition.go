@@ -1,9 +1,5 @@
 package schema
 
-import (
-	"github.com/actgardner/gogen-avro/generator"
-)
-
 /*
   The definition of a record, fixed or enum satisfies this interface.
 */
@@ -21,9 +17,6 @@ type Definition interface {
 	SerializerMethod() string
 
 	Children() []AvroType
-
-	// Add the imports and struct for the definition of this type to the generator.Package
-	AddStruct(*generator.Package, bool) error
 
 	// A JSON object defining this object, for writing the schema back out
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)

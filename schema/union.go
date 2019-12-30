@@ -1,12 +1,9 @@
 package schema
 
 import (
-	"bytes"
 	"fmt"
-	"text/template"
 
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/schema/templates"
 )
 
 type UnionField struct {
@@ -71,32 +68,6 @@ func (s *UnionField) ItemConstructor(f AvroType) string {
 		return constructor.ConstructorMethod()
 	}
 	return ""
-}
-
-func (s *UnionField) structDefinition() (string, error) {
-	buf := &bytes.Buffer{}
-	t, err := template.New("union").Parse(templates.UnionTemplate)
-	if err != nil {
-		return "", err
-	}
-	err = t.Execute(buf, s)
-	return buf.String(), err
-}
-
-func (s *UnionField) AddStruct(p *generator.Package, containers bool) error {
-	def, err := s.structDefinition()
-	if err != nil {
-		return err
-	}
-
-	p.AddFile(s.filename(), def)
-
-	for _, f := range s.itemType {
-		if err := f.AddStruct(p, containers); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {

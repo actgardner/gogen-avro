@@ -1,12 +1,9 @@
 package schema
 
 import (
-	"bytes"
 	"fmt"
-	"text/template"
 
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/schema/templates"
 )
 
 type FixedDefinition struct {
@@ -55,26 +52,6 @@ func (s *FixedDefinition) filename() string {
 
 func (s *FixedDefinition) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.GoType())
-}
-
-func (s *FixedDefinition) structDefinition() (string, error) {
-	buf := &bytes.Buffer{}
-	t, err := template.New("fixed").Parse(templates.FixedTemplate)
-	if err != nil {
-		return "", err
-	}
-	err = t.Execute(buf, s)
-	return buf.String(), err
-}
-
-func (s *FixedDefinition) AddStruct(p *generator.Package, _ bool) error {
-	def, err := s.structDefinition()
-	if err != nil {
-		return err
-	}
-
-	p.AddFile(s.filename(), def)
-	return nil
 }
 
 func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {

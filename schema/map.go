@@ -1,12 +1,9 @@
 package schema
 
 import (
-	"bytes"
 	"fmt"
-	"text/template"
 
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/schema/templates"
 )
 
 type MapField struct {
@@ -39,17 +36,6 @@ func (s *MapField) SerializerMethod() string {
 
 func (s *MapField) filename() string {
 	return generator.ToSnake(s.Name()) + ".go"
-}
-
-func (s *MapField) AddStruct(p *generator.Package, containers bool) error {
-	def, err := s.structDefinition()
-	if err != nil {
-		return err
-	}
-
-	p.AddFile(s.filename(), def)
-
-	return s.itemType.AddStruct(p, containers)
 }
 
 func (s *MapField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
@@ -91,16 +77,6 @@ func (s *MapField) IsReadableBy(f AvroType) bool {
 		return s.ItemType().IsReadableBy(reader.ItemType())
 	}
 	return false
-}
-
-func (s *MapField) structDefinition() (string, error) {
-	buf := &bytes.Buffer{}
-	t, err := template.New("map").Parse(templates.MapTemplate)
-	if err != nil {
-		return "", err
-	}
-	err = t.Execute(buf, s)
-	return buf.String(), err
 }
 
 func (s *MapField) SimpleName() string {

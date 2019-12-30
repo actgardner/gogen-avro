@@ -1,13 +1,10 @@
 package schema
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
-	"text/template"
 
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/schema/templates"
 )
 
 type EnumDefinition struct {
@@ -70,26 +67,6 @@ func (e *EnumDefinition) FromStringMethod() string {
 
 func (e *EnumDefinition) filename() string {
 	return generator.ToSnake(e.GoType()) + ".go"
-}
-
-func (e *EnumDefinition) structDefinition() (string, error) {
-	buf := &bytes.Buffer{}
-	t, err := template.New("enum").Parse(templates.EnumTemplate)
-	if err != nil {
-		return "", err
-	}
-	err = t.Execute(buf, e)
-	return buf.String(), err
-}
-
-func (e *EnumDefinition) AddStruct(p *generator.Package, _ bool) error {
-	def, err := e.structDefinition()
-	if err != nil {
-		return err
-	}
-
-	p.AddFile(e.filename(), def)
-	return nil
 }
 
 func (s *EnumDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {

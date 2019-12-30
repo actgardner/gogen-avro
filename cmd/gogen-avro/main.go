@@ -8,7 +8,9 @@ import (
 	"strings"
 
 	"github.com/actgardner/gogen-avro/generator"
+	"github.com/actgardner/gogen-avro/generator/flat"
 	"github.com/actgardner/gogen-avro/parser"
+	"github.com/actgardner/gogen-avro/resolver"
 )
 
 func main() {
@@ -17,6 +19,7 @@ func main() {
 	var err error
 	pkg := generator.NewPackage(cfg.packageName, codegenComment(cfg.files))
 	namespace := parser.NewNamespace(cfg.shortUnions)
+	gen := flat.NewFlatPackageGenerator(pkg, cfg.containers)
 
 	switch cfg.namespacedNames {
 	case nsShort:
@@ -39,16 +42,25 @@ func main() {
 		}
 	}
 
-	err = namespace.AddToPackage(pkg, cfg.containers)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error generating code for schema - %v\n", err)
-		os.Exit(4)
+	for _, def := range namespace.Roots {
+		if err := resolver.ResolveDefinition(def, namespace.Definitions); err != nil {
+			fmt.Fprintf(os.Stderr, "Error resolving definition for type %q - %v\n", def.Name(), err)
+			os.Exit(4)
+		}
+	}
+
+	for _, def := range namespace.Roots {
+		err = gen.Add(def)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error generating code for schema - %v\n", err)
+			os.Exit(5)
+		}
 	}
 
 	err = pkg.WriteFiles(cfg.targetDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing source files to directory %q - %v\n", cfg.targetDir, err)
-		os.Exit(4)
+		os.Exit(6)
 	}
 }
 

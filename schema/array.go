@@ -1,12 +1,9 @@
 package schema
 
 import (
-	"bytes"
 	"fmt"
-	"text/template"
 
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/schema/templates"
 )
 
 type ArrayField struct {
@@ -35,27 +32,6 @@ func (s *ArrayField) GoType() string {
 
 func (s *ArrayField) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.Name())
-}
-
-func (s *ArrayField) structDefinition() (string, error) {
-	buf := &bytes.Buffer{}
-	t, err := template.New("array").Parse(templates.ArrayTemplate)
-	if err != nil {
-		return "", err
-	}
-	err = t.Execute(buf, s)
-	return buf.String(), err
-}
-
-func (s *ArrayField) AddStruct(p *generator.Package, container bool) error {
-	def, err := s.structDefinition()
-	if err != nil {
-		panic(err)
-		return err
-	}
-	p.AddFile(s.filename(), def)
-
-	return s.itemType.AddStruct(p, container)
 }
 
 func (s *ArrayField) ItemType() AvroType {
