@@ -1,12 +1,8 @@
 package schema
 
-import (
-	"fmt"
-
-	"github.com/actgardner/gogen-avro/generator"
-)
-
 type FixedDefinition struct {
+	generatorMetadata
+
 	name       QualifiedName
 	aliases    []QualifiedName
 	sizeBytes  int
@@ -22,14 +18,6 @@ func NewFixedDefinition(name QualifiedName, aliases []QualifiedName, sizeBytes i
 	}
 }
 
-func (s *FixedDefinition) Name() string {
-	return s.GoType()
-}
-
-func (s *FixedDefinition) SimpleName() string {
-	return generator.ToPublicSimpleName(s.name.Name)
-}
-
 func (s *FixedDefinition) AvroName() QualifiedName {
 	return s.name
 }
@@ -38,24 +26,8 @@ func (s *FixedDefinition) Aliases() []QualifiedName {
 	return s.aliases
 }
 
-func (s *FixedDefinition) GoType() string {
-	return generator.ToPublicName(s.name.Name)
-}
-
 func (s *FixedDefinition) SizeBytes() int {
 	return s.sizeBytes
-}
-
-func (s *FixedDefinition) filename() string {
-	return generator.ToSnake(s.GoType()) + ".go"
-}
-
-func (s *FixedDefinition) SerializerMethod() string {
-	return fmt.Sprintf("write%v", s.GoType())
-}
-
-func (s *FixedDefinition) Attribute(name string) interface{} {
-	return s.definition[name]
 }
 
 func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
@@ -66,23 +38,11 @@ func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (inter
 	return s.definition, nil
 }
 
-func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	if _, ok := rvalue.(string); !ok {
-		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
-	}
-
-	return fmt.Sprintf("copy(%v[:], []byte(%q))", lvalue, rvalue), nil
-}
-
 func (s *FixedDefinition) IsReadableBy(d Definition) bool {
 	if fixed, ok := d.(*FixedDefinition); ok {
 		return fixed.sizeBytes == s.sizeBytes && fixed.name == s.name
 	}
 	return false
-}
-
-func (s *FixedDefinition) WrapperType() string {
-	return fmt.Sprintf("%vWrapper", s.GoType())
 }
 
 func (s *FixedDefinition) Children() []AvroType {

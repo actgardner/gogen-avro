@@ -32,8 +32,13 @@ func Template(t avro.Node) (string, error) {
 }
 
 func Evaluate(templateStr string, obj interface{}) (string, error) {
+	funcs := template.FuncMap{
+		"nodeMetadata":  NodeTypeMetadata,
+		"fieldMetadata": FieldMetadata,
+	}
+
 	buf := &bytes.Buffer{}
-	t, err := template.New("").Parse(templateStr)
+	t, err := template.New("").Funcs(funcs).Parse(templateStr)
 	if err != nil {
 		return "", err
 	}

@@ -5,6 +5,8 @@ package schema
 */
 
 type Reference struct {
+	generatorMetadata
+
 	TypeName QualifiedName
 	Def      Definition
 }
@@ -15,36 +17,8 @@ func NewReference(typeName QualifiedName) *Reference {
 	}
 }
 
-func (s *Reference) Name() string {
-	return s.Def.Name()
-}
-
-func (s *Reference) SimpleName() string {
-	return s.Def.SimpleName()
-}
-
-func (s *Reference) GoType() string {
-	return s.Def.GoType()
-}
-
-func (s *Reference) SerializerMethod() string {
-	return s.Def.SerializerMethod()
-}
-
-func (s *Reference) Attribute(name string) interface{} {
-	return s.Def.Attribute(name)
-}
-
 func (s *Reference) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	return s.Def.Definition(scope)
-}
-
-func (s *Reference) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	return s.Def.DefaultValue(lvalue, rvalue)
-}
-
-func (s *Reference) WrapperType() string {
-	return s.Def.WrapperType()
 }
 
 func (s *Reference) IsReadableBy(f AvroType) bool {

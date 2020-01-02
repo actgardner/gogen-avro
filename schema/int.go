@@ -1,32 +1,13 @@
 package schema
 
-import (
-	"fmt"
-)
-
 type IntField struct {
 	PrimitiveField
 }
 
 func NewIntField(definition interface{}) *IntField {
 	return &IntField{PrimitiveField{
-		definition:       definition,
-		name:             "Int",
-		goType:           "int32",
-		serializerMethod: "vm.WriteInt",
+		definition: definition,
 	}}
-}
-
-func (s *IntField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	if _, ok := rvalue.(float64); !ok {
-		return "", fmt.Errorf("Expected number as default for field %v, got %q", lvalue, rvalue)
-	}
-
-	return fmt.Sprintf("%v = %v", lvalue, rvalue), nil
-}
-
-func (s *IntField) WrapperType() string {
-	return "types.Int"
 }
 
 func (s *IntField) IsReadableBy(f AvroType) bool {

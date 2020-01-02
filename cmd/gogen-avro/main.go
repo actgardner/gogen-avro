@@ -9,6 +9,7 @@ import (
 
 	"github.com/actgardner/gogen-avro/generator"
 	"github.com/actgardner/gogen-avro/generator/flat"
+	"github.com/actgardner/gogen-avro/generator/namer"
 	"github.com/actgardner/gogen-avro/parser"
 	"github.com/actgardner/gogen-avro/resolver"
 )
@@ -17,16 +18,21 @@ func main() {
 	cfg := parseCmdLine()
 
 	var err error
-	pkg := generator.NewPackage(cfg.packageName, codegenComment(cfg.files))
-	namespace := parser.NewNamespace(cfg.shortUnions)
-	gen := flat.NewFlatPackageGenerator(pkg, cfg.containers)
+	var nameFormatter namer.NameFormatter
 
 	switch cfg.namespacedNames {
 	case nsShort:
-		generator.SetNamer(generator.NewNamespaceNamer(true))
+		nameFormatter = namer.NewNamespaceNameFormatter(true)
 	case nsFull:
-		generator.SetNamer(generator.NewNamespaceNamer(false))
+		nameFormatter = namer.NewNamespaceNameFormatter(false)
+	default:
+		nameFormatter = namer.NewDefaultNameFormatter()
 	}
+
+	pkg := generator.NewPackage(cfg.packageName, codegenComment(cfg.files))
+	namespace := parser.NewNamespace(cfg.shortUnions)
+	gen := flat.NewFlatPackageGenerator(pkg, namer.NewSnakeNameFormatter(), cfg.containers)
+	namer := namer.NewNamer(nameFormatter, nameFormatter)
 
 	for _, fileName := range cfg.files {
 		schema, err := ioutil.ReadFile(fileName)
@@ -44,7 +50,14 @@ func main() {
 
 	for _, def := range namespace.Roots {
 		if err := resolver.ResolveDefinition(def, namespace.Definitions); err != nil {
-			fmt.Fprintf(os.Stderr, "Error resolving definition for type %q - %v\n", def.Name(), err)
+			fmt.Fprintf(os.Stderr, "Error resolving definition for type %q - %v\n", def, err)
+			os.Exit(4)
+		}
+	}
+
+	for _, def := range namespace.Roots {
+		if err := namer.Apply(def); err != nil {
+			fmt.Fprintf(os.Stderr, "Error generating names for type %q - %v\n", def, err)
 			os.Exit(4)
 		}
 	}

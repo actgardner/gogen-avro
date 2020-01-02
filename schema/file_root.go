@@ -3,7 +3,15 @@ package schema
 // FileRoot represents the Avro type at the root of a given schema file, and implements Definition.
 // This is necessary for files which contain a union, array, map, etc. at the top level since these types don't otherwise have a Definition which would result in code being generated.
 type FileRoot struct {
-	Type AvroType
+	generatorMetadata
+
+	avroType AvroType
+}
+
+func NewFileRoot(avroType AvroType) *FileRoot {
+	return &FileRoot{
+		avroType: avroType,
+	}
 }
 
 func (f *FileRoot) AvroName() QualifiedName {
@@ -14,24 +22,8 @@ func (f *FileRoot) Aliases() []QualifiedName {
 	return nil
 }
 
-func (f *FileRoot) Name() string {
-	return ""
-}
-
-func (f *FileRoot) SimpleName() string {
-	return ""
-}
-
-func (f *FileRoot) GoType() string {
-	return ""
-}
-
-func (f *FileRoot) SerializerMethod() string {
-	return ""
-}
-
 func (f *FileRoot) Children() []AvroType {
-	return []AvroType{f.Type}
+	return []AvroType{f.avroType}
 }
 
 func (f *FileRoot) Attribute(name string) interface{} {
@@ -42,14 +34,6 @@ func (f *FileRoot) Definition(scope map[QualifiedName]interface{}) (interface{},
 	return nil, nil
 }
 
-func (f *FileRoot) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	return "", nil
-}
-
 func (f *FileRoot) IsReadableBy(_ Definition) bool {
 	return false
-}
-
-func (f *FileRoot) WrapperType() string {
-	return ""
 }

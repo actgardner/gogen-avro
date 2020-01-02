@@ -72,7 +72,7 @@ func (n *Namespace) TypeForSchema(schemaJson []byte) (avro.AvroType, error) {
 		return nil, err
 	}
 
-	n.Roots = append(n.Roots, &avro.FileRoot{field})
+	n.Roots = append(n.Roots, avro.NewFileRoot(field))
 
 	return field, nil
 }

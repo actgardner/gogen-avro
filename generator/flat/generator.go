@@ -2,19 +2,26 @@ package flat
 
 import (
 	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/generator/flat/templates"
+	"github.com/actgardner/gogen-avro/generator/namer"
+	"github.com/actgardner/gogen-avro/generator/templates"
 	avro "github.com/actgardner/gogen-avro/schema"
 )
+
+type Named interface {
+	AvroName() avro.QualifiedName
+}
 
 // FlatPackageGenerator emits a file per generated type, all in a single Go package without handling namespacing
 type FlatPackageGenerator struct {
 	containers bool
+	fileNamer  namer.NameFormatter
 	files      *generator.Package
 }
 
-func NewFlatPackageGenerator(files *generator.Package, containers bool) *FlatPackageGenerator {
+func NewFlatPackageGenerator(files *generator.Package, fileNamer namer.NameFormatter, containers bool) *FlatPackageGenerator {
 	return &FlatPackageGenerator{
 		containers: containers,
+		fileNamer:  fileNamer,
 		files:      files,
 	}
 }
@@ -22,8 +29,9 @@ func NewFlatPackageGenerator(files *generator.Package, containers bool) *FlatPac
 func (f *FlatPackageGenerator) Add(def avro.Node) error {
 	file, err := templates.Template(def)
 	if err == nil {
+		name := def.(Named).AvroName().Name
 		// If there's a template for this definition, add it to the package
-		filename := generator.ToSnake(def.Name()) + ".go"
+		filename := f.fileNamer.Format(name) + ".go"
 		f.files.AddFile(filename, file)
 	} else {
 		if err != templates.NoTemplateForType {
@@ -46,7 +54,8 @@ func (f *FlatPackageGenerator) Add(def avro.Node) error {
 }
 
 func (f *FlatPackageGenerator) addRecordContainer(def *avro.RecordDefinition) error {
-	containerFilename := generator.ToSnake(def.Name()) + "_container.go"
+	name := Named(def).AvroName().Name
+	containerFilename := f.fileNamer.Format(name + "Container.go")
 	file, err := templates.Evaluate(templates.RecordContainerTemplate, def)
 	if err != nil {
 		return err

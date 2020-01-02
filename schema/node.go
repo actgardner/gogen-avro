@@ -1,6 +1,8 @@
 package schema
 
 type Node interface {
-	Name() string
 	Children() []AvroType
+	SetGeneratorMetadata(key, value interface{})
+	GetGeneratorMetadata(key interface{}) interface{}
+	HasGeneratorMetadata(key interface{}) bool
 }

@@ -5,24 +5,13 @@ package schema
 */
 
 type Definition interface {
+	Node
+
 	AvroName() QualifiedName
 	Aliases() []QualifiedName
 
-	// A user-friendly name that can be built into a Go string (for unions, mostly)
-	Name() string
-	SimpleName() string
-
-	GoType() string
-
-	SerializerMethod() string
-
-	Children() []AvroType
-
-	Attribute(name string) interface{}
 	// A JSON object defining this object, for writing the schema back out
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
-	DefaultValue(lvalue string, rvalue interface{}) (string, error)
 
 	IsReadableBy(f Definition) bool
-	WrapperType() string
 }
