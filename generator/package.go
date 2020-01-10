@@ -3,6 +3,7 @@ package generator
 
 import (
 	"fmt"
+	"go/format"
 	"io/ioutil"
 	"path/filepath"
 	"sort"
@@ -23,7 +24,11 @@ func (p *Package) WriteFiles(targetDir string) error {
 	for name, body := range p.files {
 		targetFile := filepath.Join(targetDir, name)
 		fileContent := fmt.Sprintf("%v\npackage %v\n%v", p.header, p.name, body)
-		err := ioutil.WriteFile(targetFile, []byte(fileContent), 0640)
+		formattedContent, err := format.Source([]byte(fileContent))
+		if err != nil {
+			return fmt.Errorf("Error formatting Go source output %v: %v", targetFile, err)
+		}
+		err = ioutil.WriteFile(targetFile, formattedContent, 0640)
 		if err != nil {
 			return fmt.Errorf("Error writing file %v - %v", targetFile, err)
 		}

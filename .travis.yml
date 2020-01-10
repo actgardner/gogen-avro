@@ -12,5 +12,4 @@ env:
 install: go get -t -v ./cmd/...
 
 script:
-  - go test ./generator
   - bash test.sh

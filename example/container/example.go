@@ -2,9 +2,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/actgardner/gogen-avro/v7/container"
 	"github.com/actgardner/gogen-avro/v7/example/avro"
@@ -20,47 +20,36 @@ func main() {
 		BytesField:  []byte{1, 2, 3, 4},
 	}
 
-	// Open a file to write
-	fileWriter, err := os.Create("example_avro_container.avro")
-	if err != nil {
-		fmt.Printf("Error opening file writer: %v\n", err)
-		return
-	}
+	// Write to an in-memory buffer. You could use os.Create
+	// to write to an actual file.
+	buffer := new(bytes.Buffer)
 
 	// Create a container.Writer which can write any generated Avro struct to a file
 	// Note that all the objects written to the file must be the same type
 	// Using the Null codec means blocks are uncompressed - other options are Snappy and Deflate
-	containerWriter, err := avro.NewDemoSchemaWriter(fileWriter, container.Null, 10)
+	containerWriter, err := container.NewWriter(buffer, container.Null, 10, demoStruct.Schema())
 	if err != nil {
 		fmt.Printf("Error opening container writer: %v\n", err)
 		return
 	}
 
 	// Write the record to the container file
-	err = containerWriter.WriteRecord(&demoStruct)
-	if err != nil {
+	if err := containerWriter.WriteRecord(&demoStruct); err != nil {
 		fmt.Printf("Error writing record to file: %v\n", err)
 		return
 	}
 
 	// Flush the buffers to ensure the last block has been written
-	err = containerWriter.Flush()
-	if err != nil {
+	if err := containerWriter.Flush(); err != nil {
 		fmt.Printf("Error flushing last block to file: %v\n", err)
 		return
 	}
 
-	fileWriter.Close()
-
-	// Open the container file
-	fileReader, err := os.Open("example_avro_container.avro")
-	if err != nil {
-		fmt.Printf("Error opening file reader: %v\n", err)
-		return
-	}
+	// Read the data again. You could use os.Open to read from a file.
+	fileReader := bytes.NewReader(buffer.Bytes())
 
 	// Create a new OCF reader
-	ocfReader, err := avro.NewDemoSchemaReader(fileReader)
+	ocfReader, err := container.NewReader(fileReader)
 	if err != nil {
 		fmt.Printf("Error creating OCF file reader: %v\n", err)
 		return
@@ -68,14 +57,14 @@ func main() {
 
 	// Read the records back until the file is finished
 	for {
-		record, err := ocfReader.Read()
+		record, err := avro.DeserializeDemoSchema(ocfReader)
 		if err != nil {
 			if err == io.EOF {
 				return
 			}
-			fmt.Printf("Error reading OCF file: %v", err)
+			fmt.Printf("Error deserializing record: %v\n", err)
+			return
 		}
-
-		fmt.Printf("Read record: %v\n", record)
+		fmt.Printf("Read record: %#v\n", record)
 	}
 }
