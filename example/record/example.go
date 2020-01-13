@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/actgardner/gogen-avro/example/avro"
+	"github.com/actgardner/gogen-avro/v7/example/avro"
 )
 
 func main() {

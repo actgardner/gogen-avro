@@ -3,8 +3,8 @@ package compiler
 import (
 	"fmt"
 
-	"github.com/actgardner/gogen-avro/schema"
-	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/v7/schema"
+	"github.com/actgardner/gogen-avro/v7/vm"
 )
 
 type irMethod struct {

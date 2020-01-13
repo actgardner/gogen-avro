@@ -1,9 +1,9 @@
 package flat
 
 import (
-	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/generator/flat/templates"
-	avro "github.com/actgardner/gogen-avro/schema"
+	"github.com/actgardner/gogen-avro/v7/generator"
+	"github.com/actgardner/gogen-avro/v7/generator/flat/templates"
+	avro "github.com/actgardner/gogen-avro/v7/schema"
 )
 
 // FlatPackageGenerator emits a file per generated type, all in a single Go package without handling namespacing
