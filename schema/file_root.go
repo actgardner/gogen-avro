@@ -34,6 +34,10 @@ func (f *FileRoot) Children() []AvroType {
 	return []AvroType{f.Type}
 }
 
+func (f *FileRoot) Attribute(name string) interface{} {
+	return nil
+}
+
 func (f *FileRoot) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	return nil, nil
 }

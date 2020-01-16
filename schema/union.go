@@ -70,6 +70,10 @@ func (s *UnionField) ItemConstructor(f AvroType) string {
 	return ""
 }
 
+func (s *UnionField) Attribute(name string) interface{} {
+	return nil
+}
+
 func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	var err error
 	for i, item := range s.itemType {

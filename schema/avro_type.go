@@ -9,6 +9,7 @@ type AvroType interface {
 
 	Children() []AvroType
 
+	Attribute(name string) interface{}
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
 	DefaultValue(lvalue string, rvalue interface{}) (string, error)
 
