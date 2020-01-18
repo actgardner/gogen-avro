@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 
-	"github.com/actgardner/gogen-avro/v7/generator"
+	"github.com/actgardner/gogen-avro/generator"
 )
 
 type MapField struct {

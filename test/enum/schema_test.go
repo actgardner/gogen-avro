@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/linkedin/goavro/v2"
+	"github.com/linkedin/goavro"
 	"github.com/stretchr/testify/assert"
 )
 

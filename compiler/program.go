@@ -3,7 +3,7 @@ package compiler
 import (
 	"fmt"
 
-	"github.com/actgardner/gogen-avro/v7/vm"
+	"github.com/actgardner/gogen-avro/vm"
 )
 
 // Build an intermediate representation of the program where

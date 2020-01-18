@@ -4,8 +4,8 @@ const ArrayTemplate = `
 import (
 	"io"
 
-	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"github.com/actgardner/gogen-avro/v7/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
 )
 
 func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
@@ -44,7 +44,7 @@ func (r *{{ .WrapperType }}) AppendArray() types.Field {
 	{{ .ItemConstructable }}
  	{{ end }}
 	*r = append(*r, v)
-        {{ if .ItemType.WrapperType }}
+        {{ if .ItemType.WrapperType }} 
         return (*{{ .ItemType.WrapperType }})(&(*r)[len(*r)-1])
         {{ else }}
         return (*r)[len(*r)-1]

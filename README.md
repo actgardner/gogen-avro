@@ -5,7 +5,7 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/actgardner/gogen-avro/master/LICENSE)
 [![Version 6.2.0](https://img.shields.io/badge/version-6.2.0-lightgrey.svg)](https://github.com/actgardner/gogen-avro/releases)
 
-Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules.
+Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules. 
 
 ### Table of contents
 
@@ -26,19 +26,23 @@ Generates type-safe Go code based on your Avro schemas, including serializers an
 
 ### Installation
 
-gogen-avro has two parts: a tool which you install on your system (usually into your GOPATH) to generate code, and a runtime library that gets imported.
+gogen-avro has two parts: a tool which you install on your system (usually on your GOPATH) to generate code, and a runtime library that gets imported.
 
-To install the latest version of the gogen-avro executable to `$GOPATH/bin/` and generate structs,
-change to any directory that is both outside of your GOPATH and outside of a module (a temp directory is fine);
-then run:
+To install the gogen-avro executable to `$GOPATH/bin/` and generate structs, first download the repository:
 
 ```
-go get github.com/actgardner/gogen-avro/v7/cmd/gogen-avro@latest
+go get -d github.com/actgardner/gogen-avro/cmd/gogen-avro
+```
+
+Then run:
+
+```
+go install github.com/actgardner/gogen-avro/cmd/gogen-avro
 ```
 
 We recommend pinning a specific SHA of the gogen-avro tool when you compile your schemas with a tool like [retool](https://github.com/twitchtv/retool). This will ensure your builds are repeatable.
 
-For the library imports, you should manage the dependency on this repo using Go modules.
+For the library imports, you should manage the dependency on this repo using [dep](https://github.com/golang/dep) or a similar tool, like any other library.
 
 ### Usage
 
@@ -57,24 +61,24 @@ You can also use a `go:generate` directive in a source file ([example](https://g
 Note: If you want to parse multiple `.avsc` files into a single Go package (a single folder), make sure you put them all in one line. gogen-avro produces a file, `primitive.go`, that will be overwritten if you run it multiple times with different `.avsc` files and the same output folder.
 
 
-### Generated Methods
+### Generated Methods 
 
 For each record in the provided schemas, gogen-avro will produce a struct, and the following methods:
 
-#### `New<RecordType>()`
+#### `New<RecordType>()` 
 A constructor to create a new record struct, with no values set.
 
 #### `New<RecordType>Writer(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error)`
 Creates a new `container.Writer` which writes generated structs to `writer` with Avro OCF format. This is the method you want if you're writing Avro to files. `codec` supports `Identity`, `Deflate` and `Snappy` encodings per the Avro spec.
 
 #### `New<RecordType>Reader(reader io.Reader) (<RecordTypeReader>, error)`
-Creates a new `<RecordTypeReader>` which reads data in the Avro OCF format into generated structs. This is the method you want if you're reading Avro data from files. It will handle the codec and schema evolution for you based on the OCF headers and the reader schema used to generate the structs.
+Creates a new `<RecordTypeReader>` which reads data in the Avro OCF format into generated structs. This is the method you want if you're reading Avro data from files. It will handle the codec and schema evolution for you based on the OCF headers and the reader schema used to generate the structs. 
 
 #### `<RecordType>.Serialize(io.Writer) error`
 Write the contents of the struct into the given `io.Writer` in the Avro binary format, with no Avro Object Container File (OCF) framing.
 
 #### `Deserialize<RecordType>(io.Reader) (<RecordType>, error)`
-Read Avro data from the given `io.Reader` and deserialize it into the generated struct. This assumes the schema used to write the data is identical to the schema used to generate the struct. This method assumes there's no OCF framing. This method is also slow because it re-compiles the bytecode for your type every time - if you need performance you should call `compiler.Compile` once and then `vm.Eval` for each record.
+Read Avro data from the given `io.Reader` and deserialize it into the generated struct. This assumes the schema used to write the data is identical to the schema used to generate the struct. This method assumes there's no OCF framing. This method is also slow because it re-compiles the bytecode for your type every time - if you need performance you should call `compiler.Compile` once and then `vm.Eval` for each record. 
 
 ### Working with Object Container Files (OCF)
 
@@ -88,11 +92,11 @@ The `example` directory contains simple example projects with an Avro schema. On
 
 ```
 # Build the Go source files from the Avro schema using the generate directive
-go generate github.com/actgardner/gogen-avro/v7/example
+go generate github.com/actgardner/gogen-avro/example
 
 # Install the example projects on the GOPATH
-go install github.com/actgardner/gogen-avro/v7/example/record
-go install github.com/actgardner/gogen-avro/v7/example/container
+go install github.com/actgardner/gogen-avro/example/record
+go install github.com/actgardner/gogen-avro/example/container
 ```
 
 ### Naming
@@ -157,7 +161,7 @@ When reporting issues, please include your reader and writer schemas, and the ou
 
 ```
 import (
-	"github.com/actgardner/gogen-avro/v7/compiler"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
 func init() {

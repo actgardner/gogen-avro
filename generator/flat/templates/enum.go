@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/actgardner/gogen-avro/v7/vm"
+	"github.com/actgardner/gogen-avro/vm"
 )
 
 {{ if ne .Doc "" }}
 // {{ .Doc}}
-{{ end }}
+{{ end }}  
 type {{ .GoType }} int32
 
 const (

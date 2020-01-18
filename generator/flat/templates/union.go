@@ -5,8 +5,8 @@ import (
 	"io"
 	"fmt"
 
-	"github.com/actgardner/gogen-avro/v7/vm"
-	"github.com/actgardner/gogen-avro/v7/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
 )
 
 
@@ -48,7 +48,7 @@ func (_ {{ .GoType }}) SetFloat(v float32) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetString(v string) { panic("Unsupported operation") }
-func (r {{ .GoType }}) SetLong(v int64) {
+func (r {{ .GoType }}) SetLong(v int64) { 
 	r.UnionType = ({{ .UnionEnumType }})(v)
 }
 func (r {{ .GoType }}) Get(i int) types.Field {

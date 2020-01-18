@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/actgardner/gogen-avro/v7/generator"
+	"github.com/actgardner/gogen-avro/generator"
 )
 
 type RecordDefinition struct {

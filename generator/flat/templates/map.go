@@ -3,8 +3,8 @@ package templates
 const MapTemplate = `
 import (
 	"io"
-	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"github.com/actgardner/gogen-avro/v7/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
 )
 
 func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
@@ -49,7 +49,7 @@ func (_ {{ .GoType }}) SetString(v string) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetDefault(i int) { panic("Unsupported operation") }
-func (r {{ .GoType }}) Finalize() {
+func (r {{ .GoType }}) Finalize() { 
 	for i := range r.keys {
 		r.M[r.keys[i]] = r.values[i]
 	}
@@ -57,7 +57,7 @@ func (r {{ .GoType }}) Finalize() {
 	r.values = nil
 }
 
-func (r {{ .GoType }}) AppendMap(key string) types.Field {
+func (r {{ .GoType }}) AppendMap(key string) types.Field { 
 	r.keys = append(r.keys, key)
 	var v {{ .ItemType.GoType }}
 	{{ if ne .ItemConstructable "" }}
