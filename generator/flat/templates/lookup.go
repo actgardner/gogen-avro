@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"text/template"
 
-	avro "github.com/actgardner/gogen-avro/schema"
+	avro "github.com/actgardner/gogen-avro/v7/schema"
 )
 
 var NoTemplateForType = fmt.Errorf("No template exists for supplied type")

@@ -3,7 +3,7 @@ package compiler
 import (
 	"fmt"
 
-	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/v7/vm"
 )
 
 type irInstruction interface {

@@ -4,9 +4,9 @@ const RecordContainerTemplate = `
 import (
 	"io"
 
-	"github.com/actgardner/gogen-avro/container"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/v7/container"
+	"github.com/actgardner/gogen-avro/v7/vm"
+	"github.com/actgardner/gogen-avro/v7/compiler"
 )
 
 func {{ .NewWriterMethod }}(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
