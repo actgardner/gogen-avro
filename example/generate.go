@@ -5,4 +5,4 @@ package generate
 // Source files will be in a package called `example/avro`
 
 //go:generate mkdir -p ./avro
-//go:generate $GOPATH/bin/gogen-avro ./avro example.avsc
+//go:generate $GOPATH/bin/gogen-avro -containers ./avro example.avsc
