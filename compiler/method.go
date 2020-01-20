@@ -204,7 +204,7 @@ func (p *irMethod) compileRef(writer, reader *schema.Reference) error {
 		}
 		return p.compileEnum(writer.Def.(*schema.EnumDefinition), readerDef)
 	}
-	return fmt.Errorf("Unsupported reference type %t", reader)
+	return fmt.Errorf("Unsupported reference type %T", reader)
 }
 
 func (p *irMethod) compileMap(writer, reader *schema.MapField) error {
