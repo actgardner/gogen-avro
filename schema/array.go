@@ -39,13 +39,13 @@ func (s *ArrayField) ItemType() AvroType {
 }
 
 func (s *ArrayField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
+	def := copyDefinition(s.definition)
 	var err error
-	s.definition["items"], err = s.itemType.Definition(scope)
+	def["items"], err = s.itemType.Definition(scope)
 	if err != nil {
 		return nil, err
 	}
-
-	return s.definition, nil
+	return def, nil
 }
 
 func (s *ArrayField) ConstructorMethod() string {

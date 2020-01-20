@@ -57,6 +57,7 @@ func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) (inte
 	if _, ok := scope[r.name]; ok {
 		return r.name.String(), nil
 	}
+	metadata := copyDefinition(r.metadata)
 	scope[r.name] = 1
 	fields := make([]map[string]interface{}, 0)
 	for _, f := range r.fields {
@@ -67,8 +68,8 @@ func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) (inte
 		fields = append(fields, def)
 	}
 
-	r.metadata["fields"] = fields
-	return r.metadata, nil
+	metadata["fields"] = fields
+	return metadata, nil
 }
 
 func (r *RecordDefinition) ConstructorMethod() string {

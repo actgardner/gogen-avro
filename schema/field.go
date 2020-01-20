@@ -101,11 +101,11 @@ func (f *Field) Type() AvroType {
 }
 
 func (f *Field) Definition(scope map[QualifiedName]interface{}) (map[string]interface{}, error) {
+	def := copyDefinition(f.definition)
 	var err error
-	f.definition["type"], err = f.avroType.Definition(scope)
+	def["type"], err = f.avroType.Definition(scope)
 	if err != nil {
 		return nil, err
 	}
-
-	return f.definition, nil
+	return def, nil
 }

@@ -25,3 +25,14 @@ type Definition interface {
 	IsReadableBy(f Definition) bool
 	WrapperType() string
 }
+
+func copyDefinition(x map[string]interface{}) map[string]interface{} {
+	if x == nil {
+		return x
+	}
+	x1 := make(map[string]interface{})
+	for name, val := range x {
+		x1[name] = val
+	}
+	return x1
+}
