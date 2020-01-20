@@ -54,6 +54,10 @@ func (s *FixedDefinition) SerializerMethod() string {
 	return fmt.Sprintf("write%v", s.GoType())
 }
 
+func (s *FixedDefinition) Attribute(name string) interface{} {
+	return s.definition[name]
+}
+
 func (s *FixedDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	if _, ok := scope[s.name]; ok {
 		return s.name.String(), nil

@@ -69,6 +69,10 @@ func (e *EnumDefinition) filename() string {
 	return generator.ToSnake(e.GoType()) + ".go"
 }
 
+func (s *EnumDefinition) Attribute(name string) interface{} {
+	return s.definition[name]
+}
+
 func (s *EnumDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	if _, ok := scope[s.name]; ok {
 		return s.name.String(), nil

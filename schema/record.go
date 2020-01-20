@@ -53,6 +53,10 @@ func (r *RecordDefinition) NewWriterMethod() string {
 	return fmt.Sprintf("New%vWriter", r.Name())
 }
 
+func (s *RecordDefinition) Attribute(name string) interface{} {
+	return s.metadata[name]
+}
+
 func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	if _, ok := scope[r.name]; ok {
 		return r.name.String(), nil

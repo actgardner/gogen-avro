@@ -38,6 +38,10 @@ func (s *ArrayField) ItemType() AvroType {
 	return s.itemType
 }
 
+func (s *ArrayField) Attribute(name string) interface{} {
+	return s.definition[name]
+}
+
 func (s *ArrayField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	var err error
 	s.definition["items"], err = s.itemType.Definition(scope)

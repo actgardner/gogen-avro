@@ -20,6 +20,11 @@ func (s *PrimitiveField) SerializerMethod() string {
 	return s.serializerMethod
 }
 
+func (s *PrimitiveField) Attribute(name string) interface{} {
+	definition, _ := s.definition.(map[string]interface{})
+	return definition[name]
+}
+
 func (s *PrimitiveField) Definition(_ map[QualifiedName]interface{}) (interface{}, error) {
 	return s.definition, nil
 }

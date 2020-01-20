@@ -38,6 +38,10 @@ func (s *MapField) filename() string {
 	return generator.ToSnake(s.Name()) + ".go"
 }
 
+func (s *MapField) Attribute(name string) interface{} {
+	return s.definition[name]
+}
+
 func (s *MapField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	var err error
 	s.definition["values"], err = s.itemType.Definition(scope)

@@ -18,6 +18,7 @@ type Definition interface {
 
 	Children() []AvroType
 
+	Attribute(name string) interface{}
 	// A JSON object defining this object, for writing the schema back out
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
 	DefaultValue(lvalue string, rvalue interface{}) (string, error)

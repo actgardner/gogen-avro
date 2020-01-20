@@ -31,6 +31,10 @@ func (s *Reference) SerializerMethod() string {
 	return s.Def.SerializerMethod()
 }
 
+func (s *Reference) Attribute(name string) interface{} {
+	return s.Def.Attribute(name)
+}
+
 func (s *Reference) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	return s.Def.Definition(scope)
 }
