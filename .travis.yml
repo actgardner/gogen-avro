@@ -1,13 +1,12 @@
 language: go
 
 go:
-  - 1.9
-  - "1.10"
   - "1.11"
+  - "1.12"
+  - "1.13"
   - tip
 
 install: go get -t -v ./cmd/...
 
 script:
-  - go test github.com/actgardner/gogen-avro/generator
-  - bash test.sh 
+  - bash -ex test.sh 
