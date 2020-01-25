@@ -75,14 +75,15 @@ func (s *UnionField) Attribute(name string) interface{} {
 }
 
 func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
+	def := make([]interface{}, len(s.definition))
 	var err error
 	for i, item := range s.itemType {
-		s.definition[i], err = item.Definition(scope)
+		def[i], err = item.Definition(scope)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return s.definition, nil
+	return def, nil
 }
 
 func (s *UnionField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {

@@ -43,12 +43,13 @@ func (s *MapField) Attribute(name string) interface{} {
 }
 
 func (s *MapField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
+	def := copyDefinition(s.definition)
 	var err error
-	s.definition["values"], err = s.itemType.Definition(scope)
+	def["values"], err = s.itemType.Definition(scope)
 	if err != nil {
 		return nil, err
 	}
-	return s.definition, nil
+	return def, nil
 }
 
 func (s *MapField) ConstructorMethod() string {
