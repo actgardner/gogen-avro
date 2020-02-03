@@ -105,7 +105,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		return nil, fmt.Errorf("Type of record must be 'record'")
 	}
 
-	name, err := getMapString(schemaMap, "name")
+	name, err := avroNameForDefinition(schemaMap, namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -115,13 +115,6 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		rDocString, ok = rDoc.(string)
 		if !ok {
 			return nil, NewWrongMapValueTypeError("doc", "string", rDoc)
-		}
-	}
-
-	if _, ok := schemaMap["namespace"]; ok {
-		namespace, err = getMapString(schemaMap, "namespace")
-		if err != nil {
-			return nil, err
 		}
 	}
 
@@ -147,7 +140,7 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 			return nil, NewRequiredMapKeyError("type")
 		}
 
-		fieldType, err := n.decodeTypeDefinition(fieldName, namespace, t)
+		fieldType, err := n.decodeTypeDefinition(fieldName, name.Namespace, t)
 		if err != nil {
 			return nil, err
 		}
@@ -190,12 +183,12 @@ func (n *Namespace) decodeRecordDefinition(namespace string, schemaMap map[strin
 		decodedFields = append(decodedFields, fieldStruct)
 	}
 
-	aliases, err := parseAliases(schemaMap, namespace)
+	aliases, err := parseAliases(schemaMap, name.Namespace)
 	if err != nil {
 		return nil, err
 	}
 
-	return avro.NewRecordDefinition(ParseAvroName(namespace, name), aliases, decodedFields, rDocString, schemaMap), nil
+	return avro.NewRecordDefinition(name, aliases, decodedFields, rDocString, schemaMap), nil
 }
 
 // decodeEnumDefinition accepts a namespace and a map representing an enum definition,
@@ -210,14 +203,7 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 		return nil, fmt.Errorf("Type of enum must be 'enum'")
 	}
 
-	if _, ok := schemaMap["namespace"]; ok {
-		namespace, err = getMapString(schemaMap, "namespace")
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	name, err := getMapString(schemaMap, "name")
+	name, err := avroNameForDefinition(schemaMap, namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -244,7 +230,7 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 		}
 	}
 
-	return avro.NewEnumDefinition(ParseAvroName(namespace, name), aliases, symbolStr, docString, schemaMap), nil
+	return avro.NewEnumDefinition(name, aliases, symbolStr, docString, schemaMap), nil
 }
 
 // decodeFixedDefinition accepts a namespace and a map representing a fixed definition,
@@ -259,14 +245,7 @@ func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string
 		return nil, fmt.Errorf("Type of fixed must be 'fixed'")
 	}
 
-	if _, ok := schemaMap["namespace"]; ok {
-		namespace, err = getMapString(schemaMap, "namespace")
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	name, err := getMapString(schemaMap, "name")
+	name, err := avroNameForDefinition(schemaMap, namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -276,12 +255,12 @@ func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string
 		return nil, err
 	}
 
-	aliases, err := parseAliases(schemaMap, namespace)
+	aliases, err := parseAliases(schemaMap, name.Namespace)
 	if err != nil {
 		return nil, err
 	}
 
-	return avro.NewFixedDefinition(ParseAvroName(namespace, name), aliases, int(sizeBytes), schemaMap), nil
+	return avro.NewFixedDefinition(name, aliases, int(sizeBytes), schemaMap), nil
 }
 
 func (n *Namespace) decodeUnionDefinition(name, namespace string, fieldList []interface{}) (avro.AvroType, error) {
@@ -432,4 +411,44 @@ func parseAliases(objectMap map[string]interface{}, namespace string) ([]avro.Qu
 		qualifiedAliases = append(qualifiedAliases, ParseAvroName(namespace, aliasString))
 	}
 	return qualifiedAliases, nil
+}
+
+// avroNameForDefinition returns the fully qualified name from the
+// schema definition represented by schemaMap. From the specification:
+//
+//	In record, enum and fixed definitions, the fullname is
+//	determined in one of the following ways:
+//
+//	- A name and namespace are both specified. For example, one
+//	might use "name": "X", "namespace": "org.foo" to indicate the
+//	fullname org.foo.X.
+//
+//	- A fullname is specified. If the name specified contains a
+//	dot, then it is assumed to be a fullname, and any namespace
+//	also specified is ignored. For example, use "name":
+//	"org.foo.X" to indicate the fullname org.foo.X.
+//
+//	- A name only is specified, i.e., a name that contains no
+//	dots. In this case the namespace is taken from the most
+//	tightly enclosing schema or protocol. For example, if "name":
+//	"X" is specified, and this occurs within a field of the record
+//	definition of org.foo.Y, then the fullname is org.foo.X. If
+//	there is no enclosing namespace then the null namespace is
+//	used.
+func avroNameForDefinition(schemaMap map[string]interface{}, enclosing string) (avro.QualifiedName, error) {
+	name, err := getMapString(schemaMap, "name")
+	if err != nil {
+		return avro.QualifiedName{}, err
+	}
+	var namespace string
+	if _, ok := schemaMap["namespace"]; ok {
+		namespace, err = getMapString(schemaMap, "namespace")
+		if err != nil {
+			return avro.QualifiedName{}, err
+		}
+	}
+	if namespace != "" {
+		enclosing = namespace
+	}
+	return ParseAvroName(enclosing, name), nil
 }
