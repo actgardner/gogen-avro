@@ -8,9 +8,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-{{ if ne .Doc "" }}
-// {{ .Doc}}
-{{ end }}  
+{{ if ne .Doc "" }}// {{ .Doc}}{{ end }}  
 type {{ .Name }} struct {
 {{ range $i, $field := .Fields }}
 	{{ if ne $field.Doc "" }}
