@@ -12,9 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-
-// Trace
-  
+// Trace  
 type HeaderworksTrace struct {
 
 	
@@ -75,7 +73,7 @@ func (r *HeaderworksTrace) Serialize(w io.Writer) error {
 }
 
 func (r *HeaderworksTrace) Schema() string {
-	return "{\"doc\":\"Trace\",\"fields\":[{\"default\":null,\"doc\":\"Trace Identifier\",\"name\":\"traceId\",\"type\":[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"headerworks.datatype\",\"type\":\"record\"}]}],\"name\":\"Trace\",\"type\":\"record\"}"
+	return "{\"doc\":\"Trace\",\"fields\":[{\"default\":null,\"doc\":\"Trace Identifier\",\"name\":\"traceId\",\"type\":[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"headerworks.datatype\",\"type\":\"record\"}]}],\"name\":\"headerworks.Trace\",\"type\":\"record\"}"
 }
 
 func (r *HeaderworksTrace) SchemaName() string {

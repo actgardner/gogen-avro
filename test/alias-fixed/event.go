@@ -12,9 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-
-// The test record
-  
+// The test record  
 type Event struct {
 
 	

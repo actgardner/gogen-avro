@@ -12,9 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-
-// A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014
-  
+// A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014  
 type DatatypeUUID struct {
 
 	
@@ -73,7 +71,7 @@ func (r *DatatypeUUID) Serialize(w io.Writer) error {
 }
 
 func (r *DatatypeUUID) Schema() string {
-	return "{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"bodyworks.datatype\",\"type\":\"record\"}"
+	return "{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"bodyworks.datatype.UUID\",\"type\":\"record\"}"
 }
 
 func (r *DatatypeUUID) SchemaName() string {
