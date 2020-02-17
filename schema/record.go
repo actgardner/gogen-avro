@@ -146,11 +146,13 @@ func (s *RecordDefinition) Doc() string {
 }
 
 func (s *RecordDefinition) Schema() (string, error) {
-	def, err := s.Definition(make(map[QualifiedName]interface{}))
+	def0, err := s.Definition(make(map[QualifiedName]interface{}))
 	if err != nil {
 		return "", err
 	}
-
+	def := def0.(map[string]interface{})
+	delete(def, "namespace")
+	def["name"] = s.name.String()
 	jsonBytes, err := json.Marshal(def)
 	return string(jsonBytes), err
 }
