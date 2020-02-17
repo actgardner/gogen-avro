@@ -48,6 +48,13 @@ func (s *Reference) WrapperType() string {
 }
 
 func (s *Reference) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
+	if union, ok := f.(*UnionField); ok {
+		for _, t := range union.AvroTypes() {
+			if s.IsReadableBy(t, visited) {
+				return true
+			}
+		}
+	}
 	if reader, ok := f.(*Reference); ok {
 		return s.Def.IsReadableBy(reader.Def, visited)
 	}
