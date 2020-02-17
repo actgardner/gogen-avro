@@ -76,7 +76,7 @@ func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 	if _, ok := writer.(*schema.UnionField); !ok {
 		if readerUnion, ok := reader.(*schema.UnionField); ok {
 			for readerIndex, r := range readerUnion.AvroTypes() {
-				if writer.IsReadableBy(r) {
+				if writer.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
 					p.addLiteral(vm.SetLong, readerIndex)
 					p.addLiteral(vm.Set, vm.Long)
 					p.addLiteral(vm.Enter, readerIndex)
@@ -317,7 +317,7 @@ writer:
 		} else if unionReader, ok := reader.(*schema.UnionField); ok {
 			// If the reader is also a union, read into the first supported type
 			for readerIndex, r := range unionReader.AvroTypes() {
-				if t.IsReadableBy(r) {
+				if t.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
 					p.addSwitchCase(switchId, i, readerIndex)
 					p.addLiteral(vm.Enter, readerIndex)
 					err := p.compileType(t, r)
@@ -331,7 +331,7 @@ writer:
 			p.addSwitchCase(switchId, i, -1)
 			typedErrId := p.addError(fmt.Sprintf("Reader schema has no field for type %v in union", t.Name()))
 			p.addLiteral(vm.Halt, typedErrId)
-		} else if t.IsReadableBy(reader) {
+		} else if t.IsReadableBy(reader, make(map[schema.QualifiedName]interface{})) {
 			// If the reader is not a union but it can read this union field, support it
 			p.addSwitchCase(switchId, i, -1)
 			err := p.compileType(t, reader)

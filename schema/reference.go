@@ -47,9 +47,9 @@ func (s *Reference) WrapperType() string {
 	return s.Def.WrapperType()
 }
 
-func (s *Reference) IsReadableBy(f AvroType) bool {
+func (s *Reference) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
 	if reader, ok := f.(*Reference); ok {
-		return s.Def.IsReadableBy(reader.Def)
+		return s.Def.IsReadableBy(reader.Def, visited)
 	}
 	return false
 }

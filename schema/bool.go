@@ -29,7 +29,7 @@ func (s *BoolField) WrapperType() string {
 	return "types.Boolean"
 }
 
-func (s *BoolField) IsReadableBy(f AvroType) bool {
+func (s *BoolField) IsReadableBy(f AvroType, _ map[QualifiedName]interface{}) bool {
 	_, ok := f.(*BoolField)
 	return ok
 }

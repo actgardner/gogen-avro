@@ -77,9 +77,9 @@ func (s *MapField) WrapperType() string {
 	return ""
 }
 
-func (s *MapField) IsReadableBy(f AvroType) bool {
+func (s *MapField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
 	if reader, ok := f.(*MapField); ok {
-		return s.ItemType().IsReadableBy(reader.ItemType())
+		return s.ItemType().IsReadableBy(reader.ItemType(), visited)
 	}
 	return false
 }

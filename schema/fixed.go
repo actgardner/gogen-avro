@@ -74,7 +74,7 @@ func (s *FixedDefinition) DefaultValue(lvalue string, rvalue interface{}) (strin
 	return fmt.Sprintf("copy(%v[:], []byte(%q))", lvalue, rvalue), nil
 }
 
-func (s *FixedDefinition) IsReadableBy(d Definition) bool {
+func (s *FixedDefinition) IsReadableBy(d Definition, visited map[QualifiedName]interface{}) bool {
 	if fixed, ok := d.(*FixedDefinition); ok {
 		return fixed.sizeBytes == s.sizeBytes && fixed.name == s.name
 	}

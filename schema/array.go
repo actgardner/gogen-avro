@@ -82,9 +82,9 @@ func (s *ArrayField) WrapperType() string {
 	return fmt.Sprintf("%vWrapper", s.Name())
 }
 
-func (s *ArrayField) IsReadableBy(f AvroType) bool {
+func (s *ArrayField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
 	if reader, ok := f.(*ArrayField); ok {
-		return s.ItemType().IsReadableBy(reader.ItemType())
+		return s.ItemType().IsReadableBy(reader.ItemType(), visited)
 	}
 	return false
 }

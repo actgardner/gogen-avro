@@ -29,7 +29,7 @@ func (s *StringField) WrapperType() string {
 	return "types.String"
 }
 
-func (s *StringField) IsReadableBy(f AvroType) bool {
+func (s *StringField) IsReadableBy(f AvroType, _ map[QualifiedName]interface{}) bool {
 	if _, ok := f.(*BytesField); ok {
 		return true
 	}

@@ -29,7 +29,7 @@ func (s *LongField) WrapperType() string {
 	return "types.Long"
 }
 
-func (s *LongField) IsReadableBy(f AvroType) bool {
+func (s *LongField) IsReadableBy(f AvroType, _ map[QualifiedName]interface{}) bool {
 	if _, ok := f.(*LongField); ok {
 		return true
 	}

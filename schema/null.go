@@ -21,7 +21,7 @@ func (s *NullField) WrapperType() string {
 	return ""
 }
 
-func (s *NullField) IsReadableBy(f AvroType) bool {
+func (s *NullField) IsReadableBy(f AvroType, _ map[QualifiedName]interface{}) bool {
 	_, ok := f.(*NullField)
 	return ok
 }

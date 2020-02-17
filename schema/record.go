@@ -132,9 +132,32 @@ func (r *RecordDefinition) Fields() []*Field {
 	return r.fields
 }
 
-func (s *RecordDefinition) IsReadableBy(d Definition) bool {
+func (s *RecordDefinition) IsReadableBy(d Definition, visited map[QualifiedName]interface{}) bool {
+	// If there's a circular reference, don't evaluate every field on the second pass
+	if _, ok := visited[s.name]; ok {
+		return true
+	}
 	reader, ok := d.(*RecordDefinition)
-	return ok && reader.name == s.name
+	if !ok {
+		return false
+	}
+
+	visited[s.name] = true
+
+	for _, readerField := range reader.Fields() {
+		writerField := s.GetReaderField(readerField)
+		// Two schemas are incompatible if the reader has a field with no default value that is not present in the writer schema
+		if writerField == nil && !readerField.HasDefault() {
+			return false
+		}
+
+		// The two schemas are incompatible if two fields with the same name have different schemas
+		if writerField != nil && !writerField.Type().IsReadableBy(readerField.Type(), visited) {
+			return false
+		}
+
+	}
+	return true
 }
 
 func (s *RecordDefinition) WrapperType() string {

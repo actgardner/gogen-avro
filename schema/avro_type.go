@@ -14,5 +14,5 @@ type AvroType interface {
 	DefaultValue(lvalue string, rvalue interface{}) (string, error)
 
 	WrapperType() string
-	IsReadableBy(f AvroType) bool
+	IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool
 }

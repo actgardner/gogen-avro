@@ -29,7 +29,7 @@ func (s *FloatField) WrapperType() string {
 	return "types.Float"
 }
 
-func (s *FloatField) IsReadableBy(f AvroType) bool {
+func (s *FloatField) IsReadableBy(f AvroType, _ map[QualifiedName]interface{}) bool {
 	if _, ok := f.(*FloatField); ok {
 		return true
 	}

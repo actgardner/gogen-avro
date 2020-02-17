@@ -23,7 +23,7 @@ type Definition interface {
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
 	DefaultValue(lvalue string, rvalue interface{}) (string, error)
 
-	IsReadableBy(f Definition) bool
+	IsReadableBy(f Definition, visited map[QualifiedName]interface{}) bool
 	WrapperType() string
 }
 
