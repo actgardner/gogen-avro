@@ -17,6 +17,10 @@ type CanonicalFields struct {
 }
 
 func CanonicalForm(t schema.AvroType) interface{} {
+	return canonicalForm(t, make(map[string]interface{}))
+}
+
+func canonicalForm(t schema.AvroType, visited map[string]interface{}) interface{} {
 	switch v := t.(type) {
 	case *schema.BoolField:
 		return "boolean"
@@ -37,47 +41,54 @@ func CanonicalForm(t schema.AvroType) interface{} {
 	case *schema.UnionField:
 		members := make([]interface{}, 0)
 		for _, m := range v.AvroTypes() {
-			members = append(members, CanonicalForm(m))
+			members = append(members, canonicalForm(m, visited))
 		}
 		return members
 	case *schema.ArrayField:
 		return &CanonicalFields{
 			Type:  "array",
-			Items: CanonicalForm(v.ItemType()),
+			Items: canonicalForm(v.ItemType(), visited),
 		}
 	case *schema.MapField:
 		return &CanonicalFields{
 			Type:   "map",
-			Values: CanonicalForm(v.ItemType()),
+			Values: canonicalForm(v.ItemType(), visited),
 		}
 	case *schema.Reference:
 		name := v.Def.AvroName().String()
-		switch def := v.Def.(type) {
-		case *schema.RecordDefinition:
-			fields := make([]interface{}, 0)
-			for _, f := range def.Fields() {
-				fields = append(fields, &CanonicalFields{
-					Name: &name,
-					Type: CanonicalForm(f.Type()),
-				})
-			}
+		if _, ok := visited[name]; ok {
+			return name
+		} else {
+			visited[name] = true
+			switch def := v.Def.(type) {
+			case *schema.RecordDefinition:
+				fields := make([]interface{}, 0)
+				for _, f := range def.Fields() {
+					fn := f.Name()
+					fields = append(fields, &CanonicalFields{
+						Name: &fn,
+						Type: canonicalForm(f.Type(), visited),
+					})
+				}
 
-			return &CanonicalFields{
-				Name:   &name,
-				Fields: fields,
-			}
-		case *schema.EnumDefinition:
-			return &CanonicalFields{
-				Name:    &name,
-				Type:    "enum",
-				Symbols: def.Symbols(),
-			}
-		case *schema.FixedDefinition:
-			size := def.SizeBytes()
-			return &CanonicalFields{
-				Name: &name,
-				Type: "fixed",
-				Size: &size,
+				return &CanonicalFields{
+					Name:   &name,
+					Type:   "record",
+					Fields: fields,
+				}
+			case *schema.EnumDefinition:
+				return &CanonicalFields{
+					Name:    &name,
+					Type:    "enum",
+					Symbols: def.Symbols(),
+				}
+			case *schema.FixedDefinition:
+				size := def.SizeBytes()
+				return &CanonicalFields{
+					Name: &name,
+					Type: "fixed",
+					Size: &size,
+				}
 			}
 		}
 	}
