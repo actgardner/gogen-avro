@@ -15,6 +15,7 @@ const (
 
 	defaultPackageName     = "avro"
 	defaultContainers      = false
+	defaultSourcesComment  = true
 	defaultShortUnions     = false
 	defaultNamespacedNames = nsNone
 )
@@ -25,6 +26,7 @@ type config struct {
 	shortUnions     bool
 	namespacedNames string
 	targetDir       string
+	sourcesComment  bool
 	files           []string
 }
 
@@ -35,6 +37,7 @@ func parseCmdLine() config {
 
 	flag.StringVar(&cfg.packageName, "package", defaultPackageName, "Name of generated package.")
 	flag.BoolVar(&cfg.containers, "containers", defaultContainers, "Whether to generate container writer methods.")
+	flag.BoolVar(&cfg.sourcesComment, "sources-comment", defaultSourcesComment, "Whether to include a list of sources files in the comment in generated files.")
 	flag.BoolVar(&cfg.shortUnions, "short-unions", defaultShortUnions, "Whether to use shorter names for Union types.")
 	flag.StringVar(&cfg.namespacedNames, "namespaced-names", defaultNamespacedNames, "Whether to generate namespaced names for types. Default is \"none\"; \"short\" uses the last part of the namespace (last word after a separator); \"full\" uses all namespace string.")
 

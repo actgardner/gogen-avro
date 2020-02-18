@@ -49,7 +49,7 @@ For the library imports, you should manage the dependency on this repo using [de
 To generate Go source files from one or more Avro schema files, run:
 
 ```
-gogen-avro [--package=<package name>] <output directory> <avro schema files>
+gogen-avro [--containers=false] [--sources-comment=false] [--short-unions=false] [--package=<package name>] <output directory> <avro schema files>
 ```
 
 You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/blob/master/test/primitive/generate.go#L3)):
