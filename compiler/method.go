@@ -266,6 +266,9 @@ func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error 
 		if reader != nil {
 			readerField = reader.GetReaderField(field)
 			if readerField != nil {
+				if !field.Type().IsReadableBy(readerField.Type(), make(map[schema.QualifiedName]interface{})) {
+					return fmt.Errorf("Incompatible schemas: field %v in reader has incompatible type in writer", field.Name())
+				}
 				readerType = readerField.Type()
 				p.addLiteral(vm.Enter, readerField.Index())
 			}
