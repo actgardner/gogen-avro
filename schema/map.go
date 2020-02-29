@@ -23,11 +23,15 @@ func (s *MapField) ItemType() AvroType {
 }
 
 func (s *MapField) Name() string {
-	return "Map" + s.itemType.Name()
+	return s.GoType()
 }
 
 func (s *MapField) GoType() string {
-	return fmt.Sprintf("*%v", s.Name())
+	return "Map" + s.itemType.Name()
+}
+
+func (s *MapField) IsOptional() bool {
+	return false
 }
 
 func (s *MapField) SerializerMethod() string {
@@ -53,7 +57,7 @@ func (s *MapField) Definition(scope map[QualifiedName]interface{}) (interface{},
 }
 
 func (s *MapField) ConstructorMethod() string {
-	return fmt.Sprintf("New%v()", s.Name())
+	return fmt.Sprintf("New%s()", s.Name())
 }
 
 func (s *MapField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
