@@ -264,13 +264,18 @@ func (n *Namespace) decodeFixedDefinition(namespace string, schemaMap map[string
 }
 
 func (n *Namespace) decodeUnionDefinition(name, namespace string, fieldList []interface{}) (avro.AvroType, error) {
+	optFieldIndex := -1
 	unionFields := make([]avro.AvroType, 0)
-	for _, f := range fieldList {
+	for i, f := range fieldList {
 		fieldDef, err := n.decodeTypeDefinition(name, namespace, f)
 		if err != nil {
 			return nil, err
 		}
 
+		if _, ok := fieldDef.(*avro.NullField); ok {
+			// Optional field detected in position 'i'
+			optFieldIndex = i
+		}
 		unionFields = append(unionFields, fieldDef)
 	}
 
@@ -279,7 +284,8 @@ func (n *Namespace) decodeUnionDefinition(name, namespace string, fieldList []in
 	} else {
 		name = ""
 	}
-	return avro.NewUnionField(name, unionFields, fieldList), nil
+
+	return avro.NewUnionField(name, unionFields, fieldList, optFieldIndex), nil
 }
 
 func (n *Namespace) decodeComplexDefinition(name, namespace string, typeMap map[string]interface{}) (avro.AvroType, error) {
