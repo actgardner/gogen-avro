@@ -13,6 +13,7 @@ type Definition interface {
 	SimpleName() string
 
 	GoType() string
+	IsOptional() bool
 
 	SerializerMethod() string
 
