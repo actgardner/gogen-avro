@@ -109,6 +109,6 @@ func TestRoundTrip(t *testing.T) {
 
 		datum, err := DeserializeNestedTestRecord(&buf)
 		assert.Nil(t, err)
-		assert.Equal(t, *datum, f)
+		assert.Equal(t, datum, f)
 	}
 }

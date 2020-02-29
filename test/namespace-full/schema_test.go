@@ -11,10 +11,10 @@ import (
 // Round-trip some primitive values through our serializer and goavro to verify
 const fixtureJson = `
 [
-{"Header": {"UnionType": 0}, "Body": {"UnionType": 0}},
-{"Header": {"UnionType": 1, "HeaderworksData": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}, "Body": {"UnionType": 0}},
-{"Header": {"UnionType": 0}, "Body": {"UnionType": 1, "BodyworksData": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}},
-{"Header": {"UnionType": 1, "HeaderworksData": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}, "Body": {"UnionType": 1, "BodyworksData": {"UUID": {"UnionType": 0}, "Hostname": {"UnionType": 0}, "Trace": {"UnionType": 0}}}}
+{"Header": null, "Body": null},
+{"Header": {"UnionType": 1, "HeaderworksData": {"UUID": null, "Hostname": null, "Trace": null}}, "Body": null},
+{"Header": null, "Body": {"UnionType": 1, "BodyworksData": {"UUID": null, "Hostname": null, "Trace": null}}},
+{"Header": {"UnionType": 1, "HeaderworksData": {"UUID": null, "Hostname": null, "Trace": null}}, "Body": {"UnionType": 1, "BodyworksData": {"UUID": null, "Hostname": null, "Trace": null}}}
 ]`
 
 func TestRoundTrip(t *testing.T) {
@@ -30,6 +30,6 @@ func TestRoundTrip(t *testing.T) {
 
 		datum, err := DeserializeComAvroTestSample(&buf)
 		assert.Nil(t, err)
-		assert.Equal(t, *datum, f)
+		assert.Equal(t, datum, f)
 	}
 }

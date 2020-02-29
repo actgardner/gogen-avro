@@ -12,7 +12,7 @@ import (
 )
 
 func TestEvolution(t *testing.T) {
-	oldAliasRecord := NewAliasRecord()
+	oldAliasRecord := AliasRecord{}
 	oldAliasRecord.A = "hi"
 	oldAliasRecord.C = "bye"
 
@@ -20,12 +20,12 @@ func TestEvolution(t *testing.T) {
 	err := oldAliasRecord.Serialize(&buf)
 	assert.Nil(t, err)
 
-	newAliasRecord := evolution.NewAliasRecord()
+	newAliasRecord := evolution.AliasRecord{}
 
 	deser, err := compiler.CompileSchemaBytes([]byte(oldAliasRecord.Schema()), []byte(newAliasRecord.Schema()))
 	assert.Nil(t, err)
 
-	err = vm.Eval(bytes.NewReader(buf.Bytes()), deser, newAliasRecord)
+	err = vm.Eval(bytes.NewReader(buf.Bytes()), deser, &newAliasRecord)
 	assert.Nil(t, err)
 
 	assert.Equal(t, "hi", newAliasRecord.B)

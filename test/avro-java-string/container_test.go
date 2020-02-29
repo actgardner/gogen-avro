@@ -103,6 +103,6 @@ func roundTripGogenWithCodec(codec container.Codec, t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		assert.Equal(t, datum, &fixtures[i])
+		assert.Equal(t, datum, fixtures[i])
 	}
 }

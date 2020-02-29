@@ -10,7 +10,7 @@ import (
 )
 
 func TestEvolution(t *testing.T) {
-	oldUnionRecord := NewUnionRecord()
+	oldUnionRecord := UnionRecord{}
 	oldUnionRecord.Id = &UnionNullInt{UnionType: UnionNullIntTypeEnumInt, Int: 1}
 	oldUnionRecord.A = "hi"
 	oldUnionRecord.Name = &UnionNullString{UnionType: UnionNullStringTypeEnumString, String: "abcd"}
@@ -19,7 +19,7 @@ func TestEvolution(t *testing.T) {
 	err := oldUnionRecord.Serialize(&buf)
 	assert.Nil(t, err)
 
-	newUnionRecord, err := evolution.DeserializeUnionRecordFromSchema(&buf, NewUnionRecord().Schema())
+	newUnionRecord, err := evolution.DeserializeUnionRecordFromSchema(&buf, oldUnionRecord.Schema())
 	assert.Nil(t, err)
 	assert.Equal(t, evolution.UnionNullStringTypeEnumString, newUnionRecord.A.UnionType)
 	assert.Equal(t, "hi", newUnionRecord.A.String)

@@ -15,8 +15,8 @@ import (
 const fixtureJson = `
 [
 {"IntField": [1, -2147483647, 2147483647], "LongField": [2, 9223372036854775807, -9223372036854775807], "FloatField": [3.4, 3.402823e-38, 3.402823e+38], "DoubleField": [ 5.6, 2.2250738585072014e-308], "StringField": ["short", "789", "longer", "a slightly longer string"], "BoolField": [true, false], "BytesField": ["VGhpcyBpcyBhIHRlc3Qgc3RyaW5n"]},
-{"IntField":[], "LongField": [2], "FloatField": [], "DoubleField": [5.6], "StringField": [], "BoolField": [true], "BytesField": []},
-{"IntField":[], "LongField": [], "FloatField": [], "DoubleField": [], "StringField": [], "BoolField": [], "BytesField": []}
+{"IntField":null, "LongField": [2], "FloatField": null, "DoubleField": [5.6], "StringField": null, "BoolField": [true], "BytesField": null},
+{"IntField":null, "LongField": null, "FloatField": null, "DoubleField": null, "StringField": null, "BoolField": null, "BytesField": null}
 ]
 `
 
@@ -112,6 +112,6 @@ func TestRoundTrip(t *testing.T) {
 		datum, err := DeserializeArrayTestRecord(&buf)
 		assert.Nil(t, err)
 
-		assert.Equal(t, *datum, f)
+		assert.Equal(t, datum, f)
 	}
 }

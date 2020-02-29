@@ -3,14 +3,15 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // Round trip some records nested in arrays
 const fixtureJson = `
 [
-  {"Children": []},
+  {"Children": null},
   {"Children": [{"Name": "test-record"}]},
   {"Children": [{"Name": "test-record"}, {"Name": "test-record-2"}]}
 ]
@@ -33,6 +34,6 @@ func TestRoundTrip(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		assert.Equal(t, *datum, f)
+		assert.Equal(t, datum, f)
 	}
 }

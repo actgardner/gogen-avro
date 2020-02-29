@@ -13,7 +13,7 @@ import (
 // Round-trip some primitive values through our serializer and goavro to verify
 const fixtureJson = `
 [
-	{"UnionField":{"UnionType":0}},
+	{"UnionField":null},
 	{"UnionField":{"ArrayInt":[1,2,3], "UnionType":1}},
 	{"UnionField":{"MapInt":{"M": {"a":1, "b":3, "c": 5}}, "UnionType":2}},
 	{"UnionField":{"NestedUnionRecord":{"IntField":789}, "UnionType":3}}
@@ -44,26 +44,24 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 		recordField, ok := record["UnionField"]
 		assert.Equal(t, true, ok)
 
-		switch f.UnionField.UnionType {
-		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull:
-			if recordField != nil {
-				t.Fatalf("Expected nil value for union field, got %v", recordField)
-			}
-		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt:
+		switch {
+		case f.UnionField == nil:
+			assert.Equal(t, nil, recordField)
+		case f.UnionField.UnionType == UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt:
 			arr := recordField.(map[string]interface{})["array"].([]interface{})
 			for i, v := range arr {
 				if v.(int32) != f.UnionField.ArrayInt[i] {
 					t.Fatalf("Expected int value %v for union field, got %v", f.UnionField.ArrayInt[i], v)
 				}
 			}
-		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt:
+		case f.UnionField.UnionType == UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt:
 			m := recordField.(map[string]interface{})["map"].(map[string]interface{})
 			for k, v := range m {
 				if v.(int32) != f.UnionField.MapInt.M[k] {
 					t.Fatalf("Expected int value %v for union map key %v field, got %v", f.UnionField.MapInt.M[k], k, v)
 				}
 			}
-		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord:
+		case f.UnionField.UnionType == UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord:
 			v, ok := recordField.(map[string]interface{})["NestedUnionRecord"].(map[string]interface{})["IntField"]
 			if !ok {
 				t.Fatalf("GOT: %#v; WANT: %#v", ok, true)
@@ -88,6 +86,6 @@ func TestRoundTrip(t *testing.T) {
 
 		datum, err := DeserializeComplexUnionTestRecord(&buf)
 		assert.Nil(t, err)
-		assert.Equal(t, *datum, f)
+		assert.Equal(t, datum, f)
 	}
 }

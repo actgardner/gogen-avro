@@ -12,20 +12,20 @@ import (
 )
 
 func TestEvolution(t *testing.T) {
-	oldUnionRecord := NewUnionRecord()
+	oldUnionRecord := UnionRecord{}
 	var buf bytes.Buffer
 	err := oldUnionRecord.Serialize(&buf)
 	assert.Nil(t, err)
 
-	newUnionRecord := evolution.NewUnionRecord()
+	newUnionRecord := evolution.UnionRecord{}
 
 	deser, err := compiler.CompileSchemaBytes([]byte(oldUnionRecord.Schema()), []byte(newUnionRecord.Schema()))
 	assert.Nil(t, err)
 
-	err = vm.Eval(bytes.NewReader(buf.Bytes()), deser, newUnionRecord)
+	err = vm.Eval(bytes.NewReader(buf.Bytes()), deser, &newUnionRecord)
 	assert.Nil(t, err)
 
-	assert.Equal(t, evolution.UnionNullStringTypeEnumNull, newUnionRecord.UnionNull.UnionType)
+	assert.Equal(t, (*evolution.UnionNullString)(nil), newUnionRecord.UnionNull)
 	assert.Equal(t, evolution.UnionStringIntTypeEnumString, newUnionRecord.UnionString.UnionType)
 	assert.Equal(t, "hello", newUnionRecord.UnionString.String)
 	assert.Equal(t, evolution.UnionUnionRecStringTypeEnumUnionRec, newUnionRecord.UnionRecord.UnionType)

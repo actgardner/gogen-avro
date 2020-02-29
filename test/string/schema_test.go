@@ -62,8 +62,8 @@ func prepareBuffer(t *testing.T, length int64, input StringRec) (bytes.Buffer, e
 	return buffer, nil
 }
 
-func checkEqual(input StringRec, output *StringRec, t *testing.T) {
-	if !reflect.DeepEqual(input, *output) {
+func checkEqual(input StringRec, output StringRec, t *testing.T) {
+	if !reflect.DeepEqual(input, output) {
 		t.Error("deserialized content not equal to input")
 	}
 }

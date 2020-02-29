@@ -45,7 +45,7 @@ func TestRootUnionFixture(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		err = writeEvent(&f, &buf)
+		err = writeEvent(f, &buf)
 		assert.Nil(t, err)
 
 		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
@@ -60,12 +60,12 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		err := writeEvent(&f, &buf)
+		err := writeEvent(f, &buf)
 		assert.Nil(t, err)
 
 		datum, err := DeserializeEvent(&buf)
 		assert.Nil(t, err)
 
-		assert.Equal(t, datum, &f)
+		assert.Equal(t, datum, f)
 	}
 }

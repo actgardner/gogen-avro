@@ -21,7 +21,7 @@ const fixtureJson = `
 {"UnionField":{"Double":5.6, "UnionType":3}},
 {"UnionField":{"String":"testString", "UnionType":4}},
 {"UnionField":{"Bool":true, "UnionType":5}},
-{"UnionField":{"UnionType":6}}
+{"UnionField":null}
 ]
 `
 
@@ -53,8 +53,6 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 
 		for i := 0; i < value.NumField(); i++ {
 			fieldName := value.Type().Field(i).Name
-			fieldUnionIndex := int(value.Field(i).Elem().FieldByName("UnionType").Int())
-			structVal := value.Field(i).Elem().Field(fieldUnionIndex).Interface()
 			var avroVal interface{}
 			top, ok := record[fieldName].(map[string]interface{})
 			if ok {
@@ -63,6 +61,18 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 					break
 				}
 			}
+
+			// Check first for optional (nil) fields
+			innerField := value.Field(i)
+			if innerField.IsNil() {
+				if avroVal != nil {
+					t.Fatalf("Field %v not equal: %v != %t", fieldName, innerField, avroVal)
+				}
+				continue
+			}
+
+			fieldUnionIndex := int(innerField.Elem().FieldByName("UnionType").Int())
+			structVal := innerField.Elem().Field(fieldUnionIndex).Interface()
 			switch structVal.(type) {
 			case *types.NullVal:
 				if avroVal != nil {
@@ -91,6 +101,6 @@ func TestRoundTrip(t *testing.T) {
 		datum, err := DeserializePrimitiveUnionTestRecord(&buf)
 		assert.Nil(t, err)
 
-		assert.Equal(t, *datum, f)
+		assert.Equal(t, datum, f)
 	}
 }

@@ -126,6 +126,6 @@ func TestRoundTrip(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		assert.Equal(t, *datum, f)
+		assert.Equal(t, datum, f)
 	}
 }

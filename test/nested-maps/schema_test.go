@@ -55,8 +55,8 @@ const fixtureJson = `
 func BenchmarkMapOfMapsRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
 	record := NestedMap{
-		&MapMapArrayString{
-			M: map[string]*MapArrayString{
+		MapMapArrayString{
+			M: map[string]MapArrayString{
 				"key1": {
 					M: map[string][]string{
 						"array1": {"value1", "value2"},

@@ -51,13 +51,13 @@ const fixtureJson = `
 func BenchmarkMapRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
 	record := MapTestRecord{
-		&MapInt{M: map[string]int32{"value1": 1, "value2": 2, "value3": 3}},
-		&MapLong{M: map[string]int64{"value1": 1, "value2": 2, "value3": 3}},
-		&MapDouble{M: map[string]float64{"value1": 1, "value2": 2, "value3": 3}},
-		&MapString{M: map[string]string{"value1": "12345", "value2": "67890", "value3": "abcdefg"}},
-		&MapFloat{M: map[string]float32{"value1": 1, "value2": 2, "value3": 3}},
-		&MapBool{M: map[string]bool{"true": true, "false": false}},
-		&MapBytes{M: map[string][]byte{"value1": {1, 2, 3, 4}, "value2": {100, 200, 255}}},
+		MapInt{M: map[string]int32{"value1": 1, "value2": 2, "value3": 3}},
+		MapLong{M: map[string]int64{"value1": 1, "value2": 2, "value3": 3}},
+		MapDouble{M: map[string]float64{"value1": 1, "value2": 2, "value3": 3}},
+		MapString{M: map[string]string{"value1": "12345", "value2": "67890", "value3": "abcdefg"}},
+		MapFloat{M: map[string]float32{"value1": 1, "value2": 2, "value3": 3}},
+		MapBool{M: map[string]bool{"true": true, "false": false}},
+		MapBytes{M: map[string][]byte{"value1": {1, 2, 3, 4}, "value2": {100, 200, 255}}},
 	}
 
 	b.ResetTimer()
@@ -90,6 +90,13 @@ func BenchmarkMapGoavro(b *testing.B) {
 		_, err := codec.BinaryFromNative(buf, someRecord)
 		assert.Nil(b, err)
 	}
+}
+
+func TestConstructor(t *testing.T) {
+	m := NewMapBool()
+	assert.NotNil(t, m.M)
+	m.M["testing"] = true
+	assert.True(t, m.M["testing"])
 }
 
 func TestRoundTrip(t *testing.T) {
