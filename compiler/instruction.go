@@ -99,9 +99,9 @@ func (s *switchStartIRInstruction) VMLength() int {
 func (s *switchStartIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	sw := p.switches[s.switchId]
 	body := []vm.Instruction{}
-	for value, offset := range sw.cases {
-		body = append(body, vm.Instruction{vm.EvalEqual, value})
-		body = append(body, vm.Instruction{vm.CondJump, offset + 1})
+	for idx, offset := range sw.caseOffsets {
+		body = append(body, vm.Instruction{vm.EvalEqual, idx})
+		body = append(body, vm.Instruction{vm.CondJump, offset})
 	}
 
 	body = append(body, vm.Instruction{vm.Halt, s.errId})
@@ -113,26 +113,58 @@ type switchCaseIRInstruction struct {
 	writerIndex int
 	// If there is no target field, or the target is not a union, the readerIndex is -1
 	readerIndex int
+	needsJump   bool
+	insts       []vm.Instruction
+}
+
+// Creates a new switch-case IR instruction for the given switch, writer and reader IDs.
+// A 'rejecting case' instruction generates a pair (Exit, Null) and a Jump past the
+// switch instruction. The pair (Exit, Null) makes the VM to reject (Clear) the current
+// target, which must be optional (nillable).
+func newSwithCaseIRInstruction(swId, wId, rId int, isRejectingCase, needsJump bool) *switchCaseIRInstruction {
+	c := &switchCaseIRInstruction{
+		switchId:    swId,
+		writerIndex: wId,
+		readerIndex: rId,
+	}
+	var tmpInsts []vm.Instruction
+	if isRejectingCase {
+		tmpInsts = []vm.Instruction{
+			vm.Instruction{vm.Jump, 0}, // 0 -> relative offset from sw.end in CompileToVM
+			vm.Instruction{vm.Exit, vm.Null},
+			vm.Instruction{vm.Jump, 1}, // 1 -> jump past the ending exit(Noop) in switch
+		}
+	} else {
+		tmpInsts = []vm.Instruction{
+			vm.Instruction{vm.Jump, 0},
+			vm.Instruction{vm.SetLong, rId},
+			vm.Instruction{vm.Set, vm.Long},
+		}
+	}
+	fromIdx := 0
+	toIdx := len(tmpInsts)
+	if !needsJump {
+		fromIdx++
+	}
+	if !isRejectingCase && rId == -1 {
+		toIdx = 1
+	}
+	c.insts = tmpInsts[fromIdx:toIdx]
+	return c
 }
 
 func (s *switchCaseIRInstruction) VMLength() int {
-	if s.readerIndex == -1 {
-		return 1
-	}
-	return 3
+	return len(s.insts)
 }
 
 func (s *switchCaseIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	sw := p.switches[s.switchId]
-	if s.readerIndex == -1 {
-		return []vm.Instruction{vm.Instruction{vm.Jump, sw.end}}, nil
+	for i, _ := range s.insts {
+		if s.insts[i].Op == vm.Jump {
+			s.insts[i].Operand += sw.end
+		}
 	}
-
-	return []vm.Instruction{
-		vm.Instruction{vm.Jump, sw.end},
-		vm.Instruction{vm.SetLong, s.readerIndex},
-		vm.Instruction{vm.Set, vm.Long},
-	}, nil
+	return s.insts, nil
 }
 
 type switchEndIRInstruction struct {
