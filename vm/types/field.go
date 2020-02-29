@@ -17,9 +17,14 @@ type Field interface {
 	Get(i int) Field
 	// Set the default value for a given field
 	SetDefault(i int)
+	// Clear/reset a nested optional field
+	Clear(i int)
 
-	// Append a new value to a map or array and enter it
+	// Append a new value to a map and enter it
 	AppendMap(key string) Field
+	// Clear a key from a map
+	ClearMap(key string)
+	// Append a new value to an array and enter it
 	AppendArray() Field
 
 	// Finalize a field if necessary
