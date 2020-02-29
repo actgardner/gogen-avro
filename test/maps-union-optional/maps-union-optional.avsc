@@ -1,0 +1,7 @@
+{
+	"type": "record",
+	"name": "MapOptionalTestRecord",
+	"fields": [
+		{"name": "OptField", "type": {"type": "map", "values": ["null", "string", "int"]}}
+	]
+}
