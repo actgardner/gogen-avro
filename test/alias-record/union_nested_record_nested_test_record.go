@@ -79,6 +79,5 @@ func (r *UnionNestedRecordNestedTestRecord) Get(i int) types.Field {
 func (r *UnionNestedRecordNestedTestRecord) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionNestedRecordNestedTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) Finalize()  { }

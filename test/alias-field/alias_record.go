@@ -115,6 +115,5 @@ func (r *AliasRecord) Clear(i int) {
 }
 
 func (_ *AliasRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *AliasRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *AliasRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *AliasRecord) Finalize() { }

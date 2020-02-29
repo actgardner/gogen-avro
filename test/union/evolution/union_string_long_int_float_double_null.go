@@ -114,6 +114,5 @@ func (r *UnionStringLongIntFloatDoubleNull) Get(i int) types.Field {
 func (r *UnionStringLongIntFloatDoubleNull) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionStringLongIntFloatDoubleNull) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) Finalize()  { }

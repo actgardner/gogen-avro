@@ -104,6 +104,5 @@ func (r *PrimitiveUnionTestRecord) Clear(i int) {
 }
 
 func (_ *PrimitiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *PrimitiveUnionTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *PrimitiveUnionTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *PrimitiveUnionTestRecord) Finalize() { }

@@ -44,7 +44,6 @@ func (_ *MapUnionNullStringInt) SetBytes(v []byte) { panic("Unsupported operatio
 func (_ *MapUnionNullStringInt) SetString(v string) { panic("Unsupported operation") }
 func (_ *MapUnionNullStringInt) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *MapUnionNullStringInt) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *MapUnionNullStringInt) Clear(i int) { panic("Unsupported operation") }
 func (_ *MapUnionNullStringInt) SetDefault(i int) { panic("Unsupported operation") }
 func (r *MapUnionNullStringInt) Finalize() {
 	for i := range r.keys {
@@ -67,13 +66,14 @@ func (r *MapUnionNullStringInt) AppendMap(key string) types.Field {
 	
 }
 
-func (r *MapUnionNullStringInt) ClearMap(key string) { 
+func (r *MapUnionNullStringInt) Clear(i int) { 
 	pos := len(r.keys) - 1
-	if pos < 0 {
-		return
+	switch {
+	case pos < 0:
+		panic("Map already empty")
+	default:
+		r.values[pos] = nil
 	}
-	r.values[pos] = nil
-	
 }
 
 func (_ *MapUnionNullStringInt) AppendArray() types.Field { panic("Unsupported operation") }

@@ -100,6 +100,5 @@ func (r *Child) Clear(i int) {
 }
 
 func (_ *Child) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Child) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *Child) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Child) Finalize() { }

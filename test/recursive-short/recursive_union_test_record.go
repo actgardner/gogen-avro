@@ -104,6 +104,5 @@ func (r *RecursiveUnionTestRecord) Clear(i int) {
 }
 
 func (_ *RecursiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *RecursiveUnionTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) Finalize() { }

@@ -163,6 +163,5 @@ func (r *DemoSchema) Clear(i int) {
 }
 
 func (_ *DemoSchema) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *DemoSchema) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *DemoSchema) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *DemoSchema) Finalize() { }

@@ -68,6 +68,5 @@ func (r *UnionNullBodyworksTrace) Get(i int) types.Field {
 func (r *UnionNullBodyworksTrace) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionNullBodyworksTrace) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) Finalize()  { }

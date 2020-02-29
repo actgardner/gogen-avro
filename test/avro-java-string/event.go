@@ -99,6 +99,5 @@ func (r *Event) Clear(i int) {
 }
 
 func (_ *Event) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Event) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *Event) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Event) Finalize() { }

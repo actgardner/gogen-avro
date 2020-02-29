@@ -102,6 +102,5 @@ func (r *UUID) Clear(i int) {
 }
 
 func (_ *UUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UUID) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UUID) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UUID) Finalize() { }

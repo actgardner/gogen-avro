@@ -115,6 +115,5 @@ func (r *FixedTestRecord) Clear(i int) {
 }
 
 func (_ *FixedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *FixedTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *FixedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *FixedTestRecord) Finalize() { }

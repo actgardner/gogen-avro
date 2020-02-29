@@ -40,7 +40,6 @@ func (_ *ArrayChild) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *ArrayChild) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *ArrayChild) Clear(i int) { panic("Unsupported operation") }
 func (_ *ArrayChild) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayChild) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *ArrayChild) Finalize() { }
 func (_ *ArrayChild) SetDefault(i int) { panic("Unsupported operation") }
 

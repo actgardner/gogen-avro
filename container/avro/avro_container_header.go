@@ -135,6 +135,5 @@ func (r *AvroContainerHeader) Clear(i int) {
 }
 
 func (_ *AvroContainerHeader) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *AvroContainerHeader) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *AvroContainerHeader) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *AvroContainerHeader) Finalize() { }

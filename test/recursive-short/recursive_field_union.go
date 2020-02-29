@@ -68,6 +68,5 @@ func (r *RecursiveFieldUnion) Get(i int) types.Field {
 func (r *RecursiveFieldUnion) Clear(i int) { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *RecursiveFieldUnion) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) Finalize()  { }

@@ -121,6 +121,5 @@ func (r *NestedTestRecord) Clear(i int) {
 }
 
 func (_ *NestedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NestedTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *NestedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NestedTestRecord) Finalize() { }

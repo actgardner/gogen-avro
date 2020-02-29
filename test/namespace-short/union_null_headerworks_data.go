@@ -68,6 +68,5 @@ func (r *UnionNullHeaderworksData) Get(i int) types.Field {
 func (r *UnionNullHeaderworksData) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksData) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionNullHeaderworksData) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksData) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksData) Finalize()  { }

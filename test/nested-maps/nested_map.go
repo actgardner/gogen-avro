@@ -102,6 +102,5 @@ func (r *NestedMap) Clear(i int) {
 }
 
 func (_ *NestedMap) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NestedMap) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *NestedMap) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NestedMap) Finalize() { }

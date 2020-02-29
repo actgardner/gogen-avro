@@ -99,6 +99,5 @@ func (r *StructTag) Clear(i int) {
 }
 
 func (_ *StructTag) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *StructTag) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *StructTag) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *StructTag) Finalize() { }

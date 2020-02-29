@@ -39,7 +39,6 @@ func (_ *ArrayDouble) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *ArrayDouble) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *ArrayDouble) Clear(i int) { panic("Unsupported operation") }
 func (_ *ArrayDouble) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayDouble) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *ArrayDouble) Finalize() { }
 func (_ *ArrayDouble) SetDefault(i int) { panic("Unsupported operation") }
 

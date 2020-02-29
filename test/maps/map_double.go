@@ -44,7 +44,6 @@ func (_ *MapDouble) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *MapDouble) SetString(v string) { panic("Unsupported operation") }
 func (_ *MapDouble) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *MapDouble) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *MapDouble) Clear(i int) { panic("Unsupported operation") }
 func (_ *MapDouble) SetDefault(i int) { panic("Unsupported operation") }
 func (r *MapDouble) Finalize() {
 	for i := range r.keys {
@@ -64,7 +63,7 @@ func (r *MapDouble) AppendMap(key string) types.Field {
 	
 }
 
-func (r *MapDouble) ClearMap(key string) { 
+func (r *MapDouble) Clear(i int) { 
 	panic("Non-optional map item")
 	
 }

@@ -102,6 +102,5 @@ func (r *HeaderworksDatatypeUUID) Clear(i int) {
 }
 
 func (_ *HeaderworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *HeaderworksDatatypeUUID) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksDatatypeUUID) Finalize() { }

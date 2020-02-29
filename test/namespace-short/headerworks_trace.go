@@ -107,6 +107,5 @@ func (r *HeaderworksTrace) Clear(i int) {
 }
 
 func (_ *HeaderworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *HeaderworksTrace) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *HeaderworksTrace) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksTrace) Finalize() { }

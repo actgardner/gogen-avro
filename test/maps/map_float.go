@@ -44,7 +44,6 @@ func (_ *MapFloat) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *MapFloat) SetString(v string) { panic("Unsupported operation") }
 func (_ *MapFloat) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *MapFloat) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *MapFloat) Clear(i int) { panic("Unsupported operation") }
 func (_ *MapFloat) SetDefault(i int) { panic("Unsupported operation") }
 func (r *MapFloat) Finalize() {
 	for i := range r.keys {
@@ -64,7 +63,7 @@ func (r *MapFloat) AppendMap(key string) types.Field {
 	
 }
 
-func (r *MapFloat) ClearMap(key string) { 
+func (r *MapFloat) Clear(i int) { 
 	panic("Non-optional map item")
 	
 }

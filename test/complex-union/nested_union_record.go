@@ -99,6 +99,5 @@ func (r *NestedUnionRecord) Clear(i int) {
 }
 
 func (_ *NestedUnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NestedUnionRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *NestedUnionRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NestedUnionRecord) Finalize() { }

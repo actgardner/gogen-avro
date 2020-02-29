@@ -147,6 +147,5 @@ func (r *NumberRecord) Clear(i int) {
 }
 
 func (_ *NumberRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NumberRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *NumberRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NumberRecord) Finalize() { }

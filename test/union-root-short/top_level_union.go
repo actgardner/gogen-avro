@@ -77,6 +77,5 @@ func (r *TopLevelUnion) Get(i int) types.Field {
 func (r *TopLevelUnion) Clear(i int) { panic("Unsupported operation") }
 func (_ *TopLevelUnion) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *TopLevelUnion) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *TopLevelUnion) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *TopLevelUnion) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *TopLevelUnion) Finalize()  { }

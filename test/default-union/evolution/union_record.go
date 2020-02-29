@@ -174,6 +174,5 @@ func (r *UnionRecord) Clear(i int) {
 }
 
 func (_ *UnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionRecord) Finalize() { }

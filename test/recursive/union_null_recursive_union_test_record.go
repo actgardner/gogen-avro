@@ -68,6 +68,5 @@ func (r *UnionNullRecursiveUnionTestRecord) Get(i int) types.Field {
 func (r *UnionNullRecursiveUnionTestRecord) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNullRecursiveUnionTestRecord) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullRecursiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionNullRecursiveUnionTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNullRecursiveUnionTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullRecursiveUnionTestRecord) Finalize()  { }

@@ -155,6 +155,5 @@ func (r *BodyworksData) Clear(i int) {
 }
 
 func (_ *BodyworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *BodyworksData) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *BodyworksData) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *BodyworksData) Finalize() { }

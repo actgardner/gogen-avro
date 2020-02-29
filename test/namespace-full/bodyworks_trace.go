@@ -107,6 +107,5 @@ func (r *BodyworksTrace) Clear(i int) {
 }
 
 func (_ *BodyworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *BodyworksTrace) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *BodyworksTrace) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *BodyworksTrace) Finalize() { }

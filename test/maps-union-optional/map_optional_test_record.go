@@ -98,6 +98,5 @@ func (r *MapOptionalTestRecord) Clear(i int) {
 }
 
 func (_ *MapOptionalTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *MapOptionalTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *MapOptionalTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *MapOptionalTestRecord) Finalize() { }

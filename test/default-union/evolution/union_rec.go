@@ -99,6 +99,5 @@ func (r *UnionRec) Clear(i int) {
 }
 
 func (_ *UnionRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionRec) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionRec) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionRec) Finalize() { }

@@ -75,6 +75,5 @@ func (r *UnionStringInt) Get(i int) types.Field {
 func (r *UnionStringInt) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionStringInt) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionStringInt) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionStringInt) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionStringInt) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionStringInt) Finalize()  { }

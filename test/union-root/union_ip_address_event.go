@@ -77,6 +77,5 @@ func (r *UnionIp_addressEvent) Get(i int) types.Field {
 func (r *UnionIp_addressEvent) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionIp_addressEvent) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) Finalize()  { }
