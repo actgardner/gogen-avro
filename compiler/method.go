@@ -43,13 +43,26 @@ func (p *irMethod) addBlockEnd(id int) {
 
 func (p *irMethod) addSwitchStart(size, errorId int) int {
 	id := len(p.program.switches)
-	p.program.switches = append(p.program.switches, &irSwitch{0, make(map[int]int), 0})
+	p.program.switches = append(p.program.switches, &irSwitch{})
 	p.body = append(p.body, &switchStartIRInstruction{id, size, errorId})
 	return id
 }
 
 func (p *irMethod) addSwitchCase(id, writerIndex, readerIndex int) {
-	p.body = append(p.body, &switchCaseIRInstruction{id, writerIndex, readerIndex})
+	sw := p.program.switches[id]
+	sw.addCase()
+	c := newSwithCaseIRInstruction(id, writerIndex, readerIndex, false, sw.nextCaseNeedsJump)
+	p.body = append(p.body, c)
+	// Non-rejecting cases with valid readers are not empty
+	// Therefore next case must generate an initial jump to close this one
+	sw.nextCaseNeedsJump = (readerIndex != -1)
+}
+
+func (p *irMethod) addSwitchRejectCase(id, writerIndex int) {
+	sw := p.program.switches[id]
+	sw.addCase()
+	p.body = append(p.body, newSwithCaseIRInstruction(id, writerIndex, -1, true, sw.nextCaseNeedsJump))
+	sw.nextCaseNeedsJump = false
 }
 
 func (p *irMethod) addSwitchEnd(id int) {
@@ -73,8 +86,9 @@ func (p *irMethod) VMLength() int {
 func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 	log("compileType()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	// If the writer is not a union but the reader is, try and find the first matching type in the union as a target
-	if _, ok := writer.(*schema.UnionField); !ok {
-		if readerUnion, ok := reader.(*schema.UnionField); ok {
+	if !isUnionField(writer) {
+		if isUnionField(reader) {
+			readerUnion := reader.(*schema.UnionField)
 			for readerIndex, r := range readerUnion.AvroTypes() {
 				if writer.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
 					p.addLiteral(vm.SetLong, readerIndex)
@@ -221,7 +235,7 @@ func (p *irMethod) compileMap(writer, reader *schema.MapField) error {
 		return err
 	}
 	if reader != nil {
-		p.addLiteral(vm.Exit, vm.Unused)
+		p.addLiteral(vm.Exit, vm.NoopField)
 	}
 	p.addBlockEnd(blockId)
 	return nil
@@ -240,7 +254,7 @@ func (p *irMethod) compileArray(writer, reader *schema.ArrayField) error {
 		return err
 	}
 	if reader != nil {
-		p.addLiteral(vm.Exit, vm.Unused)
+		p.addLiteral(vm.Exit, vm.NoopField)
 	}
 	p.addBlockEnd(blockId)
 	return nil
@@ -310,14 +324,20 @@ func (p *irMethod) compileUnion(writer *schema.UnionField, reader schema.AvroTyp
 	switchId := p.addSwitchStart(len(writer.AvroTypes()), errId)
 writer:
 	for i, t := range writer.AvroTypes() {
-		if reader == nil {
+		switch {
+		case reader == nil:
 			// If the reader is nil, just read the field and move on
 			p.addSwitchCase(switchId, i, -1)
 			err := p.compileType(t, reader)
 			if err != nil {
 				return err
 			}
-		} else if unionReader, ok := reader.(*schema.UnionField); ok {
+		case writer.IsOptional() && writer.OptionalIndex() == i:
+			// Optional fields' handler
+			p.addSwitchRejectCase(switchId, i)
+			continue writer
+		case isUnionField(reader):
+			unionReader := reader.(*schema.UnionField)
 			// If the reader is also a union, read into the first supported type
 			for readerIndex, r := range unionReader.AvroTypes() {
 				if t.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
@@ -334,14 +354,14 @@ writer:
 			p.addSwitchCase(switchId, i, -1)
 			typedErrId := p.addError(fmt.Sprintf("Reader schema has no field for type %v in union", t.Name()))
 			p.addLiteral(vm.Halt, typedErrId)
-		} else if t.IsReadableBy(reader, make(map[schema.QualifiedName]interface{})) {
+		case t.IsReadableBy(reader, make(map[schema.QualifiedName]interface{})):
 			// If the reader is not a union but it can read this union field, support it
 			p.addSwitchCase(switchId, i, -1)
 			err := p.compileType(t, reader)
 			if err != nil {
 				return err
 			}
-		} else {
+		default:
 			p.addSwitchCase(switchId, i, -1)
 			typedErrId := p.addError(fmt.Sprintf("Reader schema has no field for type %v in union", t.Name()))
 			p.addLiteral(vm.Halt, typedErrId)
@@ -349,4 +369,9 @@ writer:
 	}
 	p.addSwitchEnd(switchId)
 	return nil
+}
+
+func isUnionField(t schema.AvroType) bool {
+	_, ok := t.(*schema.UnionField)
+	return ok
 }
