@@ -3,6 +3,7 @@ package schema
 type AvroType interface {
 	Name() string
 	GoType() string
+	IsOptional() bool
 
 	// The name of the method which writes this field onto the wire
 	SerializerMethod() string
