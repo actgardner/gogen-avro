@@ -13,7 +13,8 @@ const (
 	// Allocate a new frame and make the target the field with the operand index
 	Enter
 
-	// Move to the previous frame
+	// Move to the previous frame. If the current target is optional,
+	// its loaded value can be nil'ed by specifying a Null operand
 	Exit
 
 	// Append a value to the current target and enter the new value
