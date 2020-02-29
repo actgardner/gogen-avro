@@ -25,31 +25,28 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	return vm.WriteLong(0, w)
 }
 
-type {{ .Name }} struct {
+type {{ .GoType }} struct {
 	keys []string
 	values []{{ .ItemType.GoType }}
 	M map[string]{{ .ItemType.GoType }}
 }
 
-func New{{ .Name }}() *{{ .Name }}{
-	return &{{ .Name }} {
-		keys: make([]string, 0),
-		values: make([]{{ .ItemType.GoType }}, 0),
-		M: make(map[string]{{ .ItemType.GoType }}),
-	}
+func New{{ .GoType }}() {{ .GoType }}{
+	return {{ .GoType }}{ M: make(map[string]{{ .ItemType.GoType }}) }
 }
 
-func (_ {{ .GoType }}) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetInt(v int32) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetLong(v int64) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetString(v string) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetDefault(i int) { panic("Unsupported operation") }
-func (r {{ .GoType }}) Finalize() { 
+func (_ *{{ .GoType }}) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *{{ .GoType }}) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *{{ .GoType }}) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *{{ .GoType }}) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *{{ .GoType }}) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *{{ .GoType }}) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *{{ .GoType }}) SetString(v string) { panic("Unsupported operation") }
+func (_ *{{ .GoType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *{{ .GoType }}) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *{{ .GoType }}) Clear(i int) { panic("Unsupported operation") }
+func (_ *{{ .GoType }}) SetDefault(i int) { panic("Unsupported operation") }
+func (r *{{ .GoType }}) Finalize() {
 	for i := range r.keys {
 		r.M[r.keys[i]] = r.values[i]
 	}
@@ -57,7 +54,7 @@ func (r {{ .GoType }}) Finalize() {
 	r.values = nil
 }
 
-func (r {{ .GoType }}) AppendMap(key string) types.Field { 
+func (r *{{ .GoType }}) AppendMap(key string) types.Field { 
 	r.keys = append(r.keys, key)
 	var v {{ .ItemType.GoType }}
 	{{ if ne .ItemConstructable "" }}
@@ -67,10 +64,21 @@ func (r {{ .GoType }}) AppendMap(key string) types.Field {
 	{{ if .ItemType.WrapperType | ne "" }}
 	return (*{{ .ItemType.WrapperType }})(&r.values[len(r.values)-1])
 	{{ else }}
-	return r.values[len(r.values)-1]
+	return {{ if not .ItemType.IsOptional }}&{{ end }}r.values[len(r.values)-1]
 	{{ end }}
 }
 
-func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }
+func (r *{{ .GoType }}) ClearMap(key string) { {{ if .ItemType.IsOptional }}
+	pos := len(r.keys) - 1
+	if pos < 0 {
+		return
+	}
+	r.values[pos] = nil
+	{{ else }}
+	panic("Non-optional map item")
+	{{ end }}
+}
+
+func (_ *{{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }
 
 `
