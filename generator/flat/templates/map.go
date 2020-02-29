@@ -44,7 +44,6 @@ func (_ *{{ .GoType }}) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *{{ .GoType }}) SetString(v string) { panic("Unsupported operation") }
 func (_ *{{ .GoType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *{{ .GoType }}) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *{{ .GoType }}) Clear(i int) { panic("Unsupported operation") }
 func (_ *{{ .GoType }}) SetDefault(i int) { panic("Unsupported operation") }
 func (r *{{ .GoType }}) Finalize() {
 	for i := range r.keys {
@@ -68,13 +67,14 @@ func (r *{{ .GoType }}) AppendMap(key string) types.Field {
 	{{ end }}
 }
 
-func (r *{{ .GoType }}) ClearMap(key string) { {{ if .ItemType.IsOptional }}
+func (r *{{ .GoType }}) Clear(i int) { {{ if .ItemType.IsOptional }}
 	pos := len(r.keys) - 1
-	if pos < 0 {
-		return
-	}
-	r.values[pos] = nil
-	{{ else }}
+	switch {
+	case pos < 0:
+		panic("Map already empty")
+	default:
+		r.values[pos] = nil
+	}{{ else }}
 	panic("Non-optional map item")
 	{{ end }}
 }
