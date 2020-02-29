@@ -29,13 +29,23 @@ func (b *irBlock) String() string {
 }
 
 type irSwitch struct {
-	start int
-	cases map[int]int
-	end   int
+	start             int
+	caseOffsets       []int
+	nextCaseNeedsJump bool
+	end               int
 }
 
-func (b *irSwitch) String() string {
-	return fmt.Sprintf("%v - %v - %v", b.start, b.cases, b.end)
+// Adds a new case to this switch, taking into account the initial jump instruction, if any, in the relative offset
+func (sw *irSwitch) addCase() {
+	relOffset := 0
+	if sw.nextCaseNeedsJump {
+		relOffset++
+	}
+	sw.caseOffsets = append(sw.caseOffsets, relOffset)
+}
+
+func (sw *irSwitch) String() string {
+	return fmt.Sprintf("%v - %v - %v", sw.start, sw.caseOffsets, sw.end)
 }
 
 func (p *irProgram) createMethod(name string) *irMethod {
@@ -94,8 +104,9 @@ func (p *irProgram) findOffsets(inst []irInstruction) {
 			log("findOffsets() block %v - start %v", v.switchId, offset)
 			p.switches[v.switchId].start = offset
 		case *switchCaseIRInstruction:
-			log("findOffsets() block %v - start %v", v.switchId, offset)
-			p.switches[v.switchId].cases[v.writerIndex] = offset
+			relOffset := p.switches[v.switchId].caseOffsets[v.writerIndex]
+			log("findOffsets() block %v - start %v + %v", v.switchId, offset, relOffset)
+			p.switches[v.switchId].caseOffsets[v.writerIndex] = offset + relOffset
 		case *switchEndIRInstruction:
 			log("findOffsets() block %v - end %v", v.switchId, offset)
 			p.switches[v.switchId].end = offset
