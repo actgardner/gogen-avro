@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -37,7 +37,7 @@ func writeUnionNullHeaderworksTrace(r *UnionNullHeaderworksTrace, w io.Writer) e
 	case UnionNullHeaderworksTraceTypeEnumHeaderworksTrace:
 		return writeHeaderworksTrace(r.HeaderworksTrace, w)
 	}
-	return fmt.Errorf("invalid value for *UnionNullHeaderworksTrace")
+	return errors.New("invalid value for *UnionNullHeaderworksTrace")
 }
 
 func (_ *UnionNullHeaderworksTrace) SetBoolean(v bool) { panic("Unsupported operation") }

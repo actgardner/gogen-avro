@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -61,7 +61,7 @@ func writeUnionStringLongIntFloatDoubleNull(r *UnionStringLongIntFloatDoubleNull
 	case UnionStringLongIntFloatDoubleNullTypeEnumDouble:
 		return vm.WriteDouble(r.Double, w)
 	}
-	return fmt.Errorf("invalid value for *UnionStringLongIntFloatDoubleNull")
+	return errors.New("invalid value for *UnionStringLongIntFloatDoubleNull")
 }
 
 func (_ *UnionStringLongIntFloatDoubleNull) SetBoolean(v bool) { panic("Unsupported operation") }

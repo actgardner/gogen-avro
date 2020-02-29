@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -37,7 +37,7 @@ func writeUnionNullRecursiveUnionTestRecord(r *UnionNullRecursiveUnionTestRecord
 	case UnionNullRecursiveUnionTestRecordTypeEnumRecursiveUnionTestRecord:
 		return writeRecursiveUnionTestRecord(r.RecursiveUnionTestRecord, w)
 	}
-	return fmt.Errorf("invalid value for *UnionNullRecursiveUnionTestRecord")
+	return errors.New("invalid value for *UnionNullRecursiveUnionTestRecord")
 }
 
 func (_ *UnionNullRecursiveUnionTestRecord) SetBoolean(v bool) { panic("Unsupported operation") }

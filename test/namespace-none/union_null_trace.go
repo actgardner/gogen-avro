@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -37,7 +37,7 @@ func writeUnionNullTrace(r *UnionNullTrace, w io.Writer) error {
 	case UnionNullTraceTypeEnumTrace:
 		return writeTrace(r.Trace, w)
 	}
-	return fmt.Errorf("invalid value for *UnionNullTrace")
+	return errors.New("invalid value for *UnionNullTrace")
 }
 
 func (_ *UnionNullTrace) SetBoolean(v bool) { panic("Unsupported operation") }

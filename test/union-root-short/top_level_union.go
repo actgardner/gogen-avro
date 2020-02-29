@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -40,7 +40,7 @@ func writeTopLevelUnion(r TopLevelUnion, w io.Writer) error {
 	case TopLevelUnionTypeEnumEvent:
 		return writeEvent(r.Event, w)
 	}
-	return fmt.Errorf("invalid value for TopLevelUnion")
+	return errors.New("invalid value for TopLevelUnion")
 }
 
 func (_ *TopLevelUnion) SetBoolean(v bool) { panic("Unsupported operation") }

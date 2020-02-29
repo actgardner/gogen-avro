@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -37,7 +37,7 @@ func writeUnionNullData(r *UnionNullData, w io.Writer) error {
 	case UnionNullDataTypeEnumData:
 		return writeData(r.Data, w)
 	}
-	return fmt.Errorf("invalid value for *UnionNullData")
+	return errors.New("invalid value for *UnionNullData")
 }
 
 func (_ *UnionNullData) SetBoolean(v bool) { panic("Unsupported operation") }

@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -49,7 +49,7 @@ func writeUnionNullArrayIntMapIntNestedUnionRecord(r *UnionNullArrayIntMapIntNes
 	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord:
 		return writeNestedUnionRecord(r.NestedUnionRecord, w)
 	}
-	return fmt.Errorf("invalid value for *UnionNullArrayIntMapIntNestedUnionRecord")
+	return errors.New("invalid value for *UnionNullArrayIntMapIntNestedUnionRecord")
 }
 
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) SetBoolean(v bool) { panic("Unsupported operation") }

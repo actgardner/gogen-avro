@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -40,7 +40,7 @@ func writeUnionNestedRecordNestedTestRecord(r UnionNestedRecordNestedTestRecord,
 	case UnionNestedRecordNestedTestRecordTypeEnumNestedTestRecord:
 		return writeNestedTestRecord(r.NestedTestRecord, w)
 	}
-	return fmt.Errorf("invalid value for UnionNestedRecordNestedTestRecord")
+	return errors.New("invalid value for UnionNestedRecordNestedTestRecord")
 }
 
 func (_ *UnionNestedRecordNestedTestRecord) SetBoolean(v bool) { panic("Unsupported operation") }

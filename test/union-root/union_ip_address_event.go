@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -40,7 +40,7 @@ func writeUnionIp_addressEvent(r UnionIp_addressEvent, w io.Writer) error {
 	case UnionIp_addressEventTypeEnumEvent:
 		return writeEvent(r.Event, w)
 	}
-	return fmt.Errorf("invalid value for UnionIp_addressEvent")
+	return errors.New("invalid value for UnionIp_addressEvent")
 }
 
 func (_ *UnionIp_addressEvent) SetBoolean(v bool) { panic("Unsupported operation") }

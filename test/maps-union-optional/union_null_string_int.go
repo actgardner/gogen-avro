@@ -2,8 +2,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -39,7 +39,7 @@ func writeUnionNullStringInt(r *UnionNullStringInt, w io.Writer) error {
 	case UnionNullStringIntTypeEnumInt:
 		return vm.WriteInt(r.Int, w)
 	}
-	return fmt.Errorf("invalid value for *UnionNullStringInt")
+	return errors.New("invalid value for *UnionNullStringInt")
 }
 
 func (_ *UnionNullStringInt) SetBoolean(v bool) { panic("Unsupported operation") }

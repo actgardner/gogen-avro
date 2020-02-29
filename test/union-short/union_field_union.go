@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -67,7 +67,7 @@ func writeUnionFieldUnion(r *UnionFieldUnion, w io.Writer) error {
 	case UnionFieldUnionTypeEnumBool:
 		return vm.WriteBool(r.Bool, w)
 	}
-	return fmt.Errorf("invalid value for *UnionFieldUnion")
+	return errors.New("invalid value for *UnionFieldUnion")
 }
 
 func (_ *UnionFieldUnion) SetBoolean(v bool) { panic("Unsupported operation") }

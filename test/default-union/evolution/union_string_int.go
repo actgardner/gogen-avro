@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -40,7 +40,7 @@ func writeUnionStringInt(r UnionStringInt, w io.Writer) error {
 	case UnionStringIntTypeEnumInt:
 		return vm.WriteInt(r.Int, w)
 	}
-	return fmt.Errorf("invalid value for UnionStringInt")
+	return errors.New("invalid value for UnionStringInt")
 }
 
 func (_ *UnionStringInt) SetBoolean(v bool) { panic("Unsupported operation") }

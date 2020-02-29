@@ -6,8 +6,8 @@
 package avro
 
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -37,7 +37,7 @@ func writeUnionNullHeaderworksDatatypeUUID(r *UnionNullHeaderworksDatatypeUUID, 
 	case UnionNullHeaderworksDatatypeUUIDTypeEnumHeaderworksDatatypeUUID:
 		return writeHeaderworksDatatypeUUID(r.HeaderworksDatatypeUUID, w)
 	}
-	return fmt.Errorf("invalid value for *UnionNullHeaderworksDatatypeUUID")
+	return errors.New("invalid value for *UnionNullHeaderworksDatatypeUUID")
 }
 
 func (_ *UnionNullHeaderworksDatatypeUUID) SetBoolean(v bool) { panic("Unsupported operation") }
