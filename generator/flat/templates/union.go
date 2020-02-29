@@ -11,64 +11,62 @@ import (
 
 
 type {{ .UnionEnumType }} int
-const (
-{{ range $i, $t := .ItemTypes }}
-	 {{ $.UnionEnumType }}{{ .Name }} {{ $.UnionEnumType }} = {{ $i }}
-{{ end }}
-)
 
-type {{ .Name }} struct {
-{{ range $i, $t := .ItemTypes }}
+const ({{ range $i, $t := .AvroTypes }}{{ if $.OptionalIndex | ne $i }}
+	{{ $.UnionEnumType }}{{ .Name }} {{ $.UnionEnumType }} = {{ $i }}
+{{ end }}{{ end }})
+
+type {{ .Name }} struct { {{ range $i, $t := .ItemTypes }}
 	{{ .Name }} {{ .GoType }}
 {{ end }}
 	UnionType {{ $.UnionEnumType }}
 }
 
-func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error { {{ if .IsOptional }}
+	if r == nil {
+		return vm.WriteLong(int64({{ .OptionalIndex }}), w)
+	} {{ end }}
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	{{ range $i, $t := .ItemTypes }}
+	switch r.UnionType{ {{ range $i, $t := .ItemTypes }}
 	case {{ $.ItemName $t }}:
-		return {{ .SerializerMethod }}(r.{{ .Name }}, w)
-        {{ end }}
+		return {{ .SerializerMethod }}(r.{{ .Name }}, w){{ end }}
 	}
 	return fmt.Errorf("invalid value for {{ .GoType }}")
 }
 
-func {{ .ConstructorMethod }} {{ .GoType }} {
-	return &{{ .Name }}{}
-}
+func (_ *{{ .Name }}) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *{{ .Name }}) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *{{ .Name }}) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *{{ .Name }}) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *{{ .Name }}) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *{{ .Name }}) SetString(v string) { panic("Unsupported operation") }
 
-func (_ {{ .GoType }}) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetInt(v int32) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) SetString(v string) { panic("Unsupported operation") }
-func (r {{ .GoType }}) SetLong(v int64) { 
+func (r *{{ .Name }}) SetLong(v int64) { 
 	r.UnionType = ({{ .UnionEnumType }})(v)
 }
-func (r {{ .GoType }}) Get(i int) types.Field {
-	switch (i) {
-	{{ range $i, $t := .ItemTypes }}
+
+func (r *{{ .Name }}) Get(i int) types.Field {
+	switch (i) { {{ range $i, $t := .AvroTypes }}{{ if $.OptionalIndex | ne $i }}
 	case {{ $i }}:
 		{{ if $.ItemConstructor $t | ne "" }}
 		r.{{ .Name }} = {{ $.ItemConstructor $t }}
 		{{ end }}
 		{{ if eq .WrapperType "" }}
-		return r.{{ .Name }}
+		return &r.{{ .Name }}
 		{{ else }}
 		return (*{{ .WrapperType }})(&r.{{ .Name }})
 		{{ end }}
-	{{ end }}
+	{{ end }}{{ end }}
 	}
 	panic("Unknown field index")
 }
-func (_ {{ .GoType }}) SetDefault(i int) { panic("Unsupported operation") }
-func (_ {{ .GoType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ {{ .GoType }}) Finalize()  { }
+
+func (r *{{ .Name }}) Clear(i int) { panic("Unsupported operation") }
+func (_ *{{ .Name }}) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *{{ .Name }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *{{ .Name }}) ClearMap(key string) { panic("Unsupported operation") }
+func (_ *{{ .Name }}) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *{{ .Name }}) Finalize()  { }
 `
