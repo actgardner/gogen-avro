@@ -8,14 +8,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type AvroContainerBlock struct {
-
+type AvroContainerBlock struct { 
 	
 	
 		NumRecords int64
@@ -33,40 +33,23 @@ type AvroContainerBlock struct {
 
 }
 
-func NewAvroContainerBlock() (*AvroContainerBlock) {
-	return &AvroContainerBlock{}
-}
-
-func DeserializeAvroContainerBlock(r io.Reader) (*AvroContainerBlock, error) {
-	t := NewAvroContainerBlock()
+func DeserializeAvroContainerBlock(r io.Reader) (t AvroContainerBlock, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeAvroContainerBlockFromSchema(r io.Reader, schema string) (*AvroContainerBlock, error) {
-	t := NewAvroContainerBlock()
-
+func DeserializeAvroContainerBlockFromSchema(r io.Reader, schema string) (t AvroContainerBlock, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeAvroContainerBlock(r *AvroContainerBlock, w io.Writer) error {
+func writeAvroContainerBlock(r AvroContainerBlock, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteLong( r.NumRecords, w)
@@ -87,15 +70,15 @@ func writeAvroContainerBlock(r *AvroContainerBlock, w io.Writer) error {
 	return err
 }
 
-func (r *AvroContainerBlock) Serialize(w io.Writer) error {
+func (r AvroContainerBlock) Serialize(w io.Writer) error {
 	return writeAvroContainerBlock(r, w)
 }
 
-func (r *AvroContainerBlock) Schema() string {
+func (r AvroContainerBlock) Schema() string {
 	return "{\"fields\":[{\"name\":\"numRecords\",\"type\":\"long\"},{\"name\":\"recordBytes\",\"type\":\"bytes\"},{\"name\":\"sync\",\"type\":{\"name\":\"sync\",\"size\":16,\"type\":\"fixed\"}}],\"name\":\"AvroContainerBlock\",\"type\":\"record\"}"
 }
 
-func (r *AvroContainerBlock) SchemaName() string {
+func (r AvroContainerBlock) SchemaName() string {
 	return "AvroContainerBlock"
 }
 
@@ -129,23 +112,26 @@ func (r *AvroContainerBlock) Get(i int) types.Field {
 			return (*SyncWrapper)(&r.Sync)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *AvroContainerBlock) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
-        
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *AvroContainerBlock) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *AvroContainerBlock) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *AvroContainerBlock) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *AvroContainerBlock) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *AvroContainerBlock) Finalize() { }

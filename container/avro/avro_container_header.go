@@ -8,14 +8,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type AvroContainerHeader struct {
-
+type AvroContainerHeader struct { 
 	
 	
 		Magic Magic
@@ -23,7 +23,7 @@ type AvroContainerHeader struct {
 
 	
 	
-		Meta *MapBytes
+		Meta MapBytes
 	
 
 	
@@ -33,40 +33,23 @@ type AvroContainerHeader struct {
 
 }
 
-func NewAvroContainerHeader() (*AvroContainerHeader) {
-	return &AvroContainerHeader{}
-}
-
-func DeserializeAvroContainerHeader(r io.Reader) (*AvroContainerHeader, error) {
-	t := NewAvroContainerHeader()
+func DeserializeAvroContainerHeader(r io.Reader) (t AvroContainerHeader, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeAvroContainerHeaderFromSchema(r io.Reader, schema string) (*AvroContainerHeader, error) {
-	t := NewAvroContainerHeader()
-
+func DeserializeAvroContainerHeaderFromSchema(r io.Reader, schema string) (t AvroContainerHeader, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeAvroContainerHeader(r *AvroContainerHeader, w io.Writer) error {
+func writeAvroContainerHeader(r AvroContainerHeader, w io.Writer) error {
 	var err error
 	
 	err = writeMagic( r.Magic, w)
@@ -87,15 +70,15 @@ func writeAvroContainerHeader(r *AvroContainerHeader, w io.Writer) error {
 	return err
 }
 
-func (r *AvroContainerHeader) Serialize(w io.Writer) error {
+func (r AvroContainerHeader) Serialize(w io.Writer) error {
 	return writeAvroContainerHeader(r, w)
 }
 
-func (r *AvroContainerHeader) Schema() string {
+func (r AvroContainerHeader) Schema() string {
 	return "{\"fields\":[{\"name\":\"magic\",\"type\":{\"name\":\"Magic\",\"size\":4,\"type\":\"fixed\"}},{\"name\":\"meta\",\"type\":{\"type\":\"map\",\"values\":\"bytes\"}},{\"name\":\"sync\",\"type\":{\"name\":\"Sync\",\"size\":16,\"type\":\"fixed\"}}],\"name\":\"AvroContainerHeader\",\"type\":\"record\"}"
 }
 
-func (r *AvroContainerHeader) SchemaName() string {
+func (r AvroContainerHeader) SchemaName() string {
 	return "AvroContainerHeader"
 }
 
@@ -120,10 +103,10 @@ func (r *AvroContainerHeader) Get(i int) types.Field {
 	case 1:
 		
 			r.Meta = NewMapBytes()
-	
+
 		
 		
-			return r.Meta
+			return &r.Meta
 		
 	
 	case 2:
@@ -132,23 +115,26 @@ func (r *AvroContainerHeader) Get(i int) types.Field {
 			return (*SyncWrapper)(&r.Sync)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *AvroContainerHeader) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
-        
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *AvroContainerHeader) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *AvroContainerHeader) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *AvroContainerHeader) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *AvroContainerHeader) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *AvroContainerHeader) Finalize() { }

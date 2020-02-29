@@ -30,7 +30,9 @@ func (r *SyncWrapper) SetBytes(v []byte) {
 func (_ *SyncWrapper) SetString(v string) { panic("Unsupported operation") }
 func (_ *SyncWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *SyncWrapper) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *SyncWrapper) Clear(i int) { panic("Unsupported operation") }
 func (_ *SyncWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *SyncWrapper) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *SyncWrapper) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *SyncWrapper) Finalize() { }
 func (_ *SyncWrapper) SetDefault(i int) { panic("Unsupported operation") }
