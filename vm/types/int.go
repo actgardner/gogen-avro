@@ -42,12 +42,20 @@ func (b *Int) SetDefault(i int) {
 	panic("Unable to set default on int field")
 }
 
+func (b *Int) Clear(i int) {
+	panic("Unable to clear field from int field")
+}
+
 func (b *Int) AppendMap(key string) Field {
 	panic("Unable to append map key to from int field")
 }
 
 func (b *Int) AppendArray() Field {
 	panic("Unable to append array element to from int field")
+}
+
+func (b *Int) ClearMap(key string) {
+	panic("Unable to clear map key from int field")
 }
 
 func (b *Int) Finalize() {}

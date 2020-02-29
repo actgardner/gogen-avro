@@ -42,12 +42,20 @@ func (b *Bytes) SetDefault(i int) {
 	panic("Unable to set default on bytes field")
 }
 
+func (b *Bytes) Clear(i int) {
+	panic("Unable to clear field from bytes field")
+}
+
 func (b *Bytes) AppendMap(key string) Field {
 	panic("Unable to append map key to from bytes field")
 }
 
 func (b *Bytes) AppendArray() Field {
 	panic("Unable to append array element to from bytes field")
+}
+
+func (b *Bytes) ClearMap(key string) {
+	panic("Unable to clear map key from bytes field")
 }
 
 func (b *Bytes) Finalize() {}

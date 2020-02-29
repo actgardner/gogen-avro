@@ -42,12 +42,20 @@ func (b *NullVal) SetDefault(i int) {
 	panic("Unable to set default on null field")
 }
 
+func (b *NullVal) Clear(i int) {
+	panic("Unable to clear field from null field")
+}
+
 func (b *NullVal) AppendMap(key string) Field {
 	panic("Unable to append map key to from null field")
 }
 
 func (b *NullVal) AppendArray() Field {
 	panic("Unable to append array element to from null field")
+}
+
+func (b *NullVal) ClearMap(key string) {
+	panic("Unable to clear map key from null field")
 }
 
 func (b *NullVal) Finalize() {}

@@ -42,12 +42,20 @@ func (b *Boolean) SetDefault(i int) {
 	panic("Unable to set default on boolean field")
 }
 
+func (b *Boolean) Clear(i int) {
+	panic("Unable to clear field from boolean field")
+}
+
 func (b *Boolean) AppendMap(key string) Field {
 	panic("Unable to append map key to from boolean field")
 }
 
 func (b *Boolean) AppendArray() Field {
 	panic("Unable to append array element to from boolean field")
+}
+
+func (b *Boolean) ClearMap(key string) {
+	panic("Unable to clear map key from boolean field")
 }
 
 func (b *Boolean) Finalize() {}

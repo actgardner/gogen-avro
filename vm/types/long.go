@@ -42,12 +42,20 @@ func (b *Long) SetDefault(i int) {
 	panic("Unable to set default on long field")
 }
 
+func (b *Long) Clear(i int) {
+	panic("Unable to clear field from long field")
+}
+
 func (b *Long) AppendMap(key string) Field {
 	panic("Unable to append map key to from long field")
 }
 
 func (b *Long) AppendArray() Field {
 	panic("Unable to append array element to from long field")
+}
+
+func (b *Long) ClearMap(key string) {
+	panic("Unable to clear map key from long field")
 }
 
 func (b *Long) Finalize() {}
