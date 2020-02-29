@@ -30,7 +30,7 @@ type Instruction struct {
 }
 
 func (i Instruction) String() string {
-	if i.Op == Read || i.Op == Set {
+	if i.Op == Read || i.Op == Set || i.Op == Exit {
 		switch i.Operand {
 		case 0:
 			return fmt.Sprintf("%v(unused)", i.Op)
@@ -54,6 +54,8 @@ func (i Instruction) String() string {
 			return fmt.Sprintf("%v(union)", i.Op)
 		case 10:
 			return fmt.Sprintf("%v(UnusedLong)", i.Op)
+		case NoopField:
+			return fmt.Sprintf("%v(Noop)", i.Op)
 		}
 	}
 	if i.Operand == NoopField {
