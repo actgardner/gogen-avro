@@ -57,6 +57,10 @@ func (e *EnumDefinition) GoType() string {
 	return generator.ToPublicName(e.name.Name)
 }
 
+func (e *EnumDefinition) IsOptional() bool {
+	return false
+}
+
 func (e *EnumDefinition) SerializerMethod() string {
 	return "write" + e.GoType()
 }

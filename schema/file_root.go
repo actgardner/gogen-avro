@@ -26,6 +26,10 @@ func (f *FileRoot) GoType() string {
 	return ""
 }
 
+func (f *FileRoot) IsOptional() bool {
+	return false
+}
+
 func (f *FileRoot) SerializerMethod() string {
 	return ""
 }

@@ -16,6 +16,10 @@ func (s *PrimitiveField) GoType() string {
 	return s.goType
 }
 
+func (s *PrimitiveField) IsOptional() bool {
+	return false
+}
+
 func (s *PrimitiveField) SerializerMethod() string {
 	return s.serializerMethod
 }

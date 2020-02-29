@@ -42,6 +42,10 @@ func (s *FixedDefinition) GoType() string {
 	return generator.ToPublicName(s.name.Name)
 }
 
+func (s *FixedDefinition) IsOptional() bool {
+	return false
+}
+
 func (s *FixedDefinition) SizeBytes() int {
 	return s.sizeBytes
 }
