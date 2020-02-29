@@ -14,8 +14,8 @@ import (
 )
 
 func NewDemoSchemaWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewDemoSchema()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := DemoSchema{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewDemoSchemaReader(r io.Reader) (*DemoSchemaReader, error){
 		return nil, err
 	}
 
-	t := NewDemoSchema()
+	t := DemoSchema{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewDemoSchemaReader(r io.Reader) (*DemoSchemaReader, error){
 	}, nil
 }
 
-func (r DemoSchemaReader) Read() (*DemoSchema, error) {
-	t := NewDemoSchema()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r DemoSchemaReader) Read() (t DemoSchema, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

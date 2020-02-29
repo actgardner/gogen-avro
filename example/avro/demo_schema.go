@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type DemoSchema struct {
-
+type DemoSchema struct { 
 	
 	
 		IntField int32
@@ -42,40 +42,23 @@ type DemoSchema struct {
 
 }
 
-func NewDemoSchema() (*DemoSchema) {
-	return &DemoSchema{}
-}
-
-func DeserializeDemoSchema(r io.Reader) (*DemoSchema, error) {
-	t := NewDemoSchema()
+func DeserializeDemoSchema(r io.Reader) (t DemoSchema, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeDemoSchemaFromSchema(r io.Reader, schema string) (*DemoSchema, error) {
-	t := NewDemoSchema()
-
+func DeserializeDemoSchemaFromSchema(r io.Reader, schema string) (t DemoSchema, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeDemoSchema(r *DemoSchema, w io.Writer) error {
+func writeDemoSchema(r DemoSchema, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteInt( r.IntField, w)
@@ -106,15 +89,15 @@ func writeDemoSchema(r *DemoSchema, w io.Writer) error {
 	return err
 }
 
-func (r *DemoSchema) Serialize(w io.Writer) error {
+func (r DemoSchema) Serialize(w io.Writer) error {
 	return writeDemoSchema(r, w)
 }
 
-func (r *DemoSchema) Schema() string {
+func (r DemoSchema) Schema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"DoubleField\",\"type\":\"double\"},{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"DemoSchema\",\"type\":\"record\"}"
 }
 
-func (r *DemoSchema) SchemaName() string {
+func (r DemoSchema) SchemaName() string {
 	return "DemoSchema"
 }
 
@@ -160,27 +143,26 @@ func (r *DemoSchema) Get(i int) types.Field {
 			return (*types.Bytes)(&r.BytesField)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *DemoSchema) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
-        
-	
-        
-	
-        
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *DemoSchema) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *DemoSchema) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *DemoSchema) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *DemoSchema) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *DemoSchema) Finalize() { }
