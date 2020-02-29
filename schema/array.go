@@ -22,12 +22,16 @@ func (s *ArrayField) Name() string {
 	return "Array" + s.itemType.Name()
 }
 
-func (r *ArrayField) filename() string {
-	return generator.ToSnake(r.Name()) + ".go"
+func (s *ArrayField) filename() string {
+	return generator.ToSnake(s.Name()) + ".go"
 }
 
 func (s *ArrayField) GoType() string {
-	return fmt.Sprintf("[]%v", s.itemType.GoType())
+	return fmt.Sprintf("[]%s", s.itemType.GoType())
+}
+
+func (s *ArrayField) IsOptional() bool {
+	return false
 }
 
 func (s *ArrayField) SerializerMethod() string {
@@ -50,10 +54,6 @@ func (s *ArrayField) Definition(scope map[QualifiedName]interface{}) (interface{
 		return nil, err
 	}
 	return def, nil
-}
-
-func (s *ArrayField) ConstructorMethod() string {
-	return fmt.Sprintf("make(%v, 0)", s.GoType())
 }
 
 func (s *ArrayField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -79,7 +79,7 @@ func (s *ArrayField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 }
 
 func (s *ArrayField) WrapperType() string {
-	return fmt.Sprintf("%vWrapper", s.Name())
+	return s.Name()
 }
 
 func (s *ArrayField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
