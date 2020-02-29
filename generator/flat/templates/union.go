@@ -2,8 +2,8 @@ package templates
 
 const UnionTemplate = `
 import (
+	"errors"
 	"io"
-	"fmt"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -33,7 +33,7 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error { {{ if .IsOpti
 	case {{ $.ItemName $t }}:
 		return {{ .SerializerMethod }}(r.{{ .Name }}, w){{ end }}
 	}
-	return fmt.Errorf("invalid value for {{ .GoType }}")
+	return errors.New("invalid value for {{ .GoType }}")
 }
 
 func (_ *{{ .Name }}) SetBoolean(v bool) { panic("Unsupported operation") }

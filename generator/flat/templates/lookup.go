@@ -2,13 +2,13 @@ package templates
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 	"text/template"
 
 	avro "github.com/actgardner/gogen-avro/schema"
 )
 
-var NoTemplateForType = fmt.Errorf("No template exists for supplied type")
+var NoTemplateForType = errors.New("No template exists for supplied type")
 
 func Template(t avro.Node) (string, error) {
 	var template string
