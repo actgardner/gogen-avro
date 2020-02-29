@@ -15,26 +15,22 @@ import (
 
 
 type UnionFieldUnionTypeEnum int
+
 const (
+	UnionFieldUnionTypeEnumInt UnionFieldUnionTypeEnum = 0
 
-	 UnionFieldUnionTypeEnumInt UnionFieldUnionTypeEnum = 0
+	UnionFieldUnionTypeEnumLong UnionFieldUnionTypeEnum = 1
 
-	 UnionFieldUnionTypeEnumLong UnionFieldUnionTypeEnum = 1
+	UnionFieldUnionTypeEnumFloat UnionFieldUnionTypeEnum = 2
 
-	 UnionFieldUnionTypeEnumFloat UnionFieldUnionTypeEnum = 2
+	UnionFieldUnionTypeEnumDouble UnionFieldUnionTypeEnum = 3
 
-	 UnionFieldUnionTypeEnumDouble UnionFieldUnionTypeEnum = 3
+	UnionFieldUnionTypeEnumString UnionFieldUnionTypeEnum = 4
 
-	 UnionFieldUnionTypeEnumString UnionFieldUnionTypeEnum = 4
-
-	 UnionFieldUnionTypeEnumBool UnionFieldUnionTypeEnum = 5
-
-	 UnionFieldUnionTypeEnumNull UnionFieldUnionTypeEnum = 6
-
+	UnionFieldUnionTypeEnumBool UnionFieldUnionTypeEnum = 5
 )
 
-type UnionFieldUnion struct {
-
+type UnionFieldUnion struct { 
 	Int int32
 
 	Long int64
@@ -47,45 +43,31 @@ type UnionFieldUnion struct {
 
 	Bool bool
 
-	Null *types.NullVal
-
 	UnionType UnionFieldUnionTypeEnum
 }
 
-func writeUnionFieldUnion(r *UnionFieldUnion, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionFieldUnion(r *UnionFieldUnion, w io.Writer) error { 
+	if r == nil {
+		return vm.WriteLong(int64(6), w)
+	} 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType{ 
 	case UnionFieldUnionTypeEnumInt:
 		return vm.WriteInt(r.Int, w)
-        
 	case UnionFieldUnionTypeEnumLong:
 		return vm.WriteLong(r.Long, w)
-        
 	case UnionFieldUnionTypeEnumFloat:
 		return vm.WriteFloat(r.Float, w)
-        
 	case UnionFieldUnionTypeEnumDouble:
 		return vm.WriteDouble(r.Double, w)
-        
 	case UnionFieldUnionTypeEnumString:
 		return vm.WriteString(r.String, w)
-        
 	case UnionFieldUnionTypeEnumBool:
 		return vm.WriteBool(r.Bool, w)
-        
-	case UnionFieldUnionTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
-        
 	}
 	return fmt.Errorf("invalid value for *UnionFieldUnion")
-}
-
-func NewUnionFieldUnion() *UnionFieldUnion {
-	return &UnionFieldUnion{}
 }
 
 func (_ *UnionFieldUnion) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -94,12 +76,13 @@ func (_ *UnionFieldUnion) SetFloat(v float32) { panic("Unsupported operation") }
 func (_ *UnionFieldUnion) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionFieldUnion) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionFieldUnion) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionFieldUnion) SetLong(v int64) { 
 	r.UnionType = (UnionFieldUnionTypeEnum)(v)
 }
+
 func (r *UnionFieldUnion) Get(i int) types.Field {
-	switch (i) {
-	
+	switch (i) { 
 	case 0:
 		
 		
@@ -136,16 +119,13 @@ func (r *UnionFieldUnion) Get(i int) types.Field {
 		return (*types.Boolean)(&r.Bool)
 		
 	
-	case 6:
-		
-		
-		return r.Null
-		
-	
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionFieldUnion) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionFieldUnion) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionFieldUnion) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionFieldUnion) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionFieldUnion) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionFieldUnion) Finalize()  { }

@@ -26,27 +26,29 @@ func writeArrayBool(r []bool, w io.Writer) error {
 	return vm.WriteLong(0,w)
 }
 
+type ArrayBool []bool
 
+func (_ *ArrayBool) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *ArrayBool) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *ArrayBool) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *ArrayBool) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *ArrayBool) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *ArrayBool) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *ArrayBool) SetString(v string) { panic("Unsupported operation") }
+func (_ *ArrayBool) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *ArrayBool) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *ArrayBool) Clear(i int) { panic("Unsupported operation") }
+func (_ *ArrayBool) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *ArrayBool) ClearMap(key string) { panic("Unsupported operation") }
+func (_ *ArrayBool) Finalize() { }
+func (_ *ArrayBool) SetDefault(i int) { panic("Unsupported operation") }
 
-type ArrayBoolWrapper []bool
-
-func (_ *ArrayBoolWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) Finalize() { }
-func (_ *ArrayBoolWrapper) SetDefault(i int) { panic("Unsupported operation") }
-func (r *ArrayBoolWrapper) AppendArray() types.Field {
+func (r *ArrayBool) AppendArray() types.Field {
 	var v bool
 	
 	*r = append(*r, v)
-         
-        return (*types.Boolean)(&(*r)[len(*r)-1])
-        
+	
+	return (*types.Boolean)(&(*r)[len(*r)-1])
+	
 }
+

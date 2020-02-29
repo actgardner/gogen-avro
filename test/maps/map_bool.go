@@ -7,7 +7,7 @@ import (
 	"github.com/actgardner/gogen-avro/vm"
 )
 
-func writeMapBool(r *MapBool, w io.Writer) error {
+func writeMapBool(r MapBool, w io.Writer) error {
 	err := vm.WriteLong(int64(len(r.M)), w)
 	if err != nil || len(r.M) == 0 {
 		return err
@@ -31,12 +31,8 @@ type MapBool struct {
 	M map[string]bool
 }
 
-func NewMapBool() *MapBool{
-	return &MapBool {
-		keys: make([]string, 0),
-		values: make([]bool, 0),
-		M: make(map[string]bool),
-	}
+func NewMapBool() MapBool{
+	return MapBool{ M: make(map[string]bool) }
 }
 
 func (_ *MapBool) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -48,8 +44,9 @@ func (_ *MapBool) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *MapBool) SetString(v string) { panic("Unsupported operation") }
 func (_ *MapBool) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *MapBool) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *MapBool) Clear(i int) { panic("Unsupported operation") }
 func (_ *MapBool) SetDefault(i int) { panic("Unsupported operation") }
-func (r *MapBool) Finalize() { 
+func (r *MapBool) Finalize() {
 	for i := range r.keys {
 		r.M[r.keys[i]] = r.values[i]
 	}
@@ -64,6 +61,11 @@ func (r *MapBool) AppendMap(key string) types.Field {
 	r.values = append(r.values, v)
 	
 	return (*types.Boolean)(&r.values[len(r.values)-1])
+	
+}
+
+func (r *MapBool) ClearMap(key string) { 
+	panic("Non-optional map item")
 	
 }
 

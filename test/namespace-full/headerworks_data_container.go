@@ -14,8 +14,8 @@ import (
 )
 
 func NewHeaderworksDataWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewHeaderworksData()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := HeaderworksData{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewHeaderworksDataReader(r io.Reader) (*HeaderworksDataReader, error){
 		return nil, err
 	}
 
-	t := NewHeaderworksData()
+	t := HeaderworksData{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewHeaderworksDataReader(r io.Reader) (*HeaderworksDataReader, error){
 	}, nil
 }
 
-func (r HeaderworksDataReader) Read() (*HeaderworksData, error) {
-	t := NewHeaderworksData()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r HeaderworksDataReader) Read() (t HeaderworksData, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

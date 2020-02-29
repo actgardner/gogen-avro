@@ -7,57 +7,38 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type Event struct {
-
-	
+type Event struct { 
 	// Unique ID for this event.
-	
 	
 		Id string
 	
 
 }
 
-func NewEvent() (*Event) {
-	return &Event{}
-}
-
-func DeserializeEvent(r io.Reader) (*Event, error) {
-	t := NewEvent()
+func DeserializeEvent(r io.Reader) (t Event, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeEventFromSchema(r io.Reader, schema string) (*Event, error) {
-	t := NewEvent()
-
+func DeserializeEventFromSchema(r io.Reader, schema string) (t Event, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeEvent(r *Event, w io.Writer) error {
+func writeEvent(r Event, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteString( r.Id, w)
@@ -68,15 +49,15 @@ func writeEvent(r *Event, w io.Writer) error {
 	return err
 }
 
-func (r *Event) Serialize(w io.Writer) error {
+func (r Event) Serialize(w io.Writer) error {
 	return writeEvent(r, w)
 }
 
-func (r *Event) Schema() string {
+func (r Event) Schema() string {
 	return "{\"fields\":[{\"doc\":\"Unique ID for this event.\",\"name\":\"id\",\"type\":{\"avro.java.string\":\"String\",\"type\":\"string\"}}],\"name\":\"event\",\"subject\":\"event\",\"type\":\"record\"}"
 }
 
-func (r *Event) SchemaName() string {
+func (r Event) SchemaName() string {
 	return "event"
 }
 
@@ -98,19 +79,26 @@ func (r *Event) Get(i int) types.Field {
 			return (*types.String)(&r.Id)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *Event) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *Event) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *Event) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *Event) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *Event) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Event) Finalize() { }

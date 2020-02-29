@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014  
-type DatatypeUUID struct {
-
+type DatatypeUUID struct { 
 	
 	
 		Uuid string
@@ -22,40 +22,23 @@ type DatatypeUUID struct {
 
 }
 
-func NewDatatypeUUID() (*DatatypeUUID) {
-	return &DatatypeUUID{}
-}
-
-func DeserializeDatatypeUUID(r io.Reader) (*DatatypeUUID, error) {
-	t := NewDatatypeUUID()
+func DeserializeDatatypeUUID(r io.Reader) (t DatatypeUUID, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeDatatypeUUIDFromSchema(r io.Reader, schema string) (*DatatypeUUID, error) {
-	t := NewDatatypeUUID()
-
+func DeserializeDatatypeUUIDFromSchema(r io.Reader, schema string) (t DatatypeUUID, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeDatatypeUUID(r *DatatypeUUID, w io.Writer) error {
+func writeDatatypeUUID(r DatatypeUUID, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteString( r.Uuid, w)
@@ -66,15 +49,15 @@ func writeDatatypeUUID(r *DatatypeUUID, w io.Writer) error {
 	return err
 }
 
-func (r *DatatypeUUID) Serialize(w io.Writer) error {
+func (r DatatypeUUID) Serialize(w io.Writer) error {
 	return writeDatatypeUUID(r, w)
 }
 
-func (r *DatatypeUUID) Schema() string {
+func (r DatatypeUUID) Schema() string {
 	return "{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"bodyworks.datatype.UUID\",\"type\":\"record\"}"
 }
 
-func (r *DatatypeUUID) SchemaName() string {
+func (r DatatypeUUID) SchemaName() string {
 	return "bodyworks.datatype.UUID"
 }
 
@@ -96,23 +79,29 @@ func (r *DatatypeUUID) Get(i int) types.Field {
 			return (*types.String)(&r.Uuid)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *DatatypeUUID) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch (i) { 
 	case 0:
-       	 	r.Uuid = ""
-		return
-	
-	
+		r.Uuid = ""
+		
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *DatatypeUUID) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *DatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *DatatypeUUID) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *DatatypeUUID) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *DatatypeUUID) Finalize() { }

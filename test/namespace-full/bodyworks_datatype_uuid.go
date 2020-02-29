@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014  
-type BodyworksDatatypeUUID struct {
-
+type BodyworksDatatypeUUID struct { 
 	
 	
 		Uuid string
@@ -22,40 +22,23 @@ type BodyworksDatatypeUUID struct {
 
 }
 
-func NewBodyworksDatatypeUUID() (*BodyworksDatatypeUUID) {
-	return &BodyworksDatatypeUUID{}
-}
-
-func DeserializeBodyworksDatatypeUUID(r io.Reader) (*BodyworksDatatypeUUID, error) {
-	t := NewBodyworksDatatypeUUID()
+func DeserializeBodyworksDatatypeUUID(r io.Reader) (t BodyworksDatatypeUUID, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeBodyworksDatatypeUUIDFromSchema(r io.Reader, schema string) (*BodyworksDatatypeUUID, error) {
-	t := NewBodyworksDatatypeUUID()
-
+func DeserializeBodyworksDatatypeUUIDFromSchema(r io.Reader, schema string) (t BodyworksDatatypeUUID, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeBodyworksDatatypeUUID(r *BodyworksDatatypeUUID, w io.Writer) error {
+func writeBodyworksDatatypeUUID(r BodyworksDatatypeUUID, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteString( r.Uuid, w)
@@ -66,15 +49,15 @@ func writeBodyworksDatatypeUUID(r *BodyworksDatatypeUUID, w io.Writer) error {
 	return err
 }
 
-func (r *BodyworksDatatypeUUID) Serialize(w io.Writer) error {
+func (r BodyworksDatatypeUUID) Serialize(w io.Writer) error {
 	return writeBodyworksDatatypeUUID(r, w)
 }
 
-func (r *BodyworksDatatypeUUID) Schema() string {
+func (r BodyworksDatatypeUUID) Schema() string {
 	return "{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"bodyworks.datatype.UUID\",\"type\":\"record\"}"
 }
 
-func (r *BodyworksDatatypeUUID) SchemaName() string {
+func (r BodyworksDatatypeUUID) SchemaName() string {
 	return "bodyworks.datatype.UUID"
 }
 
@@ -96,23 +79,29 @@ func (r *BodyworksDatatypeUUID) Get(i int) types.Field {
 			return (*types.String)(&r.Uuid)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *BodyworksDatatypeUUID) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch (i) { 
 	case 0:
-       	 	r.Uuid = ""
-		return
-	
-	
+		r.Uuid = ""
+		
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *BodyworksDatatypeUUID) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *BodyworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *BodyworksDatatypeUUID) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *BodyworksDatatypeUUID) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *BodyworksDatatypeUUID) Finalize() { }

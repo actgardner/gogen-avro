@@ -7,55 +7,38 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type NestedTestRecord struct {
-
+type NestedTestRecord struct { 
 	
 	
-		OtherField *NestedRecord
+		OtherField NestedRecord
 	
 
 }
 
-func NewNestedTestRecord() (*NestedTestRecord) {
-	return &NestedTestRecord{}
-}
-
-func DeserializeNestedTestRecord(r io.Reader) (*NestedTestRecord, error) {
-	t := NewNestedTestRecord()
+func DeserializeNestedTestRecord(r io.Reader) (t NestedTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeNestedTestRecordFromSchema(r io.Reader, schema string) (*NestedTestRecord, error) {
-	t := NewNestedTestRecord()
-
+func DeserializeNestedTestRecordFromSchema(r io.Reader, schema string) (t NestedTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeNestedTestRecord(r *NestedTestRecord, w io.Writer) error {
+func writeNestedTestRecord(r NestedTestRecord, w io.Writer) error {
 	var err error
 	
 	err = writeNestedRecord( r.OtherField, w)
@@ -66,15 +49,15 @@ func writeNestedTestRecord(r *NestedTestRecord, w io.Writer) error {
 	return err
 }
 
-func (r *NestedTestRecord) Serialize(w io.Writer) error {
+func (r NestedTestRecord) Serialize(w io.Writer) error {
 	return writeNestedTestRecord(r, w)
 }
 
-func (r *NestedTestRecord) Schema() string {
+func (r NestedTestRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"OtherField\",\"type\":{\"aliases\":[\"aliasedRecord\"],\"fields\":[{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"NestedRecord\",\"type\":\"record\"}}],\"name\":\"NestedTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *NestedTestRecord) SchemaName() string {
+func (r NestedTestRecord) SchemaName() string {
 	return "NestedTestRecord"
 }
 
@@ -92,26 +75,33 @@ func (r *NestedTestRecord) Get(i int) types.Field {
 	
 	case 0:
 		
-			r.OtherField = NewNestedRecord()
+			r.OtherField = NestedRecord{}
+
+		
+		
+			return &r.OtherField
+		
 	
-		
-		
-			return r.OtherField
-		
-	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *NestedTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *NestedTestRecord) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *NestedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *NestedTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *NestedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NestedTestRecord) Finalize() { }

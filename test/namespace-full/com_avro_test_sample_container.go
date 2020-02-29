@@ -14,8 +14,8 @@ import (
 )
 
 func NewComAvroTestSampleWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewComAvroTestSample()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := ComAvroTestSample{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewComAvroTestSampleReader(r io.Reader) (*ComAvroTestSampleReader, error){
 		return nil, err
 	}
 
-	t := NewComAvroTestSample()
+	t := ComAvroTestSample{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewComAvroTestSampleReader(r io.Reader) (*ComAvroTestSampleReader, error){
 	}, nil
 }
 
-func (r ComAvroTestSampleReader) Read() (*ComAvroTestSample, error) {
-	t := NewComAvroTestSample()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r ComAvroTestSampleReader) Read() (t ComAvroTestSample, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

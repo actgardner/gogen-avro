@@ -15,42 +15,29 @@ import (
 
 
 type UnionNullBodyworksDataTypeEnum int
+
 const (
-
-	 UnionNullBodyworksDataTypeEnumNull UnionNullBodyworksDataTypeEnum = 0
-
-	 UnionNullBodyworksDataTypeEnumBodyworksData UnionNullBodyworksDataTypeEnum = 1
-
+	UnionNullBodyworksDataTypeEnumBodyworksData UnionNullBodyworksDataTypeEnum = 1
 )
 
-type UnionNullBodyworksData struct {
-
-	Null *types.NullVal
-
-	BodyworksData *BodyworksData
+type UnionNullBodyworksData struct { 
+	BodyworksData BodyworksData
 
 	UnionType UnionNullBodyworksDataTypeEnum
 }
 
-func writeUnionNullBodyworksData(r *UnionNullBodyworksData, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionNullBodyworksData(r *UnionNullBodyworksData, w io.Writer) error { 
+	if r == nil {
+		return vm.WriteLong(int64(0), w)
+	} 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
-	case UnionNullBodyworksDataTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
-        
+	switch r.UnionType{ 
 	case UnionNullBodyworksDataTypeEnumBodyworksData:
 		return writeBodyworksData(r.BodyworksData, w)
-        
 	}
 	return fmt.Errorf("invalid value for *UnionNullBodyworksData")
-}
-
-func NewUnionNullBodyworksData() *UnionNullBodyworksData {
-	return &UnionNullBodyworksData{}
 }
 
 func (_ *UnionNullBodyworksData) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -59,30 +46,28 @@ func (_ *UnionNullBodyworksData) SetFloat(v float32) { panic("Unsupported operat
 func (_ *UnionNullBodyworksData) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksData) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksData) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionNullBodyworksData) SetLong(v int64) { 
 	r.UnionType = (UnionNullBodyworksDataTypeEnum)(v)
 }
+
 func (r *UnionNullBodyworksData) Get(i int) types.Field {
-	switch (i) {
-	
-	case 0:
-		
-		
-		return r.Null
-		
-	
+	switch (i) { 
 	case 1:
 		
-		r.BodyworksData = NewBodyworksData()
+		r.BodyworksData = BodyworksData{}
 		
 		
-		return r.BodyworksData
+		return &r.BodyworksData
 		
 	
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionNullBodyworksData) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksData) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionNullBodyworksData) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksData) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksData) Finalize()  { }

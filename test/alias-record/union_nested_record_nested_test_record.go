@@ -15,42 +15,32 @@ import (
 
 
 type UnionNestedRecordNestedTestRecordTypeEnum int
+
 const (
+	UnionNestedRecordNestedTestRecordTypeEnumNestedRecord UnionNestedRecordNestedTestRecordTypeEnum = 0
 
-	 UnionNestedRecordNestedTestRecordTypeEnumNestedRecord UnionNestedRecordNestedTestRecordTypeEnum = 0
-
-	 UnionNestedRecordNestedTestRecordTypeEnumNestedTestRecord UnionNestedRecordNestedTestRecordTypeEnum = 1
-
+	UnionNestedRecordNestedTestRecordTypeEnumNestedTestRecord UnionNestedRecordNestedTestRecordTypeEnum = 1
 )
 
-type UnionNestedRecordNestedTestRecord struct {
+type UnionNestedRecordNestedTestRecord struct { 
+	NestedRecord NestedRecord
 
-	NestedRecord *NestedRecord
-
-	NestedTestRecord *NestedTestRecord
+	NestedTestRecord NestedTestRecord
 
 	UnionType UnionNestedRecordNestedTestRecordTypeEnum
 }
 
-func writeUnionNestedRecordNestedTestRecord(r *UnionNestedRecordNestedTestRecord, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionNestedRecordNestedTestRecord(r UnionNestedRecordNestedTestRecord, w io.Writer) error { 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType{ 
 	case UnionNestedRecordNestedTestRecordTypeEnumNestedRecord:
 		return writeNestedRecord(r.NestedRecord, w)
-        
 	case UnionNestedRecordNestedTestRecordTypeEnumNestedTestRecord:
 		return writeNestedTestRecord(r.NestedTestRecord, w)
-        
 	}
-	return fmt.Errorf("invalid value for *UnionNestedRecordNestedTestRecord")
-}
-
-func NewUnionNestedRecordNestedTestRecord() *UnionNestedRecordNestedTestRecord {
-	return &UnionNestedRecordNestedTestRecord{}
+	return fmt.Errorf("invalid value for UnionNestedRecordNestedTestRecord")
 }
 
 func (_ *UnionNestedRecordNestedTestRecord) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -59,32 +49,36 @@ func (_ *UnionNestedRecordNestedTestRecord) SetFloat(v float32) { panic("Unsuppo
 func (_ *UnionNestedRecordNestedTestRecord) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionNestedRecordNestedTestRecord) SetLong(v int64) { 
 	r.UnionType = (UnionNestedRecordNestedTestRecordTypeEnum)(v)
 }
+
 func (r *UnionNestedRecordNestedTestRecord) Get(i int) types.Field {
-	switch (i) {
-	
+	switch (i) { 
 	case 0:
 		
-		r.NestedRecord = NewNestedRecord()
+		r.NestedRecord = NestedRecord{}
 		
 		
-		return r.NestedRecord
+		return &r.NestedRecord
 		
 	
 	case 1:
 		
-		r.NestedTestRecord = NewNestedTestRecord()
+		r.NestedTestRecord = NestedTestRecord{}
 		
 		
-		return r.NestedTestRecord
+		return &r.NestedTestRecord
 		
 	
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionNestedRecordNestedTestRecord) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionNestedRecordNestedTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) Finalize()  { }

@@ -8,14 +8,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type Child struct {
-
+type Child struct { 
 	
 	
 		Name string
@@ -23,40 +23,23 @@ type Child struct {
 
 }
 
-func NewChild() (*Child) {
-	return &Child{}
-}
-
-func DeserializeChild(r io.Reader) (*Child, error) {
-	t := NewChild()
+func DeserializeChild(r io.Reader) (t Child, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeChildFromSchema(r io.Reader, schema string) (*Child, error) {
-	t := NewChild()
-
+func DeserializeChildFromSchema(r io.Reader, schema string) (t Child, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeChild(r *Child, w io.Writer) error {
+func writeChild(r Child, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteString( r.Name, w)
@@ -67,15 +50,15 @@ func writeChild(r *Child, w io.Writer) error {
 	return err
 }
 
-func (r *Child) Serialize(w io.Writer) error {
+func (r Child) Serialize(w io.Writer) error {
 	return writeChild(r, w)
 }
 
-func (r *Child) Schema() string {
+func (r Child) Schema() string {
 	return "{\"fields\":[{\"name\":\"name\",\"type\":\"string\"}],\"name\":\"child\",\"type\":\"record\"}"
 }
 
-func (r *Child) SchemaName() string {
+func (r Child) SchemaName() string {
 	return "child"
 }
 
@@ -97,19 +80,26 @@ func (r *Child) Get(i int) types.Field {
 			return (*types.String)(&r.Name)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *Child) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *Child) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *Child) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *Child) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *Child) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Child) Finalize() { }

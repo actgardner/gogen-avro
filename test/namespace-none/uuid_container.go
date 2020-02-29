@@ -14,8 +14,8 @@ import (
 )
 
 func NewUUIDWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewUUID()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := UUID{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewUUIDReader(r io.Reader) (*UUIDReader, error){
 		return nil, err
 	}
 
-	t := NewUUID()
+	t := UUID{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewUUIDReader(r io.Reader) (*UUIDReader, error){
 	}, nil
 }
 
-func (r UUIDReader) Read() (*UUID, error) {
-	t := NewUUID()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r UUIDReader) Read() (t UUID, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

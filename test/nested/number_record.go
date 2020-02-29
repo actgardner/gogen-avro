@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type NumberRecord struct {
-
+type NumberRecord struct { 
 	
 	
 		IntField int32
@@ -37,40 +37,23 @@ type NumberRecord struct {
 
 }
 
-func NewNumberRecord() (*NumberRecord) {
-	return &NumberRecord{}
-}
-
-func DeserializeNumberRecord(r io.Reader) (*NumberRecord, error) {
-	t := NewNumberRecord()
+func DeserializeNumberRecord(r io.Reader) (t NumberRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeNumberRecordFromSchema(r io.Reader, schema string) (*NumberRecord, error) {
-	t := NewNumberRecord()
-
+func DeserializeNumberRecordFromSchema(r io.Reader, schema string) (t NumberRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeNumberRecord(r *NumberRecord, w io.Writer) error {
+func writeNumberRecord(r NumberRecord, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteInt( r.IntField, w)
@@ -96,15 +79,15 @@ func writeNumberRecord(r *NumberRecord, w io.Writer) error {
 	return err
 }
 
-func (r *NumberRecord) Serialize(w io.Writer) error {
+func (r NumberRecord) Serialize(w io.Writer) error {
 	return writeNumberRecord(r, w)
 }
 
-func (r *NumberRecord) Schema() string {
+func (r NumberRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"LongField\",\"type\":\"long\"},{\"name\":\"FloatField\",\"type\":\"float\"},{\"name\":\"DoubleField\",\"type\":\"double\"}],\"name\":\"NumberRecord\",\"type\":\"record\"}"
 }
 
-func (r *NumberRecord) SchemaName() string {
+func (r NumberRecord) SchemaName() string {
 	return "NumberRecord"
 }
 
@@ -144,25 +127,26 @@ func (r *NumberRecord) Get(i int) types.Field {
 			return (*types.Double)(&r.DoubleField)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *NumberRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
-        
-	
-        
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *NumberRecord) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *NumberRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *NumberRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *NumberRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NumberRecord) Finalize() { }

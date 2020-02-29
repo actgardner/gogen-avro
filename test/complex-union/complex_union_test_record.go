@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type ComplexUnionTestRecord struct {
-
+type ComplexUnionTestRecord struct { 
 	
 	
 		UnionField *UnionNullArrayIntMapIntNestedUnionRecord
@@ -22,40 +22,23 @@ type ComplexUnionTestRecord struct {
 
 }
 
-func NewComplexUnionTestRecord() (*ComplexUnionTestRecord) {
-	return &ComplexUnionTestRecord{}
-}
-
-func DeserializeComplexUnionTestRecord(r io.Reader) (*ComplexUnionTestRecord, error) {
-	t := NewComplexUnionTestRecord()
+func DeserializeComplexUnionTestRecord(r io.Reader) (t ComplexUnionTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeComplexUnionTestRecordFromSchema(r io.Reader, schema string) (*ComplexUnionTestRecord, error) {
-	t := NewComplexUnionTestRecord()
-
+func DeserializeComplexUnionTestRecordFromSchema(r io.Reader, schema string) (t ComplexUnionTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeComplexUnionTestRecord(r *ComplexUnionTestRecord, w io.Writer) error {
+func writeComplexUnionTestRecord(r ComplexUnionTestRecord, w io.Writer) error {
 	var err error
 	
 	err = writeUnionNullArrayIntMapIntNestedUnionRecord( r.UnionField, w)
@@ -66,15 +49,15 @@ func writeComplexUnionTestRecord(r *ComplexUnionTestRecord, w io.Writer) error {
 	return err
 }
 
-func (r *ComplexUnionTestRecord) Serialize(w io.Writer) error {
+func (r ComplexUnionTestRecord) Serialize(w io.Writer) error {
 	return writeComplexUnionTestRecord(r, w)
 }
 
-func (r *ComplexUnionTestRecord) Schema() string {
+func (r ComplexUnionTestRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"UnionField\",\"type\":[\"null\",{\"items\":\"int\",\"type\":\"array\"},{\"type\":\"map\",\"values\":\"int\"},{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"}],\"name\":\"NestedUnionRecord\",\"type\":\"record\"}]}],\"name\":\"ComplexUnionTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *ComplexUnionTestRecord) SchemaName() string {
+func (r ComplexUnionTestRecord) SchemaName() string {
 	return "ComplexUnionTestRecord"
 }
 
@@ -92,26 +75,35 @@ func (r *ComplexUnionTestRecord) Get(i int) types.Field {
 	
 	case 0:
 		
-			r.UnionField = NewUnionNullArrayIntMapIntNestedUnionRecord()
-	
+			r.UnionField = &UnionNullArrayIntMapIntNestedUnionRecord{}
+
 		
 		
 			return r.UnionField
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *ComplexUnionTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *ComplexUnionTestRecord) Clear(i int) {
+	switch (i) { 
+	case 0:
+		r.UnionField = nil
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *ComplexUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *ComplexUnionTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *ComplexUnionTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *ComplexUnionTestRecord) Finalize() { }

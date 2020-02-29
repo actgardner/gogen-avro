@@ -14,8 +14,8 @@ import (
 )
 
 func NewBodyworksTraceWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewBodyworksTrace()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := BodyworksTrace{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewBodyworksTraceReader(r io.Reader) (*BodyworksTraceReader, error){
 		return nil, err
 	}
 
-	t := NewBodyworksTrace()
+	t := BodyworksTrace{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewBodyworksTraceReader(r io.Reader) (*BodyworksTraceReader, error){
 	}, nil
 }
 
-func (r BodyworksTraceReader) Read() (*BodyworksTrace, error) {
-	t := NewBodyworksTrace()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r BodyworksTraceReader) Read() (t BodyworksTrace, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

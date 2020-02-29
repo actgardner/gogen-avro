@@ -11,7 +11,7 @@ import (
 	"github.com/actgardner/gogen-avro/vm"
 )
 
-func writeMapMapArrayString(r *MapMapArrayString, w io.Writer) error {
+func writeMapMapArrayString(r MapMapArrayString, w io.Writer) error {
 	err := vm.WriteLong(int64(len(r.M)), w)
 	if err != nil || len(r.M) == 0 {
 		return err
@@ -31,16 +31,12 @@ func writeMapMapArrayString(r *MapMapArrayString, w io.Writer) error {
 
 type MapMapArrayString struct {
 	keys []string
-	values []*MapArrayString
-	M map[string]*MapArrayString
+	values []MapArrayString
+	M map[string]MapArrayString
 }
 
-func NewMapMapArrayString() *MapMapArrayString{
-	return &MapMapArrayString {
-		keys: make([]string, 0),
-		values: make([]*MapArrayString, 0),
-		M: make(map[string]*MapArrayString),
-	}
+func NewMapMapArrayString() MapMapArrayString{
+	return MapMapArrayString{ M: make(map[string]MapArrayString) }
 }
 
 func (_ *MapMapArrayString) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -52,8 +48,9 @@ func (_ *MapMapArrayString) SetBytes(v []byte) { panic("Unsupported operation") 
 func (_ *MapMapArrayString) SetString(v string) { panic("Unsupported operation") }
 func (_ *MapMapArrayString) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *MapMapArrayString) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *MapMapArrayString) Clear(i int) { panic("Unsupported operation") }
 func (_ *MapMapArrayString) SetDefault(i int) { panic("Unsupported operation") }
-func (r *MapMapArrayString) Finalize() { 
+func (r *MapMapArrayString) Finalize() {
 	for i := range r.keys {
 		r.M[r.keys[i]] = r.values[i]
 	}
@@ -63,14 +60,19 @@ func (r *MapMapArrayString) Finalize() {
 
 func (r *MapMapArrayString) AppendMap(key string) types.Field { 
 	r.keys = append(r.keys, key)
-	var v *MapArrayString
+	var v MapArrayString
 	
 		v = NewMapArrayString()
 
 	
 	r.values = append(r.values, v)
 	
-	return r.values[len(r.values)-1]
+	return &r.values[len(r.values)-1]
+	
+}
+
+func (r *MapMapArrayString) ClearMap(key string) { 
+	panic("Non-optional map item")
 	
 }
 

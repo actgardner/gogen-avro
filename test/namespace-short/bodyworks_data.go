@@ -7,71 +7,48 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // Common information related to the event which must be included in any clean event  
-type BodyworksData struct {
-
-	
+type BodyworksData struct { 
 	// Unique identifier for the event used for de-duplication and tracing.
-	
 	
 		Uuid *UnionNullDatatypeUUID
 	
 
-	
 	// Fully qualified name of the host that generated the event that generated the data.
-	
 	
 		Hostname *UnionNullString
 	
 
-	
 	// Trace information not redundant with this object
-	
 	
 		Trace *UnionNullBodyworksTrace
 	
 
 }
 
-func NewBodyworksData() (*BodyworksData) {
-	return &BodyworksData{}
-}
-
-func DeserializeBodyworksData(r io.Reader) (*BodyworksData, error) {
-	t := NewBodyworksData()
+func DeserializeBodyworksData(r io.Reader) (t BodyworksData, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeBodyworksDataFromSchema(r io.Reader, schema string) (*BodyworksData, error) {
-	t := NewBodyworksData()
-
+func DeserializeBodyworksDataFromSchema(r io.Reader, schema string) (t BodyworksData, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeBodyworksData(r *BodyworksData, w io.Writer) error {
+func writeBodyworksData(r BodyworksData, w io.Writer) error {
 	var err error
 	
 	err = writeUnionNullDatatypeUUID( r.Uuid, w)
@@ -92,15 +69,15 @@ func writeBodyworksData(r *BodyworksData, w io.Writer) error {
 	return err
 }
 
-func (r *BodyworksData) Serialize(w io.Writer) error {
+func (r BodyworksData) Serialize(w io.Writer) error {
 	return writeBodyworksData(r, w)
 }
 
-func (r *BodyworksData) Schema() string {
+func (r BodyworksData) Schema() string {
 	return "{\"doc\":\"Common information related to the event which must be included in any clean event\",\"fields\":[{\"default\":null,\"doc\":\"Unique identifier for the event used for de-duplication and tracing.\",\"name\":\"uuid\",\"type\":[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"bodyworks.datatype\",\"type\":\"record\"}]},{\"default\":null,\"doc\":\"Fully qualified name of the host that generated the event that generated the data.\",\"name\":\"hostname\",\"type\":[\"null\",\"string\"]},{\"default\":null,\"doc\":\"Trace information not redundant with this object\",\"name\":\"trace\",\"type\":[\"null\",{\"doc\":\"Trace\",\"fields\":[{\"default\":null,\"doc\":\"Trace Identifier\",\"name\":\"traceId\",\"type\":[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"headerworks.datatype\",\"type\":\"record\"}]}],\"name\":\"Trace\",\"type\":\"record\"}]}],\"name\":\"bodyworks.Data\",\"type\":\"record\"}"
 }
 
-func (r *BodyworksData) SchemaName() string {
+func (r BodyworksData) SchemaName() string {
 	return "bodyworks.Data"
 }
 
@@ -118,8 +95,8 @@ func (r *BodyworksData) Get(i int) types.Field {
 	
 	case 0:
 		
-			r.Uuid = NewUnionNullDatatypeUUID()
-	
+			r.Uuid = &UnionNullDatatypeUUID{}
+
 		
 		
 			return r.Uuid
@@ -127,8 +104,8 @@ func (r *BodyworksData) Get(i int) types.Field {
 	
 	case 1:
 		
-			r.Hostname = NewUnionNullString()
-	
+			r.Hostname = &UnionNullString{}
+
 		
 		
 			return r.Hostname
@@ -136,45 +113,48 @@ func (r *BodyworksData) Get(i int) types.Field {
 	
 	case 2:
 		
-			r.Trace = NewUnionNullBodyworksTrace()
-	
+			r.Trace = &UnionNullBodyworksTrace{}
+
 		
 		
 			return r.Trace
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *BodyworksData) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch (i) { 
 	case 0:
-       	 	r.Uuid = NewUnionNullDatatypeUUID()
-
-		return
-	
-	
-        
+		r.Uuid = nil
+		
 	case 1:
-       	 	r.Hostname = NewUnionNullString()
-
-		return
-	
-	
-        
+		r.Hostname = nil
+		
 	case 2:
-       	 	r.Trace = NewUnionNullBodyworksTrace()
-
-		return
-	
-	
+		r.Trace = nil
+		
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *BodyworksData) Clear(i int) {
+	switch (i) { 
+	case 0:
+		r.Uuid = nil
+	case 1:
+		r.Hostname = nil
+	case 2:
+		r.Trace = nil
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *BodyworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *BodyworksData) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *BodyworksData) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *BodyworksData) Finalize() { }

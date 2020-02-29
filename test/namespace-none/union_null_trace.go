@@ -15,42 +15,29 @@ import (
 
 
 type UnionNullTraceTypeEnum int
+
 const (
-
-	 UnionNullTraceTypeEnumNull UnionNullTraceTypeEnum = 0
-
-	 UnionNullTraceTypeEnumTrace UnionNullTraceTypeEnum = 1
-
+	UnionNullTraceTypeEnumTrace UnionNullTraceTypeEnum = 1
 )
 
-type UnionNullTrace struct {
-
-	Null *types.NullVal
-
-	Trace *Trace
+type UnionNullTrace struct { 
+	Trace Trace
 
 	UnionType UnionNullTraceTypeEnum
 }
 
-func writeUnionNullTrace(r *UnionNullTrace, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionNullTrace(r *UnionNullTrace, w io.Writer) error { 
+	if r == nil {
+		return vm.WriteLong(int64(0), w)
+	} 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
-	case UnionNullTraceTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
-        
+	switch r.UnionType{ 
 	case UnionNullTraceTypeEnumTrace:
 		return writeTrace(r.Trace, w)
-        
 	}
 	return fmt.Errorf("invalid value for *UnionNullTrace")
-}
-
-func NewUnionNullTrace() *UnionNullTrace {
-	return &UnionNullTrace{}
 }
 
 func (_ *UnionNullTrace) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -59,30 +46,28 @@ func (_ *UnionNullTrace) SetFloat(v float32) { panic("Unsupported operation") }
 func (_ *UnionNullTrace) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionNullTrace) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionNullTrace) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionNullTrace) SetLong(v int64) { 
 	r.UnionType = (UnionNullTraceTypeEnum)(v)
 }
+
 func (r *UnionNullTrace) Get(i int) types.Field {
-	switch (i) {
-	
-	case 0:
-		
-		
-		return r.Null
-		
-	
+	switch (i) { 
 	case 1:
 		
-		r.Trace = NewTrace()
+		r.Trace = Trace{}
 		
 		
-		return r.Trace
+		return &r.Trace
 		
 	
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionNullTrace) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNullTrace) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionNullTrace) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNullTrace) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullTrace) Finalize()  { }

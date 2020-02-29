@@ -14,8 +14,8 @@ import (
 )
 
 func NewStructTagWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewStructTag()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := StructTag{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewStructTagReader(r io.Reader) (*StructTagReader, error){
 		return nil, err
 	}
 
-	t := NewStructTag()
+	t := StructTag{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewStructTagReader(r io.Reader) (*StructTagReader, error){
 	}, nil
 }
 
-func (r StructTagReader) Read() (*StructTag, error) {
-	t := NewStructTag()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r StructTagReader) Read() (t StructTag, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

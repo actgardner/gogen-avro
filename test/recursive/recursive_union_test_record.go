@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type RecursiveUnionTestRecord struct {
-
+type RecursiveUnionTestRecord struct { 
 	
 	
 		RecursiveField *UnionNullRecursiveUnionTestRecord
@@ -22,40 +22,23 @@ type RecursiveUnionTestRecord struct {
 
 }
 
-func NewRecursiveUnionTestRecord() (*RecursiveUnionTestRecord) {
-	return &RecursiveUnionTestRecord{}
-}
-
-func DeserializeRecursiveUnionTestRecord(r io.Reader) (*RecursiveUnionTestRecord, error) {
-	t := NewRecursiveUnionTestRecord()
+func DeserializeRecursiveUnionTestRecord(r io.Reader) (t RecursiveUnionTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeRecursiveUnionTestRecordFromSchema(r io.Reader, schema string) (*RecursiveUnionTestRecord, error) {
-	t := NewRecursiveUnionTestRecord()
-
+func DeserializeRecursiveUnionTestRecordFromSchema(r io.Reader, schema string) (t RecursiveUnionTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeRecursiveUnionTestRecord(r *RecursiveUnionTestRecord, w io.Writer) error {
+func writeRecursiveUnionTestRecord(r RecursiveUnionTestRecord, w io.Writer) error {
 	var err error
 	
 	err = writeUnionNullRecursiveUnionTestRecord( r.RecursiveField, w)
@@ -66,15 +49,15 @@ func writeRecursiveUnionTestRecord(r *RecursiveUnionTestRecord, w io.Writer) err
 	return err
 }
 
-func (r *RecursiveUnionTestRecord) Serialize(w io.Writer) error {
+func (r RecursiveUnionTestRecord) Serialize(w io.Writer) error {
 	return writeRecursiveUnionTestRecord(r, w)
 }
 
-func (r *RecursiveUnionTestRecord) Schema() string {
+func (r RecursiveUnionTestRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"RecursiveField\",\"type\":[\"null\",\"RecursiveUnionTestRecord\"]}],\"name\":\"RecursiveUnionTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *RecursiveUnionTestRecord) SchemaName() string {
+func (r RecursiveUnionTestRecord) SchemaName() string {
 	return "RecursiveUnionTestRecord"
 }
 
@@ -92,26 +75,35 @@ func (r *RecursiveUnionTestRecord) Get(i int) types.Field {
 	
 	case 0:
 		
-			r.RecursiveField = NewUnionNullRecursiveUnionTestRecord()
-	
+			r.RecursiveField = &UnionNullRecursiveUnionTestRecord{}
+
 		
 		
 			return r.RecursiveField
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *RecursiveUnionTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *RecursiveUnionTestRecord) Clear(i int) {
+	switch (i) { 
+	case 0:
+		r.RecursiveField = nil
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *RecursiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *RecursiveUnionTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) Finalize() { }

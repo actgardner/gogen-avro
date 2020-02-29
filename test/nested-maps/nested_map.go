@@ -7,55 +7,38 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type NestedMap struct {
-
+type NestedMap struct { 
 	
 	
-		MapOfMaps *MapMapArrayString
+		MapOfMaps MapMapArrayString
 	
 
 }
 
-func NewNestedMap() (*NestedMap) {
-	return &NestedMap{}
-}
-
-func DeserializeNestedMap(r io.Reader) (*NestedMap, error) {
-	t := NewNestedMap()
+func DeserializeNestedMap(r io.Reader) (t NestedMap, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeNestedMapFromSchema(r io.Reader, schema string) (*NestedMap, error) {
-	t := NewNestedMap()
-
+func DeserializeNestedMapFromSchema(r io.Reader, schema string) (t NestedMap, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeNestedMap(r *NestedMap, w io.Writer) error {
+func writeNestedMap(r NestedMap, w io.Writer) error {
 	var err error
 	
 	err = writeMapMapArrayString( r.MapOfMaps, w)
@@ -66,15 +49,15 @@ func writeNestedMap(r *NestedMap, w io.Writer) error {
 	return err
 }
 
-func (r *NestedMap) Serialize(w io.Writer) error {
+func (r NestedMap) Serialize(w io.Writer) error {
 	return writeNestedMap(r, w)
 }
 
-func (r *NestedMap) Schema() string {
+func (r NestedMap) Schema() string {
 	return "{\"fields\":[{\"name\":\"MapOfMaps\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"map\",\"values\":{\"items\":\"string\",\"type\":\"array\"}}}}],\"name\":\"NestedMap\",\"type\":\"record\"}"
 }
 
-func (r *NestedMap) SchemaName() string {
+func (r NestedMap) SchemaName() string {
 	return "NestedMap"
 }
 
@@ -93,25 +76,32 @@ func (r *NestedMap) Get(i int) types.Field {
 	case 0:
 		
 			r.MapOfMaps = NewMapMapArrayString()
+
+		
+		
+			return &r.MapOfMaps
+		
 	
-		
-		
-			return r.MapOfMaps
-		
-	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *NestedMap) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *NestedMap) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *NestedMap) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *NestedMap) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *NestedMap) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NestedMap) Finalize() { }

@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type ArrayTestRecord struct {
-
+type ArrayTestRecord struct { 
 	
 	
 		IntField []int32
@@ -52,40 +52,23 @@ type ArrayTestRecord struct {
 
 }
 
-func NewArrayTestRecord() (*ArrayTestRecord) {
-	return &ArrayTestRecord{}
-}
-
-func DeserializeArrayTestRecord(r io.Reader) (*ArrayTestRecord, error) {
-	t := NewArrayTestRecord()
+func DeserializeArrayTestRecord(r io.Reader) (t ArrayTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (*ArrayTestRecord, error) {
-	t := NewArrayTestRecord()
-
+func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (t ArrayTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeArrayTestRecord(r *ArrayTestRecord, w io.Writer) error {
+func writeArrayTestRecord(r ArrayTestRecord, w io.Writer) error {
 	var err error
 	
 	err = writeArrayInt( r.IntField, w)
@@ -126,15 +109,15 @@ func writeArrayTestRecord(r *ArrayTestRecord, w io.Writer) error {
 	return err
 }
 
-func (r *ArrayTestRecord) Serialize(w io.Writer) error {
+func (r ArrayTestRecord) Serialize(w io.Writer) error {
 	return writeArrayTestRecord(r, w)
 }
 
-func (r *ArrayTestRecord) Schema() string {
+func (r ArrayTestRecord) Schema() string {
 	return "{\"fields\":[{\"default\":[1,2,3,4],\"name\":\"IntField\",\"type\":{\"items\":\"int\",\"type\":\"array\"}},{\"default\":[5,6,7,8],\"name\":\"LongField\",\"type\":{\"items\":\"long\",\"type\":\"array\"}},{\"default\":[1.5,2.4],\"name\":\"DoubleField\",\"type\":{\"items\":\"double\",\"type\":\"array\"}},{\"default\":[\"abc\",\"def\"],\"name\":\"StringField\",\"type\":{\"items\":\"string\",\"type\":\"array\"}},{\"default\":[1.23,3.45],\"name\":\"FloatField\",\"type\":{\"items\":\"float\",\"type\":\"array\"}},{\"default\":[true,false],\"name\":\"BoolField\",\"type\":{\"items\":\"boolean\",\"type\":\"array\"}},{\"default\":[\"abc\",\"def\"],\"name\":\"BytesField\",\"type\":{\"items\":\"bytes\",\"type\":\"array\"}}],\"name\":\"ArrayTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *ArrayTestRecord) SchemaName() string {
+func (r ArrayTestRecord) SchemaName() string {
 	return "ArrayTestRecord"
 }
 
@@ -152,145 +135,112 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	
 	case 0:
 		
-			r.IntField = make([]int32, 0)
-	
 		
-		
-			return (*ArrayIntWrapper)(&r.IntField)
+			return (*ArrayInt)(&r.IntField)
 		
 	
 	case 1:
 		
-			r.LongField = make([]int64, 0)
-	
 		
-		
-			return (*ArrayLongWrapper)(&r.LongField)
+			return (*ArrayLong)(&r.LongField)
 		
 	
 	case 2:
 		
-			r.DoubleField = make([]float64, 0)
-	
 		
-		
-			return (*ArrayDoubleWrapper)(&r.DoubleField)
+			return (*ArrayDouble)(&r.DoubleField)
 		
 	
 	case 3:
 		
-			r.StringField = make([]string, 0)
-	
 		
-		
-			return (*ArrayStringWrapper)(&r.StringField)
+			return (*ArrayString)(&r.StringField)
 		
 	
 	case 4:
 		
-			r.FloatField = make([]float32, 0)
-	
 		
-		
-			return (*ArrayFloatWrapper)(&r.FloatField)
+			return (*ArrayFloat)(&r.FloatField)
 		
 	
 	case 5:
 		
-			r.BoolField = make([]bool, 0)
-	
 		
-		
-			return (*ArrayBoolWrapper)(&r.BoolField)
+			return (*ArrayBool)(&r.BoolField)
 		
 	
 	case 6:
 		
-			r.BytesField = make([][]byte, 0)
-	
 		
-		
-			return (*ArrayBytesWrapper)(&r.BytesField)
+			return (*ArrayBytes)(&r.BytesField)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *ArrayTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch (i) { 
 	case 0:
-       	 	r.IntField = make([]int32,4)
+		r.IntField = make([]int32,4)
 r.IntField[0] = 1
 r.IntField[1] = 2
 r.IntField[2] = 3
 r.IntField[3] = 4
 
-		return
-	
-	
-        
+		
 	case 1:
-       	 	r.LongField = make([]int64,4)
+		r.LongField = make([]int64,4)
 r.LongField[0] = 5
 r.LongField[1] = 6
 r.LongField[2] = 7
 r.LongField[3] = 8
 
-		return
-	
-	
-        
+		
 	case 2:
-       	 	r.DoubleField = make([]float64,2)
+		r.DoubleField = make([]float64,2)
 r.DoubleField[0] = 1.5
 r.DoubleField[1] = 2.4
 
-		return
-	
-	
-        
+		
 	case 3:
-       	 	r.StringField = make([]string,2)
+		r.StringField = make([]string,2)
 r.StringField[0] = "abc"
 r.StringField[1] = "def"
 
-		return
-	
-	
-        
+		
 	case 4:
-       	 	r.FloatField = make([]float32,2)
+		r.FloatField = make([]float32,2)
 r.FloatField[0] = 1.23
 r.FloatField[1] = 3.45
 
-		return
-	
-	
-        
+		
 	case 5:
-       	 	r.BoolField = make([]bool,2)
+		r.BoolField = make([]bool,2)
 r.BoolField[0] = true
 r.BoolField[1] = false
 
-		return
-	
-	
-        
+		
 	case 6:
-       	 	r.BytesField = make([][]byte,2)
+		r.BytesField = make([][]byte,2)
 r.BytesField[0] = []byte("abc")
 r.BytesField[1] = []byte("def")
 
-		return
-	
-	
+		
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *ArrayTestRecord) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *ArrayTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *ArrayTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *ArrayTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *ArrayTestRecord) Finalize() { }

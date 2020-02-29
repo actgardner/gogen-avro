@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type AliasRecord struct {
-
+type AliasRecord struct { 
 	
 	
 		B string
@@ -27,40 +27,23 @@ type AliasRecord struct {
 
 }
 
-func NewAliasRecord() (*AliasRecord) {
-	return &AliasRecord{}
-}
-
-func DeserializeAliasRecord(r io.Reader) (*AliasRecord, error) {
-	t := NewAliasRecord()
+func DeserializeAliasRecord(r io.Reader) (t AliasRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeAliasRecordFromSchema(r io.Reader, schema string) (*AliasRecord, error) {
-	t := NewAliasRecord()
-
+func DeserializeAliasRecordFromSchema(r io.Reader, schema string) (t AliasRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeAliasRecord(r *AliasRecord, w io.Writer) error {
+func writeAliasRecord(r AliasRecord, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteString( r.B, w)
@@ -76,15 +59,15 @@ func writeAliasRecord(r *AliasRecord, w io.Writer) error {
 	return err
 }
 
-func (r *AliasRecord) Serialize(w io.Writer) error {
+func (r AliasRecord) Serialize(w io.Writer) error {
 	return writeAliasRecord(r, w)
 }
 
-func (r *AliasRecord) Schema() string {
+func (r AliasRecord) Schema() string {
 	return "{\"fields\":[{\"aliases\":[\"a\"],\"name\":\"b\",\"type\":\"string\"},{\"name\":\"d\",\"type\":\"string\"}],\"name\":\"AliasRecord\",\"type\":\"record\"}"
 }
 
-func (r *AliasRecord) SchemaName() string {
+func (r AliasRecord) SchemaName() string {
 	return "AliasRecord"
 }
 
@@ -112,21 +95,26 @@ func (r *AliasRecord) Get(i int) types.Field {
 			return (*types.String)(&r.D)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *AliasRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *AliasRecord) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *AliasRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *AliasRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *AliasRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *AliasRecord) Finalize() { }

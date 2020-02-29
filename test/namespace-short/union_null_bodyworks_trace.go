@@ -15,42 +15,29 @@ import (
 
 
 type UnionNullBodyworksTraceTypeEnum int
+
 const (
-
-	 UnionNullBodyworksTraceTypeEnumNull UnionNullBodyworksTraceTypeEnum = 0
-
-	 UnionNullBodyworksTraceTypeEnumBodyworksTrace UnionNullBodyworksTraceTypeEnum = 1
-
+	UnionNullBodyworksTraceTypeEnumBodyworksTrace UnionNullBodyworksTraceTypeEnum = 1
 )
 
-type UnionNullBodyworksTrace struct {
-
-	Null *types.NullVal
-
-	BodyworksTrace *BodyworksTrace
+type UnionNullBodyworksTrace struct { 
+	BodyworksTrace BodyworksTrace
 
 	UnionType UnionNullBodyworksTraceTypeEnum
 }
 
-func writeUnionNullBodyworksTrace(r *UnionNullBodyworksTrace, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionNullBodyworksTrace(r *UnionNullBodyworksTrace, w io.Writer) error { 
+	if r == nil {
+		return vm.WriteLong(int64(0), w)
+	} 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
-	case UnionNullBodyworksTraceTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
-        
+	switch r.UnionType{ 
 	case UnionNullBodyworksTraceTypeEnumBodyworksTrace:
 		return writeBodyworksTrace(r.BodyworksTrace, w)
-        
 	}
 	return fmt.Errorf("invalid value for *UnionNullBodyworksTrace")
-}
-
-func NewUnionNullBodyworksTrace() *UnionNullBodyworksTrace {
-	return &UnionNullBodyworksTrace{}
 }
 
 func (_ *UnionNullBodyworksTrace) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -59,30 +46,28 @@ func (_ *UnionNullBodyworksTrace) SetFloat(v float32) { panic("Unsupported opera
 func (_ *UnionNullBodyworksTrace) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionNullBodyworksTrace) SetLong(v int64) { 
 	r.UnionType = (UnionNullBodyworksTraceTypeEnum)(v)
 }
+
 func (r *UnionNullBodyworksTrace) Get(i int) types.Field {
-	switch (i) {
-	
-	case 0:
-		
-		
-		return r.Null
-		
-	
+	switch (i) { 
 	case 1:
 		
-		r.BodyworksTrace = NewBodyworksTrace()
+		r.BodyworksTrace = BodyworksTrace{}
 		
 		
-		return r.BodyworksTrace
+		return &r.BodyworksTrace
 		
 	
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionNullBodyworksTrace) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionNullBodyworksTrace) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) Finalize()  { }

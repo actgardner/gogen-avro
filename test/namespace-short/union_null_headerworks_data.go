@@ -15,42 +15,29 @@ import (
 
 
 type UnionNullHeaderworksDataTypeEnum int
+
 const (
-
-	 UnionNullHeaderworksDataTypeEnumNull UnionNullHeaderworksDataTypeEnum = 0
-
-	 UnionNullHeaderworksDataTypeEnumHeaderworksData UnionNullHeaderworksDataTypeEnum = 1
-
+	UnionNullHeaderworksDataTypeEnumHeaderworksData UnionNullHeaderworksDataTypeEnum = 1
 )
 
-type UnionNullHeaderworksData struct {
-
-	Null *types.NullVal
-
-	HeaderworksData *HeaderworksData
+type UnionNullHeaderworksData struct { 
+	HeaderworksData HeaderworksData
 
 	UnionType UnionNullHeaderworksDataTypeEnum
 }
 
-func writeUnionNullHeaderworksData(r *UnionNullHeaderworksData, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionNullHeaderworksData(r *UnionNullHeaderworksData, w io.Writer) error { 
+	if r == nil {
+		return vm.WriteLong(int64(0), w)
+	} 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
-	case UnionNullHeaderworksDataTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
-        
+	switch r.UnionType{ 
 	case UnionNullHeaderworksDataTypeEnumHeaderworksData:
 		return writeHeaderworksData(r.HeaderworksData, w)
-        
 	}
 	return fmt.Errorf("invalid value for *UnionNullHeaderworksData")
-}
-
-func NewUnionNullHeaderworksData() *UnionNullHeaderworksData {
-	return &UnionNullHeaderworksData{}
 }
 
 func (_ *UnionNullHeaderworksData) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -59,30 +46,28 @@ func (_ *UnionNullHeaderworksData) SetFloat(v float32) { panic("Unsupported oper
 func (_ *UnionNullHeaderworksData) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksData) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksData) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionNullHeaderworksData) SetLong(v int64) { 
 	r.UnionType = (UnionNullHeaderworksDataTypeEnum)(v)
 }
+
 func (r *UnionNullHeaderworksData) Get(i int) types.Field {
-	switch (i) {
-	
-	case 0:
-		
-		
-		return r.Null
-		
-	
+	switch (i) { 
 	case 1:
 		
-		r.HeaderworksData = NewHeaderworksData()
+		r.HeaderworksData = HeaderworksData{}
 		
 		
-		return r.HeaderworksData
+		return &r.HeaderworksData
 		
 	
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionNullHeaderworksData) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksData) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionNullHeaderworksData) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksData) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksData) Finalize()  { }

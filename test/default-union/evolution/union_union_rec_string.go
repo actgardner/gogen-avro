@@ -15,42 +15,32 @@ import (
 
 
 type UnionUnionRecStringTypeEnum int
+
 const (
+	UnionUnionRecStringTypeEnumUnionRec UnionUnionRecStringTypeEnum = 0
 
-	 UnionUnionRecStringTypeEnumUnionRec UnionUnionRecStringTypeEnum = 0
-
-	 UnionUnionRecStringTypeEnumString UnionUnionRecStringTypeEnum = 1
-
+	UnionUnionRecStringTypeEnumString UnionUnionRecStringTypeEnum = 1
 )
 
-type UnionUnionRecString struct {
-
-	UnionRec *UnionRec
+type UnionUnionRecString struct { 
+	UnionRec UnionRec
 
 	String string
 
 	UnionType UnionUnionRecStringTypeEnum
 }
 
-func writeUnionUnionRecString(r *UnionUnionRecString, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionUnionRecString(r UnionUnionRecString, w io.Writer) error { 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType{ 
 	case UnionUnionRecStringTypeEnumUnionRec:
 		return writeUnionRec(r.UnionRec, w)
-        
 	case UnionUnionRecStringTypeEnumString:
 		return vm.WriteString(r.String, w)
-        
 	}
-	return fmt.Errorf("invalid value for *UnionUnionRecString")
-}
-
-func NewUnionUnionRecString() *UnionUnionRecString {
-	return &UnionUnionRecString{}
+	return fmt.Errorf("invalid value for UnionUnionRecString")
 }
 
 func (_ *UnionUnionRecString) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -59,18 +49,19 @@ func (_ *UnionUnionRecString) SetFloat(v float32) { panic("Unsupported operation
 func (_ *UnionUnionRecString) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionUnionRecString) SetLong(v int64) { 
 	r.UnionType = (UnionUnionRecStringTypeEnum)(v)
 }
+
 func (r *UnionUnionRecString) Get(i int) types.Field {
-	switch (i) {
-	
+	switch (i) { 
 	case 0:
 		
-		r.UnionRec = NewUnionRec()
+		r.UnionRec = UnionRec{}
 		
 		
-		return r.UnionRec
+		return &r.UnionRec
 		
 	
 	case 1:
@@ -82,7 +73,10 @@ func (r *UnionUnionRecString) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionUnionRecString) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionUnionRecString) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) Finalize()  { }

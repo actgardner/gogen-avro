@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type StructTag struct {
-
+type StructTag struct { 
 	
 	
 		ProductName string `validate:"true"`
@@ -22,40 +22,23 @@ type StructTag struct {
 
 }
 
-func NewStructTag() (*StructTag) {
-	return &StructTag{}
-}
-
-func DeserializeStructTag(r io.Reader) (*StructTag, error) {
-	t := NewStructTag()
+func DeserializeStructTag(r io.Reader) (t StructTag, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeStructTagFromSchema(r io.Reader, schema string) (*StructTag, error) {
-	t := NewStructTag()
-
+func DeserializeStructTagFromSchema(r io.Reader, schema string) (t StructTag, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeStructTag(r *StructTag, w io.Writer) error {
+func writeStructTag(r StructTag, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteString( r.ProductName, w)
@@ -66,15 +49,15 @@ func writeStructTag(r *StructTag, w io.Writer) error {
 	return err
 }
 
-func (r *StructTag) Serialize(w io.Writer) error {
+func (r StructTag) Serialize(w io.Writer) error {
 	return writeStructTag(r, w)
 }
 
-func (r *StructTag) Schema() string {
+func (r StructTag) Schema() string {
 	return "{\"fields\":[{\"golang.tags\":\"validate:\\\"true\\\"\",\"name\":\"productName\",\"type\":\"string\"}],\"name\":\"StructTag\",\"type\":\"record\"}"
 }
 
-func (r *StructTag) SchemaName() string {
+func (r StructTag) SchemaName() string {
 	return "StructTag"
 }
 
@@ -96,19 +79,26 @@ func (r *StructTag) Get(i int) types.Field {
 			return (*types.String)(&r.ProductName)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *StructTag) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *StructTag) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *StructTag) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *StructTag) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *StructTag) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *StructTag) Finalize() { }

@@ -15,42 +15,32 @@ import (
 
 
 type UnionIp_addressEventTypeEnum int
+
 const (
+	UnionIp_addressEventTypeEnumIp_address UnionIp_addressEventTypeEnum = 0
 
-	 UnionIp_addressEventTypeEnumIp_address UnionIp_addressEventTypeEnum = 0
-
-	 UnionIp_addressEventTypeEnumEvent UnionIp_addressEventTypeEnum = 1
-
+	UnionIp_addressEventTypeEnumEvent UnionIp_addressEventTypeEnum = 1
 )
 
-type UnionIp_addressEvent struct {
-
+type UnionIp_addressEvent struct { 
 	Ip_address Ip_address
 
-	Event *Event
+	Event Event
 
 	UnionType UnionIp_addressEventTypeEnum
 }
 
-func writeUnionIp_addressEvent(r *UnionIp_addressEvent, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionIp_addressEvent(r UnionIp_addressEvent, w io.Writer) error { 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType{ 
 	case UnionIp_addressEventTypeEnumIp_address:
 		return writeIp_address(r.Ip_address, w)
-        
 	case UnionIp_addressEventTypeEnumEvent:
 		return writeEvent(r.Event, w)
-        
 	}
-	return fmt.Errorf("invalid value for *UnionIp_addressEvent")
-}
-
-func NewUnionIp_addressEvent() *UnionIp_addressEvent {
-	return &UnionIp_addressEvent{}
+	return fmt.Errorf("invalid value for UnionIp_addressEvent")
 }
 
 func (_ *UnionIp_addressEvent) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -59,12 +49,13 @@ func (_ *UnionIp_addressEvent) SetFloat(v float32) { panic("Unsupported operatio
 func (_ *UnionIp_addressEvent) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionIp_addressEvent) SetLong(v int64) { 
 	r.UnionType = (UnionIp_addressEventTypeEnum)(v)
 }
+
 func (r *UnionIp_addressEvent) Get(i int) types.Field {
-	switch (i) {
-	
+	switch (i) { 
 	case 0:
 		
 		
@@ -73,16 +64,19 @@ func (r *UnionIp_addressEvent) Get(i int) types.Field {
 	
 	case 1:
 		
-		r.Event = NewEvent()
+		r.Event = Event{}
 		
 		
-		return r.Event
+		return &r.Event
 		
 	
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionIp_addressEvent) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionIp_addressEvent) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) Finalize()  { }

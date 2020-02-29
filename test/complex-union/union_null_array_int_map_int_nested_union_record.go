@@ -15,56 +15,41 @@ import (
 
 
 type UnionNullArrayIntMapIntNestedUnionRecordTypeEnum int
+
 const (
+	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 1
 
-	 UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 0
+	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 2
 
-	 UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 1
-
-	 UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 2
-
-	 UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 3
-
+	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 3
 )
 
-type UnionNullArrayIntMapIntNestedUnionRecord struct {
-
-	Null *types.NullVal
-
+type UnionNullArrayIntMapIntNestedUnionRecord struct { 
 	ArrayInt []int32
 
-	MapInt *MapInt
+	MapInt MapInt
 
-	NestedUnionRecord *NestedUnionRecord
+	NestedUnionRecord NestedUnionRecord
 
 	UnionType UnionNullArrayIntMapIntNestedUnionRecordTypeEnum
 }
 
-func writeUnionNullArrayIntMapIntNestedUnionRecord(r *UnionNullArrayIntMapIntNestedUnionRecord, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionNullArrayIntMapIntNestedUnionRecord(r *UnionNullArrayIntMapIntNestedUnionRecord, w io.Writer) error { 
+	if r == nil {
+		return vm.WriteLong(int64(0), w)
+	} 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
-	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
-        
+	switch r.UnionType{ 
 	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt:
 		return writeArrayInt(r.ArrayInt, w)
-        
 	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt:
 		return writeMapInt(r.MapInt, w)
-        
 	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord:
 		return writeNestedUnionRecord(r.NestedUnionRecord, w)
-        
 	}
 	return fmt.Errorf("invalid value for *UnionNullArrayIntMapIntNestedUnionRecord")
-}
-
-func NewUnionNullArrayIntMapIntNestedUnionRecord() *UnionNullArrayIntMapIntNestedUnionRecord {
-	return &UnionNullArrayIntMapIntNestedUnionRecord{}
 }
 
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -73,24 +58,17 @@ func (_ *UnionNullArrayIntMapIntNestedUnionRecord) SetFloat(v float32) { panic("
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionNullArrayIntMapIntNestedUnionRecord) SetLong(v int64) { 
 	r.UnionType = (UnionNullArrayIntMapIntNestedUnionRecordTypeEnum)(v)
 }
+
 func (r *UnionNullArrayIntMapIntNestedUnionRecord) Get(i int) types.Field {
-	switch (i) {
-	
-	case 0:
-		
-		
-		return r.Null
-		
-	
+	switch (i) { 
 	case 1:
 		
-		r.ArrayInt = make([]int32, 0)
 		
-		
-		return (*ArrayIntWrapper)(&r.ArrayInt)
+		return (*ArrayInt)(&r.ArrayInt)
 		
 	
 	case 2:
@@ -98,21 +76,24 @@ func (r *UnionNullArrayIntMapIntNestedUnionRecord) Get(i int) types.Field {
 		r.MapInt = NewMapInt()
 		
 		
-		return r.MapInt
+		return &r.MapInt
 		
 	
 	case 3:
 		
-		r.NestedUnionRecord = NewNestedUnionRecord()
+		r.NestedUnionRecord = NestedUnionRecord{}
 		
 		
-		return r.NestedUnionRecord
+		return &r.NestedUnionRecord
 		
 	
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionNullArrayIntMapIntNestedUnionRecord) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionNullArrayIntMapIntNestedUnionRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) Finalize()  { }

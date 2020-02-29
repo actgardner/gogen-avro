@@ -14,8 +14,8 @@ import (
 )
 
 func NewSampleWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewSample()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := Sample{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewSampleReader(r io.Reader) (*SampleReader, error){
 		return nil, err
 	}
 
-	t := NewSample()
+	t := Sample{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewSampleReader(r io.Reader) (*SampleReader, error){
 	}, nil
 }
 
-func (r SampleReader) Read() (*Sample, error) {
-	t := NewSample()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r SampleReader) Read() (t Sample, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

@@ -14,8 +14,8 @@ import (
 )
 
 func NewEventWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewEvent()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := Event{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewEventReader(r io.Reader) (*EventReader, error){
 		return nil, err
 	}
 
-	t := NewEvent()
+	t := Event{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewEventReader(r io.Reader) (*EventReader, error){
 	}, nil
 }
 
-func (r EventReader) Read() (*Event, error) {
-	t := NewEvent()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r EventReader) Read() (t Event, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

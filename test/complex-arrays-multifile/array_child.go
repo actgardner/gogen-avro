@@ -13,7 +13,7 @@ import (
 	"github.com/actgardner/gogen-avro/vm"
 )
 
-func writeArrayChild(r []*Child, w io.Writer) error {
+func writeArrayChild(r []Child, w io.Writer) error {
 	err := vm.WriteLong(int64(len(r)),w)
 	if err != nil || len(r) == 0 {
 		return err
@@ -27,30 +27,32 @@ func writeArrayChild(r []*Child, w io.Writer) error {
 	return vm.WriteLong(0,w)
 }
 
+type ArrayChild []Child
 
+func (_ *ArrayChild) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *ArrayChild) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *ArrayChild) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *ArrayChild) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *ArrayChild) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *ArrayChild) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *ArrayChild) SetString(v string) { panic("Unsupported operation") }
+func (_ *ArrayChild) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *ArrayChild) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *ArrayChild) Clear(i int) { panic("Unsupported operation") }
+func (_ *ArrayChild) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *ArrayChild) ClearMap(key string) { panic("Unsupported operation") }
+func (_ *ArrayChild) Finalize() { }
+func (_ *ArrayChild) SetDefault(i int) { panic("Unsupported operation") }
 
-type ArrayChildWrapper []*Child
-
-func (_ *ArrayChildWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *ArrayChildWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *ArrayChildWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *ArrayChildWrapper) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *ArrayChildWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *ArrayChildWrapper) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *ArrayChildWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *ArrayChildWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *ArrayChildWrapper) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *ArrayChildWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayChildWrapper) Finalize() { }
-func (_ *ArrayChildWrapper) SetDefault(i int) { panic("Unsupported operation") }
-func (r *ArrayChildWrapper) AppendArray() types.Field {
-	var v *Child
+func (r *ArrayChild) AppendArray() types.Field {
+	var v Child
 	
-	v = NewChild()
+	v = Child{}
 
- 	
+	
 	*r = append(*r, v)
-        
-        return (*r)[len(*r)-1]
-        
+	
+	return &((*r)[len(*r)-1])
+	
 }
+

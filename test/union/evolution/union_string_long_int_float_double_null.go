@@ -15,24 +15,20 @@ import (
 
 
 type UnionStringLongIntFloatDoubleNullTypeEnum int
+
 const (
+	UnionStringLongIntFloatDoubleNullTypeEnumString UnionStringLongIntFloatDoubleNullTypeEnum = 0
 
-	 UnionStringLongIntFloatDoubleNullTypeEnumString UnionStringLongIntFloatDoubleNullTypeEnum = 0
+	UnionStringLongIntFloatDoubleNullTypeEnumLong UnionStringLongIntFloatDoubleNullTypeEnum = 1
 
-	 UnionStringLongIntFloatDoubleNullTypeEnumLong UnionStringLongIntFloatDoubleNullTypeEnum = 1
+	UnionStringLongIntFloatDoubleNullTypeEnumInt UnionStringLongIntFloatDoubleNullTypeEnum = 2
 
-	 UnionStringLongIntFloatDoubleNullTypeEnumInt UnionStringLongIntFloatDoubleNullTypeEnum = 2
+	UnionStringLongIntFloatDoubleNullTypeEnumFloat UnionStringLongIntFloatDoubleNullTypeEnum = 3
 
-	 UnionStringLongIntFloatDoubleNullTypeEnumFloat UnionStringLongIntFloatDoubleNullTypeEnum = 3
-
-	 UnionStringLongIntFloatDoubleNullTypeEnumDouble UnionStringLongIntFloatDoubleNullTypeEnum = 4
-
-	 UnionStringLongIntFloatDoubleNullTypeEnumNull UnionStringLongIntFloatDoubleNullTypeEnum = 5
-
+	UnionStringLongIntFloatDoubleNullTypeEnumDouble UnionStringLongIntFloatDoubleNullTypeEnum = 4
 )
 
-type UnionStringLongIntFloatDoubleNull struct {
-
+type UnionStringLongIntFloatDoubleNull struct { 
 	String string
 
 	Long int64
@@ -43,42 +39,29 @@ type UnionStringLongIntFloatDoubleNull struct {
 
 	Double float64
 
-	Null *types.NullVal
-
 	UnionType UnionStringLongIntFloatDoubleNullTypeEnum
 }
 
-func writeUnionStringLongIntFloatDoubleNull(r *UnionStringLongIntFloatDoubleNull, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionStringLongIntFloatDoubleNull(r *UnionStringLongIntFloatDoubleNull, w io.Writer) error { 
+	if r == nil {
+		return vm.WriteLong(int64(5), w)
+	} 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType{ 
 	case UnionStringLongIntFloatDoubleNullTypeEnumString:
 		return vm.WriteString(r.String, w)
-        
 	case UnionStringLongIntFloatDoubleNullTypeEnumLong:
 		return vm.WriteLong(r.Long, w)
-        
 	case UnionStringLongIntFloatDoubleNullTypeEnumInt:
 		return vm.WriteInt(r.Int, w)
-        
 	case UnionStringLongIntFloatDoubleNullTypeEnumFloat:
 		return vm.WriteFloat(r.Float, w)
-        
 	case UnionStringLongIntFloatDoubleNullTypeEnumDouble:
 		return vm.WriteDouble(r.Double, w)
-        
-	case UnionStringLongIntFloatDoubleNullTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
-        
 	}
 	return fmt.Errorf("invalid value for *UnionStringLongIntFloatDoubleNull")
-}
-
-func NewUnionStringLongIntFloatDoubleNull() *UnionStringLongIntFloatDoubleNull {
-	return &UnionStringLongIntFloatDoubleNull{}
 }
 
 func (_ *UnionStringLongIntFloatDoubleNull) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -87,12 +70,13 @@ func (_ *UnionStringLongIntFloatDoubleNull) SetFloat(v float32) { panic("Unsuppo
 func (_ *UnionStringLongIntFloatDoubleNull) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionStringLongIntFloatDoubleNull) SetLong(v int64) { 
 	r.UnionType = (UnionStringLongIntFloatDoubleNullTypeEnum)(v)
 }
+
 func (r *UnionStringLongIntFloatDoubleNull) Get(i int) types.Field {
-	switch (i) {
-	
+	switch (i) { 
 	case 0:
 		
 		
@@ -123,16 +107,13 @@ func (r *UnionStringLongIntFloatDoubleNull) Get(i int) types.Field {
 		return (*types.Double)(&r.Double)
 		
 	
-	case 5:
-		
-		
-		return r.Null
-		
-	
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionStringLongIntFloatDoubleNull) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionStringLongIntFloatDoubleNull) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) Finalize()  { }

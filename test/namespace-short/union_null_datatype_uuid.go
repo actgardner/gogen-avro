@@ -15,42 +15,29 @@ import (
 
 
 type UnionNullDatatypeUUIDTypeEnum int
+
 const (
-
-	 UnionNullDatatypeUUIDTypeEnumNull UnionNullDatatypeUUIDTypeEnum = 0
-
-	 UnionNullDatatypeUUIDTypeEnumDatatypeUUID UnionNullDatatypeUUIDTypeEnum = 1
-
+	UnionNullDatatypeUUIDTypeEnumDatatypeUUID UnionNullDatatypeUUIDTypeEnum = 1
 )
 
-type UnionNullDatatypeUUID struct {
-
-	Null *types.NullVal
-
-	DatatypeUUID *DatatypeUUID
+type UnionNullDatatypeUUID struct { 
+	DatatypeUUID DatatypeUUID
 
 	UnionType UnionNullDatatypeUUIDTypeEnum
 }
 
-func writeUnionNullDatatypeUUID(r *UnionNullDatatypeUUID, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionNullDatatypeUUID(r *UnionNullDatatypeUUID, w io.Writer) error { 
+	if r == nil {
+		return vm.WriteLong(int64(0), w)
+	} 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
-	case UnionNullDatatypeUUIDTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
-        
+	switch r.UnionType{ 
 	case UnionNullDatatypeUUIDTypeEnumDatatypeUUID:
 		return writeDatatypeUUID(r.DatatypeUUID, w)
-        
 	}
 	return fmt.Errorf("invalid value for *UnionNullDatatypeUUID")
-}
-
-func NewUnionNullDatatypeUUID() *UnionNullDatatypeUUID {
-	return &UnionNullDatatypeUUID{}
 }
 
 func (_ *UnionNullDatatypeUUID) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -59,30 +46,28 @@ func (_ *UnionNullDatatypeUUID) SetFloat(v float32) { panic("Unsupported operati
 func (_ *UnionNullDatatypeUUID) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionNullDatatypeUUID) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionNullDatatypeUUID) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionNullDatatypeUUID) SetLong(v int64) { 
 	r.UnionType = (UnionNullDatatypeUUIDTypeEnum)(v)
 }
+
 func (r *UnionNullDatatypeUUID) Get(i int) types.Field {
-	switch (i) {
-	
-	case 0:
-		
-		
-		return r.Null
-		
-	
+	switch (i) { 
 	case 1:
 		
-		r.DatatypeUUID = NewDatatypeUUID()
+		r.DatatypeUUID = DatatypeUUID{}
 		
 		
-		return r.DatatypeUUID
+		return &r.DatatypeUUID
 		
 	
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionNullDatatypeUUID) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNullDatatypeUUID) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionNullDatatypeUUID) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNullDatatypeUUID) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullDatatypeUUID) Finalize()  { }

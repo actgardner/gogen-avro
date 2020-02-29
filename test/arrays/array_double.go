@@ -26,27 +26,29 @@ func writeArrayDouble(r []float64, w io.Writer) error {
 	return vm.WriteLong(0,w)
 }
 
+type ArrayDouble []float64
 
+func (_ *ArrayDouble) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *ArrayDouble) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *ArrayDouble) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *ArrayDouble) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *ArrayDouble) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *ArrayDouble) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *ArrayDouble) SetString(v string) { panic("Unsupported operation") }
+func (_ *ArrayDouble) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *ArrayDouble) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *ArrayDouble) Clear(i int) { panic("Unsupported operation") }
+func (_ *ArrayDouble) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *ArrayDouble) ClearMap(key string) { panic("Unsupported operation") }
+func (_ *ArrayDouble) Finalize() { }
+func (_ *ArrayDouble) SetDefault(i int) { panic("Unsupported operation") }
 
-type ArrayDoubleWrapper []float64
-
-func (_ *ArrayDoubleWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) Finalize() { }
-func (_ *ArrayDoubleWrapper) SetDefault(i int) { panic("Unsupported operation") }
-func (r *ArrayDoubleWrapper) AppendArray() types.Field {
+func (r *ArrayDouble) AppendArray() types.Field {
 	var v float64
 	
 	*r = append(*r, v)
-         
-        return (*types.Double)(&(*r)[len(*r)-1])
-        
+	
+	return (*types.Double)(&(*r)[len(*r)-1])
+	
 }
+

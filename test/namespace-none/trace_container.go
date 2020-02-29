@@ -14,8 +14,8 @@ import (
 )
 
 func NewTraceWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewTrace()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := Trace{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewTraceReader(r io.Reader) (*TraceReader, error){
 		return nil, err
 	}
 
-	t := NewTrace()
+	t := Trace{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewTraceReader(r io.Reader) (*TraceReader, error){
 	}, nil
 }
 
-func (r TraceReader) Read() (*Trace, error) {
-	t := NewTrace()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r TraceReader) Read() (t Trace, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

@@ -3,85 +3,68 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type MapTestRecord struct {
-
+type MapTestRecord struct { 
 	
 	
-		IntField *MapInt
-	
-
-	
-	
-		LongField *MapLong
+		IntField MapInt
 	
 
 	
 	
-		DoubleField *MapDouble
+		LongField MapLong
 	
 
 	
 	
-		StringField *MapString
+		DoubleField MapDouble
 	
 
 	
 	
-		FloatField *MapFloat
+		StringField MapString
 	
 
 	
 	
-		BoolField *MapBool
+		FloatField MapFloat
 	
 
 	
 	
-		BytesField *MapBytes
+		BoolField MapBool
+	
+
+	
+	
+		BytesField MapBytes
 	
 
 }
 
-func NewMapTestRecord() (*MapTestRecord) {
-	return &MapTestRecord{}
-}
-
-func DeserializeMapTestRecord(r io.Reader) (*MapTestRecord, error) {
-	t := NewMapTestRecord()
+func DeserializeMapTestRecord(r io.Reader) (t MapTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeMapTestRecordFromSchema(r io.Reader, schema string) (*MapTestRecord, error) {
-	t := NewMapTestRecord()
-
+func DeserializeMapTestRecordFromSchema(r io.Reader, schema string) (t MapTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeMapTestRecord(r *MapTestRecord, w io.Writer) error {
+func writeMapTestRecord(r MapTestRecord, w io.Writer) error {
 	var err error
 	
 	err = writeMapInt( r.IntField, w)
@@ -122,15 +105,15 @@ func writeMapTestRecord(r *MapTestRecord, w io.Writer) error {
 	return err
 }
 
-func (r *MapTestRecord) Serialize(w io.Writer) error {
+func (r MapTestRecord) Serialize(w io.Writer) error {
 	return writeMapTestRecord(r, w)
 }
 
-func (r *MapTestRecord) Schema() string {
+func (r MapTestRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":{\"type\":\"map\",\"values\":\"int\"}},{\"name\":\"LongField\",\"type\":{\"type\":\"map\",\"values\":\"long\"}},{\"name\":\"DoubleField\",\"type\":{\"type\":\"map\",\"values\":\"double\"}},{\"name\":\"StringField\",\"type\":{\"type\":\"map\",\"values\":\"string\"}},{\"name\":\"FloatField\",\"type\":{\"type\":\"map\",\"values\":\"float\"}},{\"name\":\"BoolField\",\"type\":{\"type\":\"map\",\"values\":\"boolean\"}},{\"name\":\"BytesField\",\"type\":{\"type\":\"map\",\"values\":\"bytes\"}}],\"name\":\"MapTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *MapTestRecord) SchemaName() string {
+func (r MapTestRecord) SchemaName() string {
 	return "MapTestRecord"
 }
 
@@ -149,91 +132,86 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 0:
 		
 			r.IntField = NewMapInt()
-	
+
 		
 		
-			return r.IntField
+			return &r.IntField
 		
 	
 	case 1:
 		
 			r.LongField = NewMapLong()
-	
+
 		
 		
-			return r.LongField
+			return &r.LongField
 		
 	
 	case 2:
 		
 			r.DoubleField = NewMapDouble()
-	
+
 		
 		
-			return r.DoubleField
+			return &r.DoubleField
 		
 	
 	case 3:
 		
 			r.StringField = NewMapString()
-	
+
 		
 		
-			return r.StringField
+			return &r.StringField
 		
 	
 	case 4:
 		
 			r.FloatField = NewMapFloat()
-	
+
 		
 		
-			return r.FloatField
+			return &r.FloatField
 		
 	
 	case 5:
 		
 			r.BoolField = NewMapBool()
-	
+
 		
 		
-			return r.BoolField
+			return &r.BoolField
 		
 	
 	case 6:
 		
 			r.BytesField = NewMapBytes()
+
+		
+		
+			return &r.BytesField
+		
 	
-		
-		
-			return r.BytesField
-		
-	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *MapTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
-        
-	
-        
-	
-        
-	
-        
-	
-        
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *MapTestRecord) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *MapTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *MapTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *MapTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *MapTestRecord) Finalize() { }

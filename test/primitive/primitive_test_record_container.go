@@ -14,8 +14,8 @@ import (
 )
 
 func NewPrimitiveTestRecordWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewPrimitiveTestRecord()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := PrimitiveTestRecord{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewPrimitiveTestRecordReader(r io.Reader) (*PrimitiveTestRecordReader, erro
 		return nil, err
 	}
 
-	t := NewPrimitiveTestRecord()
+	t := PrimitiveTestRecord{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewPrimitiveTestRecordReader(r io.Reader) (*PrimitiveTestRecordReader, erro
 	}, nil
 }
 
-func (r PrimitiveTestRecordReader) Read() (*PrimitiveTestRecord, error) {
-	t := NewPrimitiveTestRecord()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r PrimitiveTestRecordReader) Read() (t PrimitiveTestRecord, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type UnionRecord struct {
-
+type UnionRecord struct { 
 	
 	
 		Id string
@@ -27,40 +27,23 @@ type UnionRecord struct {
 
 }
 
-func NewUnionRecord() (*UnionRecord) {
-	return &UnionRecord{}
-}
-
-func DeserializeUnionRecord(r io.Reader) (*UnionRecord, error) {
-	t := NewUnionRecord()
+func DeserializeUnionRecord(r io.Reader) (t UnionRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (*UnionRecord, error) {
-	t := NewUnionRecord()
-
+func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (t UnionRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeUnionRecord(r *UnionRecord, w io.Writer) error {
+func writeUnionRecord(r UnionRecord, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteString( r.Id, w)
@@ -76,15 +59,15 @@ func writeUnionRecord(r *UnionRecord, w io.Writer) error {
 	return err
 }
 
-func (r *UnionRecord) Serialize(w io.Writer) error {
+func (r UnionRecord) Serialize(w io.Writer) error {
 	return writeUnionRecord(r, w)
 }
 
-func (r *UnionRecord) Schema() string {
+func (r UnionRecord) Schema() string {
 	return "{\"fields\":[{\"default\":\"test_id\",\"name\":\"id\",\"type\":\"string\"},{\"default\":100,\"name\":\"age\",\"type\":\"int\"}],\"name\":\"UnionRecord\",\"type\":\"record\"}"
 }
 
-func (r *UnionRecord) SchemaName() string {
+func (r UnionRecord) SchemaName() string {
 	return "UnionRecord"
 }
 
@@ -112,29 +95,32 @@ func (r *UnionRecord) Get(i int) types.Field {
 			return (*types.Int)(&r.Age)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *UnionRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch (i) { 
 	case 0:
-       	 	r.Id = "test_id"
-		return
-	
-	
-        
+		r.Id = "test_id"
+		
 	case 1:
-       	 	r.Age = 100
-		return
-	
-	
+		r.Age = 100
+		
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *UnionRecord) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *UnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionRecord) Finalize() { }

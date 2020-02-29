@@ -14,8 +14,8 @@ import (
 )
 
 func NewBodyworksDatatypeUUIDWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewBodyworksDatatypeUUID()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := BodyworksDatatypeUUID{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewBodyworksDatatypeUUIDReader(r io.Reader) (*BodyworksDatatypeUUIDReader, 
 		return nil, err
 	}
 
-	t := NewBodyworksDatatypeUUID()
+	t := BodyworksDatatypeUUID{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewBodyworksDatatypeUUIDReader(r io.Reader) (*BodyworksDatatypeUUIDReader, 
 	}, nil
 }
 
-func (r BodyworksDatatypeUUIDReader) Read() (*BodyworksDatatypeUUID, error) {
-	t := NewBodyworksDatatypeUUID()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r BodyworksDatatypeUUIDReader) Read() (t BodyworksDatatypeUUID, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

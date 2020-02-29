@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type NestedRecord struct {
-
+type NestedRecord struct { 
 	
 	
 		StringField string
@@ -32,40 +32,23 @@ type NestedRecord struct {
 
 }
 
-func NewNestedRecord() (*NestedRecord) {
-	return &NestedRecord{}
-}
-
-func DeserializeNestedRecord(r io.Reader) (*NestedRecord, error) {
-	t := NewNestedRecord()
+func DeserializeNestedRecord(r io.Reader) (t NestedRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeNestedRecordFromSchema(r io.Reader, schema string) (*NestedRecord, error) {
-	t := NewNestedRecord()
-
+func DeserializeNestedRecordFromSchema(r io.Reader, schema string) (t NestedRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeNestedRecord(r *NestedRecord, w io.Writer) error {
+func writeNestedRecord(r NestedRecord, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteString( r.StringField, w)
@@ -86,15 +69,15 @@ func writeNestedRecord(r *NestedRecord, w io.Writer) error {
 	return err
 }
 
-func (r *NestedRecord) Serialize(w io.Writer) error {
+func (r NestedRecord) Serialize(w io.Writer) error {
 	return writeNestedRecord(r, w)
 }
 
-func (r *NestedRecord) Schema() string {
+func (r NestedRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"NestedRecord\",\"type\":\"record\"}"
 }
 
-func (r *NestedRecord) SchemaName() string {
+func (r NestedRecord) SchemaName() string {
 	return "NestedRecord"
 }
 
@@ -128,23 +111,26 @@ func (r *NestedRecord) Get(i int) types.Field {
 			return (*types.Bytes)(&r.BytesField)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *NestedRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
-        
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *NestedRecord) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *NestedRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *NestedRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *NestedRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NestedRecord) Finalize() { }

@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type FixedDefaultTestRecord struct {
-
+type FixedDefaultTestRecord struct { 
 	
 	
 		FixedField TestFixedDefaultType
@@ -22,40 +22,23 @@ type FixedDefaultTestRecord struct {
 
 }
 
-func NewFixedDefaultTestRecord() (*FixedDefaultTestRecord) {
-	return &FixedDefaultTestRecord{}
-}
-
-func DeserializeFixedDefaultTestRecord(r io.Reader) (*FixedDefaultTestRecord, error) {
-	t := NewFixedDefaultTestRecord()
+func DeserializeFixedDefaultTestRecord(r io.Reader) (t FixedDefaultTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeFixedDefaultTestRecordFromSchema(r io.Reader, schema string) (*FixedDefaultTestRecord, error) {
-	t := NewFixedDefaultTestRecord()
-
+func DeserializeFixedDefaultTestRecordFromSchema(r io.Reader, schema string) (t FixedDefaultTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeFixedDefaultTestRecord(r *FixedDefaultTestRecord, w io.Writer) error {
+func writeFixedDefaultTestRecord(r FixedDefaultTestRecord, w io.Writer) error {
 	var err error
 	
 	err = writeTestFixedDefaultType( r.FixedField, w)
@@ -66,15 +49,15 @@ func writeFixedDefaultTestRecord(r *FixedDefaultTestRecord, w io.Writer) error {
 	return err
 }
 
-func (r *FixedDefaultTestRecord) Serialize(w io.Writer) error {
+func (r FixedDefaultTestRecord) Serialize(w io.Writer) error {
 	return writeFixedDefaultTestRecord(r, w)
 }
 
-func (r *FixedDefaultTestRecord) Schema() string {
+func (r FixedDefaultTestRecord) Schema() string {
 	return "{\"fields\":[{\"default\":\"\\u0000\\u0001\\u0012\\u0000\\u0013C\\u0000\\u0001\\u0012\\u0000\\u0013S\",\"name\":\"FixedField\",\"type\":{\"name\":\"TestFixedDefaultType\",\"size\":12,\"type\":\"fixed\"}}],\"name\":\"FixedDefaultTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *FixedDefaultTestRecord) SchemaName() string {
+func (r FixedDefaultTestRecord) SchemaName() string {
 	return "FixedDefaultTestRecord"
 }
 
@@ -96,23 +79,29 @@ func (r *FixedDefaultTestRecord) Get(i int) types.Field {
 			return (*TestFixedDefaultTypeWrapper)(&r.FixedField)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *FixedDefaultTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch (i) { 
 	case 0:
-       	 	copy(r.FixedField[:], []byte("\x00\x01\x12\x00\x13C\x00\x01\x12\x00\x13S"))
-		return
-	
-	
+		copy(r.FixedField[:], []byte("\x00\x01\x12\x00\x13C\x00\x01\x12\x00\x13S"))
+		
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *FixedDefaultTestRecord) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *FixedDefaultTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *FixedDefaultTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *FixedDefaultTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *FixedDefaultTestRecord) Finalize() { }

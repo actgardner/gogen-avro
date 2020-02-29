@@ -29,7 +29,9 @@ func (r *TestFixedDefaultTypeWrapper) SetBytes(v []byte) {
 func (_ *TestFixedDefaultTypeWrapper) SetString(v string) { panic("Unsupported operation") }
 func (_ *TestFixedDefaultTypeWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *TestFixedDefaultTypeWrapper) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *TestFixedDefaultTypeWrapper) Clear(i int) { panic("Unsupported operation") }
 func (_ *TestFixedDefaultTypeWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *TestFixedDefaultTypeWrapper) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *TestFixedDefaultTypeWrapper) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *TestFixedDefaultTypeWrapper) Finalize() { }
 func (_ *TestFixedDefaultTypeWrapper) SetDefault(i int) { panic("Unsupported operation") }

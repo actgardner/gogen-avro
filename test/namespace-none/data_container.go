@@ -14,8 +14,8 @@ import (
 )
 
 func NewDataWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewData()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := Data{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewDataReader(r io.Reader) (*DataReader, error){
 		return nil, err
 	}
 
-	t := NewData()
+	t := Data{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewDataReader(r io.Reader) (*DataReader, error){
 	}, nil
 }
 
-func (r DataReader) Read() (*Data, error) {
-	t := NewData()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r DataReader) Read() (t Data, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

@@ -7,57 +7,38 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // Trace  
-type Trace struct {
-
-	
+type Trace struct { 
 	// Trace Identifier
-	
 	
 		TraceId *UnionNullUUID
 	
 
 }
 
-func NewTrace() (*Trace) {
-	return &Trace{}
-}
-
-func DeserializeTrace(r io.Reader) (*Trace, error) {
-	t := NewTrace()
+func DeserializeTrace(r io.Reader) (t Trace, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeTraceFromSchema(r io.Reader, schema string) (*Trace, error) {
-	t := NewTrace()
-
+func DeserializeTraceFromSchema(r io.Reader, schema string) (t Trace, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeTrace(r *Trace, w io.Writer) error {
+func writeTrace(r Trace, w io.Writer) error {
 	var err error
 	
 	err = writeUnionNullUUID( r.TraceId, w)
@@ -68,15 +49,15 @@ func writeTrace(r *Trace, w io.Writer) error {
 	return err
 }
 
-func (r *Trace) Serialize(w io.Writer) error {
+func (r Trace) Serialize(w io.Writer) error {
 	return writeTrace(r, w)
 }
 
-func (r *Trace) Schema() string {
+func (r Trace) Schema() string {
 	return "{\"doc\":\"Trace\",\"fields\":[{\"default\":null,\"doc\":\"Trace Identifier\",\"name\":\"traceId\",\"type\":[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"headerworks.datatype\",\"type\":\"record\"}]}],\"name\":\"bodyworks.Trace\",\"type\":\"record\"}"
 }
 
-func (r *Trace) SchemaName() string {
+func (r Trace) SchemaName() string {
 	return "bodyworks.Trace"
 }
 
@@ -94,31 +75,38 @@ func (r *Trace) Get(i int) types.Field {
 	
 	case 0:
 		
-			r.TraceId = NewUnionNullUUID()
-	
+			r.TraceId = &UnionNullUUID{}
+
 		
 		
 			return r.TraceId
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *Trace) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch (i) { 
 	case 0:
-       	 	r.TraceId = NewUnionNullUUID()
-
-		return
-	
-	
+		r.TraceId = nil
+		
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *Trace) Clear(i int) {
+	switch (i) { 
+	case 0:
+		r.TraceId = nil
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *Trace) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *Trace) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *Trace) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Trace) Finalize() { }

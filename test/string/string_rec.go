@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type StringRec struct {
-
+type StringRec struct { 
 	
 	
 		ProductName string
@@ -22,40 +22,23 @@ type StringRec struct {
 
 }
 
-func NewStringRec() (*StringRec) {
-	return &StringRec{}
-}
-
-func DeserializeStringRec(r io.Reader) (*StringRec, error) {
-	t := NewStringRec()
+func DeserializeStringRec(r io.Reader) (t StringRec, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeStringRecFromSchema(r io.Reader, schema string) (*StringRec, error) {
-	t := NewStringRec()
-
+func DeserializeStringRecFromSchema(r io.Reader, schema string) (t StringRec, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeStringRec(r *StringRec, w io.Writer) error {
+func writeStringRec(r StringRec, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteString( r.ProductName, w)
@@ -66,15 +49,15 @@ func writeStringRec(r *StringRec, w io.Writer) error {
 	return err
 }
 
-func (r *StringRec) Serialize(w io.Writer) error {
+func (r StringRec) Serialize(w io.Writer) error {
 	return writeStringRec(r, w)
 }
 
-func (r *StringRec) Schema() string {
+func (r StringRec) Schema() string {
 	return "{\"fields\":[{\"name\":\"productName\",\"type\":\"string\"}],\"name\":\"StringRec\",\"type\":\"record\"}"
 }
 
-func (r *StringRec) SchemaName() string {
+func (r StringRec) SchemaName() string {
 	return "StringRec"
 }
 
@@ -96,19 +79,26 @@ func (r *StringRec) Get(i int) types.Field {
 			return (*types.String)(&r.ProductName)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *StringRec) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch (i) { 
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *StringRec) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *StringRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *StringRec) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *StringRec) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *StringRec) Finalize() { }

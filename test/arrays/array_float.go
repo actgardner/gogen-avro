@@ -26,27 +26,29 @@ func writeArrayFloat(r []float32, w io.Writer) error {
 	return vm.WriteLong(0,w)
 }
 
+type ArrayFloat []float32
 
+func (_ *ArrayFloat) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *ArrayFloat) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *ArrayFloat) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *ArrayFloat) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *ArrayFloat) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *ArrayFloat) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *ArrayFloat) SetString(v string) { panic("Unsupported operation") }
+func (_ *ArrayFloat) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *ArrayFloat) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *ArrayFloat) Clear(i int) { panic("Unsupported operation") }
+func (_ *ArrayFloat) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *ArrayFloat) ClearMap(key string) { panic("Unsupported operation") }
+func (_ *ArrayFloat) Finalize() { }
+func (_ *ArrayFloat) SetDefault(i int) { panic("Unsupported operation") }
 
-type ArrayFloatWrapper []float32
-
-func (_ *ArrayFloatWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) Finalize() { }
-func (_ *ArrayFloatWrapper) SetDefault(i int) { panic("Unsupported operation") }
-func (r *ArrayFloatWrapper) AppendArray() types.Field {
+func (r *ArrayFloat) AppendArray() types.Field {
 	var v float32
 	
 	*r = append(*r, v)
-         
-        return (*types.Float)(&(*r)[len(*r)-1])
-        
+	
+	return (*types.Float)(&(*r)[len(*r)-1])
+	
 }
+

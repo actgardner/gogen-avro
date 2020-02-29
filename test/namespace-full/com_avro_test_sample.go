@@ -7,64 +7,43 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // GoGen test  
-type ComAvroTestSample struct {
-
-	
+type ComAvroTestSample struct { 
 	// Core data information required for any event
-	
 	
 		Header *UnionNullHeaderworksData
 	
 
-	
 	// Core data information required for any event
-	
 	
 		Body *UnionNullBodyworksData
 	
 
 }
 
-func NewComAvroTestSample() (*ComAvroTestSample) {
-	return &ComAvroTestSample{}
-}
-
-func DeserializeComAvroTestSample(r io.Reader) (*ComAvroTestSample, error) {
-	t := NewComAvroTestSample()
+func DeserializeComAvroTestSample(r io.Reader) (t ComAvroTestSample, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeComAvroTestSampleFromSchema(r io.Reader, schema string) (*ComAvroTestSample, error) {
-	t := NewComAvroTestSample()
-
+func DeserializeComAvroTestSampleFromSchema(r io.Reader, schema string) (t ComAvroTestSample, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeComAvroTestSample(r *ComAvroTestSample, w io.Writer) error {
+func writeComAvroTestSample(r ComAvroTestSample, w io.Writer) error {
 	var err error
 	
 	err = writeUnionNullHeaderworksData( r.Header, w)
@@ -80,15 +59,15 @@ func writeComAvroTestSample(r *ComAvroTestSample, w io.Writer) error {
 	return err
 }
 
-func (r *ComAvroTestSample) Serialize(w io.Writer) error {
+func (r ComAvroTestSample) Serialize(w io.Writer) error {
 	return writeComAvroTestSample(r, w)
 }
 
-func (r *ComAvroTestSample) Schema() string {
+func (r ComAvroTestSample) Schema() string {
 	return "{\"doc\":\"GoGen test\",\"fields\":[{\"default\":null,\"doc\":\"Core data information required for any event\",\"name\":\"header\",\"type\":[\"null\",{\"doc\":\"Common information related to the event which must be included in any clean event\",\"fields\":[{\"default\":null,\"doc\":\"Unique identifier for the event used for de-duplication and tracing.\",\"name\":\"uuid\",\"type\":[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"headerworks.datatype\",\"type\":\"record\"}]},{\"default\":null,\"doc\":\"Fully qualified name of the host that generated the event that generated the data.\",\"name\":\"hostname\",\"type\":[\"null\",\"string\"]},{\"default\":null,\"doc\":\"Trace information not redundant with this object\",\"name\":\"trace\",\"type\":[\"null\",{\"doc\":\"Trace\",\"fields\":[{\"default\":null,\"doc\":\"Trace Identifier\",\"name\":\"traceId\",\"type\":[\"null\",\"headerworks.datatype.UUID\"]}],\"name\":\"Trace\",\"type\":\"record\"}]}],\"name\":\"Data\",\"namespace\":\"headerworks\",\"type\":\"record\"}]},{\"default\":null,\"doc\":\"Core data information required for any event\",\"name\":\"body\",\"type\":[\"null\",{\"doc\":\"Common information related to the event which must be included in any clean event\",\"fields\":[{\"default\":null,\"doc\":\"Unique identifier for the event used for de-duplication and tracing.\",\"name\":\"uuid\",\"type\":[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"bodyworks.datatype\",\"type\":\"record\"}]},{\"default\":null,\"doc\":\"Fully qualified name of the host that generated the event that generated the data.\",\"name\":\"hostname\",\"type\":[\"null\",\"string\"]},{\"default\":null,\"doc\":\"Trace information not redundant with this object\",\"name\":\"trace\",\"type\":[\"null\",{\"doc\":\"Trace\",\"fields\":[{\"default\":null,\"doc\":\"Trace Identifier\",\"name\":\"traceId\",\"type\":[\"null\",\"headerworks.datatype.UUID\"]}],\"name\":\"Trace\",\"type\":\"record\"}]}],\"name\":\"Data\",\"namespace\":\"bodyworks\",\"type\":\"record\"}]}],\"name\":\"com.avro.test.sample\",\"type\":\"record\"}"
 }
 
-func (r *ComAvroTestSample) SchemaName() string {
+func (r ComAvroTestSample) SchemaName() string {
 	return "com.avro.test.sample"
 }
 
@@ -106,8 +85,8 @@ func (r *ComAvroTestSample) Get(i int) types.Field {
 	
 	case 0:
 		
-			r.Header = NewUnionNullHeaderworksData()
-	
+			r.Header = &UnionNullHeaderworksData{}
+
 		
 		
 			return r.Header
@@ -115,38 +94,43 @@ func (r *ComAvroTestSample) Get(i int) types.Field {
 	
 	case 1:
 		
-			r.Body = NewUnionNullBodyworksData()
-	
+			r.Body = &UnionNullBodyworksData{}
+
 		
 		
 			return r.Body
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *ComAvroTestSample) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch (i) { 
 	case 0:
-       	 	r.Header = NewUnionNullHeaderworksData()
-
-		return
-	
-	
-        
+		r.Header = nil
+		
 	case 1:
-       	 	r.Body = NewUnionNullBodyworksData()
-
-		return
-	
-	
+		r.Body = nil
+		
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *ComAvroTestSample) Clear(i int) {
+	switch (i) { 
+	case 0:
+		r.Header = nil
+	case 1:
+		r.Body = nil
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *ComAvroTestSample) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *ComAvroTestSample) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *ComAvroTestSample) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *ComAvroTestSample) Finalize() { }

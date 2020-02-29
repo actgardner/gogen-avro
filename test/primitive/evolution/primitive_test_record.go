@@ -7,14 +7,14 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
   
-type PrimitiveTestRecord struct {
-
+type PrimitiveTestRecord struct { 
 	
 	
 		LongField int64
@@ -57,40 +57,23 @@ type PrimitiveTestRecord struct {
 
 }
 
-func NewPrimitiveTestRecord() (*PrimitiveTestRecord) {
-	return &PrimitiveTestRecord{}
-}
-
-func DeserializePrimitiveTestRecord(r io.Reader) (*PrimitiveTestRecord, error) {
-	t := NewPrimitiveTestRecord()
+func DeserializePrimitiveTestRecord(r io.Reader) (t PrimitiveTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializePrimitiveTestRecordFromSchema(r io.Reader, schema string) (*PrimitiveTestRecord, error) {
-	t := NewPrimitiveTestRecord()
-
+func DeserializePrimitiveTestRecordFromSchema(r io.Reader, schema string) (t PrimitiveTestRecord, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writePrimitiveTestRecord(r *PrimitiveTestRecord, w io.Writer) error {
+func writePrimitiveTestRecord(r PrimitiveTestRecord, w io.Writer) error {
 	var err error
 	
 	err = vm.WriteLong( r.LongField, w)
@@ -136,15 +119,15 @@ func writePrimitiveTestRecord(r *PrimitiveTestRecord, w io.Writer) error {
 	return err
 }
 
-func (r *PrimitiveTestRecord) Serialize(w io.Writer) error {
+func (r PrimitiveTestRecord) Serialize(w io.Writer) error {
 	return writePrimitiveTestRecord(r, w)
 }
 
-func (r *PrimitiveTestRecord) Schema() string {
+func (r PrimitiveTestRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"LongField\",\"type\":\"long\"},{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"FloatField\",\"type\":\"float\"},{\"name\":\"BytesField\",\"type\":\"bytes\"},{\"name\":\"DoubleField\",\"type\":\"double\"},{\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"default\":\"somedefault\",\"name\":\"NewString\",\"type\":\"string\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *PrimitiveTestRecord) SchemaName() string {
+func (r PrimitiveTestRecord) SchemaName() string {
 	return "PrimitiveTestRecord"
 }
 
@@ -208,37 +191,29 @@ func (r *PrimitiveTestRecord) Get(i int) types.Field {
 			return (*types.String)(&r.NewString)
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *PrimitiveTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
-        
-	
-        
-	
-        
-	
-        
-	
-        
-	
-        
-	
-        
+	switch (i) { 
 	case 7:
-       	 	r.NewString = "somedefault"
-		return
-	
-	
+		r.NewString = "somedefault"
+		
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *PrimitiveTestRecord) Clear(i int) {
+	switch (i) { 
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *PrimitiveTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *PrimitiveTestRecord) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *PrimitiveTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *PrimitiveTestRecord) Finalize() { }

@@ -26,27 +26,29 @@ func writeArrayBytes(r [][]byte, w io.Writer) error {
 	return vm.WriteLong(0,w)
 }
 
+type ArrayBytes [][]byte
 
+func (_ *ArrayBytes) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *ArrayBytes) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *ArrayBytes) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *ArrayBytes) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *ArrayBytes) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *ArrayBytes) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *ArrayBytes) SetString(v string) { panic("Unsupported operation") }
+func (_ *ArrayBytes) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *ArrayBytes) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *ArrayBytes) Clear(i int) { panic("Unsupported operation") }
+func (_ *ArrayBytes) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *ArrayBytes) ClearMap(key string) { panic("Unsupported operation") }
+func (_ *ArrayBytes) Finalize() { }
+func (_ *ArrayBytes) SetDefault(i int) { panic("Unsupported operation") }
 
-type ArrayBytesWrapper [][]byte
-
-func (_ *ArrayBytesWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) Finalize() { }
-func (_ *ArrayBytesWrapper) SetDefault(i int) { panic("Unsupported operation") }
-func (r *ArrayBytesWrapper) AppendArray() types.Field {
+func (r *ArrayBytes) AppendArray() types.Field {
 	var v []byte
 	
 	*r = append(*r, v)
-         
-        return (*types.Bytes)(&(*r)[len(*r)-1])
-        
+	
+	return (*types.Bytes)(&(*r)[len(*r)-1])
+	
 }
+

@@ -14,8 +14,8 @@ import (
 )
 
 func NewHeaderworksDatatypeUUIDWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewHeaderworksDatatypeUUID()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := HeaderworksDatatypeUUID{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewHeaderworksDatatypeUUIDReader(r io.Reader) (*HeaderworksDatatypeUUIDRead
 		return nil, err
 	}
 
-	t := NewHeaderworksDatatypeUUID()
+	t := HeaderworksDatatypeUUID{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewHeaderworksDatatypeUUIDReader(r io.Reader) (*HeaderworksDatatypeUUIDRead
 	}, nil
 }
 
-func (r HeaderworksDatatypeUUIDReader) Read() (*HeaderworksDatatypeUUID, error) {
-	t := NewHeaderworksDatatypeUUID()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r HeaderworksDatatypeUUIDReader) Read() (t HeaderworksDatatypeUUID, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

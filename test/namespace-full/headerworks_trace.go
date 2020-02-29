@@ -7,57 +7,38 @@ package avro
 
 import (
 	"io"
+	
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // Trace  
-type HeaderworksTrace struct {
-
-	
+type HeaderworksTrace struct { 
 	// Trace Identifier
-	
 	
 		TraceId *UnionNullHeaderworksDatatypeUUID
 	
 
 }
 
-func NewHeaderworksTrace() (*HeaderworksTrace) {
-	return &HeaderworksTrace{}
-}
-
-func DeserializeHeaderworksTrace(r io.Reader) (*HeaderworksTrace, error) {
-	t := NewHeaderworksTrace()
+func DeserializeHeaderworksTrace(r io.Reader) (t HeaderworksTrace, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func DeserializeHeaderworksTraceFromSchema(r io.Reader, schema string) (*HeaderworksTrace, error) {
-	t := NewHeaderworksTrace()
-
+func DeserializeHeaderworksTraceFromSchema(r io.Reader, schema string) (t HeaderworksTrace, err error) {
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
-	if err != nil {
-		return nil, err
+	if err == nil {
+		err = vm.Eval(r, deser, &t)
 	}
-
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err	
-	}
-	return t, err
+	return
 }
 
-func writeHeaderworksTrace(r *HeaderworksTrace, w io.Writer) error {
+func writeHeaderworksTrace(r HeaderworksTrace, w io.Writer) error {
 	var err error
 	
 	err = writeUnionNullHeaderworksDatatypeUUID( r.TraceId, w)
@@ -68,15 +49,15 @@ func writeHeaderworksTrace(r *HeaderworksTrace, w io.Writer) error {
 	return err
 }
 
-func (r *HeaderworksTrace) Serialize(w io.Writer) error {
+func (r HeaderworksTrace) Serialize(w io.Writer) error {
 	return writeHeaderworksTrace(r, w)
 }
 
-func (r *HeaderworksTrace) Schema() string {
+func (r HeaderworksTrace) Schema() string {
 	return "{\"doc\":\"Trace\",\"fields\":[{\"default\":null,\"doc\":\"Trace Identifier\",\"name\":\"traceId\",\"type\":[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"headerworks.datatype\",\"type\":\"record\"}]}],\"name\":\"headerworks.Trace\",\"type\":\"record\"}"
 }
 
-func (r *HeaderworksTrace) SchemaName() string {
+func (r HeaderworksTrace) SchemaName() string {
 	return "headerworks.Trace"
 }
 
@@ -94,31 +75,38 @@ func (r *HeaderworksTrace) Get(i int) types.Field {
 	
 	case 0:
 		
-			r.TraceId = NewUnionNullHeaderworksDatatypeUUID()
-	
+			r.TraceId = &UnionNullHeaderworksDatatypeUUID{}
+
 		
 		
 			return r.TraceId
 		
 	
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
 }
 
 func (r *HeaderworksTrace) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch (i) { 
 	case 0:
-       	 	r.TraceId = NewUnionNullHeaderworksDatatypeUUID()
-
-		return
-	
-	
+		r.TraceId = nil
+		
+	default:
+		panic("Unknown field index")
 	}
-	panic("Unknown field index")
+}
+
+func (r *HeaderworksTrace) Clear(i int) {
+	switch (i) { 
+	case 0:
+		r.TraceId = nil
+	default:
+		panic("Non-optional field index")
+	}
 }
 
 func (_ *HeaderworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *HeaderworksTrace) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *HeaderworksTrace) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksTrace) Finalize() { }

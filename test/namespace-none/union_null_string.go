@@ -15,42 +15,29 @@ import (
 
 
 type UnionNullStringTypeEnum int
+
 const (
-
-	 UnionNullStringTypeEnumNull UnionNullStringTypeEnum = 0
-
-	 UnionNullStringTypeEnumString UnionNullStringTypeEnum = 1
-
+	UnionNullStringTypeEnumString UnionNullStringTypeEnum = 1
 )
 
-type UnionNullString struct {
-
-	Null *types.NullVal
-
+type UnionNullString struct { 
 	String string
 
 	UnionType UnionNullStringTypeEnum
 }
 
-func writeUnionNullString(r *UnionNullString, w io.Writer) error {
-	err := vm.WriteLong(int64(r.UnionType), w)
-	if err != nil {
+func writeUnionNullString(r *UnionNullString, w io.Writer) error { 
+	if r == nil {
+		return vm.WriteLong(int64(0), w)
+	} 
+	if err := vm.WriteLong(int64(r.UnionType), w); err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
-	case UnionNullStringTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
-        
+	switch r.UnionType{ 
 	case UnionNullStringTypeEnumString:
 		return vm.WriteString(r.String, w)
-        
 	}
 	return fmt.Errorf("invalid value for *UnionNullString")
-}
-
-func NewUnionNullString() *UnionNullString {
-	return &UnionNullString{}
 }
 
 func (_ *UnionNullString) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -59,18 +46,13 @@ func (_ *UnionNullString) SetFloat(v float32) { panic("Unsupported operation") }
 func (_ *UnionNullString) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionNullString) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *UnionNullString) SetString(v string) { panic("Unsupported operation") }
+
 func (r *UnionNullString) SetLong(v int64) { 
 	r.UnionType = (UnionNullStringTypeEnum)(v)
 }
+
 func (r *UnionNullString) Get(i int) types.Field {
-	switch (i) {
-	
-	case 0:
-		
-		
-		return r.Null
-		
-	
+	switch (i) { 
 	case 1:
 		
 		
@@ -80,7 +62,10 @@ func (r *UnionNullString) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+
+func (r *UnionNullString) Clear(i int) { panic("Unsupported operation") }
 func (_ *UnionNullString) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullString) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionNullString) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *UnionNullString) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullString) Finalize()  { }

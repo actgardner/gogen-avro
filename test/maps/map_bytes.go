@@ -7,7 +7,7 @@ import (
 	"github.com/actgardner/gogen-avro/vm"
 )
 
-func writeMapBytes(r *MapBytes, w io.Writer) error {
+func writeMapBytes(r MapBytes, w io.Writer) error {
 	err := vm.WriteLong(int64(len(r.M)), w)
 	if err != nil || len(r.M) == 0 {
 		return err
@@ -31,12 +31,8 @@ type MapBytes struct {
 	M map[string][]byte
 }
 
-func NewMapBytes() *MapBytes{
-	return &MapBytes {
-		keys: make([]string, 0),
-		values: make([][]byte, 0),
-		M: make(map[string][]byte),
-	}
+func NewMapBytes() MapBytes{
+	return MapBytes{ M: make(map[string][]byte) }
 }
 
 func (_ *MapBytes) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -48,8 +44,9 @@ func (_ *MapBytes) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ *MapBytes) SetString(v string) { panic("Unsupported operation") }
 func (_ *MapBytes) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *MapBytes) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *MapBytes) Clear(i int) { panic("Unsupported operation") }
 func (_ *MapBytes) SetDefault(i int) { panic("Unsupported operation") }
-func (r *MapBytes) Finalize() { 
+func (r *MapBytes) Finalize() {
 	for i := range r.keys {
 		r.M[r.keys[i]] = r.values[i]
 	}
@@ -64,6 +61,11 @@ func (r *MapBytes) AppendMap(key string) types.Field {
 	r.values = append(r.values, v)
 	
 	return (*types.Bytes)(&r.values[len(r.values)-1])
+	
+}
+
+func (r *MapBytes) ClearMap(key string) { 
+	panic("Non-optional map item")
 	
 }
 

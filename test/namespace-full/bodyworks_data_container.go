@@ -14,8 +14,8 @@ import (
 )
 
 func NewBodyworksDataWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewBodyworksData()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := BodyworksData{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewBodyworksDataReader(r io.Reader) (*BodyworksDataReader, error){
 		return nil, err
 	}
 
-	t := NewBodyworksData()
+	t := BodyworksData{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewBodyworksDataReader(r io.Reader) (*BodyworksDataReader, error){
 	}, nil
 }
 
-func (r BodyworksDataReader) Read() (*BodyworksData, error) {
-	t := NewBodyworksData()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r BodyworksDataReader) Read() (t BodyworksData, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }

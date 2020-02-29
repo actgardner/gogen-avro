@@ -14,8 +14,8 @@ import (
 )
 
 func NewDatatypeUUIDWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewDatatypeUUID()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := DatatypeUUID{}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -30,7 +30,7 @@ func NewDatatypeUUIDReader(r io.Reader) (*DatatypeUUIDReader, error){
 		return nil, err
 	}
 
-	t := NewDatatypeUUID()
+	t := DatatypeUUID{}
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
@@ -42,8 +42,7 @@ func NewDatatypeUUIDReader(r io.Reader) (*DatatypeUUIDReader, error){
 	}, nil
 }
 
-func (r DatatypeUUIDReader) Read() (*DatatypeUUID, error) {
-	t := NewDatatypeUUID()
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r DatatypeUUIDReader) Read() (t DatatypeUUID, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }
