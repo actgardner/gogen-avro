@@ -16,7 +16,9 @@ func (p *Program) String() string {
 	s := ""
 	depth := ""
 	for i, inst := range p.Instructions {
-		if inst.Op == Exit {
+		// Exit ops with Null operands are unmatched, so reducing depth
+		// would cause program structure's mismatch. Better inline them.
+		if inst.Op == Exit && inst.Operand != Null {
 			depth = depth[0 : len(depth)-3]
 		}
 		s += fmt.Sprintf("%v:\t%v%v\n", i, depth, inst)
