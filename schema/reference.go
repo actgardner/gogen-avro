@@ -27,6 +27,10 @@ func (s *Reference) GoType() string {
 	return s.Def.GoType()
 }
 
+func (s *Reference) IsOptional() bool {
+	return s.Def.IsOptional()
+}
+
 func (s *Reference) SerializerMethod() string {
 	return s.Def.SerializerMethod()
 }
