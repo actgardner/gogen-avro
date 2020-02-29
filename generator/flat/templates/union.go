@@ -66,7 +66,6 @@ func (r *{{ .Name }}) Get(i int) types.Field {
 func (r *{{ .Name }}) Clear(i int) { panic("Unsupported operation") }
 func (_ *{{ .Name }}) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *{{ .Name }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *{{ .Name }}) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *{{ .Name }}) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *{{ .Name }}) Finalize()  { }
 `

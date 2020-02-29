@@ -27,7 +27,6 @@ func (_ *{{ .WrapperType }}) SetUnionElem(v int64) { panic("Unsupported operatio
 func (_ *{{ .WrapperType }}) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) Clear(i int) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) Finalize() { }
 func (_ *{{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
