@@ -7,22 +7,38 @@ import (
 )
 
 type UnionField struct {
-	name       string
-	itemType   []AvroType
-	definition []interface{}
+	name           string
+	avroTypes      []AvroType
+	generatedTypes []AvroType
+	definition     []interface{}
+	optTypeIdx     int
 }
 
-func NewUnionField(name string, itemType []AvroType, definition []interface{}) *UnionField {
-	return &UnionField{
+func NewUnionField(name string, avroTypes []AvroType, definition []interface{}, optTypeIndex int) *UnionField {
+	u := &UnionField{
 		name:       name,
-		itemType:   itemType,
+		avroTypes:  avroTypes,
 		definition: definition,
+		optTypeIdx: optTypeIndex,
 	}
+	l := len(avroTypes)
+	if optTypeIndex >= 0 {
+		l--
+	}
+	u.generatedTypes = make([]AvroType, l)
+	i := 0
+	for j, t := range avroTypes {
+		if j != optTypeIndex {
+			u.generatedTypes[i] = t
+			i++
+		}
+	}
+	return u
 }
 
 func (s *UnionField) compositeFieldName() string {
 	var UnionFields = "Union"
-	for _, i := range s.itemType {
+	for _, i := range s.avroTypes {
 		UnionFields += i.Name()
 	}
 	return UnionFields
@@ -36,11 +52,18 @@ func (s *UnionField) Name() string {
 }
 
 func (s *UnionField) AvroTypes() []AvroType {
-	return s.itemType
+	return s.avroTypes
 }
 
 func (s *UnionField) GoType() string {
-	return "*" + s.Name()
+	if s.IsOptional() {
+		return fmt.Sprintf("*%s", s.Name())
+	}
+	return s.Name()
+}
+
+func (s *UnionField) IsOptional() bool {
+	return s.optTypeIdx >= 0
 }
 
 func (s *UnionField) UnionEnumType() string {
@@ -52,7 +75,11 @@ func (s *UnionField) ItemName(item AvroType) string {
 }
 
 func (s *UnionField) ItemTypes() []AvroType {
-	return s.itemType
+	return s.generatedTypes
+}
+
+func (s *UnionField) OptionalIndex() int {
+	return s.optTypeIdx
 }
 
 func (s *UnionField) filename() string {
@@ -77,7 +104,7 @@ func (s *UnionField) Attribute(name string) interface{} {
 func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
 	def := make([]interface{}, len(s.definition))
 	var err error
-	for i, item := range s.itemType {
+	for i, item := range s.avroTypes {
 		def[i], err = item.Definition(scope)
 		if err != nil {
 			return nil, err
@@ -87,7 +114,7 @@ func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{
 }
 
 func (s *UnionField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	defaultType := s.itemType[0]
+	defaultType := s.avroTypes[0]
 	init := fmt.Sprintf("%v = %v\n", lvalue, s.ConstructorMethod())
 	lvalue = fmt.Sprintf("%v.%v", lvalue, defaultType.Name())
 	constructorCall := ""
@@ -121,7 +148,10 @@ func (s *UnionField) IsReadableBy(f AvroType, visited map[QualifiedName]interfac
 }
 
 func (s *UnionField) ConstructorMethod() string {
-	return fmt.Sprintf("New%v()", s.Name())
+	if s.IsOptional() {
+		return fmt.Sprintf("&%s{}", s.Name())
+	}
+	return fmt.Sprintf("%s{}", s.Name())
 }
 
 func (s *UnionField) Equals(reader *UnionField) bool {
@@ -151,5 +181,5 @@ func (s *UnionField) SimpleName() string {
 }
 
 func (s *UnionField) Children() []AvroType {
-	return s.itemType
+	return s.avroTypes
 }
