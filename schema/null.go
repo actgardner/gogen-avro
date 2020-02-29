@@ -8,7 +8,7 @@ func NewNullField(definition interface{}) *NullField {
 	return &NullField{PrimitiveField{
 		definition:       definition,
 		name:             "Null",
-		goType:           "*types.NullVal",
+		goType:           "types.NullVal",
 		serializerMethod: "vm.WriteNull",
 	}}
 }
