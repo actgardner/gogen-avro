@@ -108,7 +108,9 @@ func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (bool
 			if accepted, err := evalInner(r, program, target.AppendMap(frame.String), pc); err != nil {
 				return false, err
 			} else if !accepted {
-				target.ClearMap(frame.String)
+				// Map additions are collected in a slice and the current is always
+				// the last one, so no need to inform about the item index.
+				target.Clear(0)
 			}
 		case Call:
 			curr := *pc
