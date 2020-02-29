@@ -22,8 +22,6 @@ type Field interface {
 
 	// Append a new value to a map and enter it
 	AppendMap(key string) Field
-	// Clear a key from a map
-	ClearMap(key string)
 	// Append a new value to an array and enter it
 	AppendArray() Field
 

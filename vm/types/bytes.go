@@ -54,8 +54,4 @@ func (b *Bytes) AppendArray() Field {
 	panic("Unable to append array element to from bytes field")
 }
 
-func (b *Bytes) ClearMap(key string) {
-	panic("Unable to clear map key from bytes field")
-}
-
 func (b *Bytes) Finalize() {}

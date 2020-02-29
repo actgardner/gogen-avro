@@ -54,8 +54,4 @@ func (b *Boolean) AppendArray() Field {
 	panic("Unable to append array element to from boolean field")
 }
 
-func (b *Boolean) ClearMap(key string) {
-	panic("Unable to clear map key from boolean field")
-}
-
 func (b *Boolean) Finalize() {}

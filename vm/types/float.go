@@ -54,8 +54,4 @@ func (b *Float) AppendArray() Field {
 	panic("Unable to append array element to from float field")
 }
 
-func (b *Float) ClearMap(key string) {
-	panic("Unable to clear map key from float field")
-}
-
 func (b *Float) Finalize() {}
