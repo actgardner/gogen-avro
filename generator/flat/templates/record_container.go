@@ -10,8 +10,8 @@ import (
 )
 
 func {{ .NewWriterMethod }}(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := {{ .ConstructorMethod }}
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	t := {{ .ConstructorMethod }}
+	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
@@ -38,9 +38,8 @@ func New{{ .RecordReaderTypeName }}(r io.Reader) (*{{ .RecordReaderTypeName }}, 
 	}, nil
 }
 
-func (r {{ .RecordReaderTypeName }}) Read() ({{ .GoType }}, error) {
-	t := {{ .ConstructorMethod }}
-        err := vm.Eval(r.r, r.p, t)
-	return t, err
+func (r {{ .RecordReaderTypeName }}) Read() (t {{ .GoType }}, err error) {
+	err = vm.Eval(r.r, r.p, &t)
+	return
 }
 `
