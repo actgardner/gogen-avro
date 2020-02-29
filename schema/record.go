@@ -30,7 +30,7 @@ func (r *RecordDefinition) AvroName() QualifiedName {
 }
 
 func (r *RecordDefinition) Name() string {
-	return generator.ToPublicName(r.name.String())
+	return r.GoType()
 }
 
 func (r *RecordDefinition) SimpleName() string {
@@ -38,7 +38,11 @@ func (r *RecordDefinition) SimpleName() string {
 }
 
 func (r *RecordDefinition) GoType() string {
-	return fmt.Sprintf("*%v", r.Name())
+	return generator.ToPublicName(r.name.String())
+}
+
+func (r *RecordDefinition) IsOptional() bool {
+	return false
 }
 
 func (r *RecordDefinition) Aliases() []QualifiedName {
@@ -77,10 +81,13 @@ func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) (inte
 }
 
 func (r *RecordDefinition) ConstructorMethod() string {
-	return fmt.Sprintf("New%v()", r.Name())
+	return fmt.Sprintf("%s{}", r.Name())
 }
 
 func (r *RecordDefinition) DefaultForField(f *Field) (string, error) {
+	if f.Type().IsOptional() && f.Default() == nil {
+		return fmt.Sprintf("r.%v = nil", f.GoName()), nil
+	}
 	return f.Type().DefaultValue(fmt.Sprintf("r.%v", f.GoName()), f.Default())
 }
 
