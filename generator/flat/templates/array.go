@@ -22,8 +22,6 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	return vm.WriteLong(0,w)
 }
 
-
-
 type {{ .WrapperType }} {{ .GoType }}
 
 func (_ *{{ .WrapperType }}) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -35,19 +33,23 @@ func (_ *{{ .WrapperType }}) SetBytes(v []byte) { panic("Unsupported operation")
 func (_ *{{ .WrapperType }}) SetString(v string) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *{{ .WrapperType }}) Clear(i int) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *{{ .WrapperType }}) ClearMap(key string) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) Finalize() { }
 func (_ *{{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
+
 func (r *{{ .WrapperType }}) AppendArray() types.Field {
 	var v {{ .ItemType.GoType }}
 	{{ if .ItemConstructable }}
 	{{ .ItemConstructable }}
- 	{{ end }}
+	{{ end }}
 	*r = append(*r, v)
-        {{ if .ItemType.WrapperType }} 
-        return (*{{ .ItemType.WrapperType }})(&(*r)[len(*r)-1])
-        {{ else }}
-        return (*r)[len(*r)-1]
-        {{ end }}
+	{{ if .ItemType.WrapperType }}
+	return (*{{ .ItemType.WrapperType }})(&(*r)[len(*r)-1])
+	{{ else }}
+	return &((*r)[len(*r)-1])
+	{{ end }}
 }
+
 `
