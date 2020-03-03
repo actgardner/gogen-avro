@@ -3,7 +3,6 @@ package compiler
 
 import (
 	"github.com/actgardner/gogen-avro/parser"
-	"github.com/actgardner/gogen-avro/resolver"
 	"github.com/actgardner/gogen-avro/schema"
 	"github.com/actgardner/gogen-avro/vm"
 )
@@ -28,17 +27,7 @@ func CompileSchemaBytes(writer, reader []byte) (*vm.Program, error) {
 
 func parseSchema(s []byte) (schema.AvroType, error) {
 	ns := parser.NewNamespace(false)
-	sType, err := ns.TypeForSchema(s)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, def := range ns.Roots {
-		if err := resolver.ResolveDefinition(def, ns.Definitions); err != nil {
-			return nil, err
-		}
-	}
-	return sType, nil
+	return ns.TypeForSchema(s)
 }
 
 // Given two parsed Avro schemas, compile them into a program which can read the data
