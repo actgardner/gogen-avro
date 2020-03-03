@@ -16,23 +16,22 @@ func writeSync(r Sync, w io.Writer) error {
 	return err
 }
 
-type Sync SyncWrapper
-type SyncWrapper [16]byte
+type Sync [16]byte
 
-func (_ *SyncWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *SyncWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *SyncWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *SyncWrapper) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *SyncWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (r *SyncWrapper) SetBytes(v []byte) { 
+func (_ *Sync) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *Sync) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *Sync) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *Sync) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *Sync) SetDouble(v float64) { panic("Unsupported operation") }
+func (r *Sync) SetBytes(v []byte) { 
 	copy((*r)[:], v)
 }
-func (_ *SyncWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *SyncWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *SyncWrapper) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *SyncWrapper) Clear(i int) { panic("Unsupported operation") }
-func (_ *SyncWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *SyncWrapper) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *SyncWrapper) Finalize() { }
-func (_ *SyncWrapper) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *Sync) SetString(v string) { panic("Unsupported operation") }
+func (_ *Sync) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *Sync) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *Sync) Clear(i int) { panic("Unsupported operation") }
+func (_ *Sync) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *Sync) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *Sync) Finalize() { }
+func (_ *Sync) SetDefault(i int) { panic("Unsupported operation") }
 

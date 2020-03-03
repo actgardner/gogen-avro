@@ -109,7 +109,7 @@ func (r *AvroContainerBlock) Get(i int) types.Field {
 	case 2:
 		
 		
-			return (*SyncWrapper)(&r.Sync)
+			return &r.Sync
 		
 	
 	default:

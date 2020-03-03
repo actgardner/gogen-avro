@@ -97,7 +97,7 @@ func (r *AvroContainerHeader) Get(i int) types.Field {
 	case 0:
 		
 		
-			return (*MagicWrapper)(&r.Magic)
+			return &r.Magic
 		
 	
 	case 1:
@@ -112,7 +112,7 @@ func (r *AvroContainerHeader) Get(i int) types.Field {
 	case 2:
 		
 		
-			return (*SyncWrapper)(&r.Sync)
+			return &r.Sync
 		
 	
 	default:
