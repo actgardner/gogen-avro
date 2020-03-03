@@ -9,7 +9,7 @@ func getConstructableForType(t AvroType) (Constructable, bool) {
 		return c, true
 	}
 	if ref, ok := t.(*Reference); ok {
-		if c, ok := ref.Def.(Constructable); ok {
+		if c, ok := ref.refType.(Constructable); ok {
 			return c, true
 		}
 	}
