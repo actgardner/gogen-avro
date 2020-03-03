@@ -5,16 +5,11 @@ import (
 )
 
 type DoubleField struct {
-	PrimitiveField
+	primitiveField
 }
 
 func NewDoubleField(definition interface{}) *DoubleField {
-	return &DoubleField{PrimitiveField{
-		definition:       definition,
-		name:             "Double",
-		goType:           "float64",
-		serializerMethod: "vm.WriteDouble",
-	}}
+	return &DoubleField{newPrimitiveField("Double", "float64", definition, "vm.WriteDouble")}
 }
 
 func (s *DoubleField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -29,15 +24,14 @@ func (s *DoubleField) WrapperType() string {
 }
 
 func (s *DoubleField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
-	if union, ok := f.(*UnionField); ok {
-		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
-				return true
-			}
-		}
-	}
 	if _, ok := f.(*DoubleField); ok {
 		return true
+	}
+	if s.primitiveField.IsReadableBy(f, visited) {
+		return true
+	}
+	if union, ok := f.(*UnionField); ok {
+		return isReadableByUnion(s, union, visited)
 	}
 	return false
 }

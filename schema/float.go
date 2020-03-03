@@ -5,16 +5,11 @@ import (
 )
 
 type FloatField struct {
-	PrimitiveField
+	primitiveField
 }
 
 func NewFloatField(definition interface{}) *FloatField {
-	return &FloatField{PrimitiveField{
-		definition:       definition,
-		name:             "Float",
-		goType:           "float32",
-		serializerMethod: "vm.WriteFloat",
-	}}
+	return &FloatField{newPrimitiveField("Float", "float32", definition, "vm.WriteFloat")}
 }
 
 func (s *FloatField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -30,18 +25,17 @@ func (s *FloatField) WrapperType() string {
 }
 
 func (s *FloatField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
-	if union, ok := f.(*UnionField); ok {
-		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
-				return true
-			}
-		}
-	}
 	if _, ok := f.(*FloatField); ok {
 		return true
 	}
 	if _, ok := f.(*DoubleField); ok {
 		return true
+	}
+	if s.primitiveField.IsReadableBy(f, visited) {
+		return true
+	}
+	if union, ok := f.(*UnionField); ok {
+		return isReadableByUnion(s, union, visited)
 	}
 	return false
 }

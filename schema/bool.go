@@ -5,16 +5,11 @@ import (
 )
 
 type BoolField struct {
-	PrimitiveField
+	primitiveField
 }
 
 func NewBoolField(definition interface{}) *BoolField {
-	return &BoolField{PrimitiveField{
-		definition:       definition,
-		name:             "Bool",
-		goType:           "bool",
-		serializerMethod: "vm.WriteBool",
-	}}
+	return &BoolField{newPrimitiveField("Bool", "bool", definition, "vm.WriteBool")}
 }
 
 func (s *BoolField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -30,13 +25,14 @@ func (s *BoolField) WrapperType() string {
 }
 
 func (s *BoolField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
-	if union, ok := f.(*UnionField); ok {
-		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
-				return true
-			}
-		}
+	if _, ok := f.(*BoolField); ok {
+		return true
 	}
-	_, ok := f.(*BoolField)
-	return ok
+	if s.primitiveField.IsReadableBy(f, visited) {
+		return true
+	}
+	if union, ok := f.(*UnionField); ok {
+		return isReadableByUnion(s, union, visited)
+	}
+	return false
 }

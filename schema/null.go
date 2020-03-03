@@ -1,34 +1,22 @@
 package schema
 
 type NullField struct {
-	PrimitiveField
+	primitiveField
 }
 
 func NewNullField(definition interface{}) *NullField {
-	return &NullField{PrimitiveField{
-		definition:       definition,
-		name:             "Null",
-		goType:           "types.NullVal",
-		serializerMethod: "vm.WriteNull",
-	}}
-}
-
-func (s *NullField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	return "", nil
-}
-
-func (s *NullField) WrapperType() string {
-	return ""
+	return &NullField{newPrimitiveField("Null", "types.NullVal", definition, "vm.WriteNull")}
 }
 
 func (s *NullField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
-	if union, ok := f.(*UnionField); ok {
-		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
-				return true
-			}
-		}
+	if _, ok := f.(*NullField); ok {
+		return true
 	}
-	_, ok := f.(*NullField)
-	return ok
+	if s.primitiveField.IsReadableBy(f, visited) {
+		return true
+	}
+	if union, ok := f.(*UnionField); ok {
+		return isReadableByUnion(s, union, visited)
+	}
+	return false
 }

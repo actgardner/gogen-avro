@@ -5,16 +5,11 @@ import (
 )
 
 type BytesField struct {
-	PrimitiveField
+	primitiveField
 }
 
 func NewBytesField(definition interface{}) *BytesField {
-	return &BytesField{PrimitiveField{
-		definition:       definition,
-		name:             "Bytes",
-		goType:           "[]byte",
-		serializerMethod: "vm.WriteBytes",
-	}}
+	return &BytesField{newPrimitiveField("Bytes", "[]byte", definition, "vm.WriteBytes")}
 }
 
 func (s *BytesField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -30,18 +25,17 @@ func (s *BytesField) WrapperType() string {
 }
 
 func (s *BytesField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
-	if union, ok := f.(*UnionField); ok {
-		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
-				return true
-			}
-		}
-	}
 	if _, ok := f.(*BytesField); ok {
 		return true
 	}
 	if _, ok := f.(*StringField); ok {
 		return true
+	}
+	if s.primitiveField.IsReadableBy(f, visited) {
+		return true
+	}
+	if union, ok := f.(*UnionField); ok {
+		return isReadableByUnion(s, union, visited)
 	}
 	return false
 }

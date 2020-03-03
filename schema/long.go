@@ -5,16 +5,11 @@ import (
 )
 
 type LongField struct {
-	PrimitiveField
+	primitiveField
 }
 
 func NewLongField(definition interface{}) *LongField {
-	return &LongField{PrimitiveField{
-		definition:       definition,
-		name:             "Long",
-		goType:           "int64",
-		serializerMethod: "vm.WriteLong",
-	}}
+	return &LongField{newPrimitiveField("Long", "int64", definition, "vm.WriteLong")}
 }
 
 func (s *LongField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -30,13 +25,6 @@ func (s *LongField) WrapperType() string {
 }
 
 func (s *LongField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
-	if union, ok := f.(*UnionField); ok {
-		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
-				return true
-			}
-		}
-	}
 	if _, ok := f.(*LongField); ok {
 		return true
 	}
@@ -45,6 +33,12 @@ func (s *LongField) IsReadableBy(f AvroType, visited map[QualifiedName]interface
 	}
 	if _, ok := f.(*DoubleField); ok {
 		return true
+	}
+	if s.primitiveField.IsReadableBy(f, visited) {
+		return true
+	}
+	if union, ok := f.(*UnionField); ok {
+		return isReadableByUnion(s, union, visited)
 	}
 	return false
 }

@@ -5,16 +5,11 @@ import (
 )
 
 type StringField struct {
-	PrimitiveField
+	primitiveField
 }
 
 func NewStringField(definition interface{}) *StringField {
-	return &StringField{PrimitiveField{
-		definition:       definition,
-		name:             "String",
-		goType:           "string",
-		serializerMethod: "vm.WriteString",
-	}}
+	return &StringField{newPrimitiveField("String", "string", definition, "vm.WriteString")}
 }
 
 func (s *StringField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -30,18 +25,17 @@ func (s *StringField) WrapperType() string {
 }
 
 func (s *StringField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
-	if union, ok := f.(*UnionField); ok {
-		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
-				return true
-			}
-		}
-	}
 	if _, ok := f.(*BytesField); ok {
 		return true
 	}
 	if _, ok := f.(*StringField); ok {
 		return true
+	}
+	if s.primitiveField.IsReadableBy(f, visited) {
+		return true
+	}
+	if union, ok := f.(*UnionField); ok {
+		return isReadableByUnion(s, union, visited)
 	}
 	return false
 }
