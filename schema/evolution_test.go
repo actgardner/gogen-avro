@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/actgardner/gogen-avro/parser"
-	"github.com/actgardner/gogen-avro/resolver"
 	"github.com/actgardner/gogen-avro/schema"
 
 	"github.com/stretchr/testify/assert"
@@ -60,19 +59,15 @@ func TestIsReadableBy(t *testing.T) {
 		{`["double", "string"]`, `"bytes"`, true},
 	}
 
-	for _, c := range cases {
+	for i, c := range cases {
 		ns1 := parser.NewNamespace(false)
 		writer, err := ns1.TypeForSchema([]byte(c.writer))
 		assert.Nil(t, err)
-		for _, def := range ns1.Roots {
-			assert.Nil(t, resolver.ResolveDefinition(def, ns1.Definitions))
-		}
+
 		ns2 := parser.NewNamespace(false)
 		reader, err := ns2.TypeForSchema([]byte(c.reader))
 		assert.Nil(t, err)
-		for _, def := range ns2.Roots {
-			assert.Nil(t, resolver.ResolveDefinition(def, ns2.Definitions))
-		}
-		assert.Equal(t, c.isReadable, writer.IsReadableBy(reader, make(map[schema.QualifiedName]interface{})))
+
+		assert.Equal(t, c.isReadable, writer.IsReadableBy(reader, make(map[schema.QualifiedName]interface{})), "Bug %d", i)
 	}
 }
