@@ -85,11 +85,20 @@ func (p *irMethod) VMLength() int {
 
 func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 	log("compileType()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
+
+	// Derreference refs
+	if wref, ok := writer.(*schema.Reference); ok {
+		writer = wref.RefType()
+	}
+	if rref, ok := reader.(*schema.Reference); ok {
+		reader = rref.RefType()
+	}
+
 	// If the writer is not a union but the reader is, try and find the first matching type in the union as a target
 	if !isUnionField(writer) {
 		if isUnionField(reader) {
 			readerUnion := reader.(*schema.UnionField)
-			for readerIndex, r := range readerUnion.AvroTypes() {
+			for readerIndex, r := range readerUnion.Children() {
 				if writer.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
 					p.addLiteral(vm.SetLong, readerIndex)
 					p.addLiteral(vm.Set, vm.Long)
@@ -108,8 +117,35 @@ func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 
 	switch v := writer.(type) {
 	case *schema.Reference:
-		if readerRef, ok := reader.(*schema.Reference); ok || reader == nil {
-			return p.compileRef(v, readerRef)
+		return fmt.Errorf("Unexpected reference type in writer %v", writer)
+	case *schema.RecordDefinition:
+		if readerRef, ok := reader.(*schema.RecordDefinition); ok || reader == nil {
+			var recordMethodName string
+			if reader == nil {
+				recordMethodName = fmt.Sprintf("record-r-%v", v.Name())
+			} else {
+				recordMethodName = fmt.Sprintf("record-rw-%v", v.Name())
+			}
+
+			if _, ok := p.program.methods[recordMethodName]; !ok {
+				method := p.program.createMethod(recordMethodName)
+				err := method.compileRecord(v, readerRef)
+				if err != nil {
+					return err
+				}
+			}
+			p.addMethodCall(recordMethodName)
+			return nil
+		}
+		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
+	case *schema.FixedDefinition:
+		if readerRef, ok := reader.(*schema.FixedDefinition); ok || reader == nil {
+			return p.compileFixed(v, readerRef)
+		}
+		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
+	case *schema.EnumDefinition:
+		if readerRef, ok := reader.(*schema.EnumDefinition); ok || reader == nil {
+			return p.compileEnum(v, readerRef)
 		}
 		return fmt.Errorf("Incompatible types: %v %v", reader, writer)
 	case *schema.MapField:
@@ -172,55 +208,6 @@ func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 	return fmt.Errorf("Unsupported type: %t", writer)
 }
 
-func (p *irMethod) compileRef(writer, reader *schema.Reference) error {
-	log("compileRef()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	if reader != nil && writer.TypeName.Name != reader.TypeName.Name {
-		return fmt.Errorf("Incompatible types by name: %v %v", reader, writer)
-	}
-
-	switch writer.Def.(type) {
-	case *schema.RecordDefinition:
-		var readerDef *schema.RecordDefinition
-		var ok bool
-		recordMethodName := fmt.Sprintf("record-r-%v", writer.Def.Name())
-		if reader != nil {
-			if readerDef, ok = reader.Def.(*schema.RecordDefinition); !ok {
-				return fmt.Errorf("Incompatible types: %v %v", reader, writer)
-			}
-			recordMethodName = fmt.Sprintf("record-rw-%v", writer.Def.Name())
-		}
-
-		if _, ok := p.program.methods[recordMethodName]; !ok {
-			method := p.program.createMethod(recordMethodName)
-			err := method.compileRecord(writer.Def.(*schema.RecordDefinition), readerDef)
-			if err != nil {
-				return err
-			}
-		}
-		p.addMethodCall(recordMethodName)
-		return nil
-	case *schema.FixedDefinition:
-		var readerDef *schema.FixedDefinition
-		var ok bool
-		if reader != nil {
-			if readerDef, ok = reader.Def.(*schema.FixedDefinition); !ok {
-				return fmt.Errorf("Incompatible types: %v %v", reader, writer)
-			}
-		}
-		return p.compileFixed(writer.Def.(*schema.FixedDefinition), readerDef)
-	case *schema.EnumDefinition:
-		var readerDef *schema.EnumDefinition
-		var ok bool
-		if reader != nil {
-			if readerDef, ok = reader.Def.(*schema.EnumDefinition); !ok {
-				return fmt.Errorf("Incompatible types: %v %v", reader, writer)
-			}
-		}
-		return p.compileEnum(writer.Def.(*schema.EnumDefinition), readerDef)
-	}
-	return fmt.Errorf("Unsupported reference type %T", reader)
-}
-
 func (p *irMethod) compileMap(writer, reader *schema.MapField) error {
 	log("compileMap()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	blockId := p.addBlockStart()
@@ -268,6 +255,11 @@ func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error 
 			if writerField := writer.GetReaderField(field); writerField == nil {
 				if !field.HasDefault() {
 					return fmt.Errorf("Incompatible schemas: field %v in reader is not present in writer and has no default value", field.Name())
+				}
+
+				if field.Type().IsOptional() {
+					// Avoid generating code for optional fields having null default values
+					continue
 				}
 				p.addLiteral(vm.SetDefault, field.Index())
 			}
@@ -321,9 +313,9 @@ func (p *irMethod) compileUnion(writer *schema.UnionField, reader schema.AvroTyp
 
 	p.addLiteral(vm.Read, vm.Long)
 	errId := p.addError("Unsupported type for union")
-	switchId := p.addSwitchStart(len(writer.AvroTypes()), errId)
+	switchId := p.addSwitchStart(len(writer.Children()), errId)
 writer:
-	for i, t := range writer.AvroTypes() {
+	for i, t := range writer.Children() {
 		switch {
 		case reader == nil:
 			// If the reader is nil, just read the field and move on
@@ -339,7 +331,7 @@ writer:
 		case isUnionField(reader):
 			unionReader := reader.(*schema.UnionField)
 			// If the reader is also a union, read into the first supported type
-			for readerIndex, r := range unionReader.AvroTypes() {
+			for readerIndex, r := range unionReader.Children() {
 				if t.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
 					p.addSwitchCase(switchId, i, readerIndex)
 					p.addLiteral(vm.Enter, readerIndex)
