@@ -2,58 +2,54 @@ package schema
 
 import (
 	"fmt"
-
-	"github.com/actgardner/gogen-avro/generator"
 )
 
 type ArrayField struct {
-	itemType   AvroType
-	definition map[string]interface{}
+	qualifiedField
+	itemType AvroType
 }
 
 func NewArrayField(itemType AvroType, definition map[string]interface{}) *ArrayField {
-	return &ArrayField{
-		itemType:   itemType,
-		definition: definition,
+	a := &ArrayField{}
+	a.definition = definition
+	a.setItemType(itemType)
+
+	// If the item type is a reference, its final gotype will not be known until resolution
+	if ref, ok := itemType.(*Reference); ok {
+		ref.AddResolver(a)
 	}
+	return a
 }
 
-func (s *ArrayField) Name() string {
-	return "Array" + s.itemType.Name()
+func createArrayQName(name string) QualifiedName {
+	return QualifiedName{Name: fmt.Sprintf("Array%s", name)}
 }
 
-func (s *ArrayField) filename() string {
-	return generator.ToSnake(s.Name()) + ".go"
-}
-
-func (s *ArrayField) GoType() string {
-	return fmt.Sprintf("[]%s", s.itemType.GoType())
-}
-
-func (s *ArrayField) IsOptional() bool {
-	return false
-}
-
-func (s *ArrayField) SerializerMethod() string {
-	return fmt.Sprintf("write%v", s.Name())
+// Resolve runtime data when item type is a reference, since its data
+// cannot be always known at this array's creation time.
+func (s *ArrayField) Resolve(ref Reference) {
+	s.setItemType(ref.refType)
 }
 
 func (s *ArrayField) ItemType() AvroType {
 	return s.itemType
 }
 
-func (s *ArrayField) Attribute(name string) interface{} {
-	return s.definition[name]
+func (s *ArrayField) setItemType(itemType AvroType) {
+	s.itemType = itemType
+	s.setQualifiedName(QualifiedName{Name: "Array" + itemType.Name()})
+	s.setGoType(fmt.Sprintf("[]%s", itemType.GoType()))
+}
+
+func (s *ArrayField) Children() []AvroType {
+	return []AvroType{s.itemType}
 }
 
 func (s *ArrayField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
-	def := copyDefinition(s.definition)
+	def := copyDefinition(s.definitionAsStringMap())
 	var err error
 	def["items"], err = s.itemType.Definition(scope)
-	if err != nil {
-		return nil, err
-	}
-	return def, nil
+	return def, err
 }
 
 func (s *ArrayField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -83,22 +79,16 @@ func (s *ArrayField) WrapperType() string {
 }
 
 func (s *ArrayField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
-	if union, ok := f.(*UnionField); ok {
-		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
-				return true
-			}
-		}
-	}
-
 	if reader, ok := f.(*ArrayField); ok {
 		return s.ItemType().IsReadableBy(reader.ItemType(), visited)
 	}
+	if s.primitiveField.IsReadableBy(f, visited) {
+		return true
+	}
+	if union, ok := f.(*UnionField); ok {
+		return isReadableByUnion(s, union, visited)
+	}
 	return false
-}
-
-func (s *ArrayField) SimpleName() string {
-	return s.Name()
 }
 
 func (s *ArrayField) ItemConstructable() string {
@@ -106,8 +96,4 @@ func (s *ArrayField) ItemConstructable() string {
 		return fmt.Sprintf("v = %v\n", constructor.ConstructorMethod())
 	}
 	return ""
-}
-
-func (s *ArrayField) Children() []AvroType {
-	return []AvroType{s.itemType}
 }

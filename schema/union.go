@@ -2,68 +2,111 @@ package schema
 
 import (
 	"fmt"
-
-	"github.com/actgardner/gogen-avro/generator"
+	"strings"
 )
 
 type UnionField struct {
-	name           string
-	avroTypes      []AvroType
+	qualifiedField
+	children       []AvroType
 	generatedTypes []AvroType
-	definition     []interface{}
 	optTypeIdx     int
+	unresolvedRefs int
+	namingFunc     func()
 }
 
-func NewUnionField(name string, avroTypes []AvroType, definition []interface{}, optTypeIndex int) *UnionField {
+func NewUnionField(name string, children []AvroType, definition []interface{}) *UnionField {
 	u := &UnionField{
-		name:       name,
-		avroTypes:  avroTypes,
-		definition: definition,
-		optTypeIdx: optTypeIndex,
+		children:   children,
+		optTypeIdx: -1,
 	}
-	l := len(avroTypes)
-	if optTypeIndex >= 0 {
-		l--
+	u.definition = definition
+	u.namingFunc = func() {
+		// Use constructor base name for name regeneration func
+		u.regenerateName(name)
 	}
-	u.generatedTypes = make([]AvroType, l)
-	i := 0
-	for j, t := range avroTypes {
-		if j != optTypeIndex {
-			u.generatedTypes[i] = t
-			i++
+
+	// Process fields. Processing implies detecting the optional field, if any,
+	// as well as registering reference resolvers, if any. If there are no reference
+	// fields, then this union can be named straight ahead. Otherwise, the naming occurs
+	// after all references have been resolved.
+	for i, f := range u.children {
+		switch t := f.(type) {
+		case *NullField:
+			// Optional field detected in position 'i'
+			u.optTypeIdx = i
+		case *Reference:
+			// Add reference resolver for this union's field
+			t.AddResolver(u)
+			u.unresolvedRefs++
 		}
+	}
+
+	// Cache the generated types slice, optionally removing the null type elem.
+	if u.optTypeIdx == -1 {
+		u.generatedTypes = u.children
+	} else {
+		u.setOptional()
+		u.generatedTypes = make([]AvroType, len(u.children)-1)
+		i := 0
+		for j, child := range u.children {
+			if j != u.optTypeIdx {
+				u.generatedTypes[i] = child
+				i++
+			}
+		}
+	}
+
+	// No references, name the union just now
+	if u.unresolvedRefs == 0 {
+		u.namingFunc()
 	}
 	return u
 }
 
-func (s *UnionField) compositeFieldName() string {
-	var UnionFields = "Union"
-	for _, i := range s.avroTypes {
-		UnionFields += i.Name()
+// Resolve runtime data when item type is a reference, since its data
+// cannot be always known at this array's creation time.
+func (u *UnionField) Resolve(ref Reference) {
+	u.unresolvedRefs--
+	switch {
+	case u.unresolvedRefs < 0:
+		panic("Union resolved too much times")
+	case u.unresolvedRefs == 0:
+		u.namingFunc()
 	}
-	return UnionFields
 }
 
-func (s *UnionField) Name() string {
-	if s.name == "" {
-		return generator.ToPublicName(s.compositeFieldName())
+func (u *UnionField) regenerateName(basename string) {
+	// If no base name is given, generate one from its fields
+	if basename == "" {
+		var str strings.Builder
+		str.WriteString("Union")
+		for _, f := range u.children {
+			str.WriteString(f.Name())
+		}
+		basename = str.String()
 	}
-	return generator.ToPublicName(s.name)
+	u.setQualifiedName(QualifiedName{Name: basename})
 }
 
-func (s *UnionField) AvroTypes() []AvroType {
-	return s.avroTypes
-}
-
-func (s *UnionField) GoType() string {
-	if s.IsOptional() {
-		return fmt.Sprintf("*%s", s.Name())
+// Create the generated types cache slice for the template,
+// removing the null type elem from it, if there's one.
+func (u *UnionField) cacheGeneratedTypes() {
+	if u.optTypeIdx == -1 {
+		u.generatedTypes = u.children
+		return
 	}
-	return s.Name()
+	u.generatedTypes = make([]AvroType, len(u.children)-1)
+	i := 0
+	for j, child := range u.children {
+		if j != u.optTypeIdx {
+			u.generatedTypes[i] = child
+			i++
+		}
+	}
 }
 
-func (s *UnionField) IsOptional() bool {
-	return s.optTypeIdx >= 0
+func (s *UnionField) Children() []AvroType {
+	return s.children
 }
 
 func (s *UnionField) UnionEnumType() string {
@@ -82,14 +125,6 @@ func (s *UnionField) OptionalIndex() int {
 	return s.optTypeIdx
 }
 
-func (s *UnionField) filename() string {
-	return generator.ToSnake(s.Name()) + ".go"
-}
-
-func (s *UnionField) SerializerMethod() string {
-	return fmt.Sprintf("write%v", s.Name())
-}
-
 func (s *UnionField) ItemConstructor(f AvroType) string {
 	if constructor, ok := getConstructableForType(f); ok {
 		return constructor.ConstructorMethod()
@@ -97,14 +132,10 @@ func (s *UnionField) ItemConstructor(f AvroType) string {
 	return ""
 }
 
-func (s *UnionField) Attribute(name string) interface{} {
-	return nil
-}
-
 func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {
-	def := make([]interface{}, len(s.definition))
+	def := make([]interface{}, len(s.children))
 	var err error
-	for i, item := range s.avroTypes {
+	for i, item := range s.children {
 		def[i], err = item.Definition(scope)
 		if err != nil {
 			return nil, err
@@ -114,7 +145,7 @@ func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{
 }
 
 func (s *UnionField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
-	defaultType := s.avroTypes[0]
+	defaultType := s.children[0]
 	init := fmt.Sprintf("%v = %v\n", lvalue, s.ConstructorMethod())
 	lvalue = fmt.Sprintf("%v.%v", lvalue, defaultType.Name())
 	constructorCall := ""
@@ -125,23 +156,11 @@ func (s *UnionField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 	return init + constructorCall + assignment, err
 }
 
-func (s *UnionField) WrapperType() string {
-	return ""
-}
-
 func (s *UnionField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
 	// Report if *any* writer type could be deserialized by the reader
-	for _, t := range s.AvroTypes() {
-		if readerUnion, ok := f.(*UnionField); ok {
-			for _, rt := range readerUnion.AvroTypes() {
-				if t.IsReadableBy(rt, visited) {
-					return true
-				}
-			}
-		} else {
-			if t.IsReadableBy(f, visited) {
-				return true
-			}
+	for _, t := range s.children {
+		if t.IsReadableBy(f, visited) {
+			return true
 		}
 	}
 	return false
@@ -155,15 +174,15 @@ func (s *UnionField) ConstructorMethod() string {
 }
 
 func (s *UnionField) Equals(reader *UnionField) bool {
-	if len(reader.AvroTypes()) != len(s.AvroTypes()) {
+	if len(reader.children) != len(s.children) {
 		return false
 	}
 
-	for i, t := range s.AvroTypes() {
-		readerType := reader.AvroTypes()[i]
-		if writerRef, ok := t.(*Reference); ok {
-			if readerRef, ok := readerType.(*Reference); ok {
-				if readerRef.TypeName != writerRef.TypeName {
+	for i, t := range s.children {
+		readerType := reader.children[i]
+		if writerRef, ok := t.(QualifiedAvroType); ok {
+			if readerRef, ok := readerType.(QualifiedAvroType); ok {
+				if readerRef.QualifiedName() != writerRef.QualifiedName() {
 					return false
 				}
 			} else {
@@ -174,12 +193,4 @@ func (s *UnionField) Equals(reader *UnionField) bool {
 		}
 	}
 	return true
-}
-
-func (s *UnionField) SimpleName() string {
-	return s.GoType()
-}
-
-func (s *UnionField) Children() []AvroType {
-	return s.avroTypes
 }
