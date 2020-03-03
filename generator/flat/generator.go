@@ -19,12 +19,16 @@ func NewFlatPackageGenerator(files *generator.Package, containers bool) *FlatPac
 	}
 }
 
-func (f *FlatPackageGenerator) Add(def avro.Node) error {
-	file, err := templates.Template(def)
+type namedDefinition interface {
+	Name() string
+}
+
+func (f *FlatPackageGenerator) Add(def namedDefinition) error {
+	contents, err := templates.Template(def)
 	if err == nil {
 		// If there's a template for this definition, add it to the package
 		filename := generator.ToSnake(def.Name()) + ".go"
-		f.files.AddFile(filename, file)
+		f.files.AddFile(filename, contents)
 	} else {
 		if err != templates.NoTemplateForType {
 			return err
@@ -37,9 +41,14 @@ func (f *FlatPackageGenerator) Add(def avro.Node) error {
 		}
 	}
 
-	for _, child := range def.Children() {
-		if err := f.Add(child); err != nil {
-			return err
+	if ct, ok := def.(avro.CompositeType); ok {
+		for _, child := range ct.Children() {
+			// Avoid references
+			if _, ok := child.(*avro.Reference); !ok {
+				if err := f.Add(child); err != nil {
+					return err
+				}
+			}
 		}
 	}
 	return nil

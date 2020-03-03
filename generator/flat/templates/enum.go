@@ -33,7 +33,7 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	return vm.WriteInt(int32(r), w)
 }
 
-func {{ .FromStringMethod }}(raw string) (r {{ .GoType }}, err error) {
+func New{{ .GoType }}Value(raw string) (r {{ .GoType }}, err error) {
 	switch raw {
 {{ range $i, $symbol := .Symbols }}
 	case {{ printf "%q" $symbol }}:

@@ -39,7 +39,7 @@ func Deserialize{{ .GoType }}FromSchema(r io.Reader, schema string) (t {{ .GoTyp
 func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	var err error
 	{{ range $i, $field := .Fields }}
-	err = {{ .Type.SerializerMethod }}( r.{{ .GoName }}, w)
+	err = {{ .Type.SerializerMethod }}( r.{{ .GoType }}, w)
 	if err != nil {
 		return err			
 	}
@@ -56,7 +56,7 @@ func (r {{ .GoType }}) Schema() string {
 }
 
 func (r {{ .GoType }}) SchemaName() string {
-	return {{ printf "%q" .AvroName.String }}
+	return {{ printf "%q" .QualifiedName.String }}
 }
 
 func (_ *{{ .GoType }}) SetBoolean(v bool) { panic("Unsupported operation") }
@@ -76,9 +76,9 @@ func (r *{{ .GoType }}) Get(i int) types.Field {
 			{{ $.ConstructableForField $field }}
 		{{ end }}
 		{{ if ne $field.Type.WrapperType "" }}
-			return (*{{ $field.Type.WrapperType }})(&r.{{ $field.GoName }})
+			return (*{{ $field.Type.WrapperType }})(&r.{{ $field.GoType }})
 		{{ else }}
-			{{ if $field.Type.IsOptional }}return r.{{ $field.GoName }}{{ else }}return &r.{{ $field.GoName }}{{ end }}
+			{{ if $field.Type.IsOptional }}return r.{{ $field.GoType }}{{ else }}return &r.{{ $field.GoType }}{{ end }}
 		{{ end }}
 	{{ end }}
 	default:
@@ -99,7 +99,7 @@ func (r *{{ .GoType }}) SetDefault(i int) {
 func (r *{{ .GoType }}) Clear(i int) {
 	switch (i) { {{ range $i, $f := .Fields }}{{ if $f.Type.IsOptional }}
 	case {{ $i }}:
-		r.{{ $f.GoName }} = nil{{ end }}{{ end }}
+		r.{{ $f.GoType }} = nil{{ end }}{{ end }}
 	default:
 		panic("Non-optional field index")
 	}

@@ -9,18 +9,18 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-func {{ .NewWriterMethod }}(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
+func New{{ .Name }}Writer(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
 	t := {{ .ConstructorMethod }}
 	return container.NewWriter(writer, codec, recordsPerBlock, t.Schema())
 }
 
 // container reader
-type {{ .RecordReaderTypeName }} struct {
+type {{ .Name }}Reader struct {
 	r io.Reader
 	p *vm.Program
 }
 
-func New{{ .RecordReaderTypeName }}(r io.Reader) (*{{ .RecordReaderTypeName }}, error){
+func New{{ .Name }}Reader(r io.Reader) (*{{ .Name }}Reader, error){
 	containerReader, err := container.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -32,13 +32,13 @@ func New{{ .RecordReaderTypeName }}(r io.Reader) (*{{ .RecordReaderTypeName }}, 
 		return nil, err
 	}
 
-	return &{{ .RecordReaderTypeName }} {
+	return &{{ .Name }}Reader {
 		r: containerReader,
 		p: deser,
 	}, nil
 }
 
-func (r {{ .RecordReaderTypeName }}) Read() (t {{ .GoType }}, err error) {
+func (r {{ .Name }}Reader) Read() (t {{ .GoType }}, err error) {
 	err = vm.Eval(r.r, r.p, &t)
 	return
 }

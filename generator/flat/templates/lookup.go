@@ -10,7 +10,7 @@ import (
 
 var NoTemplateForType = errors.New("No template exists for supplied type")
 
-func Template(t avro.Node) (string, error) {
+func Template(t interface{}) (string, error) {
 	var template string
 	switch t.(type) {
 	case *avro.ArrayField:

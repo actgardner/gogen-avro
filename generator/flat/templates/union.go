@@ -12,7 +12,7 @@ import (
 
 type {{ .UnionEnumType }} int
 
-const ({{ range $i, $t := .AvroTypes }}{{ if $.OptionalIndex | ne $i }}
+const ({{ range $i, $t := .Children }}{{ if $.OptionalIndex | ne $i }}
 	{{ $.UnionEnumType }}{{ .Name }} {{ $.UnionEnumType }} = {{ $i }}
 {{ end }}{{ end }})
 
@@ -48,7 +48,7 @@ func (r *{{ .Name }}) SetLong(v int64) {
 }
 
 func (r *{{ .Name }}) Get(i int) types.Field {
-	switch (i) { {{ range $i, $t := .AvroTypes }}{{ if $.OptionalIndex | ne $i }}
+	switch (i) { {{ range $i, $t := .Children }}{{ if $.OptionalIndex | ne $i }}
 	case {{ $i }}:
 		{{ if $.ItemConstructor $t | ne "" }}
 		r.{{ .Name }} = {{ $.ItemConstructor $t }}
