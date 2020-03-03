@@ -76,7 +76,7 @@ func (r *FixedDefaultTestRecord) Get(i int) types.Field {
 	case 0:
 		
 		
-			return (*TestFixedDefaultTypeWrapper)(&r.FixedField)
+			return &r.FixedField
 		
 	
 	default:

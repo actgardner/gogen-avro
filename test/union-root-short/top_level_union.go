@@ -59,7 +59,7 @@ func (r *TopLevelUnion) Get(i int) types.Field {
 	case 0:
 		
 		
-		return (*Ip_addressWrapper)(&r.Ip_address)
+		return &r.Ip_address
 		
 	
 	case 1:

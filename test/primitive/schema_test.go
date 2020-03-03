@@ -9,7 +9,6 @@ import (
 
 	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/parser"
-	"github.com/actgardner/gogen-avro/resolver"
 	"github.com/actgardner/gogen-avro/vm"
 
 	"github.com/linkedin/goavro"
@@ -129,11 +128,6 @@ func BenchmarkDeserializePrimitiveRecord(b *testing.B) {
 	readerNs := parser.NewNamespace(false)
 	readerType, err := readerNs.TypeForSchema(schemaJson)
 	assert.Nil(b, err)
-
-	for _, def := range readerNs.Roots {
-		err = resolver.ResolveDefinition(def, readerNs.Definitions)
-		assert.Nil(b, err)
-	}
 
 	deser, err := compiler.Compile(readerType, readerType)
 	assert.Nil(b, err)

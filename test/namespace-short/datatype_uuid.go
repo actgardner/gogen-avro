@@ -54,11 +54,11 @@ func (r DatatypeUUID) Serialize(w io.Writer) error {
 }
 
 func (r DatatypeUUID) Schema() string {
-	return "{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"bodyworks.datatype.UUID\",\"type\":\"record\"}"
+	return "{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"headerworks.datatype.UUID\",\"type\":\"record\"}"
 }
 
 func (r DatatypeUUID) SchemaName() string {
-	return "bodyworks.datatype.UUID"
+	return "headerworks.datatype.UUID"
 }
 
 func (_ *DatatypeUUID) SetBoolean(v bool) { panic("Unsupported operation") }

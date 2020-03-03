@@ -102,13 +102,13 @@ func (r *Event) Get(i int) types.Field {
 	case 1:
 		
 		
-			return (*Ip_addressWrapper)(&r.Start_ip)
+			return &r.Start_ip
 		
 	
 	case 2:
 		
 		
-			return (*Ip_addressWrapper)(&r.End_ip)
+			return &r.End_ip
 		
 	
 	default:

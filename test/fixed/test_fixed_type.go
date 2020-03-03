@@ -15,23 +15,22 @@ func writeTestFixedType(r TestFixedType, w io.Writer) error {
 	return err
 }
 
-type TestFixedType TestFixedTypeWrapper
-type TestFixedTypeWrapper [12]byte
+type TestFixedType [12]byte
 
-func (_ *TestFixedTypeWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (r *TestFixedTypeWrapper) SetBytes(v []byte) { 
+func (_ *TestFixedType) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *TestFixedType) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *TestFixedType) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *TestFixedType) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *TestFixedType) SetDouble(v float64) { panic("Unsupported operation") }
+func (r *TestFixedType) SetBytes(v []byte) { 
 	copy((*r)[:], v)
 }
-func (_ *TestFixedTypeWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) Clear(i int) { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) Finalize() { }
-func (_ *TestFixedTypeWrapper) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *TestFixedType) SetString(v string) { panic("Unsupported operation") }
+func (_ *TestFixedType) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *TestFixedType) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *TestFixedType) Clear(i int) { panic("Unsupported operation") }
+func (_ *TestFixedType) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *TestFixedType) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *TestFixedType) Finalize() { }
+func (_ *TestFixedType) SetDefault(i int) { panic("Unsupported operation") }
 
