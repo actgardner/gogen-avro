@@ -41,7 +41,8 @@ func NewReader(r io.Reader) (*Reader, error) {
 
 	codec, ok := header.Meta.M["avro.codec"]
 	if !ok {
-		return nil, fmt.Errorf("Expected avro.codec in header, not specified in metadata map - %v", header.Meta)
+		log("Expected avro.codec in header, not specified in metadata map. assuming 'null' for Codec", header.Meta)
+		codec = []byte("null")
 	}
 	log("Got OCF codec from header: %v", string(codec))
 
