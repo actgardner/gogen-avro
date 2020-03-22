@@ -3,6 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/actgardner/gogen-avro/singleobject"
 	"io/ioutil"
 	"testing"
 
@@ -36,10 +37,11 @@ func TestEnumFixture(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		err = f.Serialize(&buf)
+		writer := singleobject.NewWriter(&buf, EnumTestRecordUID)
+		err = f.Serialize(writer)
 		assert.Nil(t, err)
-
-		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
+		b := singleobject.NewReader(&buf).Bytes()
+		datum, remaining, err := codec.NativeFromBinary(b)
 		assert.Nil(t, err)
 		assert.Equal(t, 0, len(remaining))
 
@@ -62,10 +64,11 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		err = f.Serialize(&buf)
+		writer := singleobject.NewWriter(&buf, EnumTestRecordUID)
+		err = f.Serialize(writer)
 		assert.Nil(t, err)
 
-		datum, err := DeserializeEnumTestRecord(&buf)
+		datum, err := DeserializeEnumTestRecord(singleobject.NewReader(&buf))
 		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}

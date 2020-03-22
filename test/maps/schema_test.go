@@ -3,6 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/actgardner/gogen-avro/singleobject"
 	"io/ioutil"
 	"testing"
 
@@ -22,22 +23,22 @@ const fixtureJson = `
         },
         "FloatField": {
             "m": {"small": 3.4, "verysmall": 3.402823e-38, "large": 3.402823e+38}
-        }, 
+        },
         "DoubleField": {
             "m": {"small": 5.6, "verysmall": 2.2250738585072014e-308}
-        }, 
+        },
         "StringField": {
             "m": {"short": "789", "longer": "a slightly longer string"}
         },
         "BoolField": {
             "m": {"true": true, "false": false}
-        }, 
+        },
         "BytesField": {
             "m": {"small": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5n", "longer": "VGhpcyBpcyBhIG11Y2ggbG9uZ2VyIHRlc3Qgc3RyaW5nIGxvbmcgbG9uZw=="}
         }
     },
     {
-        "IntField": {"m": {}}, 
+        "IntField": {"m": {}},
         "LongField": {"m": {}},
         "FloatField": {"m": {}},
         "DoubleField": {"m": {}},
@@ -100,10 +101,11 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		err = f.Serialize(&buf)
+		writer := singleobject.NewWriter(&buf, MapTestRecordUID)
+		err = f.Serialize(writer)
 		assert.Nil(t, err)
 
-		datum, err := DeserializeMapTestRecord(&buf)
+		datum, err := DeserializeMapTestRecord(singleobject.NewReader(&buf))
 		assert.Nil(t, err)
 		assert.Equal(t, datum.IntField.M, f.IntField.M)
 		assert.Equal(t, datum.LongField.M, f.LongField.M)

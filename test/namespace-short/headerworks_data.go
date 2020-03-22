@@ -6,39 +6,37 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-// Common information related to the event which must be included in any clean event  
-type HeaderworksData struct {
+var HeaderworksDataUID []byte
 
-	
-	// Unique identifier for the event used for de-duplication and tracing.
-	
-	
-		Uuid *UnionNullDatatypeUUID
-	
-
-	
-	// Fully qualified name of the host that generated the event that generated the data.
-	
-	
-		Hostname *UnionNullString
-	
-
-	
-	// Trace information not redundant with this object
-	
-	
-		Trace *UnionNullHeaderworksTrace
-	
-
+func init() {
+	t := NewHeaderworksData()
+	HeaderworksDataUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewHeaderworksData() (*HeaderworksData) {
+// Common information related to the event which must be included in any clean event
+type HeaderworksData struct {
+
+	// Unique identifier for the event used for de-duplication and tracing.
+
+	Uuid *UnionNullDatatypeUUID
+
+	// Fully qualified name of the host that generated the event that generated the data.
+
+	Hostname *UnionNullString
+
+	// Trace information not redundant with this object
+
+	Trace *UnionNullHeaderworksTrace
+}
+
+func NewHeaderworksData() *HeaderworksData {
 	return &HeaderworksData{}
 }
 
@@ -51,44 +49,49 @@ func DeserializeHeaderworksData(r io.Reader) (*HeaderworksData, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeHeaderworksDataFromSchema(r io.Reader, schema string) (*HeaderworksData, error) {
 	t := NewHeaderworksData()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeHeaderworksData(r *HeaderworksData, w io.Writer) error {
 	var err error
-	
-	err = writeUnionNullDatatypeUUID( r.Uuid, w)
+
+	err = writeUnionNullDatatypeUUID(r.Uuid, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
-	err = writeUnionNullString( r.Hostname, w)
+
+	err = writeUnionNullString(r.Hostname, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
-	err = writeUnionNullHeaderworksTrace( r.Trace, w)
+
+	err = writeUnionNullHeaderworksTrace(r.Trace, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -104,77 +107,62 @@ func (r *HeaderworksData) SchemaName() string {
 	return "headerworks.Data"
 }
 
-func (_ *HeaderworksData) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *HeaderworksData) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *HeaderworksData) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *HeaderworksData) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *HeaderworksData) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *HeaderworksData) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *HeaderworksData) SetString(v string) { panic("Unsupported operation") }
+func (_ *HeaderworksData) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *HeaderworksData) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *HeaderworksData) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *HeaderworksData) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *HeaderworksData) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *HeaderworksData) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *HeaderworksData) SetString(v string)   { panic("Unsupported operation") }
 func (_ *HeaderworksData) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *HeaderworksData) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-			r.Uuid = NewUnionNullDatatypeUUID()
-	
-		
-		
-			return r.Uuid
-		
-	
+
+		r.Uuid = NewUnionNullDatatypeUUID()
+
+		return r.Uuid
+
 	case 1:
-		
-			r.Hostname = NewUnionNullString()
-	
-		
-		
-			return r.Hostname
-		
-	
+
+		r.Hostname = NewUnionNullString()
+
+		return r.Hostname
+
 	case 2:
-		
-			r.Trace = NewUnionNullHeaderworksTrace()
-	
-		
-		
-			return r.Trace
-		
-	
+
+		r.Trace = NewUnionNullHeaderworksTrace()
+
+		return r.Trace
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *HeaderworksData) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch i {
+
 	case 0:
-       	 	r.Uuid = NewUnionNullDatatypeUUID()
+		r.Uuid = NewUnionNullDatatypeUUID()
 
 		return
-	
-	
-        
+
 	case 1:
-       	 	r.Hostname = NewUnionNullString()
+		r.Hostname = NewUnionNullString()
 
 		return
-	
-	
-        
+
 	case 2:
-       	 	r.Trace = NewUnionNullHeaderworksTrace()
+		r.Trace = NewUnionNullHeaderworksTrace()
 
 		return
-	
-	
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *HeaderworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *HeaderworksData) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *HeaderworksData) Finalize() { }
+func (_ *HeaderworksData) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *HeaderworksData) Finalize()                        {}

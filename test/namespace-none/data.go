@@ -6,39 +6,37 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-// Common information related to the event which must be included in any clean event  
-type Data struct {
+var DataUID []byte
 
-	
-	// Unique identifier for the event used for de-duplication and tracing.
-	
-	
-		Uuid *UnionNullUUID
-	
-
-	
-	// Fully qualified name of the host that generated the event that generated the data.
-	
-	
-		Hostname *UnionNullString
-	
-
-	
-	// Trace information not redundant with this object
-	
-	
-		Trace *UnionNullTrace
-	
-
+func init() {
+	t := NewData()
+	DataUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewData() (*Data) {
+// Common information related to the event which must be included in any clean event
+type Data struct {
+
+	// Unique identifier for the event used for de-duplication and tracing.
+
+	Uuid *UnionNullUUID
+
+	// Fully qualified name of the host that generated the event that generated the data.
+
+	Hostname *UnionNullString
+
+	// Trace information not redundant with this object
+
+	Trace *UnionNullTrace
+}
+
+func NewData() *Data {
 	return &Data{}
 }
 
@@ -51,44 +49,49 @@ func DeserializeData(r io.Reader) (*Data, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeDataFromSchema(r io.Reader, schema string) (*Data, error) {
 	t := NewData()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeData(r *Data, w io.Writer) error {
 	var err error
-	
-	err = writeUnionNullUUID( r.Uuid, w)
+
+	err = writeUnionNullUUID(r.Uuid, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
-	err = writeUnionNullString( r.Hostname, w)
+
+	err = writeUnionNullString(r.Hostname, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
-	err = writeUnionNullTrace( r.Trace, w)
+
+	err = writeUnionNullTrace(r.Trace, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -104,77 +107,62 @@ func (r *Data) SchemaName() string {
 	return "bodyworks.Data"
 }
 
-func (_ *Data) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *Data) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *Data) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *Data) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *Data) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *Data) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *Data) SetString(v string) { panic("Unsupported operation") }
+func (_ *Data) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *Data) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *Data) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *Data) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *Data) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *Data) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *Data) SetString(v string)   { panic("Unsupported operation") }
 func (_ *Data) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Data) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-			r.Uuid = NewUnionNullUUID()
-	
-		
-		
-			return r.Uuid
-		
-	
+
+		r.Uuid = NewUnionNullUUID()
+
+		return r.Uuid
+
 	case 1:
-		
-			r.Hostname = NewUnionNullString()
-	
-		
-		
-			return r.Hostname
-		
-	
+
+		r.Hostname = NewUnionNullString()
+
+		return r.Hostname
+
 	case 2:
-		
-			r.Trace = NewUnionNullTrace()
-	
-		
-		
-			return r.Trace
-		
-	
+
+		r.Trace = NewUnionNullTrace()
+
+		return r.Trace
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *Data) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch i {
+
 	case 0:
-       	 	r.Uuid = NewUnionNullUUID()
+		r.Uuid = NewUnionNullUUID()
 
 		return
-	
-	
-        
+
 	case 1:
-       	 	r.Hostname = NewUnionNullString()
+		r.Hostname = NewUnionNullString()
 
 		return
-	
-	
-        
+
 	case 2:
-       	 	r.Trace = NewUnionNullTrace()
+		r.Trace = NewUnionNullTrace()
 
 		return
-	
-	
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *Data) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Data) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *Data) Finalize() { }
+func (_ *Data) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *Data) Finalize()                        {}

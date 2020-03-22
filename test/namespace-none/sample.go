@@ -6,32 +6,33 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-// GoGen test  
-type Sample struct {
+var SampleUID []byte
 
-	
-	// Core data information required for any event
-	
-	
-		Header *UnionNullData
-	
-
-	
-	// Core data information required for any event
-	
-	
-		Body *UnionNullData
-	
-
+func init() {
+	t := NewSample()
+	SampleUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewSample() (*Sample) {
+// GoGen test
+type Sample struct {
+
+	// Core data information required for any event
+
+	Header *UnionNullData
+
+	// Core data information required for any event
+
+	Body *UnionNullData
+}
+
+func NewSample() *Sample {
 	return &Sample{}
 }
 
@@ -44,39 +45,44 @@ func DeserializeSample(r io.Reader) (*Sample, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeSampleFromSchema(r io.Reader, schema string) (*Sample, error) {
 	t := NewSample()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeSample(r *Sample, w io.Writer) error {
 	var err error
-	
-	err = writeUnionNullData( r.Header, w)
+
+	err = writeUnionNullData(r.Header, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
-	err = writeUnionNullData( r.Body, w)
+
+	err = writeUnionNullData(r.Body, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -92,61 +98,51 @@ func (r *Sample) SchemaName() string {
 	return "com.avro.test.sample"
 }
 
-func (_ *Sample) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *Sample) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *Sample) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *Sample) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *Sample) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *Sample) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *Sample) SetString(v string) { panic("Unsupported operation") }
+func (_ *Sample) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *Sample) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *Sample) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *Sample) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *Sample) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *Sample) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *Sample) SetString(v string)   { panic("Unsupported operation") }
 func (_ *Sample) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Sample) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-			r.Header = NewUnionNullData()
-	
-		
-		
-			return r.Header
-		
-	
+
+		r.Header = NewUnionNullData()
+
+		return r.Header
+
 	case 1:
-		
-			r.Body = NewUnionNullData()
-	
-		
-		
-			return r.Body
-		
-	
+
+		r.Body = NewUnionNullData()
+
+		return r.Body
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *Sample) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch i {
+
 	case 0:
-       	 	r.Header = NewUnionNullData()
+		r.Header = NewUnionNullData()
 
 		return
-	
-	
-        
+
 	case 1:
-       	 	r.Body = NewUnionNullData()
+		r.Body = NewUnionNullData()
 
 		return
-	
-	
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *Sample) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Sample) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *Sample) Finalize() { }
+func (_ *Sample) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *Sample) Finalize()                        {}

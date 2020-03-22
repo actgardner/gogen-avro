@@ -6,38 +6,31 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-  
-type NumberRecord struct {
+var NumberRecordUID []byte
 
-	
-	
-		IntField int32
-	
-
-	
-	
-		LongField int64
-	
-
-	
-	
-		FloatField float32
-	
-
-	
-	
-		DoubleField float64
-	
-
+func init() {
+	t := NewNumberRecord()
+	NumberRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewNumberRecord() (*NumberRecord) {
+type NumberRecord struct {
+	IntField int32
+
+	LongField int64
+
+	FloatField float32
+
+	DoubleField float64
+}
+
+func NewNumberRecord() *NumberRecord {
 	return &NumberRecord{}
 }
 
@@ -50,49 +43,54 @@ func DeserializeNumberRecord(r io.Reader) (*NumberRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeNumberRecordFromSchema(r io.Reader, schema string) (*NumberRecord, error) {
 	t := NewNumberRecord()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeNumberRecord(r *NumberRecord, w io.Writer) error {
 	var err error
-	
-	err = vm.WriteInt( r.IntField, w)
+
+	err = vm.WriteInt(r.IntField, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
-	err = vm.WriteLong( r.LongField, w)
+
+	err = vm.WriteLong(r.LongField, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
-	err = vm.WriteFloat( r.FloatField, w)
+
+	err = vm.WriteFloat(r.FloatField, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
-	err = vm.WriteDouble( r.DoubleField, w)
+
+	err = vm.WriteDouble(r.DoubleField, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -108,61 +106,45 @@ func (r *NumberRecord) SchemaName() string {
 	return "NumberRecord"
 }
 
-func (_ *NumberRecord) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *NumberRecord) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *NumberRecord) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *NumberRecord) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *NumberRecord) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *NumberRecord) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *NumberRecord) SetString(v string) { panic("Unsupported operation") }
+func (_ *NumberRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *NumberRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *NumberRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *NumberRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *NumberRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *NumberRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *NumberRecord) SetString(v string)   { panic("Unsupported operation") }
 func (_ *NumberRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NumberRecord) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
-			return (*types.Int)(&r.IntField)
-		
-	
+
+		return (*types.Int)(&r.IntField)
+
 	case 1:
-		
-		
-			return (*types.Long)(&r.LongField)
-		
-	
+
+		return (*types.Long)(&r.LongField)
+
 	case 2:
-		
-		
-			return (*types.Float)(&r.FloatField)
-		
-	
+
+		return (*types.Float)(&r.FloatField)
+
 	case 3:
-		
-		
-			return (*types.Double)(&r.DoubleField)
-		
-	
+
+		return (*types.Double)(&r.DoubleField)
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *NumberRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
-        
-	
-        
-	
-        
-	
+	switch i {
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *NumberRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NumberRecord) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *NumberRecord) Finalize() { }
+func (_ *NumberRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *NumberRecord) Finalize()                        {}

@@ -6,23 +6,26 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-// A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014  
-type BodyworksDatatypeUUID struct {
+var BodyworksDatatypeUUIDUID []byte
 
-	
-	
-		Uuid string
-	
-
+func init() {
+	t := NewBodyworksDatatypeUUID()
+	BodyworksDatatypeUUIDUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewBodyworksDatatypeUUID() (*BodyworksDatatypeUUID) {
+// A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014
+type BodyworksDatatypeUUID struct {
+	Uuid string
+}
+
+func NewBodyworksDatatypeUUID() *BodyworksDatatypeUUID {
 	return &BodyworksDatatypeUUID{}
 }
 
@@ -35,34 +38,39 @@ func DeserializeBodyworksDatatypeUUID(r io.Reader) (*BodyworksDatatypeUUID, erro
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeBodyworksDatatypeUUIDFromSchema(r io.Reader, schema string) (*BodyworksDatatypeUUID, error) {
 	t := NewBodyworksDatatypeUUID()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeBodyworksDatatypeUUID(r *BodyworksDatatypeUUID, w io.Writer) error {
 	var err error
-	
-	err = vm.WriteString( r.Uuid, w)
+
+	err = vm.WriteString(r.Uuid, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -78,41 +86,37 @@ func (r *BodyworksDatatypeUUID) SchemaName() string {
 	return "bodyworks.datatype.UUID"
 }
 
-func (_ *BodyworksDatatypeUUID) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *BodyworksDatatypeUUID) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *BodyworksDatatypeUUID) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *BodyworksDatatypeUUID) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *BodyworksDatatypeUUID) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *BodyworksDatatypeUUID) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *BodyworksDatatypeUUID) SetString(v string) { panic("Unsupported operation") }
+func (_ *BodyworksDatatypeUUID) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *BodyworksDatatypeUUID) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *BodyworksDatatypeUUID) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *BodyworksDatatypeUUID) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *BodyworksDatatypeUUID) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *BodyworksDatatypeUUID) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *BodyworksDatatypeUUID) SetString(v string)   { panic("Unsupported operation") }
 func (_ *BodyworksDatatypeUUID) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *BodyworksDatatypeUUID) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
-			return (*types.String)(&r.Uuid)
-		
-	
+
+		return (*types.String)(&r.Uuid)
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *BodyworksDatatypeUUID) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch i {
+
 	case 0:
-       	 	r.Uuid = ""
+		r.Uuid = ""
 		return
-	
-	
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *BodyworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *BodyworksDatatypeUUID) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *BodyworksDatatypeUUID) Finalize() { }
+func (_ *BodyworksDatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *BodyworksDatatypeUUID) Finalize()                        {}

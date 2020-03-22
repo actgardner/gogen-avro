@@ -6,9 +6,17 @@ import (
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
 )
 
-{{ if ne .Doc "" }}// {{ .Doc}}{{ end }}  
+var {{ .Name }}UID []byte
+
+func init() {
+	t := {{ .ConstructorMethod }}
+	{{ .Name }}UID = canonical.AvroCalcSchemaUID(t.Schema())
+}
+
+{{ if ne .Doc "" }}// {{ .Doc}}{{ end }}
 type {{ .Name }} struct {
 {{ range $i, $field := .Fields }}
 	{{ if ne $field.Doc "" }}
@@ -35,22 +43,27 @@ func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func Deserialize{{ .Name }}FromSchema(r io.Reader, schema string) ({{ .GoType }}, error) {
 	t := {{ .ConstructorMethod }}
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -60,7 +73,7 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	{{ range $i, $field := .Fields }}
 	err = {{ .Type.SerializerMethod }}( r.{{ .GoName }}, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	{{ end }}
 	return err
@@ -92,7 +105,7 @@ func (r {{ .GoType }}) Get(i int) types.Field {
 	{{ range $i, $field := .Fields }}
 	case {{ $i }}:
 		{{ if $.ConstructableForField $field | ne "" }}
-			{{ $.ConstructableForField $field }}	
+			{{ $.ConstructableForField $field }}
 		{{ end }}
 		{{ if ne $field.Type.WrapperType "" }}
 			return (*{{ $field.Type.WrapperType }})(&r.{{ $field.GoName }})

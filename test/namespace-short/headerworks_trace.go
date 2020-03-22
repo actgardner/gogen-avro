@@ -6,25 +6,29 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-// Trace  
-type HeaderworksTrace struct {
+var HeaderworksTraceUID []byte
 
-	
-	// Trace Identifier
-	
-	
-		TraceId *UnionNullDatatypeUUID
-	
-
+func init() {
+	t := NewHeaderworksTrace()
+	HeaderworksTraceUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewHeaderworksTrace() (*HeaderworksTrace) {
+// Trace
+type HeaderworksTrace struct {
+
+	// Trace Identifier
+
+	TraceId *UnionNullDatatypeUUID
+}
+
+func NewHeaderworksTrace() *HeaderworksTrace {
 	return &HeaderworksTrace{}
 }
 
@@ -37,34 +41,39 @@ func DeserializeHeaderworksTrace(r io.Reader) (*HeaderworksTrace, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeHeaderworksTraceFromSchema(r io.Reader, schema string) (*HeaderworksTrace, error) {
 	t := NewHeaderworksTrace()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeHeaderworksTrace(r *HeaderworksTrace, w io.Writer) error {
 	var err error
-	
-	err = writeUnionNullDatatypeUUID( r.TraceId, w)
+
+	err = writeUnionNullDatatypeUUID(r.TraceId, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -80,45 +89,40 @@ func (r *HeaderworksTrace) SchemaName() string {
 	return "headerworks.Trace"
 }
 
-func (_ *HeaderworksTrace) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *HeaderworksTrace) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *HeaderworksTrace) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *HeaderworksTrace) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *HeaderworksTrace) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *HeaderworksTrace) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *HeaderworksTrace) SetString(v string) { panic("Unsupported operation") }
+func (_ *HeaderworksTrace) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *HeaderworksTrace) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *HeaderworksTrace) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *HeaderworksTrace) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *HeaderworksTrace) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *HeaderworksTrace) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *HeaderworksTrace) SetString(v string)   { panic("Unsupported operation") }
 func (_ *HeaderworksTrace) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *HeaderworksTrace) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-			r.TraceId = NewUnionNullDatatypeUUID()
-	
-		
-		
-			return r.TraceId
-		
-	
+
+		r.TraceId = NewUnionNullDatatypeUUID()
+
+		return r.TraceId
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *HeaderworksTrace) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch i {
+
 	case 0:
-       	 	r.TraceId = NewUnionNullDatatypeUUID()
+		r.TraceId = NewUnionNullDatatypeUUID()
 
 		return
-	
-	
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *HeaderworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *HeaderworksTrace) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *HeaderworksTrace) Finalize() { }
+func (_ *HeaderworksTrace) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *HeaderworksTrace) Finalize()                        {}

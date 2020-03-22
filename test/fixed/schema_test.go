@@ -35,7 +35,6 @@ func TestFixedFixture(t *testing.T) {
 		buf.Reset()
 		err = f.Serialize(&buf)
 		assert.Nil(t, err)
-
 		datum, _, err := codec.NativeFromBinary(buf.Bytes())
 		assert.Nil(t, err)
 
@@ -52,6 +51,7 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
+
 		err := f.Serialize(&buf)
 		assert.Nil(t, err)
 

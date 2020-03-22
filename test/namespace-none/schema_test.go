@@ -3,6 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/actgardner/gogen-avro/singleobject"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -25,10 +26,11 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		err = f.Serialize(&buf)
+		writer := singleobject.NewWriter(&buf, SampleUID)
+		err = f.Serialize(writer)
 		assert.Nil(t, err)
 
-		datum, err := DeserializeSample(&buf)
+		datum, err := DeserializeSample(singleobject.NewReader(&buf))
 		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}

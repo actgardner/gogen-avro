@@ -2,6 +2,7 @@ package avro
 
 import (
 	"bytes"
+	"github.com/actgardner/gogen-avro/singleobject"
 	"testing"
 
 	"github.com/actgardner/gogen-avro/compiler"
@@ -17,7 +18,8 @@ func TestEvolution(t *testing.T) {
 	oldAliasRecord.C = "bye"
 
 	var buf bytes.Buffer
-	err := oldAliasRecord.Serialize(&buf)
+	writer := singleobject.NewWriter(&buf, AliasRecordUID)
+	err := oldAliasRecord.Serialize(writer)
 	assert.Nil(t, err)
 
 	newAliasRecord := evolution.NewAliasRecord()
@@ -25,7 +27,7 @@ func TestEvolution(t *testing.T) {
 	deser, err := compiler.CompileSchemaBytes([]byte(oldAliasRecord.Schema()), []byte(newAliasRecord.Schema()))
 	assert.Nil(t, err)
 
-	err = vm.Eval(bytes.NewReader(buf.Bytes()), deser, newAliasRecord)
+	err = vm.Eval(singleobject.NewReader(&buf), deser, newAliasRecord)
 	assert.Nil(t, err)
 
 	assert.Equal(t, "hi", newAliasRecord.B)

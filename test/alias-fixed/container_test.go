@@ -2,6 +2,7 @@ package avro
 
 import (
 	"bytes"
+	"github.com/actgardner/gogen-avro/singleobject"
 	"testing"
 
 	"github.com/actgardner/gogen-avro/container"
@@ -37,8 +38,10 @@ func TestGogenDeflateEncoding(t *testing.T) {
 
 func roundTripWithCodec(codec container.Codec, t *testing.T) {
 	var buf bytes.Buffer
+	UID := make([]byte, 8)
+	writer := singleobject.NewWriter(&buf, UID)
 	// Write the container file contents to the buffer
-	containerWriter, err := NewEventWriter(&buf, codec, 2)
+	containerWriter, err := NewEventWriter(writer, codec, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,7 +60,7 @@ func roundTripWithCodec(codec container.Codec, t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reader, err := goavro.NewOCFReader(bytes.NewReader(buf.Bytes()))
+	reader, err := goavro.NewOCFReader(singleobject.NewReader(&buf))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -75,8 +78,10 @@ func roundTripWithCodec(codec container.Codec, t *testing.T) {
 
 func roundTripGogenWithCodec(codec container.Codec, t *testing.T) {
 	var buf bytes.Buffer
+	UID := make([]byte, 8)
+	writer := singleobject.NewWriter(&buf, UID)
 	// Write the container file contents to the buffer
-	containerWriter, err := NewEventWriter(&buf, codec, 2)
+	containerWriter, err := NewEventWriter(writer, codec, 2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -95,7 +100,7 @@ func roundTripGogenWithCodec(codec container.Codec, t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reader, err := NewEventReader(bytes.NewReader(buf.Bytes()))
+	reader, err := NewEventReader(singleobject.NewReader(&buf))
 	if err != nil {
 		t.Fatal(err)
 	}

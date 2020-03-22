@@ -6,23 +6,25 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-  
-type UnionRec struct {
+var UnionRecUID []byte
 
-	
-	
-		A int32
-	
-
+func init() {
+	t := NewUnionRec()
+	UnionRecUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewUnionRec() (*UnionRec) {
+type UnionRec struct {
+	A int32
+}
+
+func NewUnionRec() *UnionRec {
 	return &UnionRec{}
 }
 
@@ -35,34 +37,39 @@ func DeserializeUnionRec(r io.Reader) (*UnionRec, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeUnionRecFromSchema(r io.Reader, schema string) (*UnionRec, error) {
 	t := NewUnionRec()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeUnionRec(r *UnionRec, w io.Writer) error {
 	var err error
-	
-	err = vm.WriteInt( r.A, w)
+
+	err = vm.WriteInt(r.A, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -78,37 +85,33 @@ func (r *UnionRec) SchemaName() string {
 	return "unionRec"
 }
 
-func (_ *UnionRec) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *UnionRec) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *UnionRec) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *UnionRec) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *UnionRec) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *UnionRec) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *UnionRec) SetString(v string) { panic("Unsupported operation") }
+func (_ *UnionRec) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *UnionRec) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *UnionRec) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *UnionRec) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *UnionRec) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *UnionRec) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *UnionRec) SetString(v string)   { panic("Unsupported operation") }
 func (_ *UnionRec) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *UnionRec) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
-			return (*types.Int)(&r.A)
-		
-	
+
+		return (*types.Int)(&r.A)
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *UnionRec) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch i {
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *UnionRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionRec) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *UnionRec) Finalize() { }
+func (_ *UnionRec) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *UnionRec) Finalize()                        {}

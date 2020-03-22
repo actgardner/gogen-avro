@@ -3,6 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/actgardner/gogen-avro/singleobject"
 	"io/ioutil"
 	"testing"
 
@@ -34,10 +35,11 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		err = f.Serialize(&buf)
+		writer := singleobject.NewWriter(&buf, ComplexUnionTestRecordUID)
+		err = f.Serialize(writer)
 		assert.Nil(t, err)
-
-		datum, _, err := codec.NativeFromBinary(buf.Bytes())
+		b := singleobject.NewReader(&buf).Bytes()
+		datum, _, err := codec.NativeFromBinary(b)
 		assert.Nil(t, err)
 
 		record := datum.(map[string]interface{})
@@ -83,10 +85,11 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		err = f.Serialize(&buf)
+		writer := singleobject.NewWriter(&buf, ComplexUnionTestRecordUID)
+		err = f.Serialize(writer)
 		assert.Nil(t, err)
 
-		datum, err := DeserializeComplexUnionTestRecord(&buf)
+		datum, err := DeserializeComplexUnionTestRecord(singleobject.NewReader(&buf))
 		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}

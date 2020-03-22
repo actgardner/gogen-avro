@@ -6,25 +6,29 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-// Trace  
-type BodyworksTrace struct {
+var BodyworksTraceUID []byte
 
-	
-	// Trace Identifier
-	
-	
-		TraceId *UnionNullHeaderworksDatatypeUUID
-	
-
+func init() {
+	t := NewBodyworksTrace()
+	BodyworksTraceUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewBodyworksTrace() (*BodyworksTrace) {
+// Trace
+type BodyworksTrace struct {
+
+	// Trace Identifier
+
+	TraceId *UnionNullHeaderworksDatatypeUUID
+}
+
+func NewBodyworksTrace() *BodyworksTrace {
 	return &BodyworksTrace{}
 }
 
@@ -37,34 +41,39 @@ func DeserializeBodyworksTrace(r io.Reader) (*BodyworksTrace, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeBodyworksTraceFromSchema(r io.Reader, schema string) (*BodyworksTrace, error) {
 	t := NewBodyworksTrace()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeBodyworksTrace(r *BodyworksTrace, w io.Writer) error {
 	var err error
-	
-	err = writeUnionNullHeaderworksDatatypeUUID( r.TraceId, w)
+
+	err = writeUnionNullHeaderworksDatatypeUUID(r.TraceId, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -80,45 +89,40 @@ func (r *BodyworksTrace) SchemaName() string {
 	return "bodyworks.Trace"
 }
 
-func (_ *BodyworksTrace) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetString(v string) { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetString(v string)   { panic("Unsupported operation") }
 func (_ *BodyworksTrace) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *BodyworksTrace) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-			r.TraceId = NewUnionNullHeaderworksDatatypeUUID()
-	
-		
-		
-			return r.TraceId
-		
-	
+
+		r.TraceId = NewUnionNullHeaderworksDatatypeUUID()
+
+		return r.TraceId
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *BodyworksTrace) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch i {
+
 	case 0:
-       	 	r.TraceId = NewUnionNullHeaderworksDatatypeUUID()
+		r.TraceId = NewUnionNullHeaderworksDatatypeUUID()
 
 		return
-	
-	
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *BodyworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *BodyworksTrace) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *BodyworksTrace) Finalize() { }
+func (_ *BodyworksTrace) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *BodyworksTrace) Finalize()                        {}

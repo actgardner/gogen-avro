@@ -6,23 +6,25 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-  
-type NestedTestRecord struct {
+var NestedTestRecordUID []byte
 
-	
-	
-		OtherField *NestedRecord
-	
-
+func init() {
+	t := NewNestedTestRecord()
+	NestedTestRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewNestedTestRecord() (*NestedTestRecord) {
+type NestedTestRecord struct {
+	OtherField *NestedRecord
+}
+
+func NewNestedTestRecord() *NestedTestRecord {
 	return &NestedTestRecord{}
 }
 
@@ -35,34 +37,39 @@ func DeserializeNestedTestRecord(r io.Reader) (*NestedTestRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeNestedTestRecordFromSchema(r io.Reader, schema string) (*NestedTestRecord, error) {
 	t := NewNestedTestRecord()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeNestedTestRecord(r *NestedTestRecord, w io.Writer) error {
 	var err error
-	
-	err = writeNestedRecord( r.OtherField, w)
+
+	err = writeNestedRecord(r.OtherField, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -78,40 +85,35 @@ func (r *NestedTestRecord) SchemaName() string {
 	return "NestedTestRecord"
 }
 
-func (_ *NestedTestRecord) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetString(v string) { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetString(v string)   { panic("Unsupported operation") }
 func (_ *NestedTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NestedTestRecord) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-			r.OtherField = NewNestedRecord()
-	
-		
-		
-			return r.OtherField
-		
-	
+
+		r.OtherField = NewNestedRecord()
+
+		return r.OtherField
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *NestedTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch i {
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *NestedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NestedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *NestedTestRecord) Finalize() { }
+func (_ *NestedTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *NestedTestRecord) Finalize()                        {}

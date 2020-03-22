@@ -6,32 +6,33 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-// GoGen test  
-type TestSample struct {
+var TestSampleUID []byte
 
-	
-	// Core data information required for any event
-	
-	
-		Header *UnionNullHeaderworksData
-	
-
-	
-	// Core data information required for any event
-	
-	
-		Body *UnionNullBodyworksData
-	
-
+func init() {
+	t := NewTestSample()
+	TestSampleUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewTestSample() (*TestSample) {
+// GoGen test
+type TestSample struct {
+
+	// Core data information required for any event
+
+	Header *UnionNullHeaderworksData
+
+	// Core data information required for any event
+
+	Body *UnionNullBodyworksData
+}
+
+func NewTestSample() *TestSample {
 	return &TestSample{}
 }
 
@@ -44,39 +45,44 @@ func DeserializeTestSample(r io.Reader) (*TestSample, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeTestSampleFromSchema(r io.Reader, schema string) (*TestSample, error) {
 	t := NewTestSample()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeTestSample(r *TestSample, w io.Writer) error {
 	var err error
-	
-	err = writeUnionNullHeaderworksData( r.Header, w)
+
+	err = writeUnionNullHeaderworksData(r.Header, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
-	err = writeUnionNullBodyworksData( r.Body, w)
+
+	err = writeUnionNullBodyworksData(r.Body, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -92,61 +98,51 @@ func (r *TestSample) SchemaName() string {
 	return "com.avro.test.sample"
 }
 
-func (_ *TestSample) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *TestSample) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *TestSample) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *TestSample) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *TestSample) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *TestSample) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *TestSample) SetString(v string) { panic("Unsupported operation") }
+func (_ *TestSample) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *TestSample) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *TestSample) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *TestSample) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *TestSample) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *TestSample) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *TestSample) SetString(v string)   { panic("Unsupported operation") }
 func (_ *TestSample) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *TestSample) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-			r.Header = NewUnionNullHeaderworksData()
-	
-		
-		
-			return r.Header
-		
-	
+
+		r.Header = NewUnionNullHeaderworksData()
+
+		return r.Header
+
 	case 1:
-		
-			r.Body = NewUnionNullBodyworksData()
-	
-		
-		
-			return r.Body
-		
-	
+
+		r.Body = NewUnionNullBodyworksData()
+
+		return r.Body
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *TestSample) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch i {
+
 	case 0:
-       	 	r.Header = NewUnionNullHeaderworksData()
+		r.Header = NewUnionNullHeaderworksData()
 
 		return
-	
-	
-        
+
 	case 1:
-       	 	r.Body = NewUnionNullBodyworksData()
+		r.Body = NewUnionNullBodyworksData()
 
 		return
-	
-	
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *TestSample) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *TestSample) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *TestSample) Finalize() { }
+func (_ *TestSample) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *TestSample) Finalize()                        {}

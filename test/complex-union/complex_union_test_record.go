@@ -6,23 +6,25 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/schema/canonical"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-  
-type ComplexUnionTestRecord struct {
+var ComplexUnionTestRecordUID []byte
 
-	
-	
-		UnionField *UnionNullArrayIntMapIntNestedUnionRecord
-	
-
+func init() {
+	t := NewComplexUnionTestRecord()
+	ComplexUnionTestRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
 }
 
-func NewComplexUnionTestRecord() (*ComplexUnionTestRecord) {
+type ComplexUnionTestRecord struct {
+	UnionField *UnionNullArrayIntMapIntNestedUnionRecord
+}
+
+func NewComplexUnionTestRecord() *ComplexUnionTestRecord {
 	return &ComplexUnionTestRecord{}
 }
 
@@ -35,34 +37,39 @@ func DeserializeComplexUnionTestRecord(r io.Reader) (*ComplexUnionTestRecord, er
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func DeserializeComplexUnionTestRecordFromSchema(r io.Reader, schema string) (*ComplexUnionTestRecord, error) {
 	t := NewComplexUnionTestRecord()
+	err := canonical.AvroConsumeHeader(r)
+	if err != nil {
+		return nil, err
+	}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	var deser *vm.Program
+	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
 
 func writeComplexUnionTestRecord(r *ComplexUnionTestRecord, w io.Writer) error {
 	var err error
-	
-	err = writeUnionNullArrayIntMapIntNestedUnionRecord( r.UnionField, w)
+
+	err = writeUnionNullArrayIntMapIntNestedUnionRecord(r.UnionField, w)
 	if err != nil {
-		return err			
+		return err
 	}
-	
+
 	return err
 }
 
@@ -78,40 +85,35 @@ func (r *ComplexUnionTestRecord) SchemaName() string {
 	return "ComplexUnionTestRecord"
 }
 
-func (_ *ComplexUnionTestRecord) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *ComplexUnionTestRecord) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *ComplexUnionTestRecord) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *ComplexUnionTestRecord) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *ComplexUnionTestRecord) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *ComplexUnionTestRecord) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *ComplexUnionTestRecord) SetString(v string) { panic("Unsupported operation") }
+func (_ *ComplexUnionTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *ComplexUnionTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *ComplexUnionTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *ComplexUnionTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *ComplexUnionTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *ComplexUnionTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *ComplexUnionTestRecord) SetString(v string)   { panic("Unsupported operation") }
 func (_ *ComplexUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *ComplexUnionTestRecord) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-			r.UnionField = NewUnionNullArrayIntMapIntNestedUnionRecord()
-	
-		
-		
-			return r.UnionField
-		
-	
+
+		r.UnionField = NewUnionNullArrayIntMapIntNestedUnionRecord()
+
+		return r.UnionField
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *ComplexUnionTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch i {
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *ComplexUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ComplexUnionTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *ComplexUnionTestRecord) Finalize() { }
+func (_ *ComplexUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *ComplexUnionTestRecord) Finalize()                        {}

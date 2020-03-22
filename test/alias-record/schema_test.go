@@ -3,6 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/actgardner/gogen-avro/singleobject"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,22 +14,22 @@ const fixtureJson = `
 [
   {
     "OtherField": {
-      "StringField": "789", 
-      "BoolField": true, 
+      "StringField": "789",
+      "BoolField": true,
       "BytesField": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5n"
     }
   },
   {
     "OtherField": {
-      "StringField": "abcdghejw", 
-      "BoolField": true, 
+      "StringField": "abcdghejw",
+      "BoolField": true,
       "BytesField": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5n"
     }
   },
   {
     "OtherField": {
-      "StringField": "jdnwjkendwedddedee", 
-      "BoolField": true, 
+      "StringField": "jdnwjkendwedddedee",
+      "BoolField": true,
       "BytesField": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5n"
     }
   }
@@ -43,10 +44,11 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		err = f.Serialize(&buf)
+		writer := singleobject.NewWriter(&buf, NestedRecordUID)
+		err = f.Serialize(writer)
 		assert.Nil(t, err)
 
-		datum, err := DeserializeNestedTestRecord(&buf)
+		datum, err := DeserializeNestedTestRecord(singleobject.NewReader(&buf))
 		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}

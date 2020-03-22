@@ -2,6 +2,7 @@ package avro
 
 import (
 	"bytes"
+	"github.com/actgardner/gogen-avro/singleobject"
 	"testing"
 
 	evolution "github.com/actgardner/gogen-avro/test/evolve-union/evolution"
@@ -16,7 +17,8 @@ func TestEvolution(t *testing.T) {
 	oldUnionRecord.Name = &UnionNullString{UnionType: UnionNullStringTypeEnumString, String: "abcd"}
 
 	var buf bytes.Buffer
-	err := oldUnionRecord.Serialize(&buf)
+	writer := singleobject.NewWriter(&buf, UnionRecordUID)
+	err := oldUnionRecord.Serialize(writer)
 	assert.Nil(t, err)
 
 	newUnionRecord, err := evolution.DeserializeUnionRecordFromSchema(&buf, NewUnionRecord().Schema())
