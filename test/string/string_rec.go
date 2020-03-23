@@ -7,22 +7,16 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-var StringRecUID []byte
-
-func init() {
-	t := NewStringRec()
-	StringRecUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
-
 type StringRec struct {
 	ProductName string
 }
+
+var StringRecAvroCRC64Fingerprint = []byte{0x77, 0x83, 0x36, 0xab, 0x9d, 0xe9, 0x0, 0x15}
 
 func NewStringRec() *StringRec {
 	return &StringRec{}
@@ -110,3 +104,7 @@ func (r *StringRec) SetDefault(i int) {
 func (_ *StringRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *StringRec) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *StringRec) Finalize()                        {}
+
+func (_ *StringRec) AvroCRC64Fingerprint() []byte {
+	return StringRecAvroCRC64Fingerprint
+}

@@ -7,18 +7,10 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var HeaderworksTraceUID []byte
-
-func init() {
-	t := NewHeaderworksTrace()
-	HeaderworksTraceUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 // Trace
 type HeaderworksTrace struct {
@@ -27,6 +19,8 @@ type HeaderworksTrace struct {
 
 	TraceId *UnionNullDatatypeUUID
 }
+
+var HeaderworksTraceAvroCRC64Fingerprint = []byte{0x8a, 0xdf, 0x75, 0xe7, 0xcb, 0xbb, 0xa6, 0xbc}
 
 func NewHeaderworksTrace() *HeaderworksTrace {
 	return &HeaderworksTrace{}
@@ -121,3 +115,7 @@ func (r *HeaderworksTrace) SetDefault(i int) {
 func (_ *HeaderworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksTrace) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *HeaderworksTrace) Finalize()                        {}
+
+func (_ *HeaderworksTrace) AvroCRC64Fingerprint() []byte {
+	return HeaderworksTraceAvroCRC64Fingerprint
+}

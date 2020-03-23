@@ -8,18 +8,10 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var AvroContainerBlockUID []byte
-
-func init() {
-	t := NewAvroContainerBlock()
-	AvroContainerBlockUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 type AvroContainerBlock struct {
 	NumRecords int64
@@ -28,6 +20,8 @@ type AvroContainerBlock struct {
 
 	Sync Sync
 }
+
+var AvroContainerBlockAvroCRC64Fingerprint = []byte{0xe, 0xec, 0x6a, 0x40, 0xd9, 0x94, 0xe1, 0x34}
 
 func NewAvroContainerBlock() *AvroContainerBlock {
 	return &AvroContainerBlock{}
@@ -133,3 +127,7 @@ func (r *AvroContainerBlock) SetDefault(i int) {
 func (_ *AvroContainerBlock) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *AvroContainerBlock) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *AvroContainerBlock) Finalize()                        {}
+
+func (_ *AvroContainerBlock) AvroCRC64Fingerprint() []byte {
+	return AvroContainerBlockAvroCRC64Fingerprint
+}

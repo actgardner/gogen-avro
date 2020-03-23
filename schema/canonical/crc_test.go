@@ -19,8 +19,7 @@ func TestAvroCRC64Fingerprint(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		b := make([]byte, 0, 8)
-		output := bytes.NewBuffer(b)
+
 		ns := parser.NewNamespace(false)
 		s, err := ns.TypeForSchema([]byte(c.schema))
 		assert.Nil(t, err)
@@ -28,9 +27,8 @@ func TestAvroCRC64Fingerprint(t *testing.T) {
 			assert.Nil(t, resolver.ResolveDefinition(def, ns.Definitions))
 		}
 		canonical, err := json.Marshal(CanonicalForm(s))
-		err = AvroCRC64Fingerprint(canonical, output)
-		assert.Nil(t, err)
-		assert.Equal(t, c.fingerprint, hex.EncodeToString(output.Bytes()))
+		output := AvroCRC64Fingerprint(canonical)
+		assert.Equal(t, c.fingerprint, hex.EncodeToString(output))
 	}
 }
 

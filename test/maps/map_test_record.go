@@ -3,18 +3,10 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var MapTestRecordUID []byte
-
-func init() {
-	t := NewMapTestRecord()
-	MapTestRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 type MapTestRecord struct {
 	IntField *MapInt
@@ -31,6 +23,8 @@ type MapTestRecord struct {
 
 	BytesField *MapBytes
 }
+
+var MapTestRecordAvroCRC64Fingerprint = []byte{0x3c, 0x3f, 0x18, 0xa0, 0x7, 0xdf, 0x5e, 0x9e}
 
 func NewMapTestRecord() *MapTestRecord {
 	return &MapTestRecord{}
@@ -186,3 +180,7 @@ func (r *MapTestRecord) SetDefault(i int) {
 func (_ *MapTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *MapTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *MapTestRecord) Finalize()                        {}
+
+func (_ *MapTestRecord) AvroCRC64Fingerprint() []byte {
+	return MapTestRecordAvroCRC64Fingerprint
+}

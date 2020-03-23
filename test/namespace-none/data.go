@@ -7,18 +7,10 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var DataUID []byte
-
-func init() {
-	t := NewData()
-	DataUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 // Common information related to the event which must be included in any clean event
 type Data struct {
@@ -35,6 +27,8 @@ type Data struct {
 
 	Trace *UnionNullTrace
 }
+
+var DataAvroCRC64Fingerprint = []byte{0xa5, 0xec, 0x1f, 0xf5, 0x6b, 0x15, 0xc1, 0x21}
 
 func NewData() *Data {
 	return &Data{}
@@ -161,3 +155,7 @@ func (r *Data) SetDefault(i int) {
 func (_ *Data) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Data) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *Data) Finalize()                        {}
+
+func (_ *Data) AvroCRC64Fingerprint() []byte {
+	return DataAvroCRC64Fingerprint
+}

@@ -7,18 +7,10 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var TraceUID []byte
-
-func init() {
-	t := NewTrace()
-	TraceUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 // Trace
 type Trace struct {
@@ -27,6 +19,8 @@ type Trace struct {
 
 	TraceId *UnionNullUUID
 }
+
+var TraceAvroCRC64Fingerprint = []byte{0x83, 0x3c, 0x8e, 0xd5, 0x54, 0xfc, 0x8d, 0x94}
 
 func NewTrace() *Trace {
 	return &Trace{}
@@ -121,3 +115,7 @@ func (r *Trace) SetDefault(i int) {
 func (_ *Trace) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Trace) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *Trace) Finalize()                        {}
+
+func (_ *Trace) AvroCRC64Fingerprint() []byte {
+	return TraceAvroCRC64Fingerprint
+}

@@ -52,7 +52,7 @@ func TestPrimitiveFixture(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := singleobject.NewWriter(&buf, PrimitiveTestRecordUID)
+		writer := singleobject.NewWriter(&buf, PrimitiveTestRecordAvroCRC64Fingerprint)
 		err = f.Serialize(writer)
 		assert.Nil(t, err)
 

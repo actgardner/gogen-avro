@@ -7,18 +7,10 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var NumberRecordUID []byte
-
-func init() {
-	t := NewNumberRecord()
-	NumberRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 type NumberRecord struct {
 	IntField int32
@@ -29,6 +21,8 @@ type NumberRecord struct {
 
 	DoubleField float64
 }
+
+var NumberRecordAvroCRC64Fingerprint = []byte{0xf4, 0x5a, 0x75, 0xd5, 0x4e, 0x74, 0x27, 0x7e}
 
 func NewNumberRecord() *NumberRecord {
 	return &NumberRecord{}
@@ -143,3 +137,7 @@ func (r *NumberRecord) SetDefault(i int) {
 func (_ *NumberRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *NumberRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *NumberRecord) Finalize()                        {}
+
+func (_ *NumberRecord) AvroCRC64Fingerprint() []byte {
+	return NumberRecordAvroCRC64Fingerprint
+}

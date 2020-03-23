@@ -7,22 +7,16 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-var ComplexUnionTestRecordUID []byte
-
-func init() {
-	t := NewComplexUnionTestRecord()
-	ComplexUnionTestRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
-
 type ComplexUnionTestRecord struct {
 	UnionField *UnionNullArrayIntMapIntNestedUnionRecord
 }
+
+var ComplexUnionTestRecordAvroCRC64Fingerprint = []byte{0x29, 0x68, 0x8, 0x62, 0x6d, 0x7b, 0xe0, 0xbe}
 
 func NewComplexUnionTestRecord() *ComplexUnionTestRecord {
 	return &ComplexUnionTestRecord{}
@@ -112,3 +106,7 @@ func (r *ComplexUnionTestRecord) SetDefault(i int) {
 func (_ *ComplexUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ComplexUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *ComplexUnionTestRecord) Finalize()                        {}
+
+func (_ *ComplexUnionTestRecord) AvroCRC64Fingerprint() []byte {
+	return ComplexUnionTestRecordAvroCRC64Fingerprint
+}

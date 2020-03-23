@@ -7,22 +7,16 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-var RecursiveUnionTestRecordUID []byte
-
-func init() {
-	t := NewRecursiveUnionTestRecord()
-	RecursiveUnionTestRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
-
 type RecursiveUnionTestRecord struct {
 	RecursiveField *UnionNullRecursiveUnionTestRecord
 }
+
+var RecursiveUnionTestRecordAvroCRC64Fingerprint = []byte{0xc6, 0x55, 0x29, 0x43, 0xb, 0x8a, 0xa6, 0x89}
 
 func NewRecursiveUnionTestRecord() *RecursiveUnionTestRecord {
 	return &RecursiveUnionTestRecord{}
@@ -112,3 +106,7 @@ func (r *RecursiveUnionTestRecord) SetDefault(i int) {
 func (_ *RecursiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) Finalize()                        {}
+
+func (_ *RecursiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
+	return RecursiveUnionTestRecordAvroCRC64Fingerprint
+}

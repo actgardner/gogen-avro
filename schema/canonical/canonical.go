@@ -20,6 +20,49 @@ func CanonicalForm(t schema.AvroType) interface{} {
 	return canonicalForm(t, make(map[string]interface{}))
 }
 
+func DefinitionCanonicalForm(d schema.Definition) interface{} {
+	return definitionCanonicalForm(d, make(map[string]interface{}))
+}
+
+func definitionCanonicalForm(d schema.Definition, visited map[string]interface{}) interface{} {
+	name := d.AvroName().String()
+	if _, ok := visited[name]; ok {
+		return name
+	}
+	visited[name] = true
+	switch def := d.(type) {
+	case *schema.RecordDefinition:
+		fields := make([]interface{}, 0)
+		for _, f := range def.Fields() {
+			fn := f.Name()
+			fields = append(fields, &CanonicalFields{
+				Name: &fn,
+				Type: canonicalForm(f.Type(), visited),
+			})
+		}
+
+		return &CanonicalFields{
+			Name:   &name,
+			Type:   "record",
+			Fields: fields,
+		}
+	case *schema.EnumDefinition:
+		return &CanonicalFields{
+			Name:    &name,
+			Type:    "enum",
+			Symbols: def.Symbols(),
+		}
+	case *schema.FixedDefinition:
+		size := def.SizeBytes()
+		return &CanonicalFields{
+			Name: &name,
+			Type: "fixed",
+			Size: &size,
+		}
+	}
+	return nil
+}
+
 func canonicalForm(t schema.AvroType, visited map[string]interface{}) interface{} {
 	switch v := t.(type) {
 	case *schema.BoolField:
@@ -55,42 +98,7 @@ func canonicalForm(t schema.AvroType, visited map[string]interface{}) interface{
 			Values: canonicalForm(v.ItemType(), visited),
 		}
 	case *schema.Reference:
-		name := v.Def.AvroName().String()
-		if _, ok := visited[name]; ok {
-			return name
-		} else {
-			visited[name] = true
-			switch def := v.Def.(type) {
-			case *schema.RecordDefinition:
-				fields := make([]interface{}, 0)
-				for _, f := range def.Fields() {
-					fn := f.Name()
-					fields = append(fields, &CanonicalFields{
-						Name: &fn,
-						Type: canonicalForm(f.Type(), visited),
-					})
-				}
-
-				return &CanonicalFields{
-					Name:   &name,
-					Type:   "record",
-					Fields: fields,
-				}
-			case *schema.EnumDefinition:
-				return &CanonicalFields{
-					Name:    &name,
-					Type:    "enum",
-					Symbols: def.Symbols(),
-				}
-			case *schema.FixedDefinition:
-				size := def.SizeBytes()
-				return &CanonicalFields{
-					Name: &name,
-					Type: "fixed",
-					Size: &size,
-				}
-			}
-		}
+		return definitionCanonicalForm(v.Def, visited)
 	}
 	panic(fmt.Sprintf("Unkonwn type: %T", t))
 }

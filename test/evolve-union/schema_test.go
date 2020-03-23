@@ -17,7 +17,7 @@ func TestEvolution(t *testing.T) {
 	oldUnionRecord.Name = &UnionNullString{UnionType: UnionNullStringTypeEnumString, String: "abcd"}
 
 	var buf bytes.Buffer
-	writer := singleobject.NewWriter(&buf, UnionRecordUID)
+	writer := singleobject.NewWriter(&buf, UnionRecordAvroCRC64Fingerprint)
 	err := oldUnionRecord.Serialize(writer)
 	assert.Nil(t, err)
 

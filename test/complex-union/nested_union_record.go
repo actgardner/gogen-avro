@@ -7,22 +7,16 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-var NestedUnionRecordUID []byte
-
-func init() {
-	t := NewNestedUnionRecord()
-	NestedUnionRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
-
 type NestedUnionRecord struct {
 	IntField int32
 }
+
+var NestedUnionRecordAvroCRC64Fingerprint = []byte{0x23, 0xb6, 0xed, 0xa0, 0x87, 0x46, 0x3d, 0xef}
 
 func NewNestedUnionRecord() *NestedUnionRecord {
 	return &NestedUnionRecord{}
@@ -110,3 +104,7 @@ func (r *NestedUnionRecord) SetDefault(i int) {
 func (_ *NestedUnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *NestedUnionRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *NestedUnionRecord) Finalize()                        {}
+
+func (_ *NestedUnionRecord) AvroCRC64Fingerprint() []byte {
+	return NestedUnionRecordAvroCRC64Fingerprint
+}

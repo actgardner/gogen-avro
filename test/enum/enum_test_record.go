@@ -7,22 +7,16 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-var EnumTestRecordUID []byte
-
-func init() {
-	t := NewEnumTestRecord()
-	EnumTestRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
-
 type EnumTestRecord struct {
 	EnumField TestEnumType
 }
+
+var EnumTestRecordAvroCRC64Fingerprint = []byte{0x8e, 0x96, 0x0, 0xcc, 0x9b, 0x78, 0x33, 0xfa}
 
 func NewEnumTestRecord() *EnumTestRecord {
 	return &EnumTestRecord{}
@@ -114,3 +108,7 @@ func (r *EnumTestRecord) SetDefault(i int) {
 func (_ *EnumTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *EnumTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *EnumTestRecord) Finalize()                        {}
+
+func (_ *EnumTestRecord) AvroCRC64Fingerprint() []byte {
+	return EnumTestRecordAvroCRC64Fingerprint
+}

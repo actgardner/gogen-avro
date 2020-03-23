@@ -3,10 +3,6 @@ package canonical
 import (
 	"bytes"
 	"encoding/binary"
-	"encoding/json"
-	"errors"
-	"github.com/actgardner/gogen-avro/parser"
-	"github.com/actgardner/gogen-avro/resolver"
 	"io"
 )
 
@@ -27,34 +23,15 @@ func init() {
 	}
 }
 
-func AvroCRC64Fingerprint(schema []byte, writer io.Writer) error {
+func AvroCRC64Fingerprint(data []byte) []byte {
 	fp := EMPTY
-	for _, d := range schema {
+	for _, d := range data {
 		fp = (fp >> 8) ^ FP_TABLE[(fp^uint64(d))&0xff]
 	}
-	err := binary.Write(writer, binary.LittleEndian, fp)
-	return err
-}
-
-func AvroCalcSchemaUID(schema string) []byte {
-	b := make([]byte, 0, 8)
-	output := bytes.NewBuffer(b)
-	ns := parser.NewNamespace(false)
-
-	s, err := ns.TypeForSchema([]byte(schema))
+	output := bytes.NewBuffer(make([]byte, 0, 8))
+	err := binary.Write(output, binary.LittleEndian, fp)
 	if err != nil {
-		panic("Invalid schema 1")
-	}
-	for _, def := range ns.Roots {
-		err = resolver.ResolveDefinition(def, ns.Definitions)
-		if err != nil {
-			panic("Invalid schema 2")
-		}
-	}
-	canonical, err := json.Marshal(CanonicalForm(s))
-	err = AvroCRC64Fingerprint(canonical, output)
-	if err != nil {
-		panic("Invalid schema 1")
+		return nil
 	}
 	return output.Bytes()
 }
@@ -67,13 +44,4 @@ func AvroVersionHeader(writer io.Writer, header []byte) error {
 	}
 	err = binary.Write(writer, binary.LittleEndian, header)
 	return err
-}
-
-func AvroConsumeHeader(r io.Reader) error {
-	buf := make([]byte, 10)
-	n, err := r.Read(buf)
-	if n < 10 || err != nil {
-		return errors.New("message length <2")
-	}
-	return nil
 }

@@ -7,23 +7,17 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-var HeaderworksDatatypeUUIDUID []byte
-
-func init() {
-	t := NewHeaderworksDatatypeUUID()
-	HeaderworksDatatypeUUIDUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
-
 // A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014
 type HeaderworksDatatypeUUID struct {
 	Uuid string
 }
+
+var HeaderworksDatatypeUUIDAvroCRC64Fingerprint = []byte{0xab, 0x4b, 0x8c, 0x4e, 0xf4, 0x4c, 0xb6, 0x53}
 
 func NewHeaderworksDatatypeUUID() *HeaderworksDatatypeUUID {
 	return &HeaderworksDatatypeUUID{}
@@ -115,3 +109,7 @@ func (r *HeaderworksDatatypeUUID) SetDefault(i int) {
 func (_ *HeaderworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksDatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *HeaderworksDatatypeUUID) Finalize()                        {}
+
+func (_ *HeaderworksDatatypeUUID) AvroCRC64Fingerprint() []byte {
+	return HeaderworksDatatypeUUIDAvroCRC64Fingerprint
+}

@@ -7,22 +7,16 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-var ChildUID []byte
-
-func init() {
-	t := NewChild()
-	ChildUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
-
 type Child struct {
 	Name string
 }
+
+var ChildAvroCRC64Fingerprint = []byte{0xad, 0x24, 0x43, 0xb1, 0x62, 0x55, 0xc0, 0x12}
 
 func NewChild() *Child {
 	return &Child{}
@@ -110,3 +104,7 @@ func (r *Child) SetDefault(i int) {
 func (_ *Child) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Child) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *Child) Finalize()                        {}
+
+func (_ *Child) AvroCRC64Fingerprint() []byte {
+	return ChildAvroCRC64Fingerprint
+}

@@ -7,22 +7,16 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-var StructTagUID []byte
-
-func init() {
-	t := NewStructTag()
-	StructTagUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
-
 type StructTag struct {
 	ProductName string `validate:"true"`
 }
+
+var StructTagAvroCRC64Fingerprint = []byte{0x92, 0xb7, 0x44, 0x6b, 0xe2, 0x1e, 0xef, 0xfc}
 
 func NewStructTag() *StructTag {
 	return &StructTag{}
@@ -110,3 +104,7 @@ func (r *StructTag) SetDefault(i int) {
 func (_ *StructTag) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *StructTag) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *StructTag) Finalize()                        {}
+
+func (_ *StructTag) AvroCRC64Fingerprint() []byte {
+	return StructTagAvroCRC64Fingerprint
+}

@@ -7,24 +7,18 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var AliasRecordUID []byte
-
-func init() {
-	t := NewAliasRecord()
-	AliasRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 type AliasRecord struct {
 	A string
 
 	C string
 }
+
+var AliasRecordAvroCRC64Fingerprint = []byte{0x42, 0x7e, 0x5f, 0x40, 0x72, 0x7a, 0xdb, 0xc7}
 
 func NewAliasRecord() *AliasRecord {
 	return &AliasRecord{}
@@ -121,3 +115,7 @@ func (r *AliasRecord) SetDefault(i int) {
 func (_ *AliasRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *AliasRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *AliasRecord) Finalize()                        {}
+
+func (_ *AliasRecord) AvroCRC64Fingerprint() []byte {
+	return AliasRecordAvroCRC64Fingerprint
+}

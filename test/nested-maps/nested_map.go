@@ -7,22 +7,16 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-var NestedMapUID []byte
-
-func init() {
-	t := NewNestedMap()
-	NestedMapUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
-
 type NestedMap struct {
 	MapOfMaps *MapMapArrayString
 }
+
+var NestedMapAvroCRC64Fingerprint = []byte{0xa1, 0x9e, 0x89, 0xd6, 0xc5, 0x32, 0x40, 0xf2}
 
 func NewNestedMap() *NestedMap {
 	return &NestedMap{}
@@ -112,3 +106,7 @@ func (r *NestedMap) SetDefault(i int) {
 func (_ *NestedMap) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *NestedMap) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *NestedMap) Finalize()                        {}
+
+func (_ *NestedMap) AvroCRC64Fingerprint() []byte {
+	return NestedMapAvroCRC64Fingerprint
+}

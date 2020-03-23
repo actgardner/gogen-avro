@@ -7,18 +7,10 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var EventUID []byte
-
-func init() {
-	t := NewEvent()
-	EventUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 // The test record
 type Event struct {
@@ -35,6 +27,8 @@ type Event struct {
 
 	End_ip Ip_address
 }
+
+var EventAvroCRC64Fingerprint = []byte{0xeb, 0x5a, 0xc0, 0x6d, 0xf9, 0x4f, 0x56, 0x97}
 
 func NewEvent() *Event {
 	return &Event{}
@@ -140,3 +134,7 @@ func (r *Event) SetDefault(i int) {
 func (_ *Event) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Event) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *Event) Finalize()                        {}
+
+func (_ *Event) AvroCRC64Fingerprint() []byte {
+	return EventAvroCRC64Fingerprint
+}

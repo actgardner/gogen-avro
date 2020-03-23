@@ -7,18 +7,10 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var TestSampleUID []byte
-
-func init() {
-	t := NewTestSample()
-	TestSampleUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 // GoGen test
 type TestSample struct {
@@ -31,6 +23,8 @@ type TestSample struct {
 
 	Body *UnionNullBodyworksData
 }
+
+var TestSampleAvroCRC64Fingerprint = []byte{0xdf, 0x7d, 0x93, 0x20, 0x19, 0x66, 0x18, 0xa}
 
 func NewTestSample() *TestSample {
 	return &TestSample{}
@@ -141,3 +135,7 @@ func (r *TestSample) SetDefault(i int) {
 func (_ *TestSample) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *TestSample) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *TestSample) Finalize()                        {}
+
+func (_ *TestSample) AvroCRC64Fingerprint() []byte {
+	return TestSampleAvroCRC64Fingerprint
+}

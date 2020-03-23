@@ -40,7 +40,7 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := singleobject.NewWriter(&buf, PrimitiveUnionTestRecordUID)
+		writer := singleobject.NewWriter(&buf, PrimitiveUnionTestRecordAvroCRC64Fingerprint)
 		err = f.Serialize(writer)
 		assert.Nil(t, err)
 
@@ -88,7 +88,7 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := singleobject.NewWriter(&buf, PrimitiveUnionTestRecordUID)
+		writer := singleobject.NewWriter(&buf, PrimitiveUnionTestRecordAvroCRC64Fingerprint)
 		err = f.Serialize(writer)
 		assert.Nil(t, err)
 

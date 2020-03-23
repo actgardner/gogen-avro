@@ -7,18 +7,10 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var HeaderworksDataUID []byte
-
-func init() {
-	t := NewHeaderworksData()
-	HeaderworksDataUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 // Common information related to the event which must be included in any clean event
 type HeaderworksData struct {
@@ -35,6 +27,8 @@ type HeaderworksData struct {
 
 	Trace *UnionNullHeaderworksTrace
 }
+
+var HeaderworksDataAvroCRC64Fingerprint = []byte{0x36, 0x3c, 0xf6, 0x3f, 0x45, 0x45, 0xcd, 0xb}
 
 func NewHeaderworksData() *HeaderworksData {
 	return &HeaderworksData{}
@@ -161,3 +155,7 @@ func (r *HeaderworksData) SetDefault(i int) {
 func (_ *HeaderworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksData) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *HeaderworksData) Finalize()                        {}
+
+func (_ *HeaderworksData) AvroCRC64Fingerprint() []byte {
+	return HeaderworksDataAvroCRC64Fingerprint
+}

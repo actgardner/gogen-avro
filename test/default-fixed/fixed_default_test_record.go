@@ -7,22 +7,16 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-var FixedDefaultTestRecordUID []byte
-
-func init() {
-	t := NewFixedDefaultTestRecord()
-	FixedDefaultTestRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
-
 type FixedDefaultTestRecord struct {
 	FixedField TestFixedDefaultType
 }
+
+var FixedDefaultTestRecordAvroCRC64Fingerprint = []byte{0xac, 0xb5, 0x6b, 0x77, 0x1e, 0x57, 0x4b, 0xcf}
 
 func NewFixedDefaultTestRecord() *FixedDefaultTestRecord {
 	return &FixedDefaultTestRecord{}
@@ -114,3 +108,7 @@ func (r *FixedDefaultTestRecord) SetDefault(i int) {
 func (_ *FixedDefaultTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *FixedDefaultTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *FixedDefaultTestRecord) Finalize()                        {}
+
+func (_ *FixedDefaultTestRecord) AvroCRC64Fingerprint() []byte {
+	return FixedDefaultTestRecordAvroCRC64Fingerprint
+}

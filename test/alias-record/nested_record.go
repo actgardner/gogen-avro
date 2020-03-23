@@ -7,18 +7,10 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var NestedRecordUID []byte
-
-func init() {
-	t := NewNestedRecord()
-	NestedRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 type NestedRecord struct {
 	StringField string
@@ -27,6 +19,8 @@ type NestedRecord struct {
 
 	BytesField []byte
 }
+
+var NestedRecordAvroCRC64Fingerprint = []byte{0x81, 0x8d, 0xc3, 0x4b, 0x3f, 0xe8, 0x33, 0xcc}
 
 func NewNestedRecord() *NestedRecord {
 	return &NestedRecord{}
@@ -132,3 +126,7 @@ func (r *NestedRecord) SetDefault(i int) {
 func (_ *NestedRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *NestedRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *NestedRecord) Finalize()                        {}
+
+func (_ *NestedRecord) AvroCRC64Fingerprint() []byte {
+	return NestedRecordAvroCRC64Fingerprint
+}

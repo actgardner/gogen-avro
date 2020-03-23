@@ -7,24 +7,18 @@ package avro
 
 import (
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
-
-var UnionRecordUID []byte
-
-func init() {
-	t := NewUnionRecord()
-	UnionRecordUID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 type UnionRecord struct {
 	Id string
 
 	Age int32
 }
+
+var UnionRecordAvroCRC64Fingerprint = []byte{0x58, 0x58, 0x76, 0xc, 0x93, 0x29, 0xf7, 0xe2}
 
 func NewUnionRecord() *UnionRecord {
 	return &UnionRecord{}
@@ -129,3 +123,7 @@ func (r *UnionRecord) SetDefault(i int) {
 func (_ *UnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *UnionRecord) Finalize()                        {}
+
+func (_ *UnionRecord) AvroCRC64Fingerprint() []byte {
+	return UnionRecordAvroCRC64Fingerprint
+}

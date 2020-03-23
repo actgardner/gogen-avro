@@ -6,15 +6,7 @@ import (
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/schema/canonical"
 )
-
-var {{ .Name }}UID []byte
-
-func init() {
-	t := {{ .ConstructorMethod }}
-	{{ .Name }}UID = canonical.AvroCalcSchemaUID(t.Schema())
-}
 
 {{ if ne .Doc "" }}// {{ .Doc}}{{ end }}
 type {{ .Name }} struct {
@@ -29,6 +21,8 @@ type {{ .Name }} struct {
 	{{ end }}
 {{ end }}
 }
+
+var {{ .Name }}AvroCRC64Fingerprint = {{ definitionFingerprint . }}
 
 func {{ .ConstructorMethod }} ({{ .GoType}}) {
 	return &{{ .Name }}{}
@@ -128,4 +122,9 @@ func (r {{ .GoType }}) SetDefault(i int) {
 func (_ {{ .GoType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) Finalize() { }
+
+
+func (_ {{ .GoType}}) AvroCRC64Fingerprint() []byte {
+  return {{ .Name }}AvroCRC64Fingerprint
+}
 `
