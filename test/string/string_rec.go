@@ -44,13 +44,8 @@ func DeserializeStringRec(r io.Reader) (*StringRec, error) {
 
 func DeserializeStringRecFromSchema(r io.Reader, schema string) (*StringRec, error) {
 	t := NewStringRec()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

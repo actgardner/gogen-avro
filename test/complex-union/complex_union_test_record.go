@@ -44,13 +44,8 @@ func DeserializeComplexUnionTestRecord(r io.Reader) (*ComplexUnionTestRecord, er
 
 func DeserializeComplexUnionTestRecordFromSchema(r io.Reader, schema string) (*ComplexUnionTestRecord, error) {
 	t := NewComplexUnionTestRecord()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

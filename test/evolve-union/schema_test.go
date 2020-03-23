@@ -21,7 +21,7 @@ func TestEvolution(t *testing.T) {
 	err := oldUnionRecord.Serialize(writer)
 	assert.Nil(t, err)
 
-	newUnionRecord, err := evolution.DeserializeUnionRecordFromSchema(&buf, NewUnionRecord().Schema())
+	newUnionRecord, err := evolution.DeserializeUnionRecordFromSchema(singleobject.NewReader(&buf), NewUnionRecord().Schema())
 	assert.Nil(t, err)
 	assert.Equal(t, evolution.UnionNullStringTypeEnumString, newUnionRecord.A.UnionType)
 	assert.Equal(t, "hi", newUnionRecord.A.String)

@@ -52,13 +52,8 @@ func DeserializeSample(r io.Reader) (*Sample, error) {
 
 func DeserializeSampleFromSchema(r io.Reader, schema string) (*Sample, error) {
 	t := NewSample()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

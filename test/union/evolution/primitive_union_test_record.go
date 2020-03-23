@@ -44,13 +44,8 @@ func DeserializePrimitiveUnionTestRecord(r io.Reader) (*PrimitiveUnionTestRecord
 
 func DeserializePrimitiveUnionTestRecordFromSchema(r io.Reader, schema string) (*PrimitiveUnionTestRecord, error) {
 	t := NewPrimitiveUnionTestRecord()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

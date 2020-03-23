@@ -56,13 +56,8 @@ func DeserializePrimitiveTestRecord(r io.Reader) (*PrimitiveTestRecord, error) {
 
 func DeserializePrimitiveTestRecordFromSchema(r io.Reader, schema string) (*PrimitiveTestRecord, error) {
 	t := NewPrimitiveTestRecord()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

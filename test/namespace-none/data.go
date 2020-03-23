@@ -56,13 +56,8 @@ func DeserializeData(r io.Reader) (*Data, error) {
 
 func DeserializeDataFromSchema(r io.Reader, schema string) (*Data, error) {
 	t := NewData()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

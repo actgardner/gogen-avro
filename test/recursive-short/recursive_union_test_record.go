@@ -44,13 +44,8 @@ func DeserializeRecursiveUnionTestRecord(r io.Reader) (*RecursiveUnionTestRecord
 
 func DeserializeRecursiveUnionTestRecordFromSchema(r io.Reader, schema string) (*RecursiveUnionTestRecord, error) {
 	t := NewRecursiveUnionTestRecord()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

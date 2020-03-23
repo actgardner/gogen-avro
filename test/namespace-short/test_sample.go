@@ -52,13 +52,8 @@ func DeserializeTestSample(r io.Reader) (*TestSample, error) {
 
 func DeserializeTestSampleFromSchema(r io.Reader, schema string) (*TestSample, error) {
 	t := NewTestSample()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

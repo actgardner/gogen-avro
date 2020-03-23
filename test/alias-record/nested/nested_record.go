@@ -48,13 +48,8 @@ func DeserializeNestedRecord(r io.Reader) (*NestedRecord, error) {
 
 func DeserializeNestedRecordFromSchema(r io.Reader, schema string) (*NestedRecord, error) {
 	t := NewNestedRecord()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

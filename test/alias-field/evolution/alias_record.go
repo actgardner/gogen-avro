@@ -46,13 +46,8 @@ func DeserializeAliasRecord(r io.Reader) (*AliasRecord, error) {
 
 func DeserializeAliasRecordFromSchema(r io.Reader, schema string) (*AliasRecord, error) {
 	t := NewAliasRecord()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

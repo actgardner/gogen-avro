@@ -48,13 +48,8 @@ func DeserializeHeaderworksTrace(r io.Reader) (*HeaderworksTrace, error) {
 
 func DeserializeHeaderworksTraceFromSchema(r io.Reader, schema string) (*HeaderworksTrace, error) {
 	t := NewHeaderworksTrace()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

@@ -44,13 +44,8 @@ func DeserializeNestedUnionRecord(r io.Reader) (*NestedUnionRecord, error) {
 
 func DeserializeNestedUnionRecordFromSchema(r io.Reader, schema string) (*NestedUnionRecord, error) {
 	t := NewNestedUnionRecord()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}

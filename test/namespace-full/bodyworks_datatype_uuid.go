@@ -45,13 +45,8 @@ func DeserializeBodyworksDatatypeUUID(r io.Reader) (*BodyworksDatatypeUUID, erro
 
 func DeserializeBodyworksDatatypeUUIDFromSchema(r io.Reader, schema string) (*BodyworksDatatypeUUID, error) {
 	t := NewBodyworksDatatypeUUID()
-	err := canonical.AvroConsumeHeader(r)
-	if err != nil {
-		return nil, err
-	}
 
-	var deser *vm.Program
-	deser, err = compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
