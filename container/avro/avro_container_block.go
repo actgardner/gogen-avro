@@ -33,6 +33,8 @@ type AvroContainerBlock struct {
 
 }
 
+const AvroContainerBlockAvroCRC64Fingerprint = "0eec6a40d994e134"
+
 func NewAvroContainerBlock() (*AvroContainerBlock) {
 	return &AvroContainerBlock{}
 }
@@ -149,3 +151,8 @@ func (r *AvroContainerBlock) SetDefault(i int) {
 func (_ *AvroContainerBlock) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *AvroContainerBlock) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *AvroContainerBlock) Finalize() { }
+
+
+func (_ *AvroContainerBlock) AvroCRC64Fingerprint() string {
+  return AvroContainerBlockAvroCRC64Fingerprint
+}

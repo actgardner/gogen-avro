@@ -22,6 +22,8 @@ type DatatypeUUID struct {
 
 }
 
+const DatatypeUUIDAvroCRC64Fingerprint = "fca43398eee070e2"
+
 func NewDatatypeUUID() (*DatatypeUUID) {
 	return &DatatypeUUID{}
 }
@@ -116,3 +118,8 @@ func (r *DatatypeUUID) SetDefault(i int) {
 func (_ *DatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *DatatypeUUID) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *DatatypeUUID) Finalize() { }
+
+
+func (_ *DatatypeUUID) AvroCRC64Fingerprint() string {
+  return DatatypeUUIDAvroCRC64Fingerprint
+}

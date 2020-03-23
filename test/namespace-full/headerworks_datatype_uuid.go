@@ -22,6 +22,8 @@ type HeaderworksDatatypeUUID struct {
 
 }
 
+const HeaderworksDatatypeUUIDAvroCRC64Fingerprint = "ab4b8c4ef44cb653"
+
 func NewHeaderworksDatatypeUUID() (*HeaderworksDatatypeUUID) {
 	return &HeaderworksDatatypeUUID{}
 }
@@ -116,3 +118,8 @@ func (r *HeaderworksDatatypeUUID) SetDefault(i int) {
 func (_ *HeaderworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksDatatypeUUID) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksDatatypeUUID) Finalize() { }
+
+
+func (_ *HeaderworksDatatypeUUID) AvroCRC64Fingerprint() string {
+  return HeaderworksDatatypeUUIDAvroCRC64Fingerprint
+}

@@ -52,6 +52,8 @@ type ArrayTestRecord struct {
 
 }
 
+const ArrayTestRecordAvroCRC64Fingerprint = "2249bb6e4f1c232c"
+
 func NewArrayTestRecord() (*ArrayTestRecord) {
 	return &ArrayTestRecord{}
 }
@@ -294,3 +296,8 @@ r.BytesField[1] = []byte("def")
 func (_ *ArrayTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ArrayTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *ArrayTestRecord) Finalize() { }
+
+
+func (_ *ArrayTestRecord) AvroCRC64Fingerprint() string {
+  return ArrayTestRecordAvroCRC64Fingerprint
+}

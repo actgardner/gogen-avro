@@ -24,6 +24,8 @@ type HeaderworksTrace struct {
 
 }
 
+const HeaderworksTraceAvroCRC64Fingerprint = "8adf75e7cbbba6bc"
+
 func NewHeaderworksTrace() (*HeaderworksTrace) {
 	return &HeaderworksTrace{}
 }
@@ -122,3 +124,8 @@ func (r *HeaderworksTrace) SetDefault(i int) {
 func (_ *HeaderworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksTrace) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksTrace) Finalize() { }
+
+
+func (_ *HeaderworksTrace) AvroCRC64Fingerprint() string {
+  return HeaderworksTraceAvroCRC64Fingerprint
+}

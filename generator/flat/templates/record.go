@@ -22,6 +22,8 @@ type {{ .Name }} struct {
 {{ end }}
 }
 
+const {{ .Name }}AvroCRC64Fingerprint = "{{ definitionFingerprint . }}"
+
 func {{ .ConstructorMethod }} ({{ .GoType}}) {
 	return &{{ .Name }}{}
 }
@@ -120,4 +122,9 @@ func (r {{ .GoType }}) SetDefault(i int) {
 func (_ {{ .GoType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) Finalize() { }
+
+
+func (_ {{ .GoType}}) AvroCRC64Fingerprint() string {
+  return {{ .Name }}AvroCRC64Fingerprint
+}
 `

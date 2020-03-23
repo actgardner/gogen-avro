@@ -22,6 +22,8 @@ type NestedUnionRecord struct {
 
 }
 
+const NestedUnionRecordAvroCRC64Fingerprint = "23b6eda087463def"
+
 func NewNestedUnionRecord() (*NestedUnionRecord) {
 	return &NestedUnionRecord{}
 }
@@ -112,3 +114,8 @@ func (r *NestedUnionRecord) SetDefault(i int) {
 func (_ *NestedUnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *NestedUnionRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NestedUnionRecord) Finalize() { }
+
+
+func (_ *NestedUnionRecord) AvroCRC64Fingerprint() string {
+  return NestedUnionRecordAvroCRC64Fingerprint
+}

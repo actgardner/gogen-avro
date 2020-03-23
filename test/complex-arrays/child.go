@@ -22,6 +22,8 @@ type Child struct {
 
 }
 
+const ChildAvroCRC64Fingerprint = "ad2443b16255c012"
+
 func NewChild() (*Child) {
 	return &Child{}
 }
@@ -112,3 +114,8 @@ func (r *Child) SetDefault(i int) {
 func (_ *Child) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Child) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Child) Finalize() { }
+
+
+func (_ *Child) AvroCRC64Fingerprint() string {
+  return ChildAvroCRC64Fingerprint
+}

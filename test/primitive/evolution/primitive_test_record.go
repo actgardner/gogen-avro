@@ -57,6 +57,8 @@ type PrimitiveTestRecord struct {
 
 }
 
+const PrimitiveTestRecordAvroCRC64Fingerprint = "564c3a2868c7d477"
+
 func NewPrimitiveTestRecord() (*PrimitiveTestRecord) {
 	return &PrimitiveTestRecord{}
 }
@@ -242,3 +244,8 @@ func (r *PrimitiveTestRecord) SetDefault(i int) {
 func (_ *PrimitiveTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *PrimitiveTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *PrimitiveTestRecord) Finalize() { }
+
+
+func (_ *PrimitiveTestRecord) AvroCRC64Fingerprint() string {
+  return PrimitiveTestRecordAvroCRC64Fingerprint
+}

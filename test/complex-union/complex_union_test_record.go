@@ -22,6 +22,8 @@ type ComplexUnionTestRecord struct {
 
 }
 
+const ComplexUnionTestRecordAvroCRC64Fingerprint = "296808626d7be0be"
+
 func NewComplexUnionTestRecord() (*ComplexUnionTestRecord) {
 	return &ComplexUnionTestRecord{}
 }
@@ -115,3 +117,8 @@ func (r *ComplexUnionTestRecord) SetDefault(i int) {
 func (_ *ComplexUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ComplexUnionTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *ComplexUnionTestRecord) Finalize() { }
+
+
+func (_ *ComplexUnionTestRecord) AvroCRC64Fingerprint() string {
+  return ComplexUnionTestRecordAvroCRC64Fingerprint
+}

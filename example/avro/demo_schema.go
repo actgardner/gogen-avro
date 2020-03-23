@@ -42,6 +42,8 @@ type DemoSchema struct {
 
 }
 
+const DemoSchemaAvroCRC64Fingerprint = "c456a904ca9b66ad"
+
 func NewDemoSchema() (*DemoSchema) {
 	return &DemoSchema{}
 }
@@ -184,3 +186,8 @@ func (r *DemoSchema) SetDefault(i int) {
 func (_ *DemoSchema) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *DemoSchema) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *DemoSchema) Finalize() { }
+
+
+func (_ *DemoSchema) AvroCRC64Fingerprint() string {
+  return DemoSchemaAvroCRC64Fingerprint
+}

@@ -22,6 +22,8 @@ type StructTag struct {
 
 }
 
+const StructTagAvroCRC64Fingerprint = "92b7446be21eeffc"
+
 func NewStructTag() (*StructTag) {
 	return &StructTag{}
 }
@@ -112,3 +114,8 @@ func (r *StructTag) SetDefault(i int) {
 func (_ *StructTag) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *StructTag) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *StructTag) Finalize() { }
+
+
+func (_ *StructTag) AvroCRC64Fingerprint() string {
+  return StructTagAvroCRC64Fingerprint
+}

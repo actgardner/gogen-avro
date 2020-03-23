@@ -33,6 +33,8 @@ type AvroContainerHeader struct {
 
 }
 
+const AvroContainerHeaderAvroCRC64Fingerprint = "c01203c07769f936"
+
 func NewAvroContainerHeader() (*AvroContainerHeader) {
 	return &AvroContainerHeader{}
 }
@@ -152,3 +154,8 @@ func (r *AvroContainerHeader) SetDefault(i int) {
 func (_ *AvroContainerHeader) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *AvroContainerHeader) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *AvroContainerHeader) Finalize() { }
+
+
+func (_ *AvroContainerHeader) AvroCRC64Fingerprint() string {
+  return AvroContainerHeaderAvroCRC64Fingerprint
+}

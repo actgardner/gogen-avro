@@ -2,10 +2,12 @@ package templates
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"text/template"
 
 	avro "github.com/actgardner/gogen-avro/schema"
+	"github.com/actgardner/gogen-avro/schema/canonical"
 )
 
 var NoTemplateForType = fmt.Errorf("No template exists for supplied type")
@@ -33,7 +35,17 @@ func Template(t avro.Node) (string, error) {
 
 func Evaluate(templateStr string, obj interface{}) (string, error) {
 	buf := &bytes.Buffer{}
-	t, err := template.New("").Parse(templateStr)
+	t, err := template.New("").Funcs(template.FuncMap{
+		"definitionFingerprint": func(def avro.Definition) (string, error) {
+			cf := canonical.DefinitionCanonicalForm(def)
+			encoded, err := json.Marshal(cf)
+			if err != nil {
+				return "", err
+			}
+			fingerprint := canonical.AvroCRC64Fingerprint(encoded)
+			return fingerprint, err
+		},
+	}).Parse(templateStr)
 	if err != nil {
 		return "", err
 	}

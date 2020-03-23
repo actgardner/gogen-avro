@@ -38,6 +38,8 @@ type HeaderworksData struct {
 
 }
 
+const HeaderworksDataAvroCRC64Fingerprint = "363cf63f4545cd0b"
+
 func NewHeaderworksData() (*HeaderworksData) {
 	return &HeaderworksData{}
 }
@@ -178,3 +180,8 @@ func (r *HeaderworksData) SetDefault(i int) {
 func (_ *HeaderworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksData) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *HeaderworksData) Finalize() { }
+
+
+func (_ *HeaderworksData) AvroCRC64Fingerprint() string {
+  return HeaderworksDataAvroCRC64Fingerprint
+}

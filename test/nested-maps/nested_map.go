@@ -22,6 +22,8 @@ type NestedMap struct {
 
 }
 
+const NestedMapAvroCRC64Fingerprint = "a19e89d6c53240f2"
+
 func NewNestedMap() (*NestedMap) {
 	return &NestedMap{}
 }
@@ -115,3 +117,8 @@ func (r *NestedMap) SetDefault(i int) {
 func (_ *NestedMap) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *NestedMap) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NestedMap) Finalize() { }
+
+
+func (_ *NestedMap) AvroCRC64Fingerprint() string {
+  return NestedMapAvroCRC64Fingerprint
+}

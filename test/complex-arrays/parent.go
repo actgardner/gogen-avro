@@ -22,6 +22,8 @@ type Parent struct {
 
 }
 
+const ParentAvroCRC64Fingerprint = "709f6ef81169989b"
+
 func NewParent() (*Parent) {
 	return &Parent{}
 }
@@ -126,3 +128,8 @@ r.Children[1].Name = "record2"
 func (_ *Parent) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Parent) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Parent) Finalize() { }
+
+
+func (_ *Parent) AvroCRC64Fingerprint() string {
+  return ParentAvroCRC64Fingerprint
+}

@@ -27,6 +27,8 @@ type AliasRecord struct {
 
 }
 
+const AliasRecordAvroCRC64Fingerprint = "427e5f40727adbc7"
+
 func NewAliasRecord() (*AliasRecord) {
 	return &AliasRecord{}
 }
@@ -130,3 +132,8 @@ func (r *AliasRecord) SetDefault(i int) {
 func (_ *AliasRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *AliasRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *AliasRecord) Finalize() { }
+
+
+func (_ *AliasRecord) AvroCRC64Fingerprint() string {
+  return AliasRecordAvroCRC64Fingerprint
+}

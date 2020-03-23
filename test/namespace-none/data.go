@@ -38,6 +38,8 @@ type Data struct {
 
 }
 
+const DataAvroCRC64Fingerprint = "a5ec1ff56b15c121"
+
 func NewData() (*Data) {
 	return &Data{}
 }
@@ -178,3 +180,8 @@ func (r *Data) SetDefault(i int) {
 func (_ *Data) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Data) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Data) Finalize() { }
+
+
+func (_ *Data) AvroCRC64Fingerprint() string {
+  return DataAvroCRC64Fingerprint
+}

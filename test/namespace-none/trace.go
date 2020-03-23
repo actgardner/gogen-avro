@@ -24,6 +24,8 @@ type Trace struct {
 
 }
 
+const TraceAvroCRC64Fingerprint = "833c8ed554fc8d94"
+
 func NewTrace() (*Trace) {
 	return &Trace{}
 }
@@ -122,3 +124,8 @@ func (r *Trace) SetDefault(i int) {
 func (_ *Trace) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Trace) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Trace) Finalize() { }
+
+
+func (_ *Trace) AvroCRC64Fingerprint() string {
+  return TraceAvroCRC64Fingerprint
+}

@@ -38,6 +38,8 @@ type BodyworksData struct {
 
 }
 
+const BodyworksDataAvroCRC64Fingerprint = "a5ec1ff56b15c121"
+
 func NewBodyworksData() (*BodyworksData) {
 	return &BodyworksData{}
 }
@@ -178,3 +180,8 @@ func (r *BodyworksData) SetDefault(i int) {
 func (_ *BodyworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *BodyworksData) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *BodyworksData) Finalize() { }
+
+
+func (_ *BodyworksData) AvroCRC64Fingerprint() string {
+  return BodyworksDataAvroCRC64Fingerprint
+}

@@ -22,6 +22,8 @@ type PrimitiveUnionTestRecord struct {
 
 }
 
+const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "42ca8dd363cf75d5"
+
 func NewPrimitiveUnionTestRecord() (*PrimitiveUnionTestRecord) {
 	return &PrimitiveUnionTestRecord{}
 }
@@ -115,3 +117,8 @@ func (r *PrimitiveUnionTestRecord) SetDefault(i int) {
 func (_ *PrimitiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *PrimitiveUnionTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *PrimitiveUnionTestRecord) Finalize() { }
+
+
+func (_ *PrimitiveUnionTestRecord) AvroCRC64Fingerprint() string {
+  return PrimitiveUnionTestRecordAvroCRC64Fingerprint
+}

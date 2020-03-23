@@ -24,6 +24,8 @@ type Event struct {
 
 }
 
+const EventAvroCRC64Fingerprint = "e88c482cc2578ae0"
+
 func NewEvent() (*Event) {
 	return &Event{}
 }
@@ -114,3 +116,8 @@ func (r *Event) SetDefault(i int) {
 func (_ *Event) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Event) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Event) Finalize() { }
+
+
+func (_ *Event) AvroCRC64Fingerprint() string {
+  return EventAvroCRC64Fingerprint
+}

@@ -22,6 +22,8 @@ type MapTestRecord struct {
 
 }
 
+const MapTestRecordAvroCRC64Fingerprint = "f7db00b26ea875bf"
+
 func NewMapTestRecord() (*MapTestRecord) {
 	return &MapTestRecord{}
 }
@@ -115,3 +117,8 @@ func (r *MapTestRecord) SetDefault(i int) {
 func (_ *MapTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *MapTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *MapTestRecord) Finalize() { }
+
+
+func (_ *MapTestRecord) AvroCRC64Fingerprint() string {
+  return MapTestRecordAvroCRC64Fingerprint
+}

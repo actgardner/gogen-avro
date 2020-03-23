@@ -37,6 +37,8 @@ type NumberRecord struct {
 
 }
 
+const NumberRecordAvroCRC64Fingerprint = "f45a75d54e74277e"
+
 func NewNumberRecord() (*NumberRecord) {
 	return &NumberRecord{}
 }
@@ -166,3 +168,8 @@ func (r *NumberRecord) SetDefault(i int) {
 func (_ *NumberRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *NumberRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NumberRecord) Finalize() { }
+
+
+func (_ *NumberRecord) AvroCRC64Fingerprint() string {
+  return NumberRecordAvroCRC64Fingerprint
+}

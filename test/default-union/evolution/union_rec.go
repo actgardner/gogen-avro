@@ -22,6 +22,8 @@ type UnionRec struct {
 
 }
 
+const UnionRecAvroCRC64Fingerprint = "31f9aeb7578023f9"
+
 func NewUnionRec() (*UnionRec) {
 	return &UnionRec{}
 }
@@ -112,3 +114,8 @@ func (r *UnionRec) SetDefault(i int) {
 func (_ *UnionRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionRec) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionRec) Finalize() { }
+
+
+func (_ *UnionRec) AvroCRC64Fingerprint() string {
+  return UnionRecAvroCRC64Fingerprint
+}

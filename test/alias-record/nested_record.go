@@ -32,6 +32,8 @@ type NestedRecord struct {
 
 }
 
+const NestedRecordAvroCRC64Fingerprint = "818dc34b3fe833cc"
+
 func NewNestedRecord() (*NestedRecord) {
 	return &NestedRecord{}
 }
@@ -148,3 +150,8 @@ func (r *NestedRecord) SetDefault(i int) {
 func (_ *NestedRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *NestedRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NestedRecord) Finalize() { }
+
+
+func (_ *NestedRecord) AvroCRC64Fingerprint() string {
+  return NestedRecordAvroCRC64Fingerprint
+}

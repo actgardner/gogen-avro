@@ -31,6 +31,8 @@ type ComAvroTestSample struct {
 
 }
 
+const ComAvroTestSampleAvroCRC64Fingerprint = "df7d93201966180a"
+
 func NewComAvroTestSample() (*ComAvroTestSample) {
 	return &ComAvroTestSample{}
 }
@@ -150,3 +152,8 @@ func (r *ComAvroTestSample) SetDefault(i int) {
 func (_ *ComAvroTestSample) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ComAvroTestSample) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *ComAvroTestSample) Finalize() { }
+
+
+func (_ *ComAvroTestSample) AvroCRC64Fingerprint() string {
+  return ComAvroTestSampleAvroCRC64Fingerprint
+}

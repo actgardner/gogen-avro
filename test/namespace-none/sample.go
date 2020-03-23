@@ -31,6 +31,8 @@ type Sample struct {
 
 }
 
+const SampleAvroCRC64Fingerprint = "df7d93201966180a"
+
 func NewSample() (*Sample) {
 	return &Sample{}
 }
@@ -150,3 +152,8 @@ func (r *Sample) SetDefault(i int) {
 func (_ *Sample) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Sample) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Sample) Finalize() { }
+
+
+func (_ *Sample) AvroCRC64Fingerprint() string {
+  return SampleAvroCRC64Fingerprint
+}

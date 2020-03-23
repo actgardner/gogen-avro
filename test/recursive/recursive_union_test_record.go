@@ -22,6 +22,8 @@ type RecursiveUnionTestRecord struct {
 
 }
 
+const RecursiveUnionTestRecordAvroCRC64Fingerprint = "c65529430b8aa689"
+
 func NewRecursiveUnionTestRecord() (*RecursiveUnionTestRecord) {
 	return &RecursiveUnionTestRecord{}
 }
@@ -115,3 +117,8 @@ func (r *RecursiveUnionTestRecord) SetDefault(i int) {
 func (_ *RecursiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) Finalize() { }
+
+
+func (_ *RecursiveUnionTestRecord) AvroCRC64Fingerprint() string {
+  return RecursiveUnionTestRecordAvroCRC64Fingerprint
+}

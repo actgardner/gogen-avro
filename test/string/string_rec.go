@@ -22,6 +22,8 @@ type StringRec struct {
 
 }
 
+const StringRecAvroCRC64Fingerprint = "778336ab9de90015"
+
 func NewStringRec() (*StringRec) {
 	return &StringRec{}
 }
@@ -112,3 +114,8 @@ func (r *StringRec) SetDefault(i int) {
 func (_ *StringRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *StringRec) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *StringRec) Finalize() { }
+
+
+func (_ *StringRec) AvroCRC64Fingerprint() string {
+  return StringRecAvroCRC64Fingerprint
+}

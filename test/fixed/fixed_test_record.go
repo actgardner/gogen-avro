@@ -27,6 +27,8 @@ type FixedTestRecord struct {
 
 }
 
+const FixedTestRecordAvroCRC64Fingerprint = "ba4bf97e1fc0f152"
+
 func NewFixedTestRecord() (*FixedTestRecord) {
 	return &FixedTestRecord{}
 }
@@ -130,3 +132,8 @@ func (r *FixedTestRecord) SetDefault(i int) {
 func (_ *FixedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *FixedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *FixedTestRecord) Finalize() { }
+
+
+func (_ *FixedTestRecord) AvroCRC64Fingerprint() string {
+  return FixedTestRecordAvroCRC64Fingerprint
+}

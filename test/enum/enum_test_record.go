@@ -22,6 +22,8 @@ type EnumTestRecord struct {
 
 }
 
+const EnumTestRecordAvroCRC64Fingerprint = "8e9600cc9b7833fa"
+
 func NewEnumTestRecord() (*EnumTestRecord) {
 	return &EnumTestRecord{}
 }
@@ -116,3 +118,8 @@ func (r *EnumTestRecord) SetDefault(i int) {
 func (_ *EnumTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *EnumTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *EnumTestRecord) Finalize() { }
+
+
+func (_ *EnumTestRecord) AvroCRC64Fingerprint() string {
+  return EnumTestRecordAvroCRC64Fingerprint
+}
