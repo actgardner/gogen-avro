@@ -2,7 +2,7 @@ package avro
 
 import (
 	"bytes"
-	"github.com/actgardner/gogen-avro/singleobject"
+	"github.com/actgardner/gogen-avro/soe"
 	"testing"
 
 	"github.com/actgardner/gogen-avro/compiler"
@@ -18,7 +18,7 @@ func TestEvolution(t *testing.T) {
 	oldAliasRecord.C = "bye"
 
 	var buf bytes.Buffer
-	writer := singleobject.NewWriter(&buf, AliasRecordAvroCRC64Fingerprint)
+	writer := soe.NewWriter(&buf, AliasRecordAvroCRC64Fingerprint)
 	err := oldAliasRecord.Serialize(writer)
 	assert.Nil(t, err)
 
@@ -27,7 +27,7 @@ func TestEvolution(t *testing.T) {
 	deser, err := compiler.CompileSchemaBytes([]byte(oldAliasRecord.Schema()), []byte(newAliasRecord.Schema()))
 	assert.Nil(t, err)
 
-	err = vm.Eval(singleobject.NewReader(&buf), deser, newAliasRecord)
+	err = vm.Eval(soe.NewReader(&buf), deser, newAliasRecord)
 	assert.Nil(t, err)
 
 	assert.Equal(t, "hi", newAliasRecord.B)

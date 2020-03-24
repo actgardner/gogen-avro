@@ -6,19 +6,25 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
+
 type NestedMap struct {
-	MapOfMaps *MapMapArrayString
+
+	
+	
+		MapOfMaps *MapMapArrayString
+	
+
 }
 
-var NestedMapAvroCRC64Fingerprint = []byte{0xa1, 0x9e, 0x89, 0xd6, 0xc5, 0x32, 0x40, 0xf2}
+var NestedMapAvroCRC64Fingerprint = []byte{0xa1,0x9e,0x89,0xd6,0xc5,0x32,0x40,0xf2}
 
-func NewNestedMap() *NestedMap {
+func NewNestedMap() (*NestedMap) {
 	return &NestedMap{}
 }
 
@@ -53,12 +59,12 @@ func DeserializeNestedMapFromSchema(r io.Reader, schema string) (*NestedMap, err
 
 func writeNestedMap(r *NestedMap, w io.Writer) error {
 	var err error
-
-	err = writeMapMapArrayString(r.MapOfMaps, w)
+	
+	err = writeMapMapArrayString( r.MapOfMaps, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -74,39 +80,45 @@ func (r *NestedMap) SchemaName() string {
 	return "NestedMap"
 }
 
-func (_ *NestedMap) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *NestedMap) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *NestedMap) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *NestedMap) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *NestedMap) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *NestedMap) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *NestedMap) SetString(v string)   { panic("Unsupported operation") }
+func (_ *NestedMap) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *NestedMap) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *NestedMap) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *NestedMap) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *NestedMap) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *NestedMap) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *NestedMap) SetString(v string) { panic("Unsupported operation") }
 func (_ *NestedMap) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NestedMap) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
+		
+			r.MapOfMaps = NewMapMapArrayString()
 
-		r.MapOfMaps = NewMapMapArrayString()
-
-		return r.MapOfMaps
-
+		
+		
+			return r.MapOfMaps
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *NestedMap) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *NestedMap) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NestedMap) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *NestedMap) Finalize()                        {}
+func (_ *NestedMap) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *NestedMap) Finalize() { }
+
 
 func (_ *NestedMap) AvroCRC64Fingerprint() []byte {
-	return NestedMapAvroCRC64Fingerprint
+  return NestedMapAvroCRC64Fingerprint
 }

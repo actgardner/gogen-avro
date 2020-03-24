@@ -7,23 +7,35 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
+
 type AvroContainerBlock struct {
-	NumRecords int64
 
-	RecordBytes []byte
+	
+	
+		NumRecords int64
+	
 
-	Sync Sync
+	
+	
+		RecordBytes []byte
+	
+
+	
+	
+		Sync Sync
+	
+
 }
 
-var AvroContainerBlockAvroCRC64Fingerprint = []byte{0xe, 0xec, 0x6a, 0x40, 0xd9, 0x94, 0xe1, 0x34}
+var AvroContainerBlockAvroCRC64Fingerprint = []byte{0xe,0xec,0x6a,0x40,0xd9,0x94,0xe1,0x34}
 
-func NewAvroContainerBlock() *AvroContainerBlock {
+func NewAvroContainerBlock() (*AvroContainerBlock) {
 	return &AvroContainerBlock{}
 }
 
@@ -58,22 +70,22 @@ func DeserializeAvroContainerBlockFromSchema(r io.Reader, schema string) (*AvroC
 
 func writeAvroContainerBlock(r *AvroContainerBlock, w io.Writer) error {
 	var err error
-
-	err = vm.WriteLong(r.NumRecords, w)
+	
+	err = vm.WriteLong( r.NumRecords, w)
 	if err != nil {
 		return err
 	}
-
-	err = vm.WriteBytes(r.RecordBytes, w)
+	
+	err = vm.WriteBytes( r.RecordBytes, w)
 	if err != nil {
 		return err
 	}
-
-	err = writeSync(r.Sync, w)
+	
+	err = writeSync( r.Sync, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -89,45 +101,58 @@ func (r *AvroContainerBlock) SchemaName() string {
 	return "AvroContainerBlock"
 }
 
-func (_ *AvroContainerBlock) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetString(v string)   { panic("Unsupported operation") }
+func (_ *AvroContainerBlock) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *AvroContainerBlock) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *AvroContainerBlock) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *AvroContainerBlock) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *AvroContainerBlock) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *AvroContainerBlock) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *AvroContainerBlock) SetString(v string) { panic("Unsupported operation") }
 func (_ *AvroContainerBlock) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *AvroContainerBlock) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
-
-		return (*types.Long)(&r.NumRecords)
-
+		
+		
+			return (*types.Long)(&r.NumRecords)
+		
+	
 	case 1:
-
-		return (*types.Bytes)(&r.RecordBytes)
-
+		
+		
+			return (*types.Bytes)(&r.RecordBytes)
+		
+	
 	case 2:
-
-		return (*SyncWrapper)(&r.Sync)
-
+		
+		
+			return (*SyncWrapper)(&r.Sync)
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *AvroContainerBlock) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
+	
+        
+	
+        
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *AvroContainerBlock) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) Finalize()                        {}
+func (_ *AvroContainerBlock) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *AvroContainerBlock) Finalize() { }
+
 
 func (_ *AvroContainerBlock) AvroCRC64Fingerprint() []byte {
-	return AvroContainerBlockAvroCRC64Fingerprint
+  return AvroContainerBlockAvroCRC64Fingerprint
 }

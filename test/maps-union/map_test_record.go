@@ -6,19 +6,25 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
+
 type MapTestRecord struct {
-	IntField *MapUnionNullInt
+
+	
+	
+		IntField *MapUnionNullInt
+	
+
 }
 
-var MapTestRecordAvroCRC64Fingerprint = []byte{0xf7, 0xdb, 0x0, 0xb2, 0x6e, 0xa8, 0x75, 0xbf}
+var MapTestRecordAvroCRC64Fingerprint = []byte{0xf7,0xdb,0x0,0xb2,0x6e,0xa8,0x75,0xbf}
 
-func NewMapTestRecord() *MapTestRecord {
+func NewMapTestRecord() (*MapTestRecord) {
 	return &MapTestRecord{}
 }
 
@@ -53,12 +59,12 @@ func DeserializeMapTestRecordFromSchema(r io.Reader, schema string) (*MapTestRec
 
 func writeMapTestRecord(r *MapTestRecord, w io.Writer) error {
 	var err error
-
-	err = writeMapUnionNullInt(r.IntField, w)
+	
+	err = writeMapUnionNullInt( r.IntField, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -74,39 +80,45 @@ func (r *MapTestRecord) SchemaName() string {
 	return "MapTestRecord"
 }
 
-func (_ *MapTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ *MapTestRecord) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *MapTestRecord) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *MapTestRecord) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *MapTestRecord) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *MapTestRecord) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *MapTestRecord) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *MapTestRecord) SetString(v string) { panic("Unsupported operation") }
 func (_ *MapTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *MapTestRecord) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
+		
+			r.IntField = NewMapUnionNullInt()
 
-		r.IntField = NewMapUnionNullInt()
-
-		return r.IntField
-
+		
+		
+			return r.IntField
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *MapTestRecord) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *MapTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *MapTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *MapTestRecord) Finalize()                        {}
+func (_ *MapTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *MapTestRecord) Finalize() { }
+
 
 func (_ *MapTestRecord) AvroCRC64Fingerprint() []byte {
-	return MapTestRecordAvroCRC64Fingerprint
+  return MapTestRecordAvroCRC64Fingerprint
 }

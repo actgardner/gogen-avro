@@ -6,19 +6,25 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
+
 type RecursiveUnionTestRecord struct {
-	RecursiveField *RecursiveFieldUnion
+
+	
+	
+		RecursiveField *RecursiveFieldUnion
+	
+
 }
 
-var RecursiveUnionTestRecordAvroCRC64Fingerprint = []byte{0xc6, 0x55, 0x29, 0x43, 0xb, 0x8a, 0xa6, 0x89}
+var RecursiveUnionTestRecordAvroCRC64Fingerprint = []byte{0xc6,0x55,0x29,0x43,0xb,0x8a,0xa6,0x89}
 
-func NewRecursiveUnionTestRecord() *RecursiveUnionTestRecord {
+func NewRecursiveUnionTestRecord() (*RecursiveUnionTestRecord) {
 	return &RecursiveUnionTestRecord{}
 }
 
@@ -53,12 +59,12 @@ func DeserializeRecursiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 func writeRecursiveUnionTestRecord(r *RecursiveUnionTestRecord, w io.Writer) error {
 	var err error
-
-	err = writeRecursiveFieldUnion(r.RecursiveField, w)
+	
+	err = writeRecursiveFieldUnion( r.RecursiveField, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -74,39 +80,45 @@ func (r *RecursiveUnionTestRecord) SchemaName() string {
 	return "RecursiveUnionTestRecord"
 }
 
-func (_ *RecursiveUnionTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *RecursiveUnionTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *RecursiveUnionTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *RecursiveUnionTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *RecursiveUnionTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *RecursiveUnionTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *RecursiveUnionTestRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ *RecursiveUnionTestRecord) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *RecursiveUnionTestRecord) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *RecursiveUnionTestRecord) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *RecursiveUnionTestRecord) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *RecursiveUnionTestRecord) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *RecursiveUnionTestRecord) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *RecursiveUnionTestRecord) SetString(v string) { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *RecursiveUnionTestRecord) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
+		
+			r.RecursiveField = NewRecursiveFieldUnion()
 
-		r.RecursiveField = NewRecursiveFieldUnion()
-
-		return r.RecursiveField
-
+		
+		
+			return r.RecursiveField
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *RecursiveUnionTestRecord) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *RecursiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *RecursiveUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *RecursiveUnionTestRecord) Finalize()                        {}
+func (_ *RecursiveUnionTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *RecursiveUnionTestRecord) Finalize() { }
+
 
 func (_ *RecursiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
-	return RecursiveUnionTestRecordAvroCRC64Fingerprint
+  return RecursiveUnionTestRecordAvroCRC64Fingerprint
 }

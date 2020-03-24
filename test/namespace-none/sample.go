@@ -6,27 +6,34 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // GoGen test
 type Sample struct {
 
+	
 	// Core data information required for any event
+	
+	
+		Header *UnionNullData
+	
 
-	Header *UnionNullData
-
+	
 	// Core data information required for any event
+	
+	
+		Body *UnionNullData
+	
 
-	Body *UnionNullData
 }
 
-var SampleAvroCRC64Fingerprint = []byte{0xdf, 0x7d, 0x93, 0x20, 0x19, 0x66, 0x18, 0xa}
+var SampleAvroCRC64Fingerprint = []byte{0xdf,0x7d,0x93,0x20,0x19,0x66,0x18,0xa}
 
-func NewSample() *Sample {
+func NewSample() (*Sample) {
 	return &Sample{}
 }
 
@@ -61,17 +68,17 @@ func DeserializeSampleFromSchema(r io.Reader, schema string) (*Sample, error) {
 
 func writeSample(r *Sample, w io.Writer) error {
 	var err error
-
-	err = writeUnionNullData(r.Header, w)
+	
+	err = writeUnionNullData( r.Header, w)
 	if err != nil {
 		return err
 	}
-
-	err = writeUnionNullData(r.Body, w)
+	
+	err = writeUnionNullData( r.Body, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -87,55 +94,66 @@ func (r *Sample) SchemaName() string {
 	return "com.avro.test.sample"
 }
 
-func (_ *Sample) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *Sample) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *Sample) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *Sample) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *Sample) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *Sample) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *Sample) SetString(v string)   { panic("Unsupported operation") }
+func (_ *Sample) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *Sample) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *Sample) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *Sample) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *Sample) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *Sample) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *Sample) SetString(v string) { panic("Unsupported operation") }
 func (_ *Sample) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Sample) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
+		
+			r.Header = NewUnionNullData()
 
-		r.Header = NewUnionNullData()
-
-		return r.Header
-
+		
+		
+			return r.Header
+		
+	
 	case 1:
+		
+			r.Body = NewUnionNullData()
 
-		r.Body = NewUnionNullData()
-
-		return r.Body
-
+		
+		
+			return r.Body
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *Sample) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
 	case 0:
-		r.Header = NewUnionNullData()
+       	 	r.Header = NewUnionNullData()
 
 		return
-
+	
+	
+        
 	case 1:
-		r.Body = NewUnionNullData()
+       	 	r.Body = NewUnionNullData()
 
 		return
-
+	
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *Sample) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Sample) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *Sample) Finalize()                        {}
+func (_ *Sample) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *Sample) Finalize() { }
+
 
 func (_ *Sample) AvroCRC64Fingerprint() []byte {
-	return SampleAvroCRC64Fingerprint
+  return SampleAvroCRC64Fingerprint
 }

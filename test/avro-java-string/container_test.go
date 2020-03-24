@@ -2,7 +2,7 @@ package avro
 
 import (
 	"bytes"
-	"github.com/actgardner/gogen-avro/singleobject"
+	"github.com/actgardner/gogen-avro/soe"
 	"testing"
 
 	"github.com/actgardner/gogen-avro/container"
@@ -37,7 +37,7 @@ func TestGogenDeflateEncoding(t *testing.T) {
 func roundTripWithCodec(codec container.Codec, t *testing.T) {
 	var buf bytes.Buffer
 	UID := make([]byte, 8)
-	writer := singleobject.NewWriter(&buf, UID)
+	writer := soe.NewWriter(&buf, UID)
 	// Write the container file contents to the buffer
 	containerWriter, err := NewEventWriter(writer, codec, 2)
 	if err != nil {
@@ -58,7 +58,7 @@ func roundTripWithCodec(codec container.Codec, t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reader, err := goavro.NewOCFReader(singleobject.NewReader(&buf))
+	reader, err := goavro.NewOCFReader(soe.NewReader(&buf))
 	if err != nil {
 		t.Fatal(err)
 	}

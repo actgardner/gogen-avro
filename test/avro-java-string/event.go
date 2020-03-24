@@ -6,22 +6,27 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
+
 
 type Event struct {
 
+	
 	// Unique ID for this event.
+	
+	
+		Id string
+	
 
-	Id string
 }
 
-var EventAvroCRC64Fingerprint = []byte{0xe8, 0x8c, 0x48, 0x2c, 0xc2, 0x57, 0x8a, 0xe0}
+var EventAvroCRC64Fingerprint = []byte{0xe8,0x8c,0x48,0x2c,0xc2,0x57,0x8a,0xe0}
 
-func NewEvent() *Event {
+func NewEvent() (*Event) {
 	return &Event{}
 }
 
@@ -56,12 +61,12 @@ func DeserializeEventFromSchema(r io.Reader, schema string) (*Event, error) {
 
 func writeEvent(r *Event, w io.Writer) error {
 	var err error
-
-	err = vm.WriteString(r.Id, w)
+	
+	err = vm.WriteString( r.Id, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -77,37 +82,42 @@ func (r *Event) SchemaName() string {
 	return "event"
 }
 
-func (_ *Event) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *Event) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *Event) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *Event) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *Event) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *Event) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *Event) SetString(v string)   { panic("Unsupported operation") }
+func (_ *Event) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *Event) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *Event) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *Event) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *Event) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *Event) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *Event) SetString(v string) { panic("Unsupported operation") }
 func (_ *Event) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Event) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
-
-		return (*types.String)(&r.Id)
-
+		
+		
+			return (*types.String)(&r.Id)
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *Event) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *Event) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Event) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *Event) Finalize()                        {}
+func (_ *Event) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *Event) Finalize() { }
+
 
 func (_ *Event) AvroCRC64Fingerprint() []byte {
-	return EventAvroCRC64Fingerprint
+  return EventAvroCRC64Fingerprint
 }

@@ -1,4 +1,4 @@
-package singleobject
+package soe
 
 import (
 	"bytes"

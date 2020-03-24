@@ -6,21 +6,30 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
-type FixedTestRecord struct {
-	FixedField TestFixedType
 
-	AnotherFixed TestFixedType
+type FixedTestRecord struct {
+
+	
+	
+		FixedField TestFixedType
+	
+
+	
+	
+		AnotherFixed TestFixedType
+	
+
 }
 
-var FixedTestRecordAvroCRC64Fingerprint = []byte{0xba, 0x4b, 0xf9, 0x7e, 0x1f, 0xc0, 0xf1, 0x52}
+var FixedTestRecordAvroCRC64Fingerprint = []byte{0xba,0x4b,0xf9,0x7e,0x1f,0xc0,0xf1,0x52}
 
-func NewFixedTestRecord() *FixedTestRecord {
+func NewFixedTestRecord() (*FixedTestRecord) {
 	return &FixedTestRecord{}
 }
 
@@ -55,17 +64,17 @@ func DeserializeFixedTestRecordFromSchema(r io.Reader, schema string) (*FixedTes
 
 func writeFixedTestRecord(r *FixedTestRecord, w io.Writer) error {
 	var err error
-
-	err = writeTestFixedType(r.FixedField, w)
+	
+	err = writeTestFixedType( r.FixedField, w)
 	if err != nil {
 		return err
 	}
-
-	err = writeTestFixedType(r.AnotherFixed, w)
+	
+	err = writeTestFixedType( r.AnotherFixed, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -81,41 +90,50 @@ func (r *FixedTestRecord) SchemaName() string {
 	return "FixedTestRecord"
 }
 
-func (_ *FixedTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *FixedTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *FixedTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *FixedTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *FixedTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *FixedTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *FixedTestRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ *FixedTestRecord) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *FixedTestRecord) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *FixedTestRecord) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *FixedTestRecord) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *FixedTestRecord) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *FixedTestRecord) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *FixedTestRecord) SetString(v string) { panic("Unsupported operation") }
 func (_ *FixedTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *FixedTestRecord) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
-
-		return (*TestFixedTypeWrapper)(&r.FixedField)
-
+		
+		
+			return (*TestFixedTypeWrapper)(&r.FixedField)
+		
+	
 	case 1:
-
-		return (*TestFixedTypeWrapper)(&r.AnotherFixed)
-
+		
+		
+			return (*TestFixedTypeWrapper)(&r.AnotherFixed)
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *FixedTestRecord) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
+	
+        
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *FixedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *FixedTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *FixedTestRecord) Finalize()                        {}
+func (_ *FixedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *FixedTestRecord) Finalize() { }
+
 
 func (_ *FixedTestRecord) AvroCRC64Fingerprint() []byte {
-	return FixedTestRecordAvroCRC64Fingerprint
+  return FixedTestRecordAvroCRC64Fingerprint
 }

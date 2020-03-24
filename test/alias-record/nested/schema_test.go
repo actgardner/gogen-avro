@@ -3,7 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/actgardner/gogen-avro/singleobject"
+	"github.com/actgardner/gogen-avro/soe"
 	"io/ioutil"
 	"reflect"
 	"testing"
@@ -75,12 +75,12 @@ func TestNestedFixture(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := singleobject.NewWriter(&buf, NestedRecordAvroCRC64Fingerprint)
+		writer := soe.NewWriter(&buf, NestedRecordAvroCRC64Fingerprint)
 		err = f.Serialize(writer)
 		if err != nil {
 			t.Fatal(err)
 		}
-		b := singleobject.NewReader(&buf).Bytes()
+		b := soe.NewReader(&buf).Bytes()
 		datum, remaining, err := codec.NativeFromBinary(b)
 		if err != nil {
 			t.Fatal(err)
@@ -121,12 +121,12 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := singleobject.NewWriter(&buf, NestedRecordAvroCRC64Fingerprint)
+		writer := soe.NewWriter(&buf, NestedRecordAvroCRC64Fingerprint)
 		err = f.Serialize(writer)
 		if err != nil {
 			t.Fatal(err)
 		}
-		datum, err := DeserializeNestedTestRecord(singleobject.NewReader(&buf))
+		datum, err := DeserializeNestedTestRecord(soe.NewReader(&buf))
 		if err != nil {
 			t.Fatal(err)
 		}

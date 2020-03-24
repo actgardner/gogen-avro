@@ -6,25 +6,40 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
+
 type NumberRecord struct {
-	IntField int32
 
-	LongField int64
+	
+	
+		IntField int32
+	
 
-	FloatField float32
+	
+	
+		LongField int64
+	
 
-	DoubleField float64
+	
+	
+		FloatField float32
+	
+
+	
+	
+		DoubleField float64
+	
+
 }
 
-var NumberRecordAvroCRC64Fingerprint = []byte{0xf4, 0x5a, 0x75, 0xd5, 0x4e, 0x74, 0x27, 0x7e}
+var NumberRecordAvroCRC64Fingerprint = []byte{0xf4,0x5a,0x75,0xd5,0x4e,0x74,0x27,0x7e}
 
-func NewNumberRecord() *NumberRecord {
+func NewNumberRecord() (*NumberRecord) {
 	return &NumberRecord{}
 }
 
@@ -59,27 +74,27 @@ func DeserializeNumberRecordFromSchema(r io.Reader, schema string) (*NumberRecor
 
 func writeNumberRecord(r *NumberRecord, w io.Writer) error {
 	var err error
-
-	err = vm.WriteInt(r.IntField, w)
+	
+	err = vm.WriteInt( r.IntField, w)
 	if err != nil {
 		return err
 	}
-
-	err = vm.WriteLong(r.LongField, w)
+	
+	err = vm.WriteLong( r.LongField, w)
 	if err != nil {
 		return err
 	}
-
-	err = vm.WriteFloat(r.FloatField, w)
+	
+	err = vm.WriteFloat( r.FloatField, w)
 	if err != nil {
 		return err
 	}
-
-	err = vm.WriteDouble(r.DoubleField, w)
+	
+	err = vm.WriteDouble( r.DoubleField, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -95,49 +110,66 @@ func (r *NumberRecord) SchemaName() string {
 	return "NumberRecord"
 }
 
-func (_ *NumberRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *NumberRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *NumberRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *NumberRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *NumberRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *NumberRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *NumberRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ *NumberRecord) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *NumberRecord) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *NumberRecord) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *NumberRecord) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *NumberRecord) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *NumberRecord) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *NumberRecord) SetString(v string) { panic("Unsupported operation") }
 func (_ *NumberRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NumberRecord) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
-
-		return (*types.Int)(&r.IntField)
-
+		
+		
+			return (*types.Int)(&r.IntField)
+		
+	
 	case 1:
-
-		return (*types.Long)(&r.LongField)
-
+		
+		
+			return (*types.Long)(&r.LongField)
+		
+	
 	case 2:
-
-		return (*types.Float)(&r.FloatField)
-
+		
+		
+			return (*types.Float)(&r.FloatField)
+		
+	
 	case 3:
-
-		return (*types.Double)(&r.DoubleField)
-
+		
+		
+			return (*types.Double)(&r.DoubleField)
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *NumberRecord) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
+	
+        
+	
+        
+	
+        
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *NumberRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NumberRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *NumberRecord) Finalize()                        {}
+func (_ *NumberRecord) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *NumberRecord) Finalize() { }
+
 
 func (_ *NumberRecord) AvroCRC64Fingerprint() []byte {
-	return NumberRecordAvroCRC64Fingerprint
+  return NumberRecordAvroCRC64Fingerprint
 }

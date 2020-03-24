@@ -3,7 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/actgardner/gogen-avro/singleobject"
+	"github.com/actgardner/gogen-avro/soe"
 	"io/ioutil"
 	"testing"
 
@@ -37,10 +37,10 @@ func TestEnumFixture(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := singleobject.NewWriter(&buf, EnumTestRecordAvroCRC64Fingerprint)
+		writer := soe.NewWriter(&buf, EnumTestRecordAvroCRC64Fingerprint)
 		err = f.Serialize(writer)
 		assert.Nil(t, err)
-		b := singleobject.NewReader(&buf).Bytes()
+		b := soe.NewReader(&buf).Bytes()
 		datum, remaining, err := codec.NativeFromBinary(b)
 		assert.Nil(t, err)
 		assert.Equal(t, 0, len(remaining))
@@ -64,11 +64,11 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := singleobject.NewWriter(&buf, EnumTestRecordAvroCRC64Fingerprint)
+		writer := soe.NewWriter(&buf, EnumTestRecordAvroCRC64Fingerprint)
 		err = f.Serialize(writer)
 		assert.Nil(t, err)
 
-		datum, err := DeserializeEnumTestRecord(singleobject.NewReader(&buf))
+		datum, err := DeserializeEnumTestRecord(soe.NewReader(&buf))
 		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}

@@ -2,7 +2,7 @@ package avro
 
 import (
 	"bytes"
-	"github.com/actgardner/gogen-avro/singleobject"
+	"github.com/actgardner/gogen-avro/soe"
 	"testing"
 
 	"github.com/actgardner/gogen-avro/compiler"
@@ -15,7 +15,7 @@ import (
 func TestEvolution(t *testing.T) {
 	oldUnionRecord := NewUnionRecord()
 	var buf bytes.Buffer
-	writer := singleobject.NewWriter(&buf, UnionRecordAvroCRC64Fingerprint)
+	writer := soe.NewWriter(&buf, UnionRecordAvroCRC64Fingerprint)
 	err := oldUnionRecord.Serialize(writer)
 	assert.Nil(t, err)
 
@@ -24,7 +24,7 @@ func TestEvolution(t *testing.T) {
 	deser, err := compiler.CompileSchemaBytes([]byte(oldUnionRecord.Schema()), []byte(newUnionRecord.Schema()))
 	assert.Nil(t, err)
 
-	err = vm.Eval(singleobject.NewReader(&buf), deser, newUnionRecord)
+	err = vm.Eval(soe.NewReader(&buf), deser, newUnionRecord)
 	assert.Nil(t, err)
 
 	assert.Equal(t, evolution.UnionNullStringTypeEnumNull, newUnionRecord.UnionNull.UnionType)

@@ -6,20 +6,25 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014
 type HeaderworksDatatypeUUID struct {
-	Uuid string
+
+	
+	
+		Uuid string
+	
+
 }
 
-var HeaderworksDatatypeUUIDAvroCRC64Fingerprint = []byte{0xab, 0x4b, 0x8c, 0x4e, 0xf4, 0x4c, 0xb6, 0x53}
+var HeaderworksDatatypeUUIDAvroCRC64Fingerprint = []byte{0xab,0x4b,0x8c,0x4e,0xf4,0x4c,0xb6,0x53}
 
-func NewHeaderworksDatatypeUUID() *HeaderworksDatatypeUUID {
+func NewHeaderworksDatatypeUUID() (*HeaderworksDatatypeUUID) {
 	return &HeaderworksDatatypeUUID{}
 }
 
@@ -54,12 +59,12 @@ func DeserializeHeaderworksDatatypeUUIDFromSchema(r io.Reader, schema string) (*
 
 func writeHeaderworksDatatypeUUID(r *HeaderworksDatatypeUUID, w io.Writer) error {
 	var err error
-
-	err = vm.WriteString(r.Uuid, w)
+	
+	err = vm.WriteString( r.Uuid, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -75,41 +80,46 @@ func (r *HeaderworksDatatypeUUID) SchemaName() string {
 	return "headerworks.datatype.UUID"
 }
 
-func (_ *HeaderworksDatatypeUUID) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetString(v string)   { panic("Unsupported operation") }
+func (_ *HeaderworksDatatypeUUID) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *HeaderworksDatatypeUUID) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *HeaderworksDatatypeUUID) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *HeaderworksDatatypeUUID) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *HeaderworksDatatypeUUID) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *HeaderworksDatatypeUUID) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *HeaderworksDatatypeUUID) SetString(v string) { panic("Unsupported operation") }
 func (_ *HeaderworksDatatypeUUID) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *HeaderworksDatatypeUUID) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
-
-		return (*types.String)(&r.Uuid)
-
+		
+		
+			return (*types.String)(&r.Uuid)
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *HeaderworksDatatypeUUID) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
 	case 0:
-		r.Uuid = ""
+       	 	r.Uuid = ""
 		return
-
+	
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *HeaderworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) Finalize()                        {}
+func (_ *HeaderworksDatatypeUUID) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *HeaderworksDatatypeUUID) Finalize() { }
+
 
 func (_ *HeaderworksDatatypeUUID) AvroCRC64Fingerprint() []byte {
-	return HeaderworksDatatypeUUIDAvroCRC64Fingerprint
+  return HeaderworksDatatypeUUIDAvroCRC64Fingerprint
 }

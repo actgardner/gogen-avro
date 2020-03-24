@@ -6,19 +6,25 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
+
 type StringRec struct {
-	ProductName string
+
+	
+	
+		ProductName string
+	
+
 }
 
-var StringRecAvroCRC64Fingerprint = []byte{0x77, 0x83, 0x36, 0xab, 0x9d, 0xe9, 0x0, 0x15}
+var StringRecAvroCRC64Fingerprint = []byte{0x77,0x83,0x36,0xab,0x9d,0xe9,0x0,0x15}
 
-func NewStringRec() *StringRec {
+func NewStringRec() (*StringRec) {
 	return &StringRec{}
 }
 
@@ -53,12 +59,12 @@ func DeserializeStringRecFromSchema(r io.Reader, schema string) (*StringRec, err
 
 func writeStringRec(r *StringRec, w io.Writer) error {
 	var err error
-
-	err = vm.WriteString(r.ProductName, w)
+	
+	err = vm.WriteString( r.ProductName, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -74,37 +80,42 @@ func (r *StringRec) SchemaName() string {
 	return "StringRec"
 }
 
-func (_ *StringRec) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *StringRec) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *StringRec) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *StringRec) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *StringRec) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *StringRec) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *StringRec) SetString(v string)   { panic("Unsupported operation") }
+func (_ *StringRec) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *StringRec) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *StringRec) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *StringRec) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *StringRec) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *StringRec) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *StringRec) SetString(v string) { panic("Unsupported operation") }
 func (_ *StringRec) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *StringRec) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
-
-		return (*types.String)(&r.ProductName)
-
+		
+		
+			return (*types.String)(&r.ProductName)
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *StringRec) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *StringRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *StringRec) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *StringRec) Finalize()                        {}
+func (_ *StringRec) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *StringRec) Finalize() { }
+
 
 func (_ *StringRec) AvroCRC64Fingerprint() []byte {
-	return StringRecAvroCRC64Fingerprint
+  return StringRecAvroCRC64Fingerprint
 }

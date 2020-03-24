@@ -1,4 +1,4 @@
-package singleobject
+package soe
 
 import (
 	"bytes"
@@ -32,7 +32,7 @@ func readSOHeader(r *bytes.Buffer) ([]byte, error) {
 		return nil, err
 	}
 	if b != 0xC3 {
-		r.UnreadByte()
+		_ = r.UnreadByte()
 		return nil, errors.New("header not read")
 	}
 
@@ -42,14 +42,14 @@ func readSOHeader(r *bytes.Buffer) ([]byte, error) {
 	}
 
 	if b != 0x01 {
-		r.UnreadByte()
+		_ = r.UnreadByte()
 		return nil, errors.New("header not read")
 	}
 
 	var header []byte
-	if header == nil {
-		header = make([]byte, 8)
-	}
+
+	header = make([]byte, 8)
+
 	n, err := r.Read(header)
 
 	if n != 8 || err != nil {

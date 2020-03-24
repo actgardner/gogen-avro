@@ -3,7 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/actgardner/gogen-avro/singleobject"
+	"github.com/actgardner/gogen-avro/soe"
 	"io/ioutil"
 	"reflect"
 	"testing"
@@ -40,11 +40,11 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := singleobject.NewWriter(&buf, PrimitiveUnionTestRecordAvroCRC64Fingerprint)
+		writer := soe.NewWriter(&buf, PrimitiveUnionTestRecordAvroCRC64Fingerprint)
 		err = f.Serialize(writer)
 		assert.Nil(t, err)
 
-		b := singleobject.NewReader(&buf).Bytes()
+		b := soe.NewReader(&buf).Bytes()
 		datum, remaining, err := codec.NativeFromBinary(b)
 		assert.Nil(t, err)
 
@@ -88,11 +88,11 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := singleobject.NewWriter(&buf, PrimitiveUnionTestRecordAvroCRC64Fingerprint)
+		writer := soe.NewWriter(&buf, PrimitiveUnionTestRecordAvroCRC64Fingerprint)
 		err = f.Serialize(writer)
 		assert.Nil(t, err)
 
-		datum, err := DeserializePrimitiveUnionTestRecord(singleobject.NewReader(&buf))
+		datum, err := DeserializePrimitiveUnionTestRecord(soe.NewReader(&buf))
 		assert.Nil(t, err)
 
 		assert.Equal(t, *datum, f)

@@ -6,27 +6,34 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // GoGen test
 type ComAvroTestSample struct {
 
+	
 	// Core data information required for any event
+	
+	
+		Header *UnionNullHeaderworksData
+	
 
-	Header *UnionNullHeaderworksData
-
+	
 	// Core data information required for any event
+	
+	
+		Body *UnionNullBodyworksData
+	
 
-	Body *UnionNullBodyworksData
 }
 
-var ComAvroTestSampleAvroCRC64Fingerprint = []byte{0xdf, 0x7d, 0x93, 0x20, 0x19, 0x66, 0x18, 0xa}
+var ComAvroTestSampleAvroCRC64Fingerprint = []byte{0xdf,0x7d,0x93,0x20,0x19,0x66,0x18,0xa}
 
-func NewComAvroTestSample() *ComAvroTestSample {
+func NewComAvroTestSample() (*ComAvroTestSample) {
 	return &ComAvroTestSample{}
 }
 
@@ -61,17 +68,17 @@ func DeserializeComAvroTestSampleFromSchema(r io.Reader, schema string) (*ComAvr
 
 func writeComAvroTestSample(r *ComAvroTestSample, w io.Writer) error {
 	var err error
-
-	err = writeUnionNullHeaderworksData(r.Header, w)
+	
+	err = writeUnionNullHeaderworksData( r.Header, w)
 	if err != nil {
 		return err
 	}
-
-	err = writeUnionNullBodyworksData(r.Body, w)
+	
+	err = writeUnionNullBodyworksData( r.Body, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -87,55 +94,66 @@ func (r *ComAvroTestSample) SchemaName() string {
 	return "com.avro.test.sample"
 }
 
-func (_ *ComAvroTestSample) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *ComAvroTestSample) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *ComAvroTestSample) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *ComAvroTestSample) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *ComAvroTestSample) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *ComAvroTestSample) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *ComAvroTestSample) SetString(v string)   { panic("Unsupported operation") }
+func (_ *ComAvroTestSample) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *ComAvroTestSample) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *ComAvroTestSample) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *ComAvroTestSample) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *ComAvroTestSample) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *ComAvroTestSample) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *ComAvroTestSample) SetString(v string) { panic("Unsupported operation") }
 func (_ *ComAvroTestSample) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *ComAvroTestSample) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
+		
+			r.Header = NewUnionNullHeaderworksData()
 
-		r.Header = NewUnionNullHeaderworksData()
-
-		return r.Header
-
+		
+		
+			return r.Header
+		
+	
 	case 1:
+		
+			r.Body = NewUnionNullBodyworksData()
 
-		r.Body = NewUnionNullBodyworksData()
-
-		return r.Body
-
+		
+		
+			return r.Body
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *ComAvroTestSample) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
 	case 0:
-		r.Header = NewUnionNullHeaderworksData()
+       	 	r.Header = NewUnionNullHeaderworksData()
 
 		return
-
+	
+	
+        
 	case 1:
-		r.Body = NewUnionNullBodyworksData()
+       	 	r.Body = NewUnionNullBodyworksData()
 
 		return
-
+	
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *ComAvroTestSample) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ComAvroTestSample) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *ComAvroTestSample) Finalize()                        {}
+func (_ *ComAvroTestSample) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *ComAvroTestSample) Finalize() { }
+
 
 func (_ *ComAvroTestSample) AvroCRC64Fingerprint() []byte {
-	return ComAvroTestSampleAvroCRC64Fingerprint
+  return ComAvroTestSampleAvroCRC64Fingerprint
 }

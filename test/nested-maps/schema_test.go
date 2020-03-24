@@ -3,7 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/actgardner/gogen-avro/singleobject"
+	"github.com/actgardner/gogen-avro/soe"
 	"io/ioutil"
 	"testing"
 
@@ -117,11 +117,11 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := singleobject.NewWriter(&buf, NestedMapAvroCRC64Fingerprint)
+		writer := soe.NewWriter(&buf, NestedMapAvroCRC64Fingerprint)
 		err = f.Serialize(writer)
 		assert.Nil(t, err)
 
-		datum, err := DeserializeNestedMap(singleobject.NewReader(&buf))
+		datum, err := DeserializeNestedMap(soe.NewReader(&buf))
 		assert.Nil(t, err)
 		assert.Equal(t, datum.MapOfMaps, f.MapOfMaps)
 	}

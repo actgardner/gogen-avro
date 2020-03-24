@@ -6,31 +6,41 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // Common information related to the event which must be included in any clean event
 type Data struct {
 
+	
 	// Unique identifier for the event used for de-duplication and tracing.
+	
+	
+		Uuid *UnionNullUUID
+	
 
-	Uuid *UnionNullUUID
-
+	
 	// Fully qualified name of the host that generated the event that generated the data.
+	
+	
+		Hostname *UnionNullString
+	
 
-	Hostname *UnionNullString
-
+	
 	// Trace information not redundant with this object
+	
+	
+		Trace *UnionNullTrace
+	
 
-	Trace *UnionNullTrace
 }
 
-var DataAvroCRC64Fingerprint = []byte{0xa5, 0xec, 0x1f, 0xf5, 0x6b, 0x15, 0xc1, 0x21}
+var DataAvroCRC64Fingerprint = []byte{0xa5,0xec,0x1f,0xf5,0x6b,0x15,0xc1,0x21}
 
-func NewData() *Data {
+func NewData() (*Data) {
 	return &Data{}
 }
 
@@ -65,22 +75,22 @@ func DeserializeDataFromSchema(r io.Reader, schema string) (*Data, error) {
 
 func writeData(r *Data, w io.Writer) error {
 	var err error
-
-	err = writeUnionNullUUID(r.Uuid, w)
+	
+	err = writeUnionNullUUID( r.Uuid, w)
 	if err != nil {
 		return err
 	}
-
-	err = writeUnionNullString(r.Hostname, w)
+	
+	err = writeUnionNullString( r.Hostname, w)
 	if err != nil {
 		return err
 	}
-
-	err = writeUnionNullTrace(r.Trace, w)
+	
+	err = writeUnionNullTrace( r.Trace, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -96,66 +106,82 @@ func (r *Data) SchemaName() string {
 	return "bodyworks.Data"
 }
 
-func (_ *Data) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *Data) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *Data) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *Data) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *Data) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *Data) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *Data) SetString(v string)   { panic("Unsupported operation") }
+func (_ *Data) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *Data) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *Data) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *Data) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *Data) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *Data) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *Data) SetString(v string) { panic("Unsupported operation") }
 func (_ *Data) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Data) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
+		
+			r.Uuid = NewUnionNullUUID()
 
-		r.Uuid = NewUnionNullUUID()
-
-		return r.Uuid
-
+		
+		
+			return r.Uuid
+		
+	
 	case 1:
+		
+			r.Hostname = NewUnionNullString()
 
-		r.Hostname = NewUnionNullString()
-
-		return r.Hostname
-
+		
+		
+			return r.Hostname
+		
+	
 	case 2:
+		
+			r.Trace = NewUnionNullTrace()
 
-		r.Trace = NewUnionNullTrace()
-
-		return r.Trace
-
+		
+		
+			return r.Trace
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *Data) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
 	case 0:
-		r.Uuid = NewUnionNullUUID()
+       	 	r.Uuid = NewUnionNullUUID()
 
 		return
-
+	
+	
+        
 	case 1:
-		r.Hostname = NewUnionNullString()
+       	 	r.Hostname = NewUnionNullString()
 
 		return
-
+	
+	
+        
 	case 2:
-		r.Trace = NewUnionNullTrace()
+       	 	r.Trace = NewUnionNullTrace()
 
 		return
-
+	
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *Data) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Data) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *Data) Finalize()                        {}
+func (_ *Data) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *Data) Finalize() { }
+
 
 func (_ *Data) AvroCRC64Fingerprint() []byte {
-	return DataAvroCRC64Fingerprint
+  return DataAvroCRC64Fingerprint
 }

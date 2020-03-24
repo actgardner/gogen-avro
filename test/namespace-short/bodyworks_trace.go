@@ -6,23 +6,27 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
 // Trace
 type BodyworksTrace struct {
 
+	
 	// Trace Identifier
+	
+	
+		TraceId *UnionNullDatatypeUUID
+	
 
-	TraceId *UnionNullDatatypeUUID
 }
 
-var BodyworksTraceAvroCRC64Fingerprint = []byte{0x83, 0x3c, 0x8e, 0xd5, 0x54, 0xfc, 0x8d, 0x94}
+var BodyworksTraceAvroCRC64Fingerprint = []byte{0x83,0x3c,0x8e,0xd5,0x54,0xfc,0x8d,0x94}
 
-func NewBodyworksTrace() *BodyworksTrace {
+func NewBodyworksTrace() (*BodyworksTrace) {
 	return &BodyworksTrace{}
 }
 
@@ -57,12 +61,12 @@ func DeserializeBodyworksTraceFromSchema(r io.Reader, schema string) (*Bodyworks
 
 func writeBodyworksTrace(r *BodyworksTrace, w io.Writer) error {
 	var err error
-
-	err = writeUnionNullDatatypeUUID(r.TraceId, w)
+	
+	err = writeUnionNullDatatypeUUID( r.TraceId, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -78,44 +82,50 @@ func (r *BodyworksTrace) SchemaName() string {
 	return "bodyworks.Trace"
 }
 
-func (_ *BodyworksTrace) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *BodyworksTrace) SetString(v string)   { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *BodyworksTrace) SetString(v string) { panic("Unsupported operation") }
 func (_ *BodyworksTrace) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *BodyworksTrace) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
+		
+			r.TraceId = NewUnionNullDatatypeUUID()
 
-		r.TraceId = NewUnionNullDatatypeUUID()
-
-		return r.TraceId
-
+		
+		
+			return r.TraceId
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *BodyworksTrace) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
 	case 0:
-		r.TraceId = NewUnionNullDatatypeUUID()
+       	 	r.TraceId = NewUnionNullDatatypeUUID()
 
 		return
-
+	
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *BodyworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *BodyworksTrace) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *BodyworksTrace) Finalize()                        {}
+func (_ *BodyworksTrace) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *BodyworksTrace) Finalize() { }
+
 
 func (_ *BodyworksTrace) AvroCRC64Fingerprint() []byte {
-	return BodyworksTraceAvroCRC64Fingerprint
+  return BodyworksTraceAvroCRC64Fingerprint
 }

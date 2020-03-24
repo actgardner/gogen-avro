@@ -6,19 +6,25 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
+
 type Child struct {
-	Name string
+
+	
+	
+		Name string
+	
+
 }
 
-var ChildAvroCRC64Fingerprint = []byte{0xad, 0x24, 0x43, 0xb1, 0x62, 0x55, 0xc0, 0x12}
+var ChildAvroCRC64Fingerprint = []byte{0xad,0x24,0x43,0xb1,0x62,0x55,0xc0,0x12}
 
-func NewChild() *Child {
+func NewChild() (*Child) {
 	return &Child{}
 }
 
@@ -53,12 +59,12 @@ func DeserializeChildFromSchema(r io.Reader, schema string) (*Child, error) {
 
 func writeChild(r *Child, w io.Writer) error {
 	var err error
-
-	err = vm.WriteString(r.Name, w)
+	
+	err = vm.WriteString( r.Name, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -74,37 +80,42 @@ func (r *Child) SchemaName() string {
 	return "Child"
 }
 
-func (_ *Child) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *Child) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *Child) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *Child) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *Child) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *Child) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *Child) SetString(v string)   { panic("Unsupported operation") }
+func (_ *Child) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *Child) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *Child) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *Child) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *Child) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *Child) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *Child) SetString(v string) { panic("Unsupported operation") }
 func (_ *Child) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Child) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
-
-		return (*types.String)(&r.Name)
-
+		
+		
+			return (*types.String)(&r.Name)
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *Child) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *Child) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Child) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *Child) Finalize()                        {}
+func (_ *Child) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *Child) Finalize() { }
+
 
 func (_ *Child) AvroCRC64Fingerprint() []byte {
-	return ChildAvroCRC64Fingerprint
+  return ChildAvroCRC64Fingerprint
 }

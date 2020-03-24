@@ -6,19 +6,25 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/compiler"
-	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/compiler"
 )
 
+
 type StructTag struct {
-	ProductName string `validate:"true"`
+
+	
+	
+		ProductName string `validate:"true"`
+	
+
 }
 
-var StructTagAvroCRC64Fingerprint = []byte{0x92, 0xb7, 0x44, 0x6b, 0xe2, 0x1e, 0xef, 0xfc}
+var StructTagAvroCRC64Fingerprint = []byte{0x92,0xb7,0x44,0x6b,0xe2,0x1e,0xef,0xfc}
 
-func NewStructTag() *StructTag {
+func NewStructTag() (*StructTag) {
 	return &StructTag{}
 }
 
@@ -53,12 +59,12 @@ func DeserializeStructTagFromSchema(r io.Reader, schema string) (*StructTag, err
 
 func writeStructTag(r *StructTag, w io.Writer) error {
 	var err error
-
-	err = vm.WriteString(r.ProductName, w)
+	
+	err = vm.WriteString( r.ProductName, w)
 	if err != nil {
 		return err
 	}
-
+	
 	return err
 }
 
@@ -74,37 +80,42 @@ func (r *StructTag) SchemaName() string {
 	return "StructTag"
 }
 
-func (_ *StructTag) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *StructTag) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *StructTag) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *StructTag) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *StructTag) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *StructTag) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *StructTag) SetString(v string)   { panic("Unsupported operation") }
+func (_ *StructTag) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ *StructTag) SetInt(v int32) { panic("Unsupported operation") }
+func (_ *StructTag) SetLong(v int64) { panic("Unsupported operation") }
+func (_ *StructTag) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *StructTag) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ *StructTag) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ *StructTag) SetString(v string) { panic("Unsupported operation") }
 func (_ *StructTag) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *StructTag) Get(i int) types.Field {
-	switch i {
-
+	switch (i) {
+	
 	case 0:
-
-		return (*types.String)(&r.ProductName)
-
+		
+		
+			return (*types.String)(&r.ProductName)
+		
+	
 	}
 	panic("Unknown field index")
 }
 
 func (r *StructTag) SetDefault(i int) {
-	switch i {
-
+	switch (i) {
+	
+        
+	
 	}
 	panic("Unknown field index")
 }
 
 func (_ *StructTag) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *StructTag) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *StructTag) Finalize()                        {}
+func (_ *StructTag) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *StructTag) Finalize() { }
+
 
 func (_ *StructTag) AvroCRC64Fingerprint() []byte {
-	return StructTagAvroCRC64Fingerprint
+  return StructTagAvroCRC64Fingerprint
 }
