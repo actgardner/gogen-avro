@@ -3,7 +3,6 @@ package canonical
 import (
 	"bytes"
 	"encoding/binary"
-	"io"
 )
 
 var FP_TABLE []uint64
@@ -36,12 +35,3 @@ func AvroCRC64Fingerprint(data []byte) []byte {
 	return output.Bytes()
 }
 
-func AvroVersionHeader(writer io.Writer, header []byte) error {
-	fp := HeaderV1
-	err := binary.Write(writer, binary.LittleEndian, fp)
-	if err != nil {
-		return err
-	}
-	err = binary.Write(writer, binary.LittleEndian, header)
-	return err
-}

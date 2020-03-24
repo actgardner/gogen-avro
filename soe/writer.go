@@ -2,7 +2,9 @@ package soe
 
 import (
 	"bytes"
+	"encoding/binary"
 	"github.com/actgardner/gogen-avro/schema/canonical"
+	"io"
 )
 
 type soWriter struct {
@@ -11,7 +13,7 @@ type soWriter struct {
 }
 
 func NewWriter(buf *bytes.Buffer, header []byte) *soWriter {
-	err := canonical.AvroVersionHeader(buf, header)
+	err := avroVersionHeader(buf, header)
 	if err != nil {
 		return nil
 	}
@@ -28,4 +30,14 @@ func (s *soWriter) Grow(n int) {
 
 func (s *soWriter) WriteByte(c byte) error {
 	return s.w.WriteByte(c)
+}
+
+func avroVersionHeader(writer io.Writer, header []byte) error {
+	fp := canonical.HeaderV1
+	err := binary.Write(writer, binary.LittleEndian, fp)
+	if err != nil {
+		return err
+	}
+	err = binary.Write(writer, binary.LittleEndian, header)
+	return err
 }
