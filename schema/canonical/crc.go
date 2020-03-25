@@ -9,8 +9,6 @@ var FP_TABLE []uint64
 
 const EMPTY uint64 = 0xc15d213aa4d7a795
 
-var HeaderV1 = []byte{0xC3, 0x01}
-
 func init() {
 	FP_TABLE = make([]uint64, 256)
 	for i := range FP_TABLE {
@@ -34,4 +32,3 @@ func AvroCRC64Fingerprint(data []byte) []byte {
 	}
 	return output.Bytes()
 }
-
