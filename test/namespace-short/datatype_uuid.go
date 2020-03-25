@@ -22,7 +22,7 @@ type DatatypeUUID struct {
 
 }
 
-var DatatypeUUIDAvroCRC64Fingerprint = []byte{0xfc,0xa4,0x33,0x98,0xee,0xe0,0x70,0xe2}
+const DatatypeUUIDAvroCRC64Fingerprint = "\xfc\xa43\x98\xee\xe0p\xe2"
 
 func NewDatatypeUUID() (*DatatypeUUID) {
 	return &DatatypeUUID{}
@@ -121,5 +121,5 @@ func (_ *DatatypeUUID) Finalize() { }
 
 
 func (_ *DatatypeUUID) AvroCRC64Fingerprint() []byte {
-  return DatatypeUUIDAvroCRC64Fingerprint
+  return []byte(DatatypeUUIDAvroCRC64Fingerprint)
 }

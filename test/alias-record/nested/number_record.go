@@ -37,7 +37,7 @@ type NumberRecord struct {
 
 }
 
-var NumberRecordAvroCRC64Fingerprint = []byte{0xf4,0x5a,0x75,0xd5,0x4e,0x74,0x27,0x7e}
+const NumberRecordAvroCRC64Fingerprint = "\xf4Zu\xd5Nt'~"
 
 func NewNumberRecord() (*NumberRecord) {
 	return &NumberRecord{}
@@ -171,5 +171,5 @@ func (_ *NumberRecord) Finalize() { }
 
 
 func (_ *NumberRecord) AvroCRC64Fingerprint() []byte {
-  return NumberRecordAvroCRC64Fingerprint
+  return []byte(NumberRecordAvroCRC64Fingerprint)
 }

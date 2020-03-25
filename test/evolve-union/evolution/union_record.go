@@ -27,7 +27,7 @@ type UnionRecord struct {
 
 }
 
-var UnionRecordAvroCRC64Fingerprint = []byte{0xf1,0xaa,0xd1,0x1b,0x17,0x66,0x6a,0xae}
+const UnionRecordAvroCRC64Fingerprint = "\xf1\xaa\xd1\x1b\x17fj\xae"
 
 func NewUnionRecord() (*UnionRecord) {
 	return &UnionRecord{}
@@ -138,5 +138,5 @@ func (_ *UnionRecord) Finalize() { }
 
 
 func (_ *UnionRecord) AvroCRC64Fingerprint() []byte {
-  return UnionRecordAvroCRC64Fingerprint
+  return []byte(UnionRecordAvroCRC64Fingerprint)
 }

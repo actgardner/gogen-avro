@@ -31,7 +31,7 @@ type ComAvroTestSample struct {
 
 }
 
-var ComAvroTestSampleAvroCRC64Fingerprint = []byte{0xdf,0x7d,0x93,0x20,0x19,0x66,0x18,0xa}
+const ComAvroTestSampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
 func NewComAvroTestSample() (*ComAvroTestSample) {
 	return &ComAvroTestSample{}
@@ -155,5 +155,5 @@ func (_ *ComAvroTestSample) Finalize() { }
 
 
 func (_ *ComAvroTestSample) AvroCRC64Fingerprint() []byte {
-  return ComAvroTestSampleAvroCRC64Fingerprint
+  return []byte(ComAvroTestSampleAvroCRC64Fingerprint)
 }

@@ -42,7 +42,7 @@ type DemoSchema struct {
 
 }
 
-var DemoSchemaAvroCRC64Fingerprint = []byte{0xc4,0x56,0xa9,0x4,0xca,0x9b,0x66,0xad}
+const DemoSchemaAvroCRC64Fingerprint = "\xc4V\xa9\x04ʛf\xad"
 
 func NewDemoSchema() (*DemoSchema) {
 	return &DemoSchema{}
@@ -189,5 +189,5 @@ func (_ *DemoSchema) Finalize() { }
 
 
 func (_ *DemoSchema) AvroCRC64Fingerprint() []byte {
-  return DemoSchemaAvroCRC64Fingerprint
+  return []byte(DemoSchemaAvroCRC64Fingerprint)
 }

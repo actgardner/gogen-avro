@@ -22,7 +22,7 @@ type RecursiveUnionTestRecord struct {
 
 }
 
-var RecursiveUnionTestRecordAvroCRC64Fingerprint = []byte{0xc6,0x55,0x29,0x43,0xb,0x8a,0xa6,0x89}
+const RecursiveUnionTestRecordAvroCRC64Fingerprint = "\xc6U)C\v\x8a\xa6\x89"
 
 func NewRecursiveUnionTestRecord() (*RecursiveUnionTestRecord) {
 	return &RecursiveUnionTestRecord{}
@@ -120,5 +120,5 @@ func (_ *RecursiveUnionTestRecord) Finalize() { }
 
 
 func (_ *RecursiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
-  return RecursiveUnionTestRecordAvroCRC64Fingerprint
+  return []byte(RecursiveUnionTestRecordAvroCRC64Fingerprint)
 }

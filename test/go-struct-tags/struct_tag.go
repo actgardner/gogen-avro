@@ -22,7 +22,7 @@ type StructTag struct {
 
 }
 
-var StructTagAvroCRC64Fingerprint = []byte{0x92,0xb7,0x44,0x6b,0xe2,0x1e,0xef,0xfc}
+const StructTagAvroCRC64Fingerprint = "\x92\xb7Dk\xe2\x1e\xef\xfc"
 
 func NewStructTag() (*StructTag) {
 	return &StructTag{}
@@ -117,5 +117,5 @@ func (_ *StructTag) Finalize() { }
 
 
 func (_ *StructTag) AvroCRC64Fingerprint() []byte {
-  return StructTagAvroCRC64Fingerprint
+  return []byte(StructTagAvroCRC64Fingerprint)
 }

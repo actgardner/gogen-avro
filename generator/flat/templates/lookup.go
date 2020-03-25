@@ -60,13 +60,6 @@ func Evaluate(templateStr string, obj interface{}) (string, error) {
 }
 
 func convertByteToInitForm(b []byte) string {
-	if len(b) == 0 {
-		return "[]byte{}"
-	}
-	s := fmt.Sprintf("[]byte{0x%x", b[0])
-	for _, v := range b[1:] {
-		s = fmt.Sprintf("%s,0x%x", s, v)
-	}
-	s = fmt.Sprintf("%s}", s)
-	return s
+
+	return fmt.Sprintf("%q", b)
 }

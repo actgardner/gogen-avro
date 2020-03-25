@@ -33,7 +33,7 @@ type AvroContainerHeader struct {
 
 }
 
-var AvroContainerHeaderAvroCRC64Fingerprint = []byte{0xc0,0x12,0x3,0xc0,0x77,0x69,0xf9,0x36}
+const AvroContainerHeaderAvroCRC64Fingerprint = "\xc0\x12\x03\xc0wi\xf96"
 
 func NewAvroContainerHeader() (*AvroContainerHeader) {
 	return &AvroContainerHeader{}
@@ -157,5 +157,5 @@ func (_ *AvroContainerHeader) Finalize() { }
 
 
 func (_ *AvroContainerHeader) AvroCRC64Fingerprint() []byte {
-  return AvroContainerHeaderAvroCRC64Fingerprint
+  return []byte(AvroContainerHeaderAvroCRC64Fingerprint)
 }

@@ -27,7 +27,7 @@ type NestedTestRecord struct {
 
 }
 
-var NestedTestRecordAvroCRC64Fingerprint = []byte{0x62,0x7b,0x6d,0x5c,0x44,0xbe,0xaa,0x96}
+const NestedTestRecordAvroCRC64Fingerprint = "b{m\\D\xbe\xaa\x96"
 
 func NewNestedTestRecord() (*NestedTestRecord) {
 	return &NestedTestRecord{}
@@ -141,5 +141,5 @@ func (_ *NestedTestRecord) Finalize() { }
 
 
 func (_ *NestedTestRecord) AvroCRC64Fingerprint() []byte {
-  return NestedTestRecordAvroCRC64Fingerprint
+  return []byte(NestedTestRecordAvroCRC64Fingerprint)
 }

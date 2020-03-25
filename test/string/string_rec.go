@@ -22,7 +22,7 @@ type StringRec struct {
 
 }
 
-var StringRecAvroCRC64Fingerprint = []byte{0x77,0x83,0x36,0xab,0x9d,0xe9,0x0,0x15}
+const StringRecAvroCRC64Fingerprint = "w\x836\xab\x9d\xe9\x00\x15"
 
 func NewStringRec() (*StringRec) {
 	return &StringRec{}
@@ -117,5 +117,5 @@ func (_ *StringRec) Finalize() { }
 
 
 func (_ *StringRec) AvroCRC64Fingerprint() []byte {
-  return StringRecAvroCRC64Fingerprint
+  return []byte(StringRecAvroCRC64Fingerprint)
 }

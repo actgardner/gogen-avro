@@ -38,7 +38,7 @@ type HeaderworksData struct {
 
 }
 
-var HeaderworksDataAvroCRC64Fingerprint = []byte{0x36,0x3c,0xf6,0x3f,0x45,0x45,0xcd,0xb}
+const HeaderworksDataAvroCRC64Fingerprint = "6<\xf6?EE\xcd\v"
 
 func NewHeaderworksData() (*HeaderworksData) {
 	return &HeaderworksData{}
@@ -183,5 +183,5 @@ func (_ *HeaderworksData) Finalize() { }
 
 
 func (_ *HeaderworksData) AvroCRC64Fingerprint() []byte {
-  return HeaderworksDataAvroCRC64Fingerprint
+  return []byte(HeaderworksDataAvroCRC64Fingerprint)
 }

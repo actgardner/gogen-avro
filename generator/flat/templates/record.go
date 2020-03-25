@@ -22,7 +22,7 @@ type {{ .Name }} struct {
 {{ end }}
 }
 
-var {{ .Name }}AvroCRC64Fingerprint = {{ definitionFingerprint . }}
+const {{ .Name }}AvroCRC64Fingerprint = {{ definitionFingerprint . }}
 
 func {{ .ConstructorMethod }} ({{ .GoType}}) {
 	return &{{ .Name }}{}
@@ -125,6 +125,6 @@ func (_ {{ .GoType }}) Finalize() { }
 
 
 func (_ {{ .GoType}}) AvroCRC64Fingerprint() []byte {
-  return {{ .Name }}AvroCRC64Fingerprint
+  return []byte({{ .Name }}AvroCRC64Fingerprint)
 }
 `

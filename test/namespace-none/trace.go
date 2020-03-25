@@ -24,7 +24,7 @@ type Trace struct {
 
 }
 
-var TraceAvroCRC64Fingerprint = []byte{0x83,0x3c,0x8e,0xd5,0x54,0xfc,0x8d,0x94}
+const TraceAvroCRC64Fingerprint = "\x83<\x8e\xd5T\xfc\x8d\x94"
 
 func NewTrace() (*Trace) {
 	return &Trace{}
@@ -127,5 +127,5 @@ func (_ *Trace) Finalize() { }
 
 
 func (_ *Trace) AvroCRC64Fingerprint() []byte {
-  return TraceAvroCRC64Fingerprint
+  return []byte(TraceAvroCRC64Fingerprint)
 }

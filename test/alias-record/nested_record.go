@@ -32,7 +32,7 @@ type NestedRecord struct {
 
 }
 
-var NestedRecordAvroCRC64Fingerprint = []byte{0x81,0x8d,0xc3,0x4b,0x3f,0xe8,0x33,0xcc}
+const NestedRecordAvroCRC64Fingerprint = "\x81\x8d\xc3K?\xe83\xcc"
 
 func NewNestedRecord() (*NestedRecord) {
 	return &NestedRecord{}
@@ -153,5 +153,5 @@ func (_ *NestedRecord) Finalize() { }
 
 
 func (_ *NestedRecord) AvroCRC64Fingerprint() []byte {
-  return NestedRecordAvroCRC64Fingerprint
+  return []byte(NestedRecordAvroCRC64Fingerprint)
 }

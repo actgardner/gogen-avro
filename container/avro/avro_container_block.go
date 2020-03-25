@@ -33,7 +33,7 @@ type AvroContainerBlock struct {
 
 }
 
-var AvroContainerBlockAvroCRC64Fingerprint = []byte{0xe,0xec,0x6a,0x40,0xd9,0x94,0xe1,0x34}
+const AvroContainerBlockAvroCRC64Fingerprint = "\x0e\xecj@ٔ\xe14"
 
 func NewAvroContainerBlock() (*AvroContainerBlock) {
 	return &AvroContainerBlock{}
@@ -154,5 +154,5 @@ func (_ *AvroContainerBlock) Finalize() { }
 
 
 func (_ *AvroContainerBlock) AvroCRC64Fingerprint() []byte {
-  return AvroContainerBlockAvroCRC64Fingerprint
+  return []byte(AvroContainerBlockAvroCRC64Fingerprint)
 }

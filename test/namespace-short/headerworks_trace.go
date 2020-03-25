@@ -24,7 +24,7 @@ type HeaderworksTrace struct {
 
 }
 
-var HeaderworksTraceAvroCRC64Fingerprint = []byte{0x8a,0xdf,0x75,0xe7,0xcb,0xbb,0xa6,0xbc}
+const HeaderworksTraceAvroCRC64Fingerprint = "\x8a\xdfu\xe7˻\xa6\xbc"
 
 func NewHeaderworksTrace() (*HeaderworksTrace) {
 	return &HeaderworksTrace{}
@@ -127,5 +127,5 @@ func (_ *HeaderworksTrace) Finalize() { }
 
 
 func (_ *HeaderworksTrace) AvroCRC64Fingerprint() []byte {
-  return HeaderworksTraceAvroCRC64Fingerprint
+  return []byte(HeaderworksTraceAvroCRC64Fingerprint)
 }

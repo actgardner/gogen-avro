@@ -22,7 +22,7 @@ type EnumTestRecord struct {
 
 }
 
-var EnumTestRecordAvroCRC64Fingerprint = []byte{0x8e,0x96,0x0,0xcc,0x9b,0x78,0x33,0xfa}
+const EnumTestRecordAvroCRC64Fingerprint = "\x8e\x96\x00̛x3\xfa"
 
 func NewEnumTestRecord() (*EnumTestRecord) {
 	return &EnumTestRecord{}
@@ -121,5 +121,5 @@ func (_ *EnumTestRecord) Finalize() { }
 
 
 func (_ *EnumTestRecord) AvroCRC64Fingerprint() []byte {
-  return EnumTestRecordAvroCRC64Fingerprint
+  return []byte(EnumTestRecordAvroCRC64Fingerprint)
 }

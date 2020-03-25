@@ -22,7 +22,7 @@ type PrimitiveUnionTestRecord struct {
 
 }
 
-var PrimitiveUnionTestRecordAvroCRC64Fingerprint = []byte{0x42,0xca,0x8d,0xd3,0x63,0xcf,0x75,0xd5}
+const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "Bʍ\xd3c\xcfu\xd5"
 
 func NewPrimitiveUnionTestRecord() (*PrimitiveUnionTestRecord) {
 	return &PrimitiveUnionTestRecord{}
@@ -120,5 +120,5 @@ func (_ *PrimitiveUnionTestRecord) Finalize() { }
 
 
 func (_ *PrimitiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
-  return PrimitiveUnionTestRecordAvroCRC64Fingerprint
+  return []byte(PrimitiveUnionTestRecordAvroCRC64Fingerprint)
 }

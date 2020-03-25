@@ -22,7 +22,7 @@ type ComplexUnionTestRecord struct {
 
 }
 
-var ComplexUnionTestRecordAvroCRC64Fingerprint = []byte{0x29,0x68,0x8,0x62,0x6d,0x7b,0xe0,0xbe}
+const ComplexUnionTestRecordAvroCRC64Fingerprint = ")h\bbm{\xe0\xbe"
 
 func NewComplexUnionTestRecord() (*ComplexUnionTestRecord) {
 	return &ComplexUnionTestRecord{}
@@ -120,5 +120,5 @@ func (_ *ComplexUnionTestRecord) Finalize() { }
 
 
 func (_ *ComplexUnionTestRecord) AvroCRC64Fingerprint() []byte {
-  return ComplexUnionTestRecordAvroCRC64Fingerprint
+  return []byte(ComplexUnionTestRecordAvroCRC64Fingerprint)
 }

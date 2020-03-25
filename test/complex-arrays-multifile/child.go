@@ -23,7 +23,7 @@ type Child struct {
 
 }
 
-var ChildAvroCRC64Fingerprint = []byte{0x9c,0xc0,0xb2,0x57,0x46,0xd6,0xa4,0xff}
+const ChildAvroCRC64Fingerprint = "\x9c\xc0\xb2WF֤\xff"
 
 func NewChild() (*Child) {
 	return &Child{}
@@ -118,5 +118,5 @@ func (_ *Child) Finalize() { }
 
 
 func (_ *Child) AvroCRC64Fingerprint() []byte {
-  return ChildAvroCRC64Fingerprint
+  return []byte(ChildAvroCRC64Fingerprint)
 }

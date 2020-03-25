@@ -22,7 +22,7 @@ type NestedUnionRecord struct {
 
 }
 
-var NestedUnionRecordAvroCRC64Fingerprint = []byte{0x23,0xb6,0xed,0xa0,0x87,0x46,0x3d,0xef}
+const NestedUnionRecordAvroCRC64Fingerprint = "#\xb6\xed\xa0\x87F=\xef"
 
 func NewNestedUnionRecord() (*NestedUnionRecord) {
 	return &NestedUnionRecord{}
@@ -117,5 +117,5 @@ func (_ *NestedUnionRecord) Finalize() { }
 
 
 func (_ *NestedUnionRecord) AvroCRC64Fingerprint() []byte {
-  return NestedUnionRecordAvroCRC64Fingerprint
+  return []byte(NestedUnionRecordAvroCRC64Fingerprint)
 }

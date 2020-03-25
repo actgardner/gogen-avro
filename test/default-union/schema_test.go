@@ -15,7 +15,7 @@ import (
 func TestEvolution(t *testing.T) {
 	oldUnionRecord := NewUnionRecord()
 	var buf bytes.Buffer
-	writer := soe.NewWriter(&buf, UnionRecordAvroCRC64Fingerprint)
+	writer := soe.NewWriter(&buf,  oldUnionRecord.AvroCRC64Fingerprint())
 	err := oldUnionRecord.Serialize(writer)
 	assert.Nil(t, err)
 

@@ -22,7 +22,7 @@ type ArrayTestRecord struct {
 
 }
 
-var ArrayTestRecordAvroCRC64Fingerprint = []byte{0x74,0x6,0x9e,0xc8,0xc2,0x88,0xa0,0xcb}
+const ArrayTestRecordAvroCRC64Fingerprint = "t\x06\x9e\xc8\u0088\xa0\xcb"
 
 func NewArrayTestRecord() (*ArrayTestRecord) {
 	return &ArrayTestRecord{}
@@ -120,5 +120,5 @@ func (_ *ArrayTestRecord) Finalize() { }
 
 
 func (_ *ArrayTestRecord) AvroCRC64Fingerprint() []byte {
-  return ArrayTestRecordAvroCRC64Fingerprint
+  return []byte(ArrayTestRecordAvroCRC64Fingerprint)
 }

@@ -27,7 +27,7 @@ type FixedTestRecord struct {
 
 }
 
-var FixedTestRecordAvroCRC64Fingerprint = []byte{0xba,0x4b,0xf9,0x7e,0x1f,0xc0,0xf1,0x52}
+const FixedTestRecordAvroCRC64Fingerprint = "\xbaK\xf9~\x1f\xc0\xf1R"
 
 func NewFixedTestRecord() (*FixedTestRecord) {
 	return &FixedTestRecord{}
@@ -135,5 +135,5 @@ func (_ *FixedTestRecord) Finalize() { }
 
 
 func (_ *FixedTestRecord) AvroCRC64Fingerprint() []byte {
-  return FixedTestRecordAvroCRC64Fingerprint
+  return []byte(FixedTestRecordAvroCRC64Fingerprint)
 }

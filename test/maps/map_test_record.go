@@ -48,7 +48,7 @@ type MapTestRecord struct {
 
 }
 
-var MapTestRecordAvroCRC64Fingerprint = []byte{0x3c,0x3f,0x18,0xa0,0x7,0xdf,0x5e,0x9e}
+const MapTestRecordAvroCRC64Fingerprint = "<?\x18\xa0\a\xdf^\x9e"
 
 func NewMapTestRecord() (*MapTestRecord) {
 	return &MapTestRecord{}
@@ -242,5 +242,5 @@ func (_ *MapTestRecord) Finalize() { }
 
 
 func (_ *MapTestRecord) AvroCRC64Fingerprint() []byte {
-  return MapTestRecordAvroCRC64Fingerprint
+  return []byte(MapTestRecordAvroCRC64Fingerprint)
 }

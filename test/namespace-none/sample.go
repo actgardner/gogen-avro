@@ -31,7 +31,7 @@ type Sample struct {
 
 }
 
-var SampleAvroCRC64Fingerprint = []byte{0xdf,0x7d,0x93,0x20,0x19,0x66,0x18,0xa}
+const SampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
 func NewSample() (*Sample) {
 	return &Sample{}
@@ -155,5 +155,5 @@ func (_ *Sample) Finalize() { }
 
 
 func (_ *Sample) AvroCRC64Fingerprint() []byte {
-  return SampleAvroCRC64Fingerprint
+  return []byte(SampleAvroCRC64Fingerprint)
 }

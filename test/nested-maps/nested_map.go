@@ -22,7 +22,7 @@ type NestedMap struct {
 
 }
 
-var NestedMapAvroCRC64Fingerprint = []byte{0xa1,0x9e,0x89,0xd6,0xc5,0x32,0x40,0xf2}
+const NestedMapAvroCRC64Fingerprint = "\xa1\x9e\x89\xd6\xc52@\xf2"
 
 func NewNestedMap() (*NestedMap) {
 	return &NestedMap{}
@@ -120,5 +120,5 @@ func (_ *NestedMap) Finalize() { }
 
 
 func (_ *NestedMap) AvroCRC64Fingerprint() []byte {
-  return NestedMapAvroCRC64Fingerprint
+  return []byte(NestedMapAvroCRC64Fingerprint)
 }

@@ -22,7 +22,7 @@ type HeaderworksDatatypeUUID struct {
 
 }
 
-var HeaderworksDatatypeUUIDAvroCRC64Fingerprint = []byte{0xab,0x4b,0x8c,0x4e,0xf4,0x4c,0xb6,0x53}
+const HeaderworksDatatypeUUIDAvroCRC64Fingerprint = "\xabK\x8cN\xf4L\xb6S"
 
 func NewHeaderworksDatatypeUUID() (*HeaderworksDatatypeUUID) {
 	return &HeaderworksDatatypeUUID{}
@@ -121,5 +121,5 @@ func (_ *HeaderworksDatatypeUUID) Finalize() { }
 
 
 func (_ *HeaderworksDatatypeUUID) AvroCRC64Fingerprint() []byte {
-  return HeaderworksDatatypeUUIDAvroCRC64Fingerprint
+  return []byte(HeaderworksDatatypeUUIDAvroCRC64Fingerprint)
 }

@@ -27,7 +27,7 @@ type AliasRecord struct {
 
 }
 
-var AliasRecordAvroCRC64Fingerprint = []byte{0x42,0x7e,0x5f,0x40,0x72,0x7a,0xdb,0xc7}
+const AliasRecordAvroCRC64Fingerprint = "B~_@rz\xdb\xc7"
 
 func NewAliasRecord() (*AliasRecord) {
 	return &AliasRecord{}
@@ -135,5 +135,5 @@ func (_ *AliasRecord) Finalize() { }
 
 
 func (_ *AliasRecord) AvroCRC64Fingerprint() []byte {
-  return AliasRecordAvroCRC64Fingerprint
+  return []byte(AliasRecordAvroCRC64Fingerprint)
 }

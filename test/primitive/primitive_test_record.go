@@ -52,7 +52,7 @@ type PrimitiveTestRecord struct {
 
 }
 
-var PrimitiveTestRecordAvroCRC64Fingerprint = []byte{0xdb,0xb2,0x16,0xe9,0xfe,0x74,0x40,0x13}
+const PrimitiveTestRecordAvroCRC64Fingerprint = "۲\x16\xe9\xfet@\x13"
 
 func NewPrimitiveTestRecord() (*PrimitiveTestRecord) {
 	return &PrimitiveTestRecord{}
@@ -225,5 +225,5 @@ func (_ *PrimitiveTestRecord) Finalize() { }
 
 
 func (_ *PrimitiveTestRecord) AvroCRC64Fingerprint() []byte {
-  return PrimitiveTestRecordAvroCRC64Fingerprint
+  return []byte(PrimitiveTestRecordAvroCRC64Fingerprint)
 }

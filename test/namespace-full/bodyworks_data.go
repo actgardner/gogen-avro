@@ -38,7 +38,7 @@ type BodyworksData struct {
 
 }
 
-var BodyworksDataAvroCRC64Fingerprint = []byte{0xa5,0xec,0x1f,0xf5,0x6b,0x15,0xc1,0x21}
+const BodyworksDataAvroCRC64Fingerprint = "\xa5\xec\x1f\xf5k\x15\xc1!"
 
 func NewBodyworksData() (*BodyworksData) {
 	return &BodyworksData{}
@@ -183,5 +183,5 @@ func (_ *BodyworksData) Finalize() { }
 
 
 func (_ *BodyworksData) AvroCRC64Fingerprint() []byte {
-  return BodyworksDataAvroCRC64Fingerprint
+  return []byte(BodyworksDataAvroCRC64Fingerprint)
 }

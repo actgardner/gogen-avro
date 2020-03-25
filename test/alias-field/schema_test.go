@@ -18,7 +18,7 @@ func TestEvolution(t *testing.T) {
 	oldAliasRecord.C = "bye"
 
 	var buf bytes.Buffer
-	writer := soe.NewWriter(&buf, AliasRecordAvroCRC64Fingerprint)
+	writer := soe.NewWriter(&buf, oldAliasRecord.AvroCRC64Fingerprint())
 	err := oldAliasRecord.Serialize(writer)
 	assert.Nil(t, err)
 

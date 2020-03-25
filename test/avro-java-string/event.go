@@ -24,7 +24,7 @@ type Event struct {
 
 }
 
-var EventAvroCRC64Fingerprint = []byte{0xe8,0x8c,0x48,0x2c,0xc2,0x57,0x8a,0xe0}
+const EventAvroCRC64Fingerprint = "\xe8\x8cH,\xc2W\x8a\xe0"
 
 func NewEvent() (*Event) {
 	return &Event{}
@@ -119,5 +119,5 @@ func (_ *Event) Finalize() { }
 
 
 func (_ *Event) AvroCRC64Fingerprint() []byte {
-  return EventAvroCRC64Fingerprint
+  return []byte(EventAvroCRC64Fingerprint)
 }
