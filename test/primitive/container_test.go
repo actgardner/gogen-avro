@@ -58,7 +58,7 @@ func roundTripWithCodec(codec container.Codec, t *testing.T) {
 	err = containerWriter.Flush()
 	assert.Nil(t, err)
 
-	reader, err := goavro.NewOCFReader(&buf)
+	reader, err := goavro.NewOCFReader(bytes.NewReader(buf.Bytes()))
 	assert.Nil(t, err)
 
 	var i int

@@ -3,7 +3,6 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/actgardner/gogen-avro/soe"
 	"io/ioutil"
 	"reflect"
 	"testing"
@@ -52,12 +51,10 @@ func TestPrimitiveFixture(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := soe.NewWriter(&buf,  f.AvroCRC64Fingerprint())
-		err = f.Serialize(writer)
+		err = f.Serialize(&buf)
 		assert.Nil(t, err)
 
-		b := soe.NewReader(&buf).Bytes()
-		datum, remaining, err := codec.NativeFromBinary(b)
+		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
 		assert.Nil(t, err)
 		assert.Equal(t, 0, len(remaining))
 		compareFixtureGoAvro(t, datum, f)

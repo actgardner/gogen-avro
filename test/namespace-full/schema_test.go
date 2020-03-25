@@ -3,7 +3,6 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/actgardner/gogen-avro/soe"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,11 +25,10 @@ func TestRoundTrip(t *testing.T) {
 	var buf bytes.Buffer
 	for _, f := range fixtures {
 		buf.Reset()
-		writer := soe.NewWriter(&buf,  f.AvroCRC64Fingerprint())
-		err = f.Serialize(writer)
+		err = f.Serialize(&buf)
 		assert.Nil(t, err)
 
-		datum, err := DeserializeComAvroTestSample(soe.NewReader(&buf))
+		datum, err := DeserializeComAvroTestSample(&buf)
 		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
 	}
