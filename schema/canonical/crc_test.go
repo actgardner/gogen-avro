@@ -1,9 +1,12 @@
 package canonical
 
 import (
+	"testing"
+)
+
+import (
 	"encoding/hex"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestAvroCRC64Fingerprint(t *testing.T) {
@@ -11,6 +14,7 @@ func TestAvroCRC64Fingerprint(t *testing.T) {
 		schema      string
 		fingerprint string
 	}{
+		{`"int"`, "8f5c393f1ad57572"},
 		{`"long"`, "b71df49344e154d0"},
 		{`"double"`, "7e95ab32c035758e"},
 		{`"bytes"`, "651920c3da16c04f"},
