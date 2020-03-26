@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type RecursiveUnionTestRecord struct {
 
 	
@@ -22,7 +22,7 @@ type RecursiveUnionTestRecord struct {
 
 }
 
-const RecursiveUnionTestRecordAvroCRC64Fingerprint = "c65529430b8aa689"
+const RecursiveUnionTestRecordAvroCRC64Fingerprint = "\xc6U)C\v\x8a\xa6\x89"
 
 func NewRecursiveUnionTestRecord() (*RecursiveUnionTestRecord) {
 	return &RecursiveUnionTestRecord{}
@@ -37,7 +37,7 @@ func DeserializeRecursiveUnionTestRecord(r io.Reader) (*RecursiveUnionTestRecord
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeRecursiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeRecursiveUnionTestRecord(r *RecursiveUnionTestRecord, w io.Writer) err
 	
 	err = writeUnionNullRecursiveUnionTestRecord( r.RecursiveField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -95,7 +95,7 @@ func (r *RecursiveUnionTestRecord) Get(i int) types.Field {
 	case 0:
 		
 			r.RecursiveField = NewUnionNullRecursiveUnionTestRecord()
-	
+
 		
 		
 			return r.RecursiveField
@@ -119,6 +119,6 @@ func (_ *RecursiveUnionTestRecord) AppendArray() types.Field { panic("Unsupporte
 func (_ *RecursiveUnionTestRecord) Finalize() { }
 
 
-func (_ *RecursiveUnionTestRecord) AvroCRC64Fingerprint() string {
-  return RecursiveUnionTestRecordAvroCRC64Fingerprint
+func (_ *RecursiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(RecursiveUnionTestRecordAvroCRC64Fingerprint)
 }

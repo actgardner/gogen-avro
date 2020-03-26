@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type NumberRecord struct {
 
 	
@@ -37,7 +37,7 @@ type NumberRecord struct {
 
 }
 
-const NumberRecordAvroCRC64Fingerprint = "f45a75d54e74277e"
+const NumberRecordAvroCRC64Fingerprint = "\xf4Zu\xd5Nt'~"
 
 func NewNumberRecord() (*NumberRecord) {
 	return &NumberRecord{}
@@ -52,7 +52,7 @@ func DeserializeNumberRecord(r io.Reader) (*NumberRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -67,7 +67,7 @@ func DeserializeNumberRecordFromSchema(r io.Reader, schema string) (*NumberRecor
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -77,22 +77,22 @@ func writeNumberRecord(r *NumberRecord, w io.Writer) error {
 	
 	err = vm.WriteInt( r.IntField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteLong( r.LongField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteFloat( r.FloatField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteDouble( r.DoubleField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -170,6 +170,6 @@ func (_ *NumberRecord) AppendArray() types.Field { panic("Unsupported operation"
 func (_ *NumberRecord) Finalize() { }
 
 
-func (_ *NumberRecord) AvroCRC64Fingerprint() string {
-  return NumberRecordAvroCRC64Fingerprint
+func (_ *NumberRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(NumberRecordAvroCRC64Fingerprint)
 }

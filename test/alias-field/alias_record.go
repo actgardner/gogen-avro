@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type AliasRecord struct {
 
 	
@@ -27,7 +27,7 @@ type AliasRecord struct {
 
 }
 
-const AliasRecordAvroCRC64Fingerprint = "427e5f40727adbc7"
+const AliasRecordAvroCRC64Fingerprint = "B~_@rz\xdb\xc7"
 
 func NewAliasRecord() (*AliasRecord) {
 	return &AliasRecord{}
@@ -42,7 +42,7 @@ func DeserializeAliasRecord(r io.Reader) (*AliasRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -57,7 +57,7 @@ func DeserializeAliasRecordFromSchema(r io.Reader, schema string) (*AliasRecord,
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -67,12 +67,12 @@ func writeAliasRecord(r *AliasRecord, w io.Writer) error {
 	
 	err = vm.WriteString( r.A, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteString( r.C, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -134,6 +134,6 @@ func (_ *AliasRecord) AppendArray() types.Field { panic("Unsupported operation")
 func (_ *AliasRecord) Finalize() { }
 
 
-func (_ *AliasRecord) AvroCRC64Fingerprint() string {
-  return AliasRecordAvroCRC64Fingerprint
+func (_ *AliasRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(AliasRecordAvroCRC64Fingerprint)
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-// Common information related to the event which must be included in any clean event  
+// Common information related to the event which must be included in any clean event
 type BodyworksData struct {
 
 	
@@ -38,7 +38,7 @@ type BodyworksData struct {
 
 }
 
-const BodyworksDataAvroCRC64Fingerprint = "a5ec1ff56b15c121"
+const BodyworksDataAvroCRC64Fingerprint = "\xa5\xec\x1f\xf5k\x15\xc1!"
 
 func NewBodyworksData() (*BodyworksData) {
 	return &BodyworksData{}
@@ -53,7 +53,7 @@ func DeserializeBodyworksData(r io.Reader) (*BodyworksData, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -68,7 +68,7 @@ func DeserializeBodyworksDataFromSchema(r io.Reader, schema string) (*BodyworksD
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -78,17 +78,17 @@ func writeBodyworksData(r *BodyworksData, w io.Writer) error {
 	
 	err = writeUnionNullDatatypeUUID( r.Uuid, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionNullString( r.Hostname, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionNullBodyworksTrace( r.Trace, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -121,7 +121,7 @@ func (r *BodyworksData) Get(i int) types.Field {
 	case 0:
 		
 			r.Uuid = NewUnionNullDatatypeUUID()
-	
+
 		
 		
 			return r.Uuid
@@ -130,7 +130,7 @@ func (r *BodyworksData) Get(i int) types.Field {
 	case 1:
 		
 			r.Hostname = NewUnionNullString()
-	
+
 		
 		
 			return r.Hostname
@@ -139,7 +139,7 @@ func (r *BodyworksData) Get(i int) types.Field {
 	case 2:
 		
 			r.Trace = NewUnionNullBodyworksTrace()
-	
+
 		
 		
 			return r.Trace
@@ -182,6 +182,6 @@ func (_ *BodyworksData) AppendArray() types.Field { panic("Unsupported operation
 func (_ *BodyworksData) Finalize() { }
 
 
-func (_ *BodyworksData) AvroCRC64Fingerprint() string {
-  return BodyworksDataAvroCRC64Fingerprint
+func (_ *BodyworksData) AvroCRC64Fingerprint() []byte {
+  return []byte(BodyworksDataAvroCRC64Fingerprint)
 }

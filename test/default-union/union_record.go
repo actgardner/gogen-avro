@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type UnionRecord struct {
 
 	
@@ -27,7 +27,7 @@ type UnionRecord struct {
 
 }
 
-const UnionRecordAvroCRC64Fingerprint = "5858760c9329f7e2"
+const UnionRecordAvroCRC64Fingerprint = "XXv\f\x93)\xf7\xe2"
 
 func NewUnionRecord() (*UnionRecord) {
 	return &UnionRecord{}
@@ -42,7 +42,7 @@ func DeserializeUnionRecord(r io.Reader) (*UnionRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -57,7 +57,7 @@ func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (*UnionRecord,
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -67,12 +67,12 @@ func writeUnionRecord(r *UnionRecord, w io.Writer) error {
 	
 	err = vm.WriteString( r.Id, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteInt( r.Age, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -142,6 +142,6 @@ func (_ *UnionRecord) AppendArray() types.Field { panic("Unsupported operation")
 func (_ *UnionRecord) Finalize() { }
 
 
-func (_ *UnionRecord) AvroCRC64Fingerprint() string {
-  return UnionRecordAvroCRC64Fingerprint
+func (_ *UnionRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(UnionRecordAvroCRC64Fingerprint)
 }

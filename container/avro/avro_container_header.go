@@ -13,7 +13,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type AvroContainerHeader struct {
 
 	
@@ -33,7 +33,7 @@ type AvroContainerHeader struct {
 
 }
 
-const AvroContainerHeaderAvroCRC64Fingerprint = "c01203c07769f936"
+const AvroContainerHeaderAvroCRC64Fingerprint = "\xc0\x12\x03\xc0wi\xf96"
 
 func NewAvroContainerHeader() (*AvroContainerHeader) {
 	return &AvroContainerHeader{}
@@ -48,7 +48,7 @@ func DeserializeAvroContainerHeader(r io.Reader) (*AvroContainerHeader, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -63,7 +63,7 @@ func DeserializeAvroContainerHeaderFromSchema(r io.Reader, schema string) (*Avro
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -73,17 +73,17 @@ func writeAvroContainerHeader(r *AvroContainerHeader, w io.Writer) error {
 	
 	err = writeMagic( r.Magic, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeMapBytes( r.Meta, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeSync( r.Sync, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -122,7 +122,7 @@ func (r *AvroContainerHeader) Get(i int) types.Field {
 	case 1:
 		
 			r.Meta = NewMapBytes()
-	
+
 		
 		
 			return r.Meta
@@ -156,6 +156,6 @@ func (_ *AvroContainerHeader) AppendArray() types.Field { panic("Unsupported ope
 func (_ *AvroContainerHeader) Finalize() { }
 
 
-func (_ *AvroContainerHeader) AvroCRC64Fingerprint() string {
-  return AvroContainerHeaderAvroCRC64Fingerprint
+func (_ *AvroContainerHeader) AvroCRC64Fingerprint() []byte {
+  return []byte(AvroContainerHeaderAvroCRC64Fingerprint)
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type AvroContainerBlock struct {
 
 	
@@ -33,7 +33,7 @@ type AvroContainerBlock struct {
 
 }
 
-const AvroContainerBlockAvroCRC64Fingerprint = "0eec6a40d994e134"
+const AvroContainerBlockAvroCRC64Fingerprint = "\x0e\xecj@ٔ\xe14"
 
 func NewAvroContainerBlock() (*AvroContainerBlock) {
 	return &AvroContainerBlock{}
@@ -48,7 +48,7 @@ func DeserializeAvroContainerBlock(r io.Reader) (*AvroContainerBlock, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -63,7 +63,7 @@ func DeserializeAvroContainerBlockFromSchema(r io.Reader, schema string) (*AvroC
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -73,17 +73,17 @@ func writeAvroContainerBlock(r *AvroContainerBlock, w io.Writer) error {
 	
 	err = vm.WriteLong( r.NumRecords, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteBytes( r.RecordBytes, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeSync( r.Sync, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -153,6 +153,6 @@ func (_ *AvroContainerBlock) AppendArray() types.Field { panic("Unsupported oper
 func (_ *AvroContainerBlock) Finalize() { }
 
 
-func (_ *AvroContainerBlock) AvroCRC64Fingerprint() string {
-  return AvroContainerBlockAvroCRC64Fingerprint
+func (_ *AvroContainerBlock) AvroCRC64Fingerprint() []byte {
+  return []byte(AvroContainerBlockAvroCRC64Fingerprint)
 }

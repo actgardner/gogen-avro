@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type FixedDefaultTestRecord struct {
 
 	
@@ -22,7 +22,7 @@ type FixedDefaultTestRecord struct {
 
 }
 
-const FixedDefaultTestRecordAvroCRC64Fingerprint = "acb56b771e574bcf"
+const FixedDefaultTestRecordAvroCRC64Fingerprint = "\xac\xb5kw\x1eWK\xcf"
 
 func NewFixedDefaultTestRecord() (*FixedDefaultTestRecord) {
 	return &FixedDefaultTestRecord{}
@@ -37,7 +37,7 @@ func DeserializeFixedDefaultTestRecord(r io.Reader) (*FixedDefaultTestRecord, er
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeFixedDefaultTestRecordFromSchema(r io.Reader, schema string) (*F
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeFixedDefaultTestRecord(r *FixedDefaultTestRecord, w io.Writer) error {
 	
 	err = writeTestFixedDefaultType( r.FixedField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -120,6 +120,6 @@ func (_ *FixedDefaultTestRecord) AppendArray() types.Field { panic("Unsupported 
 func (_ *FixedDefaultTestRecord) Finalize() { }
 
 
-func (_ *FixedDefaultTestRecord) AvroCRC64Fingerprint() string {
-  return FixedDefaultTestRecordAvroCRC64Fingerprint
+func (_ *FixedDefaultTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(FixedDefaultTestRecordAvroCRC64Fingerprint)
 }

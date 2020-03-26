@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-// A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014  
+// A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014
 type BodyworksDatatypeUUID struct {
 
 	
@@ -22,7 +22,7 @@ type BodyworksDatatypeUUID struct {
 
 }
 
-const BodyworksDatatypeUUIDAvroCRC64Fingerprint = "fca43398eee070e2"
+const BodyworksDatatypeUUIDAvroCRC64Fingerprint = "\xfc\xa43\x98\xee\xe0p\xe2"
 
 func NewBodyworksDatatypeUUID() (*BodyworksDatatypeUUID) {
 	return &BodyworksDatatypeUUID{}
@@ -37,7 +37,7 @@ func DeserializeBodyworksDatatypeUUID(r io.Reader) (*BodyworksDatatypeUUID, erro
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeBodyworksDatatypeUUIDFromSchema(r io.Reader, schema string) (*Bo
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeBodyworksDatatypeUUID(r *BodyworksDatatypeUUID, w io.Writer) error {
 	
 	err = vm.WriteString( r.Uuid, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -120,6 +120,6 @@ func (_ *BodyworksDatatypeUUID) AppendArray() types.Field { panic("Unsupported o
 func (_ *BodyworksDatatypeUUID) Finalize() { }
 
 
-func (_ *BodyworksDatatypeUUID) AvroCRC64Fingerprint() string {
-  return BodyworksDatatypeUUIDAvroCRC64Fingerprint
+func (_ *BodyworksDatatypeUUID) AvroCRC64Fingerprint() []byte {
+  return []byte(BodyworksDatatypeUUIDAvroCRC64Fingerprint)
 }

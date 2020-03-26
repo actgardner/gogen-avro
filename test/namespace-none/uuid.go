@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-// A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014  
+// A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014
 type UUID struct {
 
 	
@@ -22,7 +22,7 @@ type UUID struct {
 
 }
 
-const UUIDAvroCRC64Fingerprint = "fca43398eee070e2"
+const UUIDAvroCRC64Fingerprint = "\xfc\xa43\x98\xee\xe0p\xe2"
 
 func NewUUID() (*UUID) {
 	return &UUID{}
@@ -37,7 +37,7 @@ func DeserializeUUID(r io.Reader) (*UUID, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeUUIDFromSchema(r io.Reader, schema string) (*UUID, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeUUID(r *UUID, w io.Writer) error {
 	
 	err = vm.WriteString( r.Uuid, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -120,6 +120,6 @@ func (_ *UUID) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UUID) Finalize() { }
 
 
-func (_ *UUID) AvroCRC64Fingerprint() string {
-  return UUIDAvroCRC64Fingerprint
+func (_ *UUID) AvroCRC64Fingerprint() []byte {
+  return []byte(UUIDAvroCRC64Fingerprint)
 }

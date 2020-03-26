@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type NestedMap struct {
 
 	
@@ -22,7 +22,7 @@ type NestedMap struct {
 
 }
 
-const NestedMapAvroCRC64Fingerprint = "a19e89d6c53240f2"
+const NestedMapAvroCRC64Fingerprint = "\xa1\x9e\x89\xd6\xc52@\xf2"
 
 func NewNestedMap() (*NestedMap) {
 	return &NestedMap{}
@@ -37,7 +37,7 @@ func DeserializeNestedMap(r io.Reader) (*NestedMap, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeNestedMapFromSchema(r io.Reader, schema string) (*NestedMap, err
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeNestedMap(r *NestedMap, w io.Writer) error {
 	
 	err = writeMapMapArrayString( r.MapOfMaps, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -95,7 +95,7 @@ func (r *NestedMap) Get(i int) types.Field {
 	case 0:
 		
 			r.MapOfMaps = NewMapMapArrayString()
-	
+
 		
 		
 			return r.MapOfMaps
@@ -119,6 +119,6 @@ func (_ *NestedMap) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *NestedMap) Finalize() { }
 
 
-func (_ *NestedMap) AvroCRC64Fingerprint() string {
-  return NestedMapAvroCRC64Fingerprint
+func (_ *NestedMap) AvroCRC64Fingerprint() []byte {
+  return []byte(NestedMapAvroCRC64Fingerprint)
 }

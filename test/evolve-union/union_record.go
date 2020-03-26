@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type UnionRecord struct {
 
 	
@@ -32,7 +32,7 @@ type UnionRecord struct {
 
 }
 
-const UnionRecordAvroCRC64Fingerprint = "fe531b64a1fccd92"
+const UnionRecordAvroCRC64Fingerprint = "\xfeS\x1bd\xa1\xfc͒"
 
 func NewUnionRecord() (*UnionRecord) {
 	return &UnionRecord{}
@@ -47,7 +47,7 @@ func DeserializeUnionRecord(r io.Reader) (*UnionRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (*UnionRecord,
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -72,17 +72,17 @@ func writeUnionRecord(r *UnionRecord, w io.Writer) error {
 	
 	err = vm.WriteString( r.A, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionNullInt( r.Id, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionNullString( r.Name, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -121,7 +121,7 @@ func (r *UnionRecord) Get(i int) types.Field {
 	case 1:
 		
 			r.Id = NewUnionNullInt()
-	
+
 		
 		
 			return r.Id
@@ -130,7 +130,7 @@ func (r *UnionRecord) Get(i int) types.Field {
 	case 2:
 		
 			r.Name = NewUnionNullString()
-	
+
 		
 		
 			return r.Name
@@ -168,6 +168,6 @@ func (_ *UnionRecord) AppendArray() types.Field { panic("Unsupported operation")
 func (_ *UnionRecord) Finalize() { }
 
 
-func (_ *UnionRecord) AvroCRC64Fingerprint() string {
-  return UnionRecordAvroCRC64Fingerprint
+func (_ *UnionRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(UnionRecordAvroCRC64Fingerprint)
 }

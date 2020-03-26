@@ -13,24 +13,24 @@ import (
 var NoTemplateForType = fmt.Errorf("No template exists for supplied type")
 
 func Template(t avro.Node) (string, error) {
-	var template string
+	var templateDef string
 	switch t.(type) {
 	case *avro.ArrayField:
-		template = ArrayTemplate
+		templateDef = ArrayTemplate
 	case *avro.MapField:
-		template = MapTemplate
+		templateDef = MapTemplate
 	case *avro.UnionField:
-		template = UnionTemplate
+		templateDef = UnionTemplate
 	case *avro.EnumDefinition:
-		template = EnumTemplate
+		templateDef = EnumTemplate
 	case *avro.FixedDefinition:
-		template = FixedTemplate
+		templateDef = FixedTemplate
 	case *avro.RecordDefinition:
-		template = RecordTemplate
+		templateDef = RecordTemplate
 	default:
 		return "", NoTemplateForType
 	}
-	return Evaluate(template, t)
+	return Evaluate(templateDef, t)
 }
 
 func Evaluate(templateStr string, obj interface{}) (string, error) {
@@ -43,7 +43,8 @@ func Evaluate(templateStr string, obj interface{}) (string, error) {
 				return "", err
 			}
 			fingerprint := canonical.AvroCRC64Fingerprint(encoded)
-			return fingerprint, err
+
+			return convertByteToInitForm(fingerprint), err
 		},
 	}).Parse(templateStr)
 	if err != nil {
@@ -56,4 +57,9 @@ func Evaluate(templateStr string, obj interface{}) (string, error) {
 	}
 
 	return buf.String(), nil
+}
+
+func convertByteToInitForm(b []byte) string {
+
+	return fmt.Sprintf("%q", b)
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type PrimitiveTestRecord struct {
 
 	
@@ -52,7 +52,7 @@ type PrimitiveTestRecord struct {
 
 }
 
-const PrimitiveTestRecordAvroCRC64Fingerprint = "dbb216e9fe744013"
+const PrimitiveTestRecordAvroCRC64Fingerprint = "۲\x16\xe9\xfet@\x13"
 
 func NewPrimitiveTestRecord() (*PrimitiveTestRecord) {
 	return &PrimitiveTestRecord{}
@@ -67,7 +67,7 @@ func DeserializePrimitiveTestRecord(r io.Reader) (*PrimitiveTestRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -82,7 +82,7 @@ func DeserializePrimitiveTestRecordFromSchema(r io.Reader, schema string) (*Prim
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -92,37 +92,37 @@ func writePrimitiveTestRecord(r *PrimitiveTestRecord, w io.Writer) error {
 	
 	err = vm.WriteInt( r.IntField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteLong( r.LongField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteFloat( r.FloatField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteDouble( r.DoubleField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteString( r.StringField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteBool( r.BoolField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteBytes( r.BytesField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -224,6 +224,6 @@ func (_ *PrimitiveTestRecord) AppendArray() types.Field { panic("Unsupported ope
 func (_ *PrimitiveTestRecord) Finalize() { }
 
 
-func (_ *PrimitiveTestRecord) AvroCRC64Fingerprint() string {
-  return PrimitiveTestRecordAvroCRC64Fingerprint
+func (_ *PrimitiveTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(PrimitiveTestRecordAvroCRC64Fingerprint)
 }

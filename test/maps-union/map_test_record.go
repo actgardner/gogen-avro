@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type MapTestRecord struct {
 
 	
@@ -22,7 +22,7 @@ type MapTestRecord struct {
 
 }
 
-const MapTestRecordAvroCRC64Fingerprint = "f7db00b26ea875bf"
+const MapTestRecordAvroCRC64Fingerprint = "\xf7\xdb\x00\xb2n\xa8u\xbf"
 
 func NewMapTestRecord() (*MapTestRecord) {
 	return &MapTestRecord{}
@@ -37,7 +37,7 @@ func DeserializeMapTestRecord(r io.Reader) (*MapTestRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeMapTestRecordFromSchema(r io.Reader, schema string) (*MapTestRec
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeMapTestRecord(r *MapTestRecord, w io.Writer) error {
 	
 	err = writeMapUnionNullInt( r.IntField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -95,7 +95,7 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 0:
 		
 			r.IntField = NewMapUnionNullInt()
-	
+
 		
 		
 			return r.IntField
@@ -119,6 +119,6 @@ func (_ *MapTestRecord) AppendArray() types.Field { panic("Unsupported operation
 func (_ *MapTestRecord) Finalize() { }
 
 
-func (_ *MapTestRecord) AvroCRC64Fingerprint() string {
-  return MapTestRecordAvroCRC64Fingerprint
+func (_ *MapTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(MapTestRecordAvroCRC64Fingerprint)
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type Parent struct {
 
 	
@@ -22,7 +22,7 @@ type Parent struct {
 
 }
 
-const ParentAvroCRC64Fingerprint = "709f6ef81169989b"
+const ParentAvroCRC64Fingerprint = "p\x9fn\xf8\x11i\x98\x9b"
 
 func NewParent() (*Parent) {
 	return &Parent{}
@@ -37,7 +37,7 @@ func DeserializeParent(r io.Reader) (*Parent, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeParentFromSchema(r io.Reader, schema string) (*Parent, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeParent(r *Parent, w io.Writer) error {
 	
 	err = writeArrayChild( r.Children, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -95,7 +95,7 @@ func (r *Parent) Get(i int) types.Field {
 	case 0:
 		
 			r.Children = make([]*Child, 0)
-	
+
 		
 		
 			return (*ArrayChildWrapper)(&r.Children)
@@ -130,6 +130,6 @@ func (_ *Parent) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Parent) Finalize() { }
 
 
-func (_ *Parent) AvroCRC64Fingerprint() string {
-  return ParentAvroCRC64Fingerprint
+func (_ *Parent) AvroCRC64Fingerprint() []byte {
+  return []byte(ParentAvroCRC64Fingerprint)
 }

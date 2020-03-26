@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type StringRec struct {
 
 	
@@ -22,7 +22,7 @@ type StringRec struct {
 
 }
 
-const StringRecAvroCRC64Fingerprint = "778336ab9de90015"
+const StringRecAvroCRC64Fingerprint = "w\x836\xab\x9d\xe9\x00\x15"
 
 func NewStringRec() (*StringRec) {
 	return &StringRec{}
@@ -37,7 +37,7 @@ func DeserializeStringRec(r io.Reader) (*StringRec, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeStringRecFromSchema(r io.Reader, schema string) (*StringRec, err
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeStringRec(r *StringRec, w io.Writer) error {
 	
 	err = vm.WriteString( r.ProductName, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -116,6 +116,6 @@ func (_ *StringRec) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *StringRec) Finalize() { }
 
 
-func (_ *StringRec) AvroCRC64Fingerprint() string {
-  return StringRecAvroCRC64Fingerprint
+func (_ *StringRec) AvroCRC64Fingerprint() []byte {
+  return []byte(StringRecAvroCRC64Fingerprint)
 }

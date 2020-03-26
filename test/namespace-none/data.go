@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-// Common information related to the event which must be included in any clean event  
+// Common information related to the event which must be included in any clean event
 type Data struct {
 
 	
@@ -38,7 +38,7 @@ type Data struct {
 
 }
 
-const DataAvroCRC64Fingerprint = "a5ec1ff56b15c121"
+const DataAvroCRC64Fingerprint = "\xa5\xec\x1f\xf5k\x15\xc1!"
 
 func NewData() (*Data) {
 	return &Data{}
@@ -53,7 +53,7 @@ func DeserializeData(r io.Reader) (*Data, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -68,7 +68,7 @@ func DeserializeDataFromSchema(r io.Reader, schema string) (*Data, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -78,17 +78,17 @@ func writeData(r *Data, w io.Writer) error {
 	
 	err = writeUnionNullUUID( r.Uuid, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionNullString( r.Hostname, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionNullTrace( r.Trace, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -121,7 +121,7 @@ func (r *Data) Get(i int) types.Field {
 	case 0:
 		
 			r.Uuid = NewUnionNullUUID()
-	
+
 		
 		
 			return r.Uuid
@@ -130,7 +130,7 @@ func (r *Data) Get(i int) types.Field {
 	case 1:
 		
 			r.Hostname = NewUnionNullString()
-	
+
 		
 		
 			return r.Hostname
@@ -139,7 +139,7 @@ func (r *Data) Get(i int) types.Field {
 	case 2:
 		
 			r.Trace = NewUnionNullTrace()
-	
+
 		
 		
 			return r.Trace
@@ -182,6 +182,6 @@ func (_ *Data) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Data) Finalize() { }
 
 
-func (_ *Data) AvroCRC64Fingerprint() string {
-  return DataAvroCRC64Fingerprint
+func (_ *Data) AvroCRC64Fingerprint() []byte {
+  return []byte(DataAvroCRC64Fingerprint)
 }

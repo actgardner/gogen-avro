@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type Event struct {
 
 	
@@ -24,7 +24,7 @@ type Event struct {
 
 }
 
-const EventAvroCRC64Fingerprint = "e88c482cc2578ae0"
+const EventAvroCRC64Fingerprint = "\xe8\x8cH,\xc2W\x8a\xe0"
 
 func NewEvent() (*Event) {
 	return &Event{}
@@ -39,7 +39,7 @@ func DeserializeEvent(r io.Reader) (*Event, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -54,7 +54,7 @@ func DeserializeEventFromSchema(r io.Reader, schema string) (*Event, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -64,7 +64,7 @@ func writeEvent(r *Event, w io.Writer) error {
 	
 	err = vm.WriteString( r.Id, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -118,6 +118,6 @@ func (_ *Event) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Event) Finalize() { }
 
 
-func (_ *Event) AvroCRC64Fingerprint() string {
-  return EventAvroCRC64Fingerprint
+func (_ *Event) AvroCRC64Fingerprint() []byte {
+  return []byte(EventAvroCRC64Fingerprint)
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type MapTestRecord struct {
 
 	
@@ -48,7 +48,7 @@ type MapTestRecord struct {
 
 }
 
-const MapTestRecordAvroCRC64Fingerprint = "3c3f18a007df5e9e"
+const MapTestRecordAvroCRC64Fingerprint = "<?\x18\xa0\a\xdf^\x9e"
 
 func NewMapTestRecord() (*MapTestRecord) {
 	return &MapTestRecord{}
@@ -63,7 +63,7 @@ func DeserializeMapTestRecord(r io.Reader) (*MapTestRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -78,7 +78,7 @@ func DeserializeMapTestRecordFromSchema(r io.Reader, schema string) (*MapTestRec
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -88,37 +88,37 @@ func writeMapTestRecord(r *MapTestRecord, w io.Writer) error {
 	
 	err = writeMapInt( r.IntField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeMapLong( r.LongField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeMapDouble( r.DoubleField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeMapString( r.StringField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeMapFloat( r.FloatField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeMapBool( r.BoolField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeMapBytes( r.BytesField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -151,7 +151,7 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 0:
 		
 			r.IntField = NewMapInt()
-	
+
 		
 		
 			return r.IntField
@@ -160,7 +160,7 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 1:
 		
 			r.LongField = NewMapLong()
-	
+
 		
 		
 			return r.LongField
@@ -169,7 +169,7 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 2:
 		
 			r.DoubleField = NewMapDouble()
-	
+
 		
 		
 			return r.DoubleField
@@ -178,7 +178,7 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 3:
 		
 			r.StringField = NewMapString()
-	
+
 		
 		
 			return r.StringField
@@ -187,7 +187,7 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 4:
 		
 			r.FloatField = NewMapFloat()
-	
+
 		
 		
 			return r.FloatField
@@ -196,7 +196,7 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 5:
 		
 			r.BoolField = NewMapBool()
-	
+
 		
 		
 			return r.BoolField
@@ -205,7 +205,7 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 6:
 		
 			r.BytesField = NewMapBytes()
-	
+
 		
 		
 			return r.BytesField
@@ -241,6 +241,6 @@ func (_ *MapTestRecord) AppendArray() types.Field { panic("Unsupported operation
 func (_ *MapTestRecord) Finalize() { }
 
 
-func (_ *MapTestRecord) AvroCRC64Fingerprint() string {
-  return MapTestRecordAvroCRC64Fingerprint
+func (_ *MapTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(MapTestRecordAvroCRC64Fingerprint)
 }

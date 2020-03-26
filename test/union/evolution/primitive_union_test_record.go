@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type PrimitiveUnionTestRecord struct {
 
 	
@@ -22,7 +22,7 @@ type PrimitiveUnionTestRecord struct {
 
 }
 
-const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "42ca8dd363cf75d5"
+const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "Bʍ\xd3c\xcfu\xd5"
 
 func NewPrimitiveUnionTestRecord() (*PrimitiveUnionTestRecord) {
 	return &PrimitiveUnionTestRecord{}
@@ -37,7 +37,7 @@ func DeserializePrimitiveUnionTestRecord(r io.Reader) (*PrimitiveUnionTestRecord
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializePrimitiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writePrimitiveUnionTestRecord(r *PrimitiveUnionTestRecord, w io.Writer) err
 	
 	err = writeUnionStringLongIntFloatDoubleNull( r.UnionField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -95,7 +95,7 @@ func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 	case 0:
 		
 			r.UnionField = NewUnionStringLongIntFloatDoubleNull()
-	
+
 		
 		
 			return r.UnionField
@@ -119,6 +119,6 @@ func (_ *PrimitiveUnionTestRecord) AppendArray() types.Field { panic("Unsupporte
 func (_ *PrimitiveUnionTestRecord) Finalize() { }
 
 
-func (_ *PrimitiveUnionTestRecord) AvroCRC64Fingerprint() string {
-  return PrimitiveUnionTestRecordAvroCRC64Fingerprint
+func (_ *PrimitiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(PrimitiveUnionTestRecordAvroCRC64Fingerprint)
 }

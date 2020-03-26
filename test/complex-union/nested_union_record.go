@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type NestedUnionRecord struct {
 
 	
@@ -22,7 +22,7 @@ type NestedUnionRecord struct {
 
 }
 
-const NestedUnionRecordAvroCRC64Fingerprint = "23b6eda087463def"
+const NestedUnionRecordAvroCRC64Fingerprint = "#\xb6\xed\xa0\x87F=\xef"
 
 func NewNestedUnionRecord() (*NestedUnionRecord) {
 	return &NestedUnionRecord{}
@@ -37,7 +37,7 @@ func DeserializeNestedUnionRecord(r io.Reader) (*NestedUnionRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeNestedUnionRecordFromSchema(r io.Reader, schema string) (*Nested
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeNestedUnionRecord(r *NestedUnionRecord, w io.Writer) error {
 	
 	err = vm.WriteInt( r.IntField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -116,6 +116,6 @@ func (_ *NestedUnionRecord) AppendArray() types.Field { panic("Unsupported opera
 func (_ *NestedUnionRecord) Finalize() { }
 
 
-func (_ *NestedUnionRecord) AvroCRC64Fingerprint() string {
-  return NestedUnionRecordAvroCRC64Fingerprint
+func (_ *NestedUnionRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(NestedUnionRecordAvroCRC64Fingerprint)
 }

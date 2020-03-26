@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type DemoSchema struct {
 
 	
@@ -42,7 +42,7 @@ type DemoSchema struct {
 
 }
 
-const DemoSchemaAvroCRC64Fingerprint = "c456a904ca9b66ad"
+const DemoSchemaAvroCRC64Fingerprint = "\xc4V\xa9\x04ʛf\xad"
 
 func NewDemoSchema() (*DemoSchema) {
 	return &DemoSchema{}
@@ -57,7 +57,7 @@ func DeserializeDemoSchema(r io.Reader) (*DemoSchema, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -72,7 +72,7 @@ func DeserializeDemoSchemaFromSchema(r io.Reader, schema string) (*DemoSchema, e
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -82,27 +82,27 @@ func writeDemoSchema(r *DemoSchema, w io.Writer) error {
 	
 	err = vm.WriteInt( r.IntField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteDouble( r.DoubleField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteString( r.StringField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteBool( r.BoolField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = vm.WriteBytes( r.BytesField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -188,6 +188,6 @@ func (_ *DemoSchema) AppendArray() types.Field { panic("Unsupported operation") 
 func (_ *DemoSchema) Finalize() { }
 
 
-func (_ *DemoSchema) AvroCRC64Fingerprint() string {
-  return DemoSchemaAvroCRC64Fingerprint
+func (_ *DemoSchema) AvroCRC64Fingerprint() []byte {
+  return []byte(DemoSchemaAvroCRC64Fingerprint)
 }

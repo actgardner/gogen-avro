@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type Child struct {
 
 	
@@ -22,7 +22,7 @@ type Child struct {
 
 }
 
-const ChildAvroCRC64Fingerprint = "ad2443b16255c012"
+const ChildAvroCRC64Fingerprint = "\xad$C\xb1bU\xc0\x12"
 
 func NewChild() (*Child) {
 	return &Child{}
@@ -37,7 +37,7 @@ func DeserializeChild(r io.Reader) (*Child, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeChildFromSchema(r io.Reader, schema string) (*Child, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeChild(r *Child, w io.Writer) error {
 	
 	err = vm.WriteString( r.Name, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -116,6 +116,6 @@ func (_ *Child) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Child) Finalize() { }
 
 
-func (_ *Child) AvroCRC64Fingerprint() string {
-  return ChildAvroCRC64Fingerprint
+func (_ *Child) AvroCRC64Fingerprint() []byte {
+  return []byte(ChildAvroCRC64Fingerprint)
 }

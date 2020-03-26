@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type EnumTestRecord struct {
 
 	
@@ -22,7 +22,7 @@ type EnumTestRecord struct {
 
 }
 
-const EnumTestRecordAvroCRC64Fingerprint = "8e9600cc9b7833fa"
+const EnumTestRecordAvroCRC64Fingerprint = "\x8e\x96\x00̛x3\xfa"
 
 func NewEnumTestRecord() (*EnumTestRecord) {
 	return &EnumTestRecord{}
@@ -37,7 +37,7 @@ func DeserializeEnumTestRecord(r io.Reader) (*EnumTestRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeEnumTestRecordFromSchema(r io.Reader, schema string) (*EnumTestR
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeEnumTestRecord(r *EnumTestRecord, w io.Writer) error {
 	
 	err = writeTestEnumType( r.EnumField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -120,6 +120,6 @@ func (_ *EnumTestRecord) AppendArray() types.Field { panic("Unsupported operatio
 func (_ *EnumTestRecord) Finalize() { }
 
 
-func (_ *EnumTestRecord) AvroCRC64Fingerprint() string {
-  return EnumTestRecordAvroCRC64Fingerprint
+func (_ *EnumTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(EnumTestRecordAvroCRC64Fingerprint)
 }

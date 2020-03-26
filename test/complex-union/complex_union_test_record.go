@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type ComplexUnionTestRecord struct {
 
 	
@@ -22,7 +22,7 @@ type ComplexUnionTestRecord struct {
 
 }
 
-const ComplexUnionTestRecordAvroCRC64Fingerprint = "296808626d7be0be"
+const ComplexUnionTestRecordAvroCRC64Fingerprint = ")h\bbm{\xe0\xbe"
 
 func NewComplexUnionTestRecord() (*ComplexUnionTestRecord) {
 	return &ComplexUnionTestRecord{}
@@ -37,7 +37,7 @@ func DeserializeComplexUnionTestRecord(r io.Reader) (*ComplexUnionTestRecord, er
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeComplexUnionTestRecordFromSchema(r io.Reader, schema string) (*C
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeComplexUnionTestRecord(r *ComplexUnionTestRecord, w io.Writer) error {
 	
 	err = writeUnionNullArrayIntMapIntNestedUnionRecord( r.UnionField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -95,7 +95,7 @@ func (r *ComplexUnionTestRecord) Get(i int) types.Field {
 	case 0:
 		
 			r.UnionField = NewUnionNullArrayIntMapIntNestedUnionRecord()
-	
+
 		
 		
 			return r.UnionField
@@ -119,6 +119,6 @@ func (_ *ComplexUnionTestRecord) AppendArray() types.Field { panic("Unsupported 
 func (_ *ComplexUnionTestRecord) Finalize() { }
 
 
-func (_ *ComplexUnionTestRecord) AvroCRC64Fingerprint() string {
-  return ComplexUnionTestRecordAvroCRC64Fingerprint
+func (_ *ComplexUnionTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(ComplexUnionTestRecordAvroCRC64Fingerprint)
 }

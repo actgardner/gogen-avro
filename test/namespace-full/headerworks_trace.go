@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-// Trace  
+// Trace
 type HeaderworksTrace struct {
 
 	
@@ -24,7 +24,7 @@ type HeaderworksTrace struct {
 
 }
 
-const HeaderworksTraceAvroCRC64Fingerprint = "8adf75e7cbbba6bc"
+const HeaderworksTraceAvroCRC64Fingerprint = "\x8a\xdfu\xe7˻\xa6\xbc"
 
 func NewHeaderworksTrace() (*HeaderworksTrace) {
 	return &HeaderworksTrace{}
@@ -39,7 +39,7 @@ func DeserializeHeaderworksTrace(r io.Reader) (*HeaderworksTrace, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -54,7 +54,7 @@ func DeserializeHeaderworksTraceFromSchema(r io.Reader, schema string) (*Headerw
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -64,7 +64,7 @@ func writeHeaderworksTrace(r *HeaderworksTrace, w io.Writer) error {
 	
 	err = writeUnionNullHeaderworksDatatypeUUID( r.TraceId, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -97,7 +97,7 @@ func (r *HeaderworksTrace) Get(i int) types.Field {
 	case 0:
 		
 			r.TraceId = NewUnionNullHeaderworksDatatypeUUID()
-	
+
 		
 		
 			return r.TraceId
@@ -126,6 +126,6 @@ func (_ *HeaderworksTrace) AppendArray() types.Field { panic("Unsupported operat
 func (_ *HeaderworksTrace) Finalize() { }
 
 
-func (_ *HeaderworksTrace) AvroCRC64Fingerprint() string {
-  return HeaderworksTraceAvroCRC64Fingerprint
+func (_ *HeaderworksTrace) AvroCRC64Fingerprint() []byte {
+  return []byte(HeaderworksTraceAvroCRC64Fingerprint)
 }

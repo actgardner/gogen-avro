@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-// GoGen test  
+// GoGen test
 type Sample struct {
 
 	
@@ -31,7 +31,7 @@ type Sample struct {
 
 }
 
-const SampleAvroCRC64Fingerprint = "df7d93201966180a"
+const SampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
 func NewSample() (*Sample) {
 	return &Sample{}
@@ -46,7 +46,7 @@ func DeserializeSample(r io.Reader) (*Sample, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -61,7 +61,7 @@ func DeserializeSampleFromSchema(r io.Reader, schema string) (*Sample, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -71,12 +71,12 @@ func writeSample(r *Sample, w io.Writer) error {
 	
 	err = writeUnionNullData( r.Header, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionNullData( r.Body, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -109,7 +109,7 @@ func (r *Sample) Get(i int) types.Field {
 	case 0:
 		
 			r.Header = NewUnionNullData()
-	
+
 		
 		
 			return r.Header
@@ -118,7 +118,7 @@ func (r *Sample) Get(i int) types.Field {
 	case 1:
 		
 			r.Body = NewUnionNullData()
-	
+
 		
 		
 			return r.Body
@@ -154,6 +154,6 @@ func (_ *Sample) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Sample) Finalize() { }
 
 
-func (_ *Sample) AvroCRC64Fingerprint() string {
-  return SampleAvroCRC64Fingerprint
+func (_ *Sample) AvroCRC64Fingerprint() []byte {
+  return []byte(SampleAvroCRC64Fingerprint)
 }

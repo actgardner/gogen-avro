@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type ArrayTestRecord struct {
 
 	
@@ -52,7 +52,7 @@ type ArrayTestRecord struct {
 
 }
 
-const ArrayTestRecordAvroCRC64Fingerprint = "2249bb6e4f1c232c"
+const ArrayTestRecordAvroCRC64Fingerprint = "\"I\xbbnO\x1c#,"
 
 func NewArrayTestRecord() (*ArrayTestRecord) {
 	return &ArrayTestRecord{}
@@ -67,7 +67,7 @@ func DeserializeArrayTestRecord(r io.Reader) (*ArrayTestRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -82,7 +82,7 @@ func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (*ArrayTes
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -92,37 +92,37 @@ func writeArrayTestRecord(r *ArrayTestRecord, w io.Writer) error {
 	
 	err = writeArrayInt( r.IntField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeArrayLong( r.LongField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeArrayDouble( r.DoubleField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeArrayString( r.StringField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeArrayFloat( r.FloatField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeArrayBool( r.BoolField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeArrayBytes( r.BytesField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -155,7 +155,7 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	case 0:
 		
 			r.IntField = make([]int32, 0)
-	
+
 		
 		
 			return (*ArrayIntWrapper)(&r.IntField)
@@ -164,7 +164,7 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	case 1:
 		
 			r.LongField = make([]int64, 0)
-	
+
 		
 		
 			return (*ArrayLongWrapper)(&r.LongField)
@@ -173,7 +173,7 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	case 2:
 		
 			r.DoubleField = make([]float64, 0)
-	
+
 		
 		
 			return (*ArrayDoubleWrapper)(&r.DoubleField)
@@ -182,7 +182,7 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	case 3:
 		
 			r.StringField = make([]string, 0)
-	
+
 		
 		
 			return (*ArrayStringWrapper)(&r.StringField)
@@ -191,7 +191,7 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	case 4:
 		
 			r.FloatField = make([]float32, 0)
-	
+
 		
 		
 			return (*ArrayFloatWrapper)(&r.FloatField)
@@ -200,7 +200,7 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	case 5:
 		
 			r.BoolField = make([]bool, 0)
-	
+
 		
 		
 			return (*ArrayBoolWrapper)(&r.BoolField)
@@ -209,7 +209,7 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	case 6:
 		
 			r.BytesField = make([][]byte, 0)
-	
+
 		
 		
 			return (*ArrayBytesWrapper)(&r.BytesField)
@@ -298,6 +298,6 @@ func (_ *ArrayTestRecord) AppendArray() types.Field { panic("Unsupported operati
 func (_ *ArrayTestRecord) Finalize() { }
 
 
-func (_ *ArrayTestRecord) AvroCRC64Fingerprint() string {
-  return ArrayTestRecordAvroCRC64Fingerprint
+func (_ *ArrayTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(ArrayTestRecordAvroCRC64Fingerprint)
 }

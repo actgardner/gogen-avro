@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type UnionRecord struct {
 
 	
@@ -37,7 +37,7 @@ type UnionRecord struct {
 
 }
 
-const UnionRecordAvroCRC64Fingerprint = "7186377c38abdc8f"
+const UnionRecordAvroCRC64Fingerprint = "q\x867|8\xab\u070f"
 
 func NewUnionRecord() (*UnionRecord) {
 	return &UnionRecord{}
@@ -52,7 +52,7 @@ func DeserializeUnionRecord(r io.Reader) (*UnionRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -67,7 +67,7 @@ func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (*UnionRecord,
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -77,22 +77,22 @@ func writeUnionRecord(r *UnionRecord, w io.Writer) error {
 	
 	err = vm.WriteString( r.Id, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionNullString( r.UnionNull, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionStringInt( r.UnionString, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionUnionRecString( r.UnionRecord, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -131,7 +131,7 @@ func (r *UnionRecord) Get(i int) types.Field {
 	case 1:
 		
 			r.UnionNull = NewUnionNullString()
-	
+
 		
 		
 			return r.UnionNull
@@ -140,7 +140,7 @@ func (r *UnionRecord) Get(i int) types.Field {
 	case 2:
 		
 			r.UnionString = NewUnionStringInt()
-	
+
 		
 		
 			return r.UnionString
@@ -149,7 +149,7 @@ func (r *UnionRecord) Get(i int) types.Field {
 	case 3:
 		
 			r.UnionRecord = NewUnionUnionRecString()
-	
+
 		
 		
 			return r.UnionRecord
@@ -200,6 +200,6 @@ func (_ *UnionRecord) AppendArray() types.Field { panic("Unsupported operation")
 func (_ *UnionRecord) Finalize() { }
 
 
-func (_ *UnionRecord) AvroCRC64Fingerprint() string {
-  return UnionRecordAvroCRC64Fingerprint
+func (_ *UnionRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(UnionRecordAvroCRC64Fingerprint)
 }

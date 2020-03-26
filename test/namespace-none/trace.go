@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-// Trace  
+// Trace
 type Trace struct {
 
 	
@@ -24,7 +24,7 @@ type Trace struct {
 
 }
 
-const TraceAvroCRC64Fingerprint = "833c8ed554fc8d94"
+const TraceAvroCRC64Fingerprint = "\x83<\x8e\xd5T\xfc\x8d\x94"
 
 func NewTrace() (*Trace) {
 	return &Trace{}
@@ -39,7 +39,7 @@ func DeserializeTrace(r io.Reader) (*Trace, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -54,7 +54,7 @@ func DeserializeTraceFromSchema(r io.Reader, schema string) (*Trace, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -64,7 +64,7 @@ func writeTrace(r *Trace, w io.Writer) error {
 	
 	err = writeUnionNullUUID( r.TraceId, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -97,7 +97,7 @@ func (r *Trace) Get(i int) types.Field {
 	case 0:
 		
 			r.TraceId = NewUnionNullUUID()
-	
+
 		
 		
 			return r.TraceId
@@ -126,6 +126,6 @@ func (_ *Trace) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *Trace) Finalize() { }
 
 
-func (_ *Trace) AvroCRC64Fingerprint() string {
-  return TraceAvroCRC64Fingerprint
+func (_ *Trace) AvroCRC64Fingerprint() []byte {
+  return []byte(TraceAvroCRC64Fingerprint)
 }

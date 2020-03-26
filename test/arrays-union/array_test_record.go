@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type ArrayTestRecord struct {
 
 	
@@ -22,7 +22,7 @@ type ArrayTestRecord struct {
 
 }
 
-const ArrayTestRecordAvroCRC64Fingerprint = "74069ec8c288a0cb"
+const ArrayTestRecordAvroCRC64Fingerprint = "t\x06\x9e\xc8\u0088\xa0\xcb"
 
 func NewArrayTestRecord() (*ArrayTestRecord) {
 	return &ArrayTestRecord{}
@@ -37,7 +37,7 @@ func DeserializeArrayTestRecord(r io.Reader) (*ArrayTestRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (*ArrayTes
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeArrayTestRecord(r *ArrayTestRecord, w io.Writer) error {
 	
 	err = writeArrayUnionNullInt( r.IntField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -95,7 +95,7 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	case 0:
 		
 			r.IntField = make([]*UnionNullInt, 0)
-	
+
 		
 		
 			return (*ArrayUnionNullIntWrapper)(&r.IntField)
@@ -119,6 +119,6 @@ func (_ *ArrayTestRecord) AppendArray() types.Field { panic("Unsupported operati
 func (_ *ArrayTestRecord) Finalize() { }
 
 
-func (_ *ArrayTestRecord) AvroCRC64Fingerprint() string {
-  return ArrayTestRecordAvroCRC64Fingerprint
+func (_ *ArrayTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(ArrayTestRecordAvroCRC64Fingerprint)
 }

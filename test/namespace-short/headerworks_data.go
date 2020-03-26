@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-// Common information related to the event which must be included in any clean event  
+// Common information related to the event which must be included in any clean event
 type HeaderworksData struct {
 
 	
@@ -38,7 +38,7 @@ type HeaderworksData struct {
 
 }
 
-const HeaderworksDataAvroCRC64Fingerprint = "363cf63f4545cd0b"
+const HeaderworksDataAvroCRC64Fingerprint = "6<\xf6?EE\xcd\v"
 
 func NewHeaderworksData() (*HeaderworksData) {
 	return &HeaderworksData{}
@@ -53,7 +53,7 @@ func DeserializeHeaderworksData(r io.Reader) (*HeaderworksData, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -68,7 +68,7 @@ func DeserializeHeaderworksDataFromSchema(r io.Reader, schema string) (*Headerwo
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -78,17 +78,17 @@ func writeHeaderworksData(r *HeaderworksData, w io.Writer) error {
 	
 	err = writeUnionNullDatatypeUUID( r.Uuid, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionNullString( r.Hostname, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	err = writeUnionNullHeaderworksTrace( r.Trace, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -121,7 +121,7 @@ func (r *HeaderworksData) Get(i int) types.Field {
 	case 0:
 		
 			r.Uuid = NewUnionNullDatatypeUUID()
-	
+
 		
 		
 			return r.Uuid
@@ -130,7 +130,7 @@ func (r *HeaderworksData) Get(i int) types.Field {
 	case 1:
 		
 			r.Hostname = NewUnionNullString()
-	
+
 		
 		
 			return r.Hostname
@@ -139,7 +139,7 @@ func (r *HeaderworksData) Get(i int) types.Field {
 	case 2:
 		
 			r.Trace = NewUnionNullHeaderworksTrace()
-	
+
 		
 		
 			return r.Trace
@@ -182,6 +182,6 @@ func (_ *HeaderworksData) AppendArray() types.Field { panic("Unsupported operati
 func (_ *HeaderworksData) Finalize() { }
 
 
-func (_ *HeaderworksData) AvroCRC64Fingerprint() string {
-  return HeaderworksDataAvroCRC64Fingerprint
+func (_ *HeaderworksData) AvroCRC64Fingerprint() []byte {
+  return []byte(HeaderworksDataAvroCRC64Fingerprint)
 }

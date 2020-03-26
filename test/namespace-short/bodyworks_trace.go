@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-// Trace  
+// Trace
 type BodyworksTrace struct {
 
 	
@@ -24,7 +24,7 @@ type BodyworksTrace struct {
 
 }
 
-const BodyworksTraceAvroCRC64Fingerprint = "833c8ed554fc8d94"
+const BodyworksTraceAvroCRC64Fingerprint = "\x83<\x8e\xd5T\xfc\x8d\x94"
 
 func NewBodyworksTrace() (*BodyworksTrace) {
 	return &BodyworksTrace{}
@@ -39,7 +39,7 @@ func DeserializeBodyworksTrace(r io.Reader) (*BodyworksTrace, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -54,7 +54,7 @@ func DeserializeBodyworksTraceFromSchema(r io.Reader, schema string) (*Bodyworks
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -64,7 +64,7 @@ func writeBodyworksTrace(r *BodyworksTrace, w io.Writer) error {
 	
 	err = writeUnionNullDatatypeUUID( r.TraceId, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -97,7 +97,7 @@ func (r *BodyworksTrace) Get(i int) types.Field {
 	case 0:
 		
 			r.TraceId = NewUnionNullDatatypeUUID()
-	
+
 		
 		
 			return r.TraceId
@@ -126,6 +126,6 @@ func (_ *BodyworksTrace) AppendArray() types.Field { panic("Unsupported operatio
 func (_ *BodyworksTrace) Finalize() { }
 
 
-func (_ *BodyworksTrace) AvroCRC64Fingerprint() string {
-  return BodyworksTraceAvroCRC64Fingerprint
+func (_ *BodyworksTrace) AvroCRC64Fingerprint() []byte {
+  return []byte(BodyworksTraceAvroCRC64Fingerprint)
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type NestedTestRecord struct {
 
 	
@@ -22,7 +22,7 @@ type NestedTestRecord struct {
 
 }
 
-const NestedTestRecordAvroCRC64Fingerprint = "403842d3c9f5b59b"
+const NestedTestRecordAvroCRC64Fingerprint = "@8B\xd3\xc9\xf5\xb5\x9b"
 
 func NewNestedTestRecord() (*NestedTestRecord) {
 	return &NestedTestRecord{}
@@ -37,7 +37,7 @@ func DeserializeNestedTestRecord(r io.Reader) (*NestedTestRecord, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeNestedTestRecordFromSchema(r io.Reader, schema string) (*NestedT
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeNestedTestRecord(r *NestedTestRecord, w io.Writer) error {
 	
 	err = writeNestedRecord( r.OtherField, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -95,7 +95,7 @@ func (r *NestedTestRecord) Get(i int) types.Field {
 	case 0:
 		
 			r.OtherField = NewNestedRecord()
-	
+
 		
 		
 			return r.OtherField
@@ -119,6 +119,6 @@ func (_ *NestedTestRecord) AppendArray() types.Field { panic("Unsupported operat
 func (_ *NestedTestRecord) Finalize() { }
 
 
-func (_ *NestedTestRecord) AvroCRC64Fingerprint() string {
-  return NestedTestRecordAvroCRC64Fingerprint
+func (_ *NestedTestRecord) AvroCRC64Fingerprint() []byte {
+  return []byte(NestedTestRecordAvroCRC64Fingerprint)
 }

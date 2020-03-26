@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/compiler"
 )
 
-  
+
 type StructTag struct {
 
 	
@@ -22,7 +22,7 @@ type StructTag struct {
 
 }
 
-const StructTagAvroCRC64Fingerprint = "92b7446be21eeffc"
+const StructTagAvroCRC64Fingerprint = "\x92\xb7Dk\xe2\x1e\xef\xfc"
 
 func NewStructTag() (*StructTag) {
 	return &StructTag{}
@@ -37,7 +37,7 @@ func DeserializeStructTag(r io.Reader) (*StructTag, error) {
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -52,7 +52,7 @@ func DeserializeStructTagFromSchema(r io.Reader, schema string) (*StructTag, err
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err	
+		return nil, err
 	}
 	return t, err
 }
@@ -62,7 +62,7 @@ func writeStructTag(r *StructTag, w io.Writer) error {
 	
 	err = vm.WriteString( r.ProductName, w)
 	if err != nil {
-		return err			
+		return err
 	}
 	
 	return err
@@ -116,6 +116,6 @@ func (_ *StructTag) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *StructTag) Finalize() { }
 
 
-func (_ *StructTag) AvroCRC64Fingerprint() string {
-  return StructTagAvroCRC64Fingerprint
+func (_ *StructTag) AvroCRC64Fingerprint() []byte {
+  return []byte(StructTagAvroCRC64Fingerprint)
 }
