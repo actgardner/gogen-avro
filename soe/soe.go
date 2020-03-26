@@ -1,3 +1,4 @@
+// Package soe provides convenience methods to read and write Avro Single-Object Encoding headers
 package soe
 
 import (
@@ -8,15 +9,21 @@ import (
 
 var HeaderV1 = []byte{0xC3, 0x01}
 
-func WriteHeader(w io.Writer, header []byte) error {
+// WriteRecord writes the single-object encoding framing (the magic bytes and the Avro CRC64 fingerprint of the canonical form of the record schema), and the record itself into `w`.
+func WriteRecord(w io.Writer, record AvroRecord) error {
 	fp := HeaderV1
-	err := binary.Write(w, binary.LittleEndian, fp)
-	if err != nil {
+	if err := binary.Write(w, binary.LittleEndian, fp); err != nil {
 		return err
 	}
-	return binary.Write(w, binary.LittleEndian, header)
+
+	if err := binary.Write(w, binary.LittleEndian, record.AvroCRC64Fingerprint()); err != nil {
+		return err
+	}
+
+	return record.Serialize(w)
 }
 
+// ReadHeader reads the magic bytes and CRC64 schema fingerprint from the given reader and returns the fingerprint.
 func ReadHeader(r io.Reader) ([]byte, error) {
 	b := make([]byte, 2)
 	n, err := r.Read(b)

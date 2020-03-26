@@ -6,45 +6,27 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-
 type DemoSchema struct {
+	IntField int32
 
-	
-	
-		IntField int32
-	
+	DoubleField float64
 
-	
-	
-		DoubleField float64
-	
+	StringField string
 
-	
-	
-		StringField string
-	
+	BoolField bool
 
-	
-	
-		BoolField bool
-	
-
-	
-	
-		BytesField []byte
-	
-
+	BytesField []byte
 }
 
 const DemoSchemaAvroCRC64Fingerprint = "\xc4V\xa9\x04ʛf\xad"
 
-func NewDemoSchema() (*DemoSchema) {
+func NewDemoSchema() *DemoSchema {
 	return &DemoSchema{}
 }
 
@@ -79,32 +61,32 @@ func DeserializeDemoSchemaFromSchema(r io.Reader, schema string) (*DemoSchema, e
 
 func writeDemoSchema(r *DemoSchema, w io.Writer) error {
 	var err error
-	
-	err = vm.WriteInt( r.IntField, w)
+
+	err = vm.WriteInt(r.IntField, w)
 	if err != nil {
 		return err
 	}
-	
-	err = vm.WriteDouble( r.DoubleField, w)
+
+	err = vm.WriteDouble(r.DoubleField, w)
 	if err != nil {
 		return err
 	}
-	
-	err = vm.WriteString( r.StringField, w)
+
+	err = vm.WriteString(r.StringField, w)
 	if err != nil {
 		return err
 	}
-	
-	err = vm.WriteBool( r.BoolField, w)
+
+	err = vm.WriteBool(r.BoolField, w)
 	if err != nil {
 		return err
 	}
-	
-	err = vm.WriteBytes( r.BytesField, w)
+
+	err = vm.WriteBytes(r.BytesField, w)
 	if err != nil {
 		return err
 	}
-	
+
 	return err
 }
 
@@ -120,74 +102,53 @@ func (r *DemoSchema) SchemaName() string {
 	return "DemoSchema"
 }
 
-func (_ *DemoSchema) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *DemoSchema) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *DemoSchema) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *DemoSchema) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *DemoSchema) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *DemoSchema) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *DemoSchema) SetString(v string) { panic("Unsupported operation") }
+func (_ *DemoSchema) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *DemoSchema) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *DemoSchema) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *DemoSchema) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *DemoSchema) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *DemoSchema) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *DemoSchema) SetString(v string)   { panic("Unsupported operation") }
 func (_ *DemoSchema) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *DemoSchema) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
-			return (*types.Int)(&r.IntField)
-		
-	
+
+		return (*types.Int)(&r.IntField)
+
 	case 1:
-		
-		
-			return (*types.Double)(&r.DoubleField)
-		
-	
+
+		return (*types.Double)(&r.DoubleField)
+
 	case 2:
-		
-		
-			return (*types.String)(&r.StringField)
-		
-	
+
+		return (*types.String)(&r.StringField)
+
 	case 3:
-		
-		
-			return (*types.Boolean)(&r.BoolField)
-		
-	
+
+		return (*types.Boolean)(&r.BoolField)
+
 	case 4:
-		
-		
-			return (*types.Bytes)(&r.BytesField)
-		
-	
+
+		return (*types.Bytes)(&r.BytesField)
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *DemoSchema) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
-        
-	
-        
-	
-        
-	
-        
-	
+	switch i {
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *DemoSchema) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *DemoSchema) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *DemoSchema) Finalize() { }
-
+func (_ *DemoSchema) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *DemoSchema) Finalize()                        {}
 
 func (_ *DemoSchema) AvroCRC64Fingerprint() []byte {
-  return []byte(DemoSchemaAvroCRC64Fingerprint)
+	return []byte(DemoSchemaAvroCRC64Fingerprint)
 }

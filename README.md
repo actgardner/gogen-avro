@@ -15,6 +15,7 @@ Generates type-safe Go code based on your Avro schemas, including serializers an
    * [Usage](#usage)
    * [Generated Methods](#generated-methods)
    * [Working with Object Container Files (OCF)](#working-with-object-container-files-ocf)
+   * [Single Object Encoding](#single-object-encoding)
    * [Example](#example)
    * [Naming](#naming)
    * [Type Conversion](#type-conversion)
@@ -85,6 +86,12 @@ Read Avro data from the given `io.Reader` and deserialize it into the generated 
 An example of how to write a container file can be found in [example/container/example.go](https://github.com/actgardner/gogen-avro/blob/master/example/container/example.go).
 
 [Godocs for the container package](https://godoc.org/github.com/actgardner/gogen-avro/container)
+
+### Single-Object Encoding
+
+An example of how to read and write Single-Object encoded messages (for use with Kafka, for instance) can be found in [example/single_object/example.go](https://github.com/actgardner/gogen-avro/blob/master/example/single_object/example.go).
+
+[Godocs for the soe package](https://godoc.org/github.com/actgardner/gogen-avro/soe)
 
 ### Example
 
