@@ -38,6 +38,8 @@ type Writer struct {
 	blockBuffer      *bytes.Buffer
 	compressedWriter io.Writer
 	nextBlockRecords int64
+	schema           string
+	wroteHeader      bool
 }
 
 //  Create a new Writer wrapping the provided io.Writer with the given Codec and number of records per block.
@@ -55,6 +57,7 @@ func NewWriter(writer io.Writer, codec Codec, recordsPerBlock int64, schema stri
 		codec:           codec,
 		recordsPerBlock: recordsPerBlock,
 		blockBuffer:     blockBuffer,
+		schema:          schema,
 	}
 	var err error
 	if codec == Deflate {
@@ -66,11 +69,6 @@ func NewWriter(writer io.Writer, codec Codec, recordsPerBlock int64, schema stri
 		avroWriter.compressedWriter = newSnappyWriter(avroWriter.blockBuffer)
 	} else {
 		avroWriter.compressedWriter = avroWriter.blockBuffer
-	}
-
-	err = avroWriter.writeHeader(schema)
-	if err != nil {
-		return nil, err
 	}
 
 	return avroWriter, nil
@@ -93,6 +91,16 @@ func (avroWriter *Writer) writeHeader(schema string) error {
 //  must be of the same Avro type.
 func (avroWriter *Writer) WriteRecord(record AvroRecord) error {
 	var err error
+
+	// Lazily write the header if it hasn't been written yet
+	if !avroWriter.wroteHeader {
+		err = avroWriter.writeHeader(avroWriter.schema)
+		if err != nil {
+			return err
+		}
+		avroWriter.wroteHeader = true
+	}
+
 	// Serialize the new record into the compressed writer
 	err = record.Serialize(avroWriter.compressedWriter)
 	if err != nil {
