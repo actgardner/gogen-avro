@@ -6,25 +6,19 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-
 type ArrayTestRecord struct {
-
-	
-	
-		IntField []*UnionNullInt
-	
-
+	IntField []*UnionNullInt
 }
 
 const ArrayTestRecordAvroCRC64Fingerprint = "t\x06\x9e\xc8\u0088\xa0\xcb"
 
-func NewArrayTestRecord() (*ArrayTestRecord) {
+func NewArrayTestRecord() *ArrayTestRecord {
 	return &ArrayTestRecord{}
 }
 
@@ -59,12 +53,12 @@ func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (*ArrayTes
 
 func writeArrayTestRecord(r *ArrayTestRecord, w io.Writer) error {
 	var err error
-	
-	err = writeArrayUnionNullInt( r.IntField, w)
+
+	err = writeArrayUnionNullInt(r.IntField, w)
 	if err != nil {
 		return err
 	}
-	
+
 	return err
 }
 
@@ -80,45 +74,39 @@ func (r *ArrayTestRecord) SchemaName() string {
 	return "ArrayTestRecord"
 }
 
-func (_ *ArrayTestRecord) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetString(v string) { panic("Unsupported operation") }
+func (_ *ArrayTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *ArrayTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *ArrayTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *ArrayTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *ArrayTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *ArrayTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *ArrayTestRecord) SetString(v string)   { panic("Unsupported operation") }
 func (_ *ArrayTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *ArrayTestRecord) Get(i int) types.Field {
-	switch (i) {
-	
-	case 0:
-		
-			r.IntField = make([]*UnionNullInt, 0)
+	switch i {
 
-		
-		
-			return (*ArrayUnionNullIntWrapper)(&r.IntField)
-		
-	
+	case 0:
+
+		r.IntField = make([]*UnionNullInt, 0)
+
+		return (*ArrayUnionNullIntWrapper)(&r.IntField)
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *ArrayTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch i {
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *ArrayTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) Finalize() { }
-
+func (_ *ArrayTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *ArrayTestRecord) Finalize()                        {}
 
 func (_ *ArrayTestRecord) AvroCRC64Fingerprint() []byte {
-  return []byte(ArrayTestRecordAvroCRC64Fingerprint)
+	return []byte(ArrayTestRecordAvroCRC64Fingerprint)
 }

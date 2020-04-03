@@ -8,9 +8,9 @@ package avro
 import (
 	"io"
 
+	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/container"
 	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/compiler"
 )
 
 func NewBodyworksDatatypeUUIDWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
@@ -24,7 +24,7 @@ type BodyworksDatatypeUUIDReader struct {
 	p *vm.Program
 }
 
-func NewBodyworksDatatypeUUIDReader(r io.Reader) (*BodyworksDatatypeUUIDReader, error){
+func NewBodyworksDatatypeUUIDReader(r io.Reader) (*BodyworksDatatypeUUIDReader, error) {
 	containerReader, err := container.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func NewBodyworksDatatypeUUIDReader(r io.Reader) (*BodyworksDatatypeUUIDReader, 
 		return nil, err
 	}
 
-	return &BodyworksDatatypeUUIDReader {
+	return &BodyworksDatatypeUUIDReader{
 		r: containerReader,
 		p: deser,
 	}, nil
@@ -44,6 +44,6 @@ func NewBodyworksDatatypeUUIDReader(r io.Reader) (*BodyworksDatatypeUUIDReader, 
 
 func (r BodyworksDatatypeUUIDReader) Read() (*BodyworksDatatypeUUID, error) {
 	t := NewBodyworksDatatypeUUID()
-        err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, t)
 	return t, err
 }

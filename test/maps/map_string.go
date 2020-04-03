@@ -2,9 +2,9 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
 func writeMapString(r *MapString, w io.Writer) error {
@@ -26,30 +26,30 @@ func writeMapString(r *MapString, w io.Writer) error {
 }
 
 type MapString struct {
-	keys []string
+	keys   []string
 	values []string
-	M map[string]string
+	M      map[string]string
 }
 
-func NewMapString() *MapString{
-	return &MapString {
-		keys: make([]string, 0),
+func NewMapString() *MapString {
+	return &MapString{
+		keys:   make([]string, 0),
 		values: make([]string, 0),
-		M: make(map[string]string),
+		M:      make(map[string]string),
 	}
 }
 
-func (_ *MapString) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *MapString) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *MapString) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *MapString) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *MapString) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *MapString) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *MapString) SetString(v string) { panic("Unsupported operation") }
-func (_ *MapString) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *MapString) SetBoolean(v bool)     { panic("Unsupported operation") }
+func (_ *MapString) SetInt(v int32)        { panic("Unsupported operation") }
+func (_ *MapString) SetLong(v int64)       { panic("Unsupported operation") }
+func (_ *MapString) SetFloat(v float32)    { panic("Unsupported operation") }
+func (_ *MapString) SetDouble(v float64)   { panic("Unsupported operation") }
+func (_ *MapString) SetBytes(v []byte)     { panic("Unsupported operation") }
+func (_ *MapString) SetString(v string)    { panic("Unsupported operation") }
+func (_ *MapString) SetUnionElem(v int64)  { panic("Unsupported operation") }
 func (_ *MapString) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *MapString) SetDefault(i int) { panic("Unsupported operation") }
-func (r *MapString) Finalize() { 
+func (_ *MapString) SetDefault(i int)      { panic("Unsupported operation") }
+func (r *MapString) Finalize() {
 	for i := range r.keys {
 		r.M[r.keys[i]] = r.values[i]
 	}
@@ -57,15 +57,14 @@ func (r *MapString) Finalize() {
 	r.values = nil
 }
 
-func (r *MapString) AppendMap(key string) types.Field { 
+func (r *MapString) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
 	var v string
-	
+
 	r.values = append(r.values, v)
-	
+
 	return (*types.String)(&r.values[len(r.values)-1])
-	
+
 }
 
 func (_ *MapString) AppendArray() types.Field { panic("Unsupported operation") }
-

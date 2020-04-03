@@ -6,25 +6,22 @@
 package avro
 
 import (
-	"io"
 	"fmt"
+	"io"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 )
 
-
 type UnionNullDataTypeEnum int
+
 const (
+	UnionNullDataTypeEnumNull UnionNullDataTypeEnum = 0
 
-	 UnionNullDataTypeEnumNull UnionNullDataTypeEnum = 0
-
-	 UnionNullDataTypeEnumData UnionNullDataTypeEnum = 1
-
+	UnionNullDataTypeEnumData UnionNullDataTypeEnum = 1
 )
 
 type UnionNullData struct {
-
 	Null *types.NullVal
 
 	Data *Data
@@ -37,14 +34,14 @@ func writeUnionNullData(r *UnionNullData, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType {
+
 	case UnionNullDataTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-        
+
 	case UnionNullDataTypeEnumData:
 		return writeData(r.Data, w)
-        
+
 	}
 	return fmt.Errorf("invalid value for *UnionNullData")
 }
@@ -53,36 +50,32 @@ func NewUnionNullData() *UnionNullData {
 	return &UnionNullData{}
 }
 
-func (_ *UnionNullData) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *UnionNullData) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *UnionNullData) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *UnionNullData) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ *UnionNullData) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ *UnionNullData) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *UnionNullData) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *UnionNullData) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *UnionNullData) SetString(v string) { panic("Unsupported operation") }
-func (r *UnionNullData) SetLong(v int64) { 
+func (_ *UnionNullData) SetBytes(v []byte)   { panic("Unsupported operation") }
+func (_ *UnionNullData) SetString(v string)  { panic("Unsupported operation") }
+func (r *UnionNullData) SetLong(v int64) {
 	r.UnionType = (UnionNullDataTypeEnum)(v)
 }
 func (r *UnionNullData) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
+
 		return r.Null
-		
-	
+
 	case 1:
-		
+
 		r.Data = NewData()
-		
-		
+
 		return r.Data
-		
-	
+
 	}
 	panic("Unknown field index")
 }
-func (_ *UnionNullData) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *UnionNullData) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *UnionNullData) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionNullData) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *UnionNullData) Finalize()  { }
+func (_ *UnionNullData) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *UnionNullData) Finalize()                        {}

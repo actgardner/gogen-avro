@@ -6,8 +6,8 @@
 package avro
 
 import (
-	"io"
 	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
 func writeTestFixedDefaultType(r TestFixedDefaultType, w io.Writer) error {
@@ -18,19 +18,20 @@ func writeTestFixedDefaultType(r TestFixedDefaultType, w io.Writer) error {
 type TestFixedDefaultType TestFixedDefaultTypeWrapper
 type TestFixedDefaultTypeWrapper [12]byte
 
-func (_ *TestFixedDefaultTypeWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *TestFixedDefaultTypeWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ *TestFixedDefaultTypeWrapper) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ *TestFixedDefaultTypeWrapper) SetLong(v int64)     { panic("Unsupported operation") }
+func (_ *TestFixedDefaultTypeWrapper) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *TestFixedDefaultTypeWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (r *TestFixedDefaultTypeWrapper) SetBytes(v []byte) { 
+func (r *TestFixedDefaultTypeWrapper) SetBytes(v []byte) {
 	copy((*r)[:], v)
 }
-func (_ *TestFixedDefaultTypeWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ *TestFixedDefaultTypeWrapper) SetString(v string)    { panic("Unsupported operation") }
+func (_ *TestFixedDefaultTypeWrapper) SetUnionElem(v int64)  { panic("Unsupported operation") }
 func (_ *TestFixedDefaultTypeWrapper) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *TestFixedDefaultTypeWrapper) AppendMap(key string) types.Field {
+	panic("Unsupported operation")
+}
 func (_ *TestFixedDefaultTypeWrapper) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) Finalize() { }
-func (_ *TestFixedDefaultTypeWrapper) SetDefault(i int) { panic("Unsupported operation") }
-
+func (_ *TestFixedDefaultTypeWrapper) Finalize()                {}
+func (_ *TestFixedDefaultTypeWrapper) SetDefault(i int)         { panic("Unsupported operation") }

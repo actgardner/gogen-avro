@@ -6,25 +6,19 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-
 type NestedTestRecord struct {
-
-	
-	
-		OtherField *NestedRecord
-	
-
+	OtherField *NestedRecord
 }
 
 const NestedTestRecordAvroCRC64Fingerprint = "@8B\xd3\xc9\xf5\xb5\x9b"
 
-func NewNestedTestRecord() (*NestedTestRecord) {
+func NewNestedTestRecord() *NestedTestRecord {
 	return &NestedTestRecord{}
 }
 
@@ -59,12 +53,12 @@ func DeserializeNestedTestRecordFromSchema(r io.Reader, schema string) (*NestedT
 
 func writeNestedTestRecord(r *NestedTestRecord, w io.Writer) error {
 	var err error
-	
-	err = writeNestedRecord( r.OtherField, w)
+
+	err = writeNestedRecord(r.OtherField, w)
 	if err != nil {
 		return err
 	}
-	
+
 	return err
 }
 
@@ -80,45 +74,39 @@ func (r *NestedTestRecord) SchemaName() string {
 	return "NestedTestRecord"
 }
 
-func (_ *NestedTestRecord) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetString(v string) { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *NestedTestRecord) SetString(v string)   { panic("Unsupported operation") }
 func (_ *NestedTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NestedTestRecord) Get(i int) types.Field {
-	switch (i) {
-	
-	case 0:
-		
-			r.OtherField = NewNestedRecord()
+	switch i {
 
-		
-		
-			return r.OtherField
-		
-	
+	case 0:
+
+		r.OtherField = NewNestedRecord()
+
+		return r.OtherField
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *NestedTestRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
-	
+	switch i {
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *NestedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NestedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *NestedTestRecord) Finalize() { }
-
+func (_ *NestedTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *NestedTestRecord) Finalize()                        {}
 
 func (_ *NestedTestRecord) AvroCRC64Fingerprint() []byte {
-  return []byte(NestedTestRecordAvroCRC64Fingerprint)
+	return []byte(NestedTestRecordAvroCRC64Fingerprint)
 }

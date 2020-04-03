@@ -8,9 +8,9 @@ package avro
 import (
 	"io"
 
+	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/container"
 	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/compiler"
 )
 
 func NewHeaderworksDataWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
@@ -24,7 +24,7 @@ type HeaderworksDataReader struct {
 	p *vm.Program
 }
 
-func NewHeaderworksDataReader(r io.Reader) (*HeaderworksDataReader, error){
+func NewHeaderworksDataReader(r io.Reader) (*HeaderworksDataReader, error) {
 	containerReader, err := container.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func NewHeaderworksDataReader(r io.Reader) (*HeaderworksDataReader, error){
 		return nil, err
 	}
 
-	return &HeaderworksDataReader {
+	return &HeaderworksDataReader{
 		r: containerReader,
 		p: deser,
 	}, nil
@@ -44,6 +44,6 @@ func NewHeaderworksDataReader(r io.Reader) (*HeaderworksDataReader, error){
 
 func (r HeaderworksDataReader) Read() (*HeaderworksData, error) {
 	t := NewHeaderworksData()
-        err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, t)
 	return t, err
 }

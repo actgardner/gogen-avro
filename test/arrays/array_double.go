@@ -8,12 +8,12 @@ package avro
 import (
 	"io"
 
-	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
 )
 
 func writeArrayDouble(r []float64, w io.Writer) error {
-	err := vm.WriteLong(int64(len(r)),w)
+	err := vm.WriteLong(int64(len(r)), w)
 	if err != nil || len(r) == 0 {
 		return err
 	}
@@ -23,30 +23,28 @@ func writeArrayDouble(r []float64, w io.Writer) error {
 			return err
 		}
 	}
-	return vm.WriteLong(0,w)
+	return vm.WriteLong(0, w)
 }
-
-
 
 type ArrayDoubleWrapper []float64
 
-func (_ *ArrayDoubleWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *ArrayDoubleWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
+func (_ *ArrayDoubleWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
+func (_ *ArrayDoubleWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
+func (_ *ArrayDoubleWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
+func (_ *ArrayDoubleWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
+func (_ *ArrayDoubleWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
+func (_ *ArrayDoubleWrapper) SetString(v string)               { panic("Unsupported operation") }
+func (_ *ArrayDoubleWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
+func (_ *ArrayDoubleWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
 func (_ *ArrayDoubleWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayDoubleWrapper) Finalize() { }
-func (_ *ArrayDoubleWrapper) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *ArrayDoubleWrapper) Finalize()                        {}
+func (_ *ArrayDoubleWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
 func (r *ArrayDoubleWrapper) AppendArray() types.Field {
 	var v float64
-	
+
 	*r = append(*r, v)
-         
-        return (*types.Double)(&(*r)[len(*r)-1])
-        
+
+	return (*types.Double)(&(*r)[len(*r)-1])
+
 }

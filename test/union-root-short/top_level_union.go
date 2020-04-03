@@ -6,25 +6,22 @@
 package avro
 
 import (
-	"io"
 	"fmt"
+	"io"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 )
 
-
 type TopLevelUnionTypeEnum int
+
 const (
+	TopLevelUnionTypeEnumIp_address TopLevelUnionTypeEnum = 0
 
-	 TopLevelUnionTypeEnumIp_address TopLevelUnionTypeEnum = 0
-
-	 TopLevelUnionTypeEnumEvent TopLevelUnionTypeEnum = 1
-
+	TopLevelUnionTypeEnumEvent TopLevelUnionTypeEnum = 1
 )
 
 type TopLevelUnion struct {
-
 	Ip_address Ip_address
 
 	Event *Event
@@ -37,14 +34,14 @@ func writeTopLevelUnion(r *TopLevelUnion, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType {
+
 	case TopLevelUnionTypeEnumIp_address:
 		return writeIp_address(r.Ip_address, w)
-        
+
 	case TopLevelUnionTypeEnumEvent:
 		return writeEvent(r.Event, w)
-        
+
 	}
 	return fmt.Errorf("invalid value for *TopLevelUnion")
 }
@@ -53,36 +50,32 @@ func NewTopLevelUnion() *TopLevelUnion {
 	return &TopLevelUnion{}
 }
 
-func (_ *TopLevelUnion) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *TopLevelUnion) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *TopLevelUnion) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *TopLevelUnion) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ *TopLevelUnion) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ *TopLevelUnion) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *TopLevelUnion) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *TopLevelUnion) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *TopLevelUnion) SetString(v string) { panic("Unsupported operation") }
-func (r *TopLevelUnion) SetLong(v int64) { 
+func (_ *TopLevelUnion) SetBytes(v []byte)   { panic("Unsupported operation") }
+func (_ *TopLevelUnion) SetString(v string)  { panic("Unsupported operation") }
+func (r *TopLevelUnion) SetLong(v int64) {
 	r.UnionType = (TopLevelUnionTypeEnum)(v)
 }
 func (r *TopLevelUnion) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
+
 		return (*Ip_addressWrapper)(&r.Ip_address)
-		
-	
+
 	case 1:
-		
+
 		r.Event = NewEvent()
-		
-		
+
 		return r.Event
-		
-	
+
 	}
 	panic("Unknown field index")
 }
-func (_ *TopLevelUnion) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *TopLevelUnion) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *TopLevelUnion) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *TopLevelUnion) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *TopLevelUnion) Finalize()  { }
+func (_ *TopLevelUnion) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *TopLevelUnion) Finalize()                        {}

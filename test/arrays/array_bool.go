@@ -8,12 +8,12 @@ package avro
 import (
 	"io"
 
-	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
 )
 
 func writeArrayBool(r []bool, w io.Writer) error {
-	err := vm.WriteLong(int64(len(r)),w)
+	err := vm.WriteLong(int64(len(r)), w)
 	if err != nil || len(r) == 0 {
 		return err
 	}
@@ -23,30 +23,28 @@ func writeArrayBool(r []bool, w io.Writer) error {
 			return err
 		}
 	}
-	return vm.WriteLong(0,w)
+	return vm.WriteLong(0, w)
 }
-
-
 
 type ArrayBoolWrapper []bool
 
-func (_ *ArrayBoolWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *ArrayBoolWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
+func (_ *ArrayBoolWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
+func (_ *ArrayBoolWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
+func (_ *ArrayBoolWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
+func (_ *ArrayBoolWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
+func (_ *ArrayBoolWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
+func (_ *ArrayBoolWrapper) SetString(v string)               { panic("Unsupported operation") }
+func (_ *ArrayBoolWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
+func (_ *ArrayBoolWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
 func (_ *ArrayBoolWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) Finalize() { }
-func (_ *ArrayBoolWrapper) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *ArrayBoolWrapper) Finalize()                        {}
+func (_ *ArrayBoolWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
 func (r *ArrayBoolWrapper) AppendArray() types.Field {
 	var v bool
-	
+
 	*r = append(*r, v)
-         
-        return (*types.Boolean)(&(*r)[len(*r)-1])
-        
+
+	return (*types.Boolean)(&(*r)[len(*r)-1])
+
 }

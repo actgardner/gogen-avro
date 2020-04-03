@@ -8,12 +8,12 @@ package avro
 import (
 	"io"
 
-	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
 )
 
 func writeArrayBytes(r [][]byte, w io.Writer) error {
-	err := vm.WriteLong(int64(len(r)),w)
+	err := vm.WriteLong(int64(len(r)), w)
 	if err != nil || len(r) == 0 {
 		return err
 	}
@@ -23,30 +23,28 @@ func writeArrayBytes(r [][]byte, w io.Writer) error {
 			return err
 		}
 	}
-	return vm.WriteLong(0,w)
+	return vm.WriteLong(0, w)
 }
-
-
 
 type ArrayBytesWrapper [][]byte
 
-func (_ *ArrayBytesWrapper) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetString(v string) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) SetString(v string)               { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
 func (_ *ArrayBytesWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayBytesWrapper) Finalize() { }
-func (_ *ArrayBytesWrapper) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) Finalize()                        {}
+func (_ *ArrayBytesWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
 func (r *ArrayBytesWrapper) AppendArray() types.Field {
 	var v []byte
-	
+
 	*r = append(*r, v)
-         
-        return (*types.Bytes)(&(*r)[len(*r)-1])
-        
+
+	return (*types.Bytes)(&(*r)[len(*r)-1])
+
 }

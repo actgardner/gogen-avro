@@ -8,9 +8,9 @@ package avro
 import (
 	"io"
 
+	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/container"
 	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/compiler"
 )
 
 func NewTraceWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
@@ -24,7 +24,7 @@ type TraceReader struct {
 	p *vm.Program
 }
 
-func NewTraceReader(r io.Reader) (*TraceReader, error){
+func NewTraceReader(r io.Reader) (*TraceReader, error) {
 	containerReader, err := container.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func NewTraceReader(r io.Reader) (*TraceReader, error){
 		return nil, err
 	}
 
-	return &TraceReader {
+	return &TraceReader{
 		r: containerReader,
 		p: deser,
 	}, nil
@@ -44,6 +44,6 @@ func NewTraceReader(r io.Reader) (*TraceReader, error){
 
 func (r TraceReader) Read() (*Trace, error) {
 	t := NewTrace()
-        err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, t)
 	return t, err
 }

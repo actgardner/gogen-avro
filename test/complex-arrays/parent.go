@@ -6,25 +6,19 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-
 type Parent struct {
-
-	
-	
-		Children []*Child
-	
-
+	Children []*Child
 }
 
 const ParentAvroCRC64Fingerprint = "p\x9fn\xf8\x11i\x98\x9b"
 
-func NewParent() (*Parent) {
+func NewParent() *Parent {
 	return &Parent{}
 }
 
@@ -59,12 +53,12 @@ func DeserializeParentFromSchema(r io.Reader, schema string) (*Parent, error) {
 
 func writeParent(r *Parent, w io.Writer) error {
 	var err error
-	
-	err = writeArrayChild( r.Children, w)
+
+	err = writeArrayChild(r.Children, w)
 	if err != nil {
 		return err
 	}
-	
+
 	return err
 }
 
@@ -80,56 +74,49 @@ func (r *Parent) SchemaName() string {
 	return "Parent"
 }
 
-func (_ *Parent) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *Parent) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *Parent) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *Parent) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *Parent) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *Parent) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *Parent) SetString(v string) { panic("Unsupported operation") }
+func (_ *Parent) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *Parent) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *Parent) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *Parent) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *Parent) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *Parent) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *Parent) SetString(v string)   { panic("Unsupported operation") }
 func (_ *Parent) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Parent) Get(i int) types.Field {
-	switch (i) {
-	
-	case 0:
-		
-			r.Children = make([]*Child, 0)
+	switch i {
 
-		
-		
-			return (*ArrayChildWrapper)(&r.Children)
-		
-	
+	case 0:
+
+		r.Children = make([]*Child, 0)
+
+		return (*ArrayChildWrapper)(&r.Children)
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *Parent) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch i {
+
 	case 0:
-       	 	r.Children = make([]*Child,2)
-r.Children[0] = NewChild()
-r.Children[0].Name = "record1"
+		r.Children = make([]*Child, 2)
+		r.Children[0] = NewChild()
+		r.Children[0].Name = "record1"
 
-r.Children[1] = NewChild()
-r.Children[1].Name = "record2"
-
+		r.Children[1] = NewChild()
+		r.Children[1].Name = "record2"
 
 		return
-	
-	
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *Parent) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Parent) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *Parent) Finalize() { }
-
+func (_ *Parent) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *Parent) Finalize()                        {}
 
 func (_ *Parent) AvroCRC64Fingerprint() []byte {
-  return []byte(ParentAvroCRC64Fingerprint)
+	return []byte(ParentAvroCRC64Fingerprint)
 }

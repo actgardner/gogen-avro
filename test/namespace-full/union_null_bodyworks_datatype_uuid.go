@@ -6,25 +6,22 @@
 package avro
 
 import (
-	"io"
 	"fmt"
+	"io"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 )
 
-
 type UnionNullBodyworksDatatypeUUIDTypeEnum int
+
 const (
+	UnionNullBodyworksDatatypeUUIDTypeEnumNull UnionNullBodyworksDatatypeUUIDTypeEnum = 0
 
-	 UnionNullBodyworksDatatypeUUIDTypeEnumNull UnionNullBodyworksDatatypeUUIDTypeEnum = 0
-
-	 UnionNullBodyworksDatatypeUUIDTypeEnumBodyworksDatatypeUUID UnionNullBodyworksDatatypeUUIDTypeEnum = 1
-
+	UnionNullBodyworksDatatypeUUIDTypeEnumBodyworksDatatypeUUID UnionNullBodyworksDatatypeUUIDTypeEnum = 1
 )
 
 type UnionNullBodyworksDatatypeUUID struct {
-
 	Null *types.NullVal
 
 	BodyworksDatatypeUUID *BodyworksDatatypeUUID
@@ -37,14 +34,14 @@ func writeUnionNullBodyworksDatatypeUUID(r *UnionNullBodyworksDatatypeUUID, w io
 	if err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType {
+
 	case UnionNullBodyworksDatatypeUUIDTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-        
+
 	case UnionNullBodyworksDatatypeUUIDTypeEnumBodyworksDatatypeUUID:
 		return writeBodyworksDatatypeUUID(r.BodyworksDatatypeUUID, w)
-        
+
 	}
 	return fmt.Errorf("invalid value for *UnionNullBodyworksDatatypeUUID")
 }
@@ -53,36 +50,34 @@ func NewUnionNullBodyworksDatatypeUUID() *UnionNullBodyworksDatatypeUUID {
 	return &UnionNullBodyworksDatatypeUUID{}
 }
 
-func (_ *UnionNullBodyworksDatatypeUUID) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *UnionNullBodyworksDatatypeUUID) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *UnionNullBodyworksDatatypeUUID) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *UnionNullBodyworksDatatypeUUID) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ *UnionNullBodyworksDatatypeUUID) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ *UnionNullBodyworksDatatypeUUID) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksDatatypeUUID) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *UnionNullBodyworksDatatypeUUID) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *UnionNullBodyworksDatatypeUUID) SetString(v string) { panic("Unsupported operation") }
-func (r *UnionNullBodyworksDatatypeUUID) SetLong(v int64) { 
+func (_ *UnionNullBodyworksDatatypeUUID) SetBytes(v []byte)   { panic("Unsupported operation") }
+func (_ *UnionNullBodyworksDatatypeUUID) SetString(v string)  { panic("Unsupported operation") }
+func (r *UnionNullBodyworksDatatypeUUID) SetLong(v int64) {
 	r.UnionType = (UnionNullBodyworksDatatypeUUIDTypeEnum)(v)
 }
 func (r *UnionNullBodyworksDatatypeUUID) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
+
 		return r.Null
-		
-	
+
 	case 1:
-		
+
 		r.BodyworksDatatypeUUID = NewBodyworksDatatypeUUID()
-		
-		
+
 		return r.BodyworksDatatypeUUID
-		
-	
+
 	}
 	panic("Unknown field index")
 }
 func (_ *UnionNullBodyworksDatatypeUUID) SetDefault(i int) { panic("Unsupported operation") }
-func (_ *UnionNullBodyworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ *UnionNullBodyworksDatatypeUUID) AppendMap(key string) types.Field {
+	panic("Unsupported operation")
+}
 func (_ *UnionNullBodyworksDatatypeUUID) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *UnionNullBodyworksDatatypeUUID) Finalize()  { }
+func (_ *UnionNullBodyworksDatatypeUUID) Finalize()                {}

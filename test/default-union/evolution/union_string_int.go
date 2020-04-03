@@ -6,25 +6,22 @@
 package avro
 
 import (
-	"io"
 	"fmt"
+	"io"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 )
 
-
 type UnionStringIntTypeEnum int
+
 const (
+	UnionStringIntTypeEnumString UnionStringIntTypeEnum = 0
 
-	 UnionStringIntTypeEnumString UnionStringIntTypeEnum = 0
-
-	 UnionStringIntTypeEnumInt UnionStringIntTypeEnum = 1
-
+	UnionStringIntTypeEnumInt UnionStringIntTypeEnum = 1
 )
 
 type UnionStringInt struct {
-
 	String string
 
 	Int int32
@@ -37,14 +34,14 @@ func writeUnionStringInt(r *UnionStringInt, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType {
+
 	case UnionStringIntTypeEnumString:
 		return vm.WriteString(r.String, w)
-        
+
 	case UnionStringIntTypeEnumInt:
 		return vm.WriteInt(r.Int, w)
-        
+
 	}
 	return fmt.Errorf("invalid value for *UnionStringInt")
 }
@@ -53,34 +50,30 @@ func NewUnionStringInt() *UnionStringInt {
 	return &UnionStringInt{}
 }
 
-func (_ *UnionStringInt) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *UnionStringInt) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *UnionStringInt) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *UnionStringInt) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ *UnionStringInt) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ *UnionStringInt) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *UnionStringInt) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *UnionStringInt) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *UnionStringInt) SetString(v string) { panic("Unsupported operation") }
-func (r *UnionStringInt) SetLong(v int64) { 
+func (_ *UnionStringInt) SetBytes(v []byte)   { panic("Unsupported operation") }
+func (_ *UnionStringInt) SetString(v string)  { panic("Unsupported operation") }
+func (r *UnionStringInt) SetLong(v int64) {
 	r.UnionType = (UnionStringIntTypeEnum)(v)
 }
 func (r *UnionStringInt) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
+
 		return (*types.String)(&r.String)
-		
-	
+
 	case 1:
-		
-		
+
 		return (*types.Int)(&r.Int)
-		
-	
+
 	}
 	panic("Unknown field index")
 }
-func (_ *UnionStringInt) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *UnionStringInt) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *UnionStringInt) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionStringInt) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *UnionStringInt) Finalize()  { }
+func (_ *UnionStringInt) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *UnionStringInt) Finalize()                        {}

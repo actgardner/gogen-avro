@@ -8,9 +8,9 @@ package avro
 import (
 	"io"
 
+	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/container"
 	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/compiler"
 )
 
 func NewEventWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
@@ -24,7 +24,7 @@ type EventReader struct {
 	p *vm.Program
 }
 
-func NewEventReader(r io.Reader) (*EventReader, error){
+func NewEventReader(r io.Reader) (*EventReader, error) {
 	containerReader, err := container.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func NewEventReader(r io.Reader) (*EventReader, error){
 		return nil, err
 	}
 
-	return &EventReader {
+	return &EventReader{
 		r: containerReader,
 		p: deser,
 	}, nil
@@ -44,6 +44,6 @@ func NewEventReader(r io.Reader) (*EventReader, error){
 
 func (r EventReader) Read() (*Event, error) {
 	t := NewEvent()
-        err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, t)
 	return t, err
 }

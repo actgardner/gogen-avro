@@ -6,25 +6,22 @@
 package avro
 
 import (
-	"io"
 	"fmt"
+	"io"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 )
 
-
 type UnionNullHeaderworksTraceTypeEnum int
+
 const (
+	UnionNullHeaderworksTraceTypeEnumNull UnionNullHeaderworksTraceTypeEnum = 0
 
-	 UnionNullHeaderworksTraceTypeEnumNull UnionNullHeaderworksTraceTypeEnum = 0
-
-	 UnionNullHeaderworksTraceTypeEnumHeaderworksTrace UnionNullHeaderworksTraceTypeEnum = 1
-
+	UnionNullHeaderworksTraceTypeEnumHeaderworksTrace UnionNullHeaderworksTraceTypeEnum = 1
 )
 
 type UnionNullHeaderworksTrace struct {
-
 	Null *types.NullVal
 
 	HeaderworksTrace *HeaderworksTrace
@@ -37,14 +34,14 @@ func writeUnionNullHeaderworksTrace(r *UnionNullHeaderworksTrace, w io.Writer) e
 	if err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType {
+
 	case UnionNullHeaderworksTraceTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-        
+
 	case UnionNullHeaderworksTraceTypeEnumHeaderworksTrace:
 		return writeHeaderworksTrace(r.HeaderworksTrace, w)
-        
+
 	}
 	return fmt.Errorf("invalid value for *UnionNullHeaderworksTrace")
 }
@@ -53,36 +50,32 @@ func NewUnionNullHeaderworksTrace() *UnionNullHeaderworksTrace {
 	return &UnionNullHeaderworksTrace{}
 }
 
-func (_ *UnionNullHeaderworksTrace) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *UnionNullHeaderworksTrace) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *UnionNullHeaderworksTrace) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *UnionNullHeaderworksTrace) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ *UnionNullHeaderworksTrace) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ *UnionNullHeaderworksTrace) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksTrace) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *UnionNullHeaderworksTrace) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *UnionNullHeaderworksTrace) SetString(v string) { panic("Unsupported operation") }
-func (r *UnionNullHeaderworksTrace) SetLong(v int64) { 
+func (_ *UnionNullHeaderworksTrace) SetBytes(v []byte)   { panic("Unsupported operation") }
+func (_ *UnionNullHeaderworksTrace) SetString(v string)  { panic("Unsupported operation") }
+func (r *UnionNullHeaderworksTrace) SetLong(v int64) {
 	r.UnionType = (UnionNullHeaderworksTraceTypeEnum)(v)
 }
 func (r *UnionNullHeaderworksTrace) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
+
 		return r.Null
-		
-	
+
 	case 1:
-		
+
 		r.HeaderworksTrace = NewHeaderworksTrace()
-		
-		
+
 		return r.HeaderworksTrace
-		
-	
+
 	}
 	panic("Unknown field index")
 }
-func (_ *UnionNullHeaderworksTrace) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *UnionNullHeaderworksTrace) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionNullHeaderworksTrace) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *UnionNullHeaderworksTrace) Finalize()  { }
+func (_ *UnionNullHeaderworksTrace) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *UnionNullHeaderworksTrace) Finalize()                        {}

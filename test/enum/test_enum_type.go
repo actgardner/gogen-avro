@@ -12,19 +12,16 @@ import (
 	"github.com/actgardner/gogen-avro/vm"
 )
 
-
 // Test enum
-  
+
 type TestEnumType int32
 
 const (
-
 	TestEnumTypeTestSymbol1 TestEnumType = 0
 
 	TestEnumTypeTestSymbol2 TestEnumType = 1
 
 	TestEnumTypeTestSymbol3 TestEnumType = 2
-
 )
 
 func (e TestEnumType) String() string {

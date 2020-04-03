@@ -8,9 +8,9 @@ package avro
 import (
 	"io"
 
+	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/container"
 	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/compiler"
 )
 
 func NewSampleWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
@@ -24,7 +24,7 @@ type SampleReader struct {
 	p *vm.Program
 }
 
-func NewSampleReader(r io.Reader) (*SampleReader, error){
+func NewSampleReader(r io.Reader) (*SampleReader, error) {
 	containerReader, err := container.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func NewSampleReader(r io.Reader) (*SampleReader, error){
 		return nil, err
 	}
 
-	return &SampleReader {
+	return &SampleReader{
 		r: containerReader,
 		p: deser,
 	}, nil
@@ -44,6 +44,6 @@ func NewSampleReader(r io.Reader) (*SampleReader, error){
 
 func (r SampleReader) Read() (*Sample, error) {
 	t := NewSample()
-        err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, t)
 	return t, err
 }

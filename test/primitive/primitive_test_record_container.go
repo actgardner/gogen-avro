@@ -8,9 +8,9 @@ package avro
 import (
 	"io"
 
+	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/container"
 	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/compiler"
 )
 
 func NewPrimitiveTestRecordWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
@@ -24,7 +24,7 @@ type PrimitiveTestRecordReader struct {
 	p *vm.Program
 }
 
-func NewPrimitiveTestRecordReader(r io.Reader) (*PrimitiveTestRecordReader, error){
+func NewPrimitiveTestRecordReader(r io.Reader) (*PrimitiveTestRecordReader, error) {
 	containerReader, err := container.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func NewPrimitiveTestRecordReader(r io.Reader) (*PrimitiveTestRecordReader, erro
 		return nil, err
 	}
 
-	return &PrimitiveTestRecordReader {
+	return &PrimitiveTestRecordReader{
 		r: containerReader,
 		p: deser,
 	}, nil
@@ -44,6 +44,6 @@ func NewPrimitiveTestRecordReader(r io.Reader) (*PrimitiveTestRecordReader, erro
 
 func (r PrimitiveTestRecordReader) Read() (*PrimitiveTestRecord, error) {
 	t := NewPrimitiveTestRecord()
-        err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, t)
 	return t, err
 }

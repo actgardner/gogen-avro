@@ -6,25 +6,22 @@
 package avro
 
 import (
-	"io"
 	"fmt"
+	"io"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 )
 
-
 type RecursiveFieldUnionTypeEnum int
+
 const (
+	RecursiveFieldUnionTypeEnumNull RecursiveFieldUnionTypeEnum = 0
 
-	 RecursiveFieldUnionTypeEnumNull RecursiveFieldUnionTypeEnum = 0
-
-	 RecursiveFieldUnionTypeEnumRecursiveUnionTestRecord RecursiveFieldUnionTypeEnum = 1
-
+	RecursiveFieldUnionTypeEnumRecursiveUnionTestRecord RecursiveFieldUnionTypeEnum = 1
 )
 
 type RecursiveFieldUnion struct {
-
 	Null *types.NullVal
 
 	RecursiveUnionTestRecord *RecursiveUnionTestRecord
@@ -37,14 +34,14 @@ func writeRecursiveFieldUnion(r *RecursiveFieldUnion, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType {
+
 	case RecursiveFieldUnionTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-        
+
 	case RecursiveFieldUnionTypeEnumRecursiveUnionTestRecord:
 		return writeRecursiveUnionTestRecord(r.RecursiveUnionTestRecord, w)
-        
+
 	}
 	return fmt.Errorf("invalid value for *RecursiveFieldUnion")
 }
@@ -53,36 +50,32 @@ func NewRecursiveFieldUnion() *RecursiveFieldUnion {
 	return &RecursiveFieldUnion{}
 }
 
-func (_ *RecursiveFieldUnion) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *RecursiveFieldUnion) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *RecursiveFieldUnion) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *RecursiveFieldUnion) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ *RecursiveFieldUnion) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ *RecursiveFieldUnion) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *RecursiveFieldUnion) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *RecursiveFieldUnion) SetString(v string) { panic("Unsupported operation") }
-func (r *RecursiveFieldUnion) SetLong(v int64) { 
+func (_ *RecursiveFieldUnion) SetBytes(v []byte)   { panic("Unsupported operation") }
+func (_ *RecursiveFieldUnion) SetString(v string)  { panic("Unsupported operation") }
+func (r *RecursiveFieldUnion) SetLong(v int64) {
 	r.UnionType = (RecursiveFieldUnionTypeEnum)(v)
 }
 func (r *RecursiveFieldUnion) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
+
 		return r.Null
-		
-	
+
 	case 1:
-		
+
 		r.RecursiveUnionTestRecord = NewRecursiveUnionTestRecord()
-		
-		
+
 		return r.RecursiveUnionTestRecord
-		
-	
+
 	}
 	panic("Unknown field index")
 }
-func (_ *RecursiveFieldUnion) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *RecursiveFieldUnion) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *RecursiveFieldUnion) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *RecursiveFieldUnion) Finalize()  { }
+func (_ *RecursiveFieldUnion) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *RecursiveFieldUnion) Finalize()                        {}

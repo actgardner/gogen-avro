@@ -6,25 +6,22 @@
 package avro
 
 import (
-	"io"
 	"fmt"
+	"io"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 )
 
-
 type UnionNullTraceTypeEnum int
+
 const (
+	UnionNullTraceTypeEnumNull UnionNullTraceTypeEnum = 0
 
-	 UnionNullTraceTypeEnumNull UnionNullTraceTypeEnum = 0
-
-	 UnionNullTraceTypeEnumTrace UnionNullTraceTypeEnum = 1
-
+	UnionNullTraceTypeEnumTrace UnionNullTraceTypeEnum = 1
 )
 
 type UnionNullTrace struct {
-
 	Null *types.NullVal
 
 	Trace *Trace
@@ -37,14 +34,14 @@ func writeUnionNullTrace(r *UnionNullTrace, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	switch r.UnionType{
-	
+	switch r.UnionType {
+
 	case UnionNullTraceTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-        
+
 	case UnionNullTraceTypeEnumTrace:
 		return writeTrace(r.Trace, w)
-        
+
 	}
 	return fmt.Errorf("invalid value for *UnionNullTrace")
 }
@@ -53,36 +50,32 @@ func NewUnionNullTrace() *UnionNullTrace {
 	return &UnionNullTrace{}
 }
 
-func (_ *UnionNullTrace) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *UnionNullTrace) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *UnionNullTrace) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ *UnionNullTrace) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ *UnionNullTrace) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ *UnionNullTrace) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *UnionNullTrace) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *UnionNullTrace) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *UnionNullTrace) SetString(v string) { panic("Unsupported operation") }
-func (r *UnionNullTrace) SetLong(v int64) { 
+func (_ *UnionNullTrace) SetBytes(v []byte)   { panic("Unsupported operation") }
+func (_ *UnionNullTrace) SetString(v string)  { panic("Unsupported operation") }
+func (r *UnionNullTrace) SetLong(v int64) {
 	r.UnionType = (UnionNullTraceTypeEnum)(v)
 }
 func (r *UnionNullTrace) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
+
 		return r.Null
-		
-	
+
 	case 1:
-		
+
 		r.Trace = NewTrace()
-		
-		
+
 		return r.Trace
-		
-	
+
 	}
 	panic("Unknown field index")
 }
-func (_ *UnionNullTrace) SetDefault(i int) { panic("Unsupported operation") }
+func (_ *UnionNullTrace) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *UnionNullTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionNullTrace) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *UnionNullTrace) Finalize()  { }
+func (_ *UnionNullTrace) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *UnionNullTrace) Finalize()                        {}

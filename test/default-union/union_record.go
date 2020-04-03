@@ -6,30 +6,21 @@
 package avro
 
 import (
-	"io"
-	"github.com/actgardner/gogen-avro/vm/types"
-	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/vm"
+	"github.com/actgardner/gogen-avro/vm/types"
+	"io"
 )
 
-
 type UnionRecord struct {
+	Id string
 
-	
-	
-		Id string
-	
-
-	
-	
-		Age int32
-	
-
+	Age int32
 }
 
 const UnionRecordAvroCRC64Fingerprint = "XXv\f\x93)\xf7\xe2"
 
-func NewUnionRecord() (*UnionRecord) {
+func NewUnionRecord() *UnionRecord {
 	return &UnionRecord{}
 }
 
@@ -64,17 +55,17 @@ func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (*UnionRecord,
 
 func writeUnionRecord(r *UnionRecord, w io.Writer) error {
 	var err error
-	
-	err = vm.WriteString( r.Id, w)
+
+	err = vm.WriteString(r.Id, w)
 	if err != nil {
 		return err
 	}
-	
-	err = vm.WriteInt( r.Age, w)
+
+	err = vm.WriteInt(r.Age, w)
 	if err != nil {
 		return err
 	}
-	
+
 	return err
 }
 
@@ -90,58 +81,49 @@ func (r *UnionRecord) SchemaName() string {
 	return "UnionRecord"
 }
 
-func (_ *UnionRecord) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *UnionRecord) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *UnionRecord) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *UnionRecord) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *UnionRecord) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *UnionRecord) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *UnionRecord) SetString(v string) { panic("Unsupported operation") }
+func (_ *UnionRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ *UnionRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ *UnionRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ *UnionRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ *UnionRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ *UnionRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ *UnionRecord) SetString(v string)   { panic("Unsupported operation") }
 func (_ *UnionRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *UnionRecord) Get(i int) types.Field {
-	switch (i) {
-	
+	switch i {
+
 	case 0:
-		
-		
-			return (*types.String)(&r.Id)
-		
-	
+
+		return (*types.String)(&r.Id)
+
 	case 1:
-		
-		
-			return (*types.Int)(&r.Age)
-		
-	
+
+		return (*types.Int)(&r.Age)
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *UnionRecord) SetDefault(i int) {
-	switch (i) {
-	
-        
+	switch i {
+
 	case 0:
-       	 	r.Id = "test_id"
+		r.Id = "test_id"
 		return
-	
-	
-        
+
 	case 1:
-       	 	r.Age = 100
+		r.Age = 100
 		return
-	
-	
+
 	}
 	panic("Unknown field index")
 }
 
 func (_ *UnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionRecord) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *UnionRecord) Finalize() { }
-
+func (_ *UnionRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *UnionRecord) Finalize()                        {}
 
 func (_ *UnionRecord) AvroCRC64Fingerprint() []byte {
-  return []byte(UnionRecordAvroCRC64Fingerprint)
+	return []byte(UnionRecordAvroCRC64Fingerprint)
 }

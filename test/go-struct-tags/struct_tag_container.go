@@ -8,9 +8,9 @@ package avro
 import (
 	"io"
 
+	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/container"
 	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/compiler"
 )
 
 func NewStructTagWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
@@ -24,7 +24,7 @@ type StructTagReader struct {
 	p *vm.Program
 }
 
-func NewStructTagReader(r io.Reader) (*StructTagReader, error){
+func NewStructTagReader(r io.Reader) (*StructTagReader, error) {
 	containerReader, err := container.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func NewStructTagReader(r io.Reader) (*StructTagReader, error){
 		return nil, err
 	}
 
-	return &StructTagReader {
+	return &StructTagReader{
 		r: containerReader,
 		p: deser,
 	}, nil
@@ -44,6 +44,6 @@ func NewStructTagReader(r io.Reader) (*StructTagReader, error){
 
 func (r StructTagReader) Read() (*StructTag, error) {
 	t := NewStructTag()
-        err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, t)
 	return t, err
 }
