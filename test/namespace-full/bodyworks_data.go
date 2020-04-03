@@ -14,17 +14,11 @@ import (
 
 // Common information related to the event which must be included in any clean event
 type BodyworksData struct {
-
 	// Unique identifier for the event used for de-duplication and tracing.
-
 	Uuid *UnionNullBodyworksDatatypeUUID
-
 	// Fully qualified name of the host that generated the event that generated the data.
-
 	Hostname *UnionNullString
-
 	// Trace information not redundant with this object
-
 	Trace *UnionNullBodyworksTrace
 }
 
@@ -65,22 +59,18 @@ func DeserializeBodyworksDataFromSchema(r io.Reader, schema string) (*BodyworksD
 
 func writeBodyworksData(r *BodyworksData, w io.Writer) error {
 	var err error
-
 	err = writeUnionNullBodyworksDatatypeUUID(r.Uuid, w)
 	if err != nil {
 		return err
 	}
-
 	err = writeUnionNullString(r.Hostname, w)
 	if err != nil {
 		return err
 	}
-
 	err = writeUnionNullBodyworksTrace(r.Trace, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -107,47 +97,36 @@ func (_ *BodyworksData) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *BodyworksData) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.Uuid = NewUnionNullBodyworksDatatypeUUID()
 
 		return r.Uuid
-
 	case 1:
-
 		r.Hostname = NewUnionNullString()
 
 		return r.Hostname
-
 	case 2:
-
 		r.Trace = NewUnionNullBodyworksTrace()
 
 		return r.Trace
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *BodyworksData) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.Uuid = NewUnionNullBodyworksDatatypeUUID()
 
 		return
-
 	case 1:
 		r.Hostname = NewUnionNullString()
 
 		return
-
 	case 2:
 		r.Trace = NewUnionNullBodyworksTrace()
 
 		return
-
 	}
 	panic("Unknown field index")
 }

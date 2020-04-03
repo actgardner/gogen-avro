@@ -16,17 +16,14 @@ import (
 type RecursiveFieldUnionTypeEnum int
 
 const (
-	RecursiveFieldUnionTypeEnumNull RecursiveFieldUnionTypeEnum = 0
-
+	RecursiveFieldUnionTypeEnumNull                     RecursiveFieldUnionTypeEnum = 0
 	RecursiveFieldUnionTypeEnumRecursiveUnionTestRecord RecursiveFieldUnionTypeEnum = 1
 )
 
 type RecursiveFieldUnion struct {
-	Null *types.NullVal
-
+	Null                     *types.NullVal
 	RecursiveUnionTestRecord *RecursiveUnionTestRecord
-
-	UnionType RecursiveFieldUnionTypeEnum
+	UnionType                RecursiveFieldUnionTypeEnum
 }
 
 func writeRecursiveFieldUnion(r *RecursiveFieldUnion, w io.Writer) error {
@@ -35,13 +32,10 @@ func writeRecursiveFieldUnion(r *RecursiveFieldUnion, w io.Writer) error {
 		return err
 	}
 	switch r.UnionType {
-
 	case RecursiveFieldUnionTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-
 	case RecursiveFieldUnionTypeEnumRecursiveUnionTestRecord:
 		return writeRecursiveUnionTestRecord(r.RecursiveUnionTestRecord, w)
-
 	}
 	return fmt.Errorf("invalid value for *RecursiveFieldUnion")
 }
@@ -61,17 +55,11 @@ func (r *RecursiveFieldUnion) SetLong(v int64) {
 }
 func (r *RecursiveFieldUnion) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return r.Null
-
 	case 1:
-
 		r.RecursiveUnionTestRecord = NewRecursiveUnionTestRecord()
-
 		return r.RecursiveUnionTestRecord
-
 	}
 	panic("Unknown field index")
 }

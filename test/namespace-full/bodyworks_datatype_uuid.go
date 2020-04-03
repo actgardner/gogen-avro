@@ -54,12 +54,10 @@ func DeserializeBodyworksDatatypeUUIDFromSchema(r io.Reader, schema string) (*Bo
 
 func writeBodyworksDatatypeUUID(r *BodyworksDatatypeUUID, w io.Writer) error {
 	var err error
-
 	err = vm.WriteString(r.Uuid, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -86,22 +84,17 @@ func (_ *BodyworksDatatypeUUID) SetUnionElem(v int64) { panic("Unsupported opera
 
 func (r *BodyworksDatatypeUUID) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.String)(&r.Uuid)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *BodyworksDatatypeUUID) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.Uuid = ""
 		return
-
 	}
 	panic("Unknown field index")
 }

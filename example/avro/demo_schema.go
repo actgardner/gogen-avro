@@ -61,32 +61,26 @@ func DeserializeDemoSchemaFromSchema(r io.Reader, schema string) (*DemoSchema, e
 
 func writeDemoSchema(r *DemoSchema, w io.Writer) error {
 	var err error
-
 	err = vm.WriteInt(r.IntField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteDouble(r.DoubleField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteString(r.StringField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteBool(r.BoolField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteBytes(r.BytesField, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -113,34 +107,22 @@ func (_ *DemoSchema) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *DemoSchema) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.Int)(&r.IntField)
-
 	case 1:
-
 		return (*types.Double)(&r.DoubleField)
-
 	case 2:
-
 		return (*types.String)(&r.StringField)
-
 	case 3:
-
 		return (*types.Boolean)(&r.BoolField)
-
 	case 4:
-
 		return (*types.Bytes)(&r.BytesField)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *DemoSchema) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

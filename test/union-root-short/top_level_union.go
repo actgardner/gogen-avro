@@ -17,16 +17,13 @@ type TopLevelUnionTypeEnum int
 
 const (
 	TopLevelUnionTypeEnumIp_address TopLevelUnionTypeEnum = 0
-
-	TopLevelUnionTypeEnumEvent TopLevelUnionTypeEnum = 1
+	TopLevelUnionTypeEnumEvent      TopLevelUnionTypeEnum = 1
 )
 
 type TopLevelUnion struct {
 	Ip_address Ip_address
-
-	Event *Event
-
-	UnionType TopLevelUnionTypeEnum
+	Event      *Event
+	UnionType  TopLevelUnionTypeEnum
 }
 
 func writeTopLevelUnion(r *TopLevelUnion, w io.Writer) error {
@@ -35,13 +32,10 @@ func writeTopLevelUnion(r *TopLevelUnion, w io.Writer) error {
 		return err
 	}
 	switch r.UnionType {
-
 	case TopLevelUnionTypeEnumIp_address:
 		return writeIp_address(r.Ip_address, w)
-
 	case TopLevelUnionTypeEnumEvent:
 		return writeEvent(r.Event, w)
-
 	}
 	return fmt.Errorf("invalid value for *TopLevelUnion")
 }
@@ -61,17 +55,11 @@ func (r *TopLevelUnion) SetLong(v int64) {
 }
 func (r *TopLevelUnion) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*Ip_addressWrapper)(&r.Ip_address)
-
 	case 1:
-
 		r.Event = NewEvent()
-
 		return r.Event
-
 	}
 	panic("Unknown field index")
 }

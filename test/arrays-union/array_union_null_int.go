@@ -42,11 +42,9 @@ func (_ *ArrayUnionNullIntWrapper) Finalize()                        {}
 func (_ *ArrayUnionNullIntWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
 func (r *ArrayUnionNullIntWrapper) AppendArray() types.Field {
 	var v *UnionNullInt
-
 	v = NewUnionNullInt()
 
 	*r = append(*r, v)
 
 	return (*r)[len(*r)-1]
-
 }

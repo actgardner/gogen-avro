@@ -55,17 +55,14 @@ func DeserializeAliasRecordFromSchema(r io.Reader, schema string) (*AliasRecord,
 
 func writeAliasRecord(r *AliasRecord, w io.Writer) error {
 	var err error
-
 	err = vm.WriteString(r.B, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteString(r.D, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -92,22 +89,16 @@ func (_ *AliasRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *AliasRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.String)(&r.B)
-
 	case 1:
-
 		return (*types.String)(&r.D)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *AliasRecord) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

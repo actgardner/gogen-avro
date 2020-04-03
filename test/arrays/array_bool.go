@@ -44,7 +44,5 @@ func (r *ArrayBoolWrapper) AppendArray() types.Field {
 	var v bool
 
 	*r = append(*r, v)
-
 	return (*types.Boolean)(&(*r)[len(*r)-1])
-
 }

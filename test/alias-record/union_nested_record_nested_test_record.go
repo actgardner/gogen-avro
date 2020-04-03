@@ -16,17 +16,14 @@ import (
 type UnionNestedRecordNestedTestRecordTypeEnum int
 
 const (
-	UnionNestedRecordNestedTestRecordTypeEnumNestedRecord UnionNestedRecordNestedTestRecordTypeEnum = 0
-
+	UnionNestedRecordNestedTestRecordTypeEnumNestedRecord     UnionNestedRecordNestedTestRecordTypeEnum = 0
 	UnionNestedRecordNestedTestRecordTypeEnumNestedTestRecord UnionNestedRecordNestedTestRecordTypeEnum = 1
 )
 
 type UnionNestedRecordNestedTestRecord struct {
-	NestedRecord *NestedRecord
-
+	NestedRecord     *NestedRecord
 	NestedTestRecord *NestedTestRecord
-
-	UnionType UnionNestedRecordNestedTestRecordTypeEnum
+	UnionType        UnionNestedRecordNestedTestRecordTypeEnum
 }
 
 func writeUnionNestedRecordNestedTestRecord(r *UnionNestedRecordNestedTestRecord, w io.Writer) error {
@@ -35,13 +32,10 @@ func writeUnionNestedRecordNestedTestRecord(r *UnionNestedRecordNestedTestRecord
 		return err
 	}
 	switch r.UnionType {
-
 	case UnionNestedRecordNestedTestRecordTypeEnumNestedRecord:
 		return writeNestedRecord(r.NestedRecord, w)
-
 	case UnionNestedRecordNestedTestRecordTypeEnumNestedTestRecord:
 		return writeNestedTestRecord(r.NestedTestRecord, w)
-
 	}
 	return fmt.Errorf("invalid value for *UnionNestedRecordNestedTestRecord")
 }
@@ -61,19 +55,12 @@ func (r *UnionNestedRecordNestedTestRecord) SetLong(v int64) {
 }
 func (r *UnionNestedRecordNestedTestRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.NestedRecord = NewNestedRecord()
-
 		return r.NestedRecord
-
 	case 1:
-
 		r.NestedTestRecord = NewNestedTestRecord()
-
 		return r.NestedTestRecord
-
 	}
 	panic("Unknown field index")
 }

@@ -53,12 +53,10 @@ func DeserializePrimitiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 func writePrimitiveUnionTestRecord(r *PrimitiveUnionTestRecord, w io.Writer) error {
 	var err error
-
 	err = writeUnionIntLongFloatDoubleStringBoolNull(r.UnionField, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -85,25 +83,20 @@ func (_ *PrimitiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported op
 
 func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
 
 		return r.UnionField
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *PrimitiveUnionTestRecord) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
 		r.UnionField.Int = 1234
 		return
-
 	}
 	panic("Unknown field index")
 }

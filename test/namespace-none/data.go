@@ -14,17 +14,11 @@ import (
 
 // Common information related to the event which must be included in any clean event
 type Data struct {
-
 	// Unique identifier for the event used for de-duplication and tracing.
-
 	Uuid *UnionNullUUID
-
 	// Fully qualified name of the host that generated the event that generated the data.
-
 	Hostname *UnionNullString
-
 	// Trace information not redundant with this object
-
 	Trace *UnionNullTrace
 }
 
@@ -65,22 +59,18 @@ func DeserializeDataFromSchema(r io.Reader, schema string) (*Data, error) {
 
 func writeData(r *Data, w io.Writer) error {
 	var err error
-
 	err = writeUnionNullUUID(r.Uuid, w)
 	if err != nil {
 		return err
 	}
-
 	err = writeUnionNullString(r.Hostname, w)
 	if err != nil {
 		return err
 	}
-
 	err = writeUnionNullTrace(r.Trace, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -107,47 +97,36 @@ func (_ *Data) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Data) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.Uuid = NewUnionNullUUID()
 
 		return r.Uuid
-
 	case 1:
-
 		r.Hostname = NewUnionNullString()
 
 		return r.Hostname
-
 	case 2:
-
 		r.Trace = NewUnionNullTrace()
 
 		return r.Trace
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *Data) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.Uuid = NewUnionNullUUID()
 
 		return
-
 	case 1:
 		r.Hostname = NewUnionNullString()
 
 		return
-
 	case 2:
 		r.Trace = NewUnionNullTrace()
 
 		return
-
 	}
 	panic("Unknown field index")
 }

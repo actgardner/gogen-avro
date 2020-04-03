@@ -64,13 +64,10 @@ func (r *MapArrayString) Finalize() {
 func (r *MapArrayString) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
 	var v []string
-
 	v = make([]string, 0)
 
 	r.values = append(r.values, v)
-
 	return (*ArrayStringWrapper)(&r.values[len(r.values)-1])
-
 }
 
 func (_ *MapArrayString) AppendArray() types.Field { panic("Unsupported operation") }

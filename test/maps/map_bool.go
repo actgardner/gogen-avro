@@ -60,11 +60,8 @@ func (r *MapBool) Finalize() {
 func (r *MapBool) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
 	var v bool
-
 	r.values = append(r.values, v)
-
 	return (*types.Boolean)(&r.values[len(r.values)-1])
-
 }
 
 func (_ *MapBool) AppendArray() types.Field { panic("Unsupported operation") }

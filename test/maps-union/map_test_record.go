@@ -53,12 +53,10 @@ func DeserializeMapTestRecordFromSchema(r io.Reader, schema string) (*MapTestRec
 
 func writeMapTestRecord(r *MapTestRecord, w io.Writer) error {
 	var err error
-
 	err = writeMapUnionNullInt(r.IntField, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -85,20 +83,16 @@ func (_ *MapTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *MapTestRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.IntField = NewMapUnionNullInt()
 
 		return r.IntField
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *MapTestRecord) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

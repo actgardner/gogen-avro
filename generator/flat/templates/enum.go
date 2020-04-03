@@ -8,23 +8,21 @@ import (
 	"github.com/actgardner/gogen-avro/vm"
 )
 
-{{ if ne .Doc "" }}
-// {{ .Doc}}
-{{ end }}  
+{{ if ne .Doc "" }}// {{ .Doc}}{{ end }}  
 type {{ .GoType }} int32
 
 const (
-{{ range $i, $symbol := .Symbols }}
+{{ range $i, $symbol := .Symbols -}}
 	{{ $.SymbolName $symbol }} {{ $.GoType }} = {{ $i }}
-{{ end }}
+{{ end -}}
 )
 
 func (e {{ .GoType  }}) String() string {
 	switch e {
-{{ range $i, $symbol := .Symbols }}
+{{ range $i, $symbol := .Symbols -}}
 	case {{ $.SymbolName $symbol }}:
 		return {{ printf "%q" $symbol }}
-{{ end }}
+{{ end -}}
 	}
 	return "unknown"
 }
@@ -35,10 +33,10 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 
 func {{ .FromStringMethod }}(raw string) (r {{ .GoType }}, err error) {
 	switch raw {
-{{ range $i, $symbol := .Symbols }}
+{{ range $i, $symbol := .Symbols -}}
 	case {{ printf "%q" $symbol }}:
 		return {{ $.SymbolName $symbol }}, nil
-{{ end }}
+{{ end -}}
 	}
 
 	return -1, fmt.Errorf("invalid value for {{ $.GoType }}: '%s'", raw)

@@ -60,11 +60,8 @@ func (r *MapBytes) Finalize() {
 func (r *MapBytes) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
 	var v []byte
-
 	r.values = append(r.values, v)
-
 	return (*types.Bytes)(&r.values[len(r.values)-1])
-
 }
 
 func (_ *MapBytes) AppendArray() types.Field { panic("Unsupported operation") }

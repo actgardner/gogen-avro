@@ -14,13 +14,9 @@ import (
 
 // GoGen test
 type Sample struct {
-
 	// Core data information required for any event
-
 	Header *UnionNullData
-
 	// Core data information required for any event
-
 	Body *UnionNullData
 }
 
@@ -61,17 +57,14 @@ func DeserializeSampleFromSchema(r io.Reader, schema string) (*Sample, error) {
 
 func writeSample(r *Sample, w io.Writer) error {
 	var err error
-
 	err = writeUnionNullData(r.Header, w)
 	if err != nil {
 		return err
 	}
-
 	err = writeUnionNullData(r.Body, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -98,36 +91,28 @@ func (_ *Sample) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Sample) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.Header = NewUnionNullData()
 
 		return r.Header
-
 	case 1:
-
 		r.Body = NewUnionNullData()
 
 		return r.Body
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *Sample) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.Header = NewUnionNullData()
 
 		return
-
 	case 1:
 		r.Body = NewUnionNullData()
 
 		return
-
 	}
 	panic("Unknown field index")
 }

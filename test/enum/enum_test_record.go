@@ -53,12 +53,10 @@ func DeserializeEnumTestRecordFromSchema(r io.Reader, schema string) (*EnumTestR
 
 func writeEnumTestRecord(r *EnumTestRecord, w io.Writer) error {
 	var err error
-
 	err = writeTestEnumType(r.EnumField, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -85,22 +83,17 @@ func (_ *EnumTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") 
 
 func (r *EnumTestRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.Int)(&r.EnumField)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *EnumTestRecord) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.EnumField = TestEnumTypeTestSymbol3
 		return
-
 	}
 	panic("Unknown field index")
 }

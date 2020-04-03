@@ -53,12 +53,10 @@ func DeserializeRecursiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 func writeRecursiveUnionTestRecord(r *RecursiveUnionTestRecord, w io.Writer) error {
 	var err error
-
 	err = writeUnionNullRecursiveUnionTestRecord(r.RecursiveField, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -85,20 +83,16 @@ func (_ *RecursiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported op
 
 func (r *RecursiveUnionTestRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.RecursiveField = NewUnionNullRecursiveUnionTestRecord()
 
 		return r.RecursiveField
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *RecursiveUnionTestRecord) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

@@ -67,47 +67,38 @@ func DeserializePrimitiveTestRecordFromSchema(r io.Reader, schema string) (*Prim
 
 func writePrimitiveTestRecord(r *PrimitiveTestRecord, w io.Writer) error {
 	var err error
-
 	err = vm.WriteLong(r.LongField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteString(r.StringField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteFloat(r.FloatField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteBytes(r.BytesField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteDouble(r.DoubleField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteInt(r.IntField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteBool(r.BoolField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteString(r.NewString, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -134,50 +125,31 @@ func (_ *PrimitiveTestRecord) SetUnionElem(v int64) { panic("Unsupported operati
 
 func (r *PrimitiveTestRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.Long)(&r.LongField)
-
 	case 1:
-
 		return (*types.String)(&r.StringField)
-
 	case 2:
-
 		return (*types.Float)(&r.FloatField)
-
 	case 3:
-
 		return (*types.Bytes)(&r.BytesField)
-
 	case 4:
-
 		return (*types.Double)(&r.DoubleField)
-
 	case 5:
-
 		return (*types.Int)(&r.IntField)
-
 	case 6:
-
 		return (*types.Boolean)(&r.BoolField)
-
 	case 7:
-
 		return (*types.String)(&r.NewString)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *PrimitiveTestRecord) SetDefault(i int) {
 	switch i {
-
 	case 7:
 		r.NewString = "somedefault"
 		return
-
 	}
 	panic("Unknown field index")
 }

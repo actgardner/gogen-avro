@@ -16,17 +16,14 @@ import (
 type UnionNullDatatypeUUIDTypeEnum int
 
 const (
-	UnionNullDatatypeUUIDTypeEnumNull UnionNullDatatypeUUIDTypeEnum = 0
-
+	UnionNullDatatypeUUIDTypeEnumNull         UnionNullDatatypeUUIDTypeEnum = 0
 	UnionNullDatatypeUUIDTypeEnumDatatypeUUID UnionNullDatatypeUUIDTypeEnum = 1
 )
 
 type UnionNullDatatypeUUID struct {
-	Null *types.NullVal
-
+	Null         *types.NullVal
 	DatatypeUUID *DatatypeUUID
-
-	UnionType UnionNullDatatypeUUIDTypeEnum
+	UnionType    UnionNullDatatypeUUIDTypeEnum
 }
 
 func writeUnionNullDatatypeUUID(r *UnionNullDatatypeUUID, w io.Writer) error {
@@ -35,13 +32,10 @@ func writeUnionNullDatatypeUUID(r *UnionNullDatatypeUUID, w io.Writer) error {
 		return err
 	}
 	switch r.UnionType {
-
 	case UnionNullDatatypeUUIDTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-
 	case UnionNullDatatypeUUIDTypeEnumDatatypeUUID:
 		return writeDatatypeUUID(r.DatatypeUUID, w)
-
 	}
 	return fmt.Errorf("invalid value for *UnionNullDatatypeUUID")
 }
@@ -61,17 +55,11 @@ func (r *UnionNullDatatypeUUID) SetLong(v int64) {
 }
 func (r *UnionNullDatatypeUUID) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return r.Null
-
 	case 1:
-
 		r.DatatypeUUID = NewDatatypeUUID()
-
 		return r.DatatypeUUID
-
 	}
 	panic("Unknown field index")
 }

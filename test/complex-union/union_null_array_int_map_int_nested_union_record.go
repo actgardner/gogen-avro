@@ -16,25 +16,18 @@ import (
 type UnionNullArrayIntMapIntNestedUnionRecordTypeEnum int
 
 const (
-	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 0
-
-	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 1
-
-	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 2
-
+	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull              UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 0
+	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt          UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 1
+	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt            UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 2
 	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 3
 )
 
 type UnionNullArrayIntMapIntNestedUnionRecord struct {
-	Null *types.NullVal
-
-	ArrayInt []int32
-
-	MapInt *MapInt
-
+	Null              *types.NullVal
+	ArrayInt          []int32
+	MapInt            *MapInt
 	NestedUnionRecord *NestedUnionRecord
-
-	UnionType UnionNullArrayIntMapIntNestedUnionRecordTypeEnum
+	UnionType         UnionNullArrayIntMapIntNestedUnionRecordTypeEnum
 }
 
 func writeUnionNullArrayIntMapIntNestedUnionRecord(r *UnionNullArrayIntMapIntNestedUnionRecord, w io.Writer) error {
@@ -43,19 +36,14 @@ func writeUnionNullArrayIntMapIntNestedUnionRecord(r *UnionNullArrayIntMapIntNes
 		return err
 	}
 	switch r.UnionType {
-
 	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-
 	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt:
 		return writeArrayInt(r.ArrayInt, w)
-
 	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt:
 		return writeMapInt(r.MapInt, w)
-
 	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord:
 		return writeNestedUnionRecord(r.NestedUnionRecord, w)
-
 	}
 	return fmt.Errorf("invalid value for *UnionNullArrayIntMapIntNestedUnionRecord")
 }
@@ -81,29 +69,17 @@ func (r *UnionNullArrayIntMapIntNestedUnionRecord) SetLong(v int64) {
 }
 func (r *UnionNullArrayIntMapIntNestedUnionRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return r.Null
-
 	case 1:
-
 		r.ArrayInt = make([]int32, 0)
-
 		return (*ArrayIntWrapper)(&r.ArrayInt)
-
 	case 2:
-
 		r.MapInt = NewMapInt()
-
 		return r.MapInt
-
 	case 3:
-
 		r.NestedUnionRecord = NewNestedUnionRecord()
-
 		return r.NestedUnionRecord
-
 	}
 	panic("Unknown field index")
 }

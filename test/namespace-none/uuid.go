@@ -54,12 +54,10 @@ func DeserializeUUIDFromSchema(r io.Reader, schema string) (*UUID, error) {
 
 func writeUUID(r *UUID, w io.Writer) error {
 	var err error
-
 	err = vm.WriteString(r.Uuid, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -86,22 +84,17 @@ func (_ *UUID) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *UUID) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.String)(&r.Uuid)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *UUID) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.Uuid = ""
 		return
-
 	}
 	panic("Unknown field index")
 }

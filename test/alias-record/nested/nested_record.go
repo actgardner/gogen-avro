@@ -57,22 +57,18 @@ func DeserializeNestedRecordFromSchema(r io.Reader, schema string) (*NestedRecor
 
 func writeNestedRecord(r *NestedRecord, w io.Writer) error {
 	var err error
-
 	err = vm.WriteString(r.StringField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteBool(r.BoolField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteBytes(r.BytesField, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -99,26 +95,18 @@ func (_ *NestedRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NestedRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.String)(&r.StringField)
-
 	case 1:
-
 		return (*types.Boolean)(&r.BoolField)
-
 	case 2:
-
 		return (*types.Bytes)(&r.BytesField)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *NestedRecord) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

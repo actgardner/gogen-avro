@@ -14,17 +14,11 @@ import (
 
 // Common information related to the event which must be included in any clean event
 type HeaderworksData struct {
-
 	// Unique identifier for the event used for de-duplication and tracing.
-
 	Uuid *UnionNullDatatypeUUID
-
 	// Fully qualified name of the host that generated the event that generated the data.
-
 	Hostname *UnionNullString
-
 	// Trace information not redundant with this object
-
 	Trace *UnionNullHeaderworksTrace
 }
 
@@ -65,22 +59,18 @@ func DeserializeHeaderworksDataFromSchema(r io.Reader, schema string) (*Headerwo
 
 func writeHeaderworksData(r *HeaderworksData, w io.Writer) error {
 	var err error
-
 	err = writeUnionNullDatatypeUUID(r.Uuid, w)
 	if err != nil {
 		return err
 	}
-
 	err = writeUnionNullString(r.Hostname, w)
 	if err != nil {
 		return err
 	}
-
 	err = writeUnionNullHeaderworksTrace(r.Trace, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -107,47 +97,36 @@ func (_ *HeaderworksData) SetUnionElem(v int64) { panic("Unsupported operation")
 
 func (r *HeaderworksData) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.Uuid = NewUnionNullDatatypeUUID()
 
 		return r.Uuid
-
 	case 1:
-
 		r.Hostname = NewUnionNullString()
 
 		return r.Hostname
-
 	case 2:
-
 		r.Trace = NewUnionNullHeaderworksTrace()
 
 		return r.Trace
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *HeaderworksData) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.Uuid = NewUnionNullDatatypeUUID()
 
 		return
-
 	case 1:
 		r.Hostname = NewUnionNullString()
 
 		return
-
 	case 2:
 		r.Trace = NewUnionNullHeaderworksTrace()
 
 		return
-
 	}
 	panic("Unknown field index")
 }

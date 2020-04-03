@@ -54,12 +54,10 @@ func DeserializeParentFromSchema(r io.Reader, schema string) (*Parent, error) {
 
 func writeParent(r *Parent, w io.Writer) error {
 	var err error
-
 	err = writeArrayChild(r.Children, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -86,20 +84,16 @@ func (_ *Parent) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Parent) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.Children = make([]*Child, 0)
 
 		return (*ArrayChildWrapper)(&r.Children)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *Parent) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

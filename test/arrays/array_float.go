@@ -44,7 +44,5 @@ func (r *ArrayFloatWrapper) AppendArray() types.Field {
 	var v float32
 
 	*r = append(*r, v)
-
 	return (*types.Float)(&(*r)[len(*r)-1])
-
 }

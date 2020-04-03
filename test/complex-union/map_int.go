@@ -64,11 +64,8 @@ func (r *MapInt) Finalize() {
 func (r *MapInt) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
 	var v int32
-
 	r.values = append(r.values, v)
-
 	return (*types.Int)(&r.values[len(r.values)-1])
-
 }
 
 func (_ *MapInt) AppendArray() types.Field { panic("Unsupported operation") }

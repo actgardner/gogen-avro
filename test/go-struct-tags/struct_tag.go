@@ -53,12 +53,10 @@ func DeserializeStructTagFromSchema(r io.Reader, schema string) (*StructTag, err
 
 func writeStructTag(r *StructTag, w io.Writer) error {
 	var err error
-
 	err = vm.WriteString(r.ProductName, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -85,18 +83,14 @@ func (_ *StructTag) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *StructTag) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.String)(&r.ProductName)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *StructTag) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

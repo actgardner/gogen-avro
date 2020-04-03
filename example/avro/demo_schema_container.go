@@ -8,9 +8,9 @@ package avro
 import (
 	"io"
 
+	"github.com/actgardner/gogen-avro/compiler"
 	"github.com/actgardner/gogen-avro/container"
 	"github.com/actgardner/gogen-avro/vm"
-	"github.com/actgardner/gogen-avro/compiler"
 )
 
 func NewDemoSchemaWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
@@ -24,7 +24,7 @@ type DemoSchemaReader struct {
 	p *vm.Program
 }
 
-func NewDemoSchemaReader(r io.Reader) (*DemoSchemaReader, error){
+func NewDemoSchemaReader(r io.Reader) (*DemoSchemaReader, error) {
 	containerReader, err := container.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func NewDemoSchemaReader(r io.Reader) (*DemoSchemaReader, error){
 		return nil, err
 	}
 
-	return &DemoSchemaReader {
+	return &DemoSchemaReader{
 		r: containerReader,
 		p: deser,
 	}, nil
@@ -44,6 +44,6 @@ func NewDemoSchemaReader(r io.Reader) (*DemoSchemaReader, error){
 
 func (r DemoSchemaReader) Read() (*DemoSchema, error) {
 	t := NewDemoSchema()
-        err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, t)
 	return t, err
 }

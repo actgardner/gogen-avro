@@ -40,14 +40,14 @@ func (_ *{{ .WrapperType }}) Finalize() { }
 func (_ *{{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
 func (r *{{ .WrapperType }}) AppendArray() types.Field {
 	var v {{ .ItemType.GoType }}
-	{{ if .ItemConstructable }}
+	{{ if .ItemConstructable -}}
 	{{ .ItemConstructable }}
- 	{{ end }}
+ 	{{- end }}
 	*r = append(*r, v)
-        {{ if .ItemType.WrapperType }} 
+        {{ if .ItemType.WrapperType -}} 
         return (*{{ .ItemType.WrapperType }})(&(*r)[len(*r)-1])
-        {{ else }}
+        {{- else }}
         return (*r)[len(*r)-1]
-        {{ end }}
+        {{- end }}
 }
 `

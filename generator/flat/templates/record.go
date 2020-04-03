@@ -10,15 +10,13 @@ import (
 
 {{ if ne .Doc "" }}// {{ .Doc}}{{ end }}
 type {{ .Name }} struct {
-{{ range $i, $field := .Fields }}
-	{{ if ne $field.Doc "" }}
-	// {{ $field.Doc }}
-	{{ end }}
-	{{ if ne $field.Tags "" }}
+{{ range $i, $field := .Fields -}}
+	{{ if ne $field.Doc "" }}// {{ $field.Doc }}{{ end }}
+	{{ if ne $field.Tags "" -}}
 		{{ $field.SimpleName }} {{ $field.Type.GoType }} ` + "`{{ $field.Tags }}`" + `
-	{{ else }}
+	{{ else -}}
 		{{ $field.SimpleName }} {{ $field.Type.GoType }}
-	{{ end }}
+	{{ end -}}
 {{ end }}
 }
 
@@ -59,12 +57,12 @@ func Deserialize{{ .Name }}FromSchema(r io.Reader, schema string) ({{ .GoType }}
 
 func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	var err error
-	{{ range $i, $field := .Fields }}
+	{{ range $i, $field := .Fields -}}
 	err = {{ .Type.SerializerMethod }}( r.{{ .GoName }}, w)
 	if err != nil {
 		return err
 	}
-	{{ end }}
+	{{ end -}}
 	return err
 }
 
@@ -91,30 +89,30 @@ func (_ {{ .GoType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r {{ .GoType }}) Get(i int) types.Field {
 	switch (i) {
-	{{ range $i, $field := .Fields }}
+	{{ range $i, $field := .Fields -}}
 	case {{ $i }}:
-		{{ if $.ConstructableForField $field | ne "" }}
+		{{ if $.ConstructableForField $field | ne "" -}}
 			{{ $.ConstructableForField $field }}
-		{{ end }}
-		{{ if ne $field.Type.WrapperType "" }}
+		{{ end -}}
+		{{ if ne $field.Type.WrapperType "" -}}
 			return (*{{ $field.Type.WrapperType }})(&r.{{ $field.GoName }})
-		{{ else }}
+		{{ else -}}
 			return r.{{ $field.GoName }}
-		{{ end }}
-	{{ end }}
+		{{ end -}}
+	{{ end -}}
 	}
 	panic("Unknown field index")
 }
 
 func (r {{ .GoType }}) SetDefault(i int) {
 	switch (i) {
-	{{ range $i, $field := .Fields }}
-        {{ if .HasDefault }}
+	{{ range $i, $field := .Fields -}}
+        {{ if .HasDefault -}}
 	case {{ $i }}:
        	 	{{ $.DefaultForField $field }}
 		return
-	{{ end }}
-	{{ end }}
+	{{ end -}}
+	{{ end -}}
 	}
 	panic("Unknown field index")
 }

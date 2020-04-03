@@ -53,12 +53,10 @@ func DeserializeNestedMapFromSchema(r io.Reader, schema string) (*NestedMap, err
 
 func writeNestedMap(r *NestedMap, w io.Writer) error {
 	var err error
-
 	err = writeMapMapArrayString(r.MapOfMaps, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -85,20 +83,16 @@ func (_ *NestedMap) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NestedMap) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.MapOfMaps = NewMapMapArrayString()
 
 		return r.MapOfMaps
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *NestedMap) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

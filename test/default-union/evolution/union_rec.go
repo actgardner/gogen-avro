@@ -53,12 +53,10 @@ func DeserializeUnionRecFromSchema(r io.Reader, schema string) (*UnionRec, error
 
 func writeUnionRec(r *UnionRec, w io.Writer) error {
 	var err error
-
 	err = vm.WriteInt(r.A, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -85,18 +83,14 @@ func (_ *UnionRec) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *UnionRec) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.Int)(&r.A)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *UnionRec) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

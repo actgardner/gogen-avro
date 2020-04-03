@@ -17,16 +17,13 @@ type UnionIp_addressEventTypeEnum int
 
 const (
 	UnionIp_addressEventTypeEnumIp_address UnionIp_addressEventTypeEnum = 0
-
-	UnionIp_addressEventTypeEnumEvent UnionIp_addressEventTypeEnum = 1
+	UnionIp_addressEventTypeEnumEvent      UnionIp_addressEventTypeEnum = 1
 )
 
 type UnionIp_addressEvent struct {
 	Ip_address Ip_address
-
-	Event *Event
-
-	UnionType UnionIp_addressEventTypeEnum
+	Event      *Event
+	UnionType  UnionIp_addressEventTypeEnum
 }
 
 func writeUnionIp_addressEvent(r *UnionIp_addressEvent, w io.Writer) error {
@@ -35,13 +32,10 @@ func writeUnionIp_addressEvent(r *UnionIp_addressEvent, w io.Writer) error {
 		return err
 	}
 	switch r.UnionType {
-
 	case UnionIp_addressEventTypeEnumIp_address:
 		return writeIp_address(r.Ip_address, w)
-
 	case UnionIp_addressEventTypeEnumEvent:
 		return writeEvent(r.Event, w)
-
 	}
 	return fmt.Errorf("invalid value for *UnionIp_addressEvent")
 }
@@ -61,17 +55,11 @@ func (r *UnionIp_addressEvent) SetLong(v int64) {
 }
 func (r *UnionIp_addressEvent) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*Ip_addressWrapper)(&r.Ip_address)
-
 	case 1:
-
 		r.Event = NewEvent()
-
 		return r.Event
-
 	}
 	panic("Unknown field index")
 }

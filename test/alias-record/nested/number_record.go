@@ -59,27 +59,22 @@ func DeserializeNumberRecordFromSchema(r io.Reader, schema string) (*NumberRecor
 
 func writeNumberRecord(r *NumberRecord, w io.Writer) error {
 	var err error
-
 	err = vm.WriteInt(r.IntField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteLong(r.LongField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteFloat(r.FloatField, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteDouble(r.DoubleField, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -106,30 +101,20 @@ func (_ *NumberRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NumberRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.Int)(&r.IntField)
-
 	case 1:
-
 		return (*types.Long)(&r.LongField)
-
 	case 2:
-
 		return (*types.Float)(&r.FloatField)
-
 	case 3:
-
 		return (*types.Double)(&r.DoubleField)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *NumberRecord) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

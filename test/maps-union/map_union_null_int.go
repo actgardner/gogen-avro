@@ -64,13 +64,10 @@ func (r *MapUnionNullInt) Finalize() {
 func (r *MapUnionNullInt) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
 	var v *UnionNullInt
-
 	v = NewUnionNullInt()
 
 	r.values = append(r.values, v)
-
 	return r.values[len(r.values)-1]
-
 }
 
 func (_ *MapUnionNullInt) AppendArray() types.Field { panic("Unsupported operation") }

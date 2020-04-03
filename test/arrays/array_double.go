@@ -44,7 +44,5 @@ func (r *ArrayDoubleWrapper) AppendArray() types.Field {
 	var v float64
 
 	*r = append(*r, v)
-
 	return (*types.Double)(&(*r)[len(*r)-1])
-
 }

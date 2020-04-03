@@ -16,36 +16,23 @@ import (
 type UnionIntLongFloatDoubleStringBoolNullTypeEnum int
 
 const (
-	UnionIntLongFloatDoubleStringBoolNullTypeEnumInt UnionIntLongFloatDoubleStringBoolNullTypeEnum = 0
-
-	UnionIntLongFloatDoubleStringBoolNullTypeEnumLong UnionIntLongFloatDoubleStringBoolNullTypeEnum = 1
-
-	UnionIntLongFloatDoubleStringBoolNullTypeEnumFloat UnionIntLongFloatDoubleStringBoolNullTypeEnum = 2
-
+	UnionIntLongFloatDoubleStringBoolNullTypeEnumInt    UnionIntLongFloatDoubleStringBoolNullTypeEnum = 0
+	UnionIntLongFloatDoubleStringBoolNullTypeEnumLong   UnionIntLongFloatDoubleStringBoolNullTypeEnum = 1
+	UnionIntLongFloatDoubleStringBoolNullTypeEnumFloat  UnionIntLongFloatDoubleStringBoolNullTypeEnum = 2
 	UnionIntLongFloatDoubleStringBoolNullTypeEnumDouble UnionIntLongFloatDoubleStringBoolNullTypeEnum = 3
-
 	UnionIntLongFloatDoubleStringBoolNullTypeEnumString UnionIntLongFloatDoubleStringBoolNullTypeEnum = 4
-
-	UnionIntLongFloatDoubleStringBoolNullTypeEnumBool UnionIntLongFloatDoubleStringBoolNullTypeEnum = 5
-
-	UnionIntLongFloatDoubleStringBoolNullTypeEnumNull UnionIntLongFloatDoubleStringBoolNullTypeEnum = 6
+	UnionIntLongFloatDoubleStringBoolNullTypeEnumBool   UnionIntLongFloatDoubleStringBoolNullTypeEnum = 5
+	UnionIntLongFloatDoubleStringBoolNullTypeEnumNull   UnionIntLongFloatDoubleStringBoolNullTypeEnum = 6
 )
 
 type UnionIntLongFloatDoubleStringBoolNull struct {
-	Int int32
-
-	Long int64
-
-	Float float32
-
-	Double float64
-
-	String string
-
-	Bool bool
-
-	Null *types.NullVal
-
+	Int       int32
+	Long      int64
+	Float     float32
+	Double    float64
+	String    string
+	Bool      bool
+	Null      *types.NullVal
 	UnionType UnionIntLongFloatDoubleStringBoolNullTypeEnum
 }
 
@@ -55,28 +42,20 @@ func writeUnionIntLongFloatDoubleStringBoolNull(r *UnionIntLongFloatDoubleString
 		return err
 	}
 	switch r.UnionType {
-
 	case UnionIntLongFloatDoubleStringBoolNullTypeEnumInt:
 		return vm.WriteInt(r.Int, w)
-
 	case UnionIntLongFloatDoubleStringBoolNullTypeEnumLong:
 		return vm.WriteLong(r.Long, w)
-
 	case UnionIntLongFloatDoubleStringBoolNullTypeEnumFloat:
 		return vm.WriteFloat(r.Float, w)
-
 	case UnionIntLongFloatDoubleStringBoolNullTypeEnumDouble:
 		return vm.WriteDouble(r.Double, w)
-
 	case UnionIntLongFloatDoubleStringBoolNullTypeEnumString:
 		return vm.WriteString(r.String, w)
-
 	case UnionIntLongFloatDoubleStringBoolNullTypeEnumBool:
 		return vm.WriteBool(r.Bool, w)
-
 	case UnionIntLongFloatDoubleStringBoolNullTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-
 	}
 	return fmt.Errorf("invalid value for *UnionIntLongFloatDoubleStringBoolNull")
 }
@@ -96,35 +75,20 @@ func (r *UnionIntLongFloatDoubleStringBoolNull) SetLong(v int64) {
 }
 func (r *UnionIntLongFloatDoubleStringBoolNull) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.Int)(&r.Int)
-
 	case 1:
-
 		return (*types.Long)(&r.Long)
-
 	case 2:
-
 		return (*types.Float)(&r.Float)
-
 	case 3:
-
 		return (*types.Double)(&r.Double)
-
 	case 4:
-
 		return (*types.String)(&r.String)
-
 	case 5:
-
 		return (*types.Boolean)(&r.Bool)
-
 	case 6:
-
 		return r.Null
-
 	}
 	panic("Unknown field index")
 }

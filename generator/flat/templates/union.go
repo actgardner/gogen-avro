@@ -12,15 +12,15 @@ import (
 
 type {{ .UnionEnumType }} int
 const (
-{{ range $i, $t := .ItemTypes }}
+{{ range $i, $t := .ItemTypes -}}
 	 {{ $.UnionEnumType }}{{ .Name }} {{ $.UnionEnumType }} = {{ $i }}
-{{ end }}
+{{ end -}}
 )
 
 type {{ .Name }} struct {
-{{ range $i, $t := .ItemTypes }}
+{{ range $i, $t := .ItemTypes -}}
 	{{ .Name }} {{ .GoType }}
-{{ end }}
+{{ end -}}
 	UnionType {{ $.UnionEnumType }}
 }
 
@@ -30,10 +30,10 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 		return err
 	}
 	switch r.UnionType{
-	{{ range $i, $t := .ItemTypes }}
+	{{ range $i, $t := .ItemTypes -}}
 	case {{ $.ItemName $t }}:
 		return {{ .SerializerMethod }}(r.{{ .Name }}, w)
-        {{ end }}
+        {{ end -}}
 	}
 	return fmt.Errorf("invalid value for {{ .GoType }}")
 }
@@ -53,17 +53,17 @@ func (r {{ .GoType }}) SetLong(v int64) {
 }
 func (r {{ .GoType }}) Get(i int) types.Field {
 	switch (i) {
-	{{ range $i, $t := .ItemTypes }}
+	{{ range $i, $t := .ItemTypes -}}
 	case {{ $i }}:
-		{{ if $.ItemConstructor $t | ne "" }}
+		{{ if $.ItemConstructor $t | ne "" -}}
 		r.{{ .Name }} = {{ $.ItemConstructor $t }}
-		{{ end }}
-		{{ if eq .WrapperType "" }}
+		{{ end -}}
+		{{ if eq .WrapperType "" -}}
 		return r.{{ .Name }}
-		{{ else }}
+		{{ else -}}
 		return (*{{ .WrapperType }})(&r.{{ .Name }})
-		{{ end }}
-	{{ end }}
+		{{ end -}}
+	{{ end -}}
 	}
 	panic("Unknown field index")
 }

@@ -16,17 +16,14 @@ import (
 type UnionNullRecursiveUnionTestRecordTypeEnum int
 
 const (
-	UnionNullRecursiveUnionTestRecordTypeEnumNull UnionNullRecursiveUnionTestRecordTypeEnum = 0
-
+	UnionNullRecursiveUnionTestRecordTypeEnumNull                     UnionNullRecursiveUnionTestRecordTypeEnum = 0
 	UnionNullRecursiveUnionTestRecordTypeEnumRecursiveUnionTestRecord UnionNullRecursiveUnionTestRecordTypeEnum = 1
 )
 
 type UnionNullRecursiveUnionTestRecord struct {
-	Null *types.NullVal
-
+	Null                     *types.NullVal
 	RecursiveUnionTestRecord *RecursiveUnionTestRecord
-
-	UnionType UnionNullRecursiveUnionTestRecordTypeEnum
+	UnionType                UnionNullRecursiveUnionTestRecordTypeEnum
 }
 
 func writeUnionNullRecursiveUnionTestRecord(r *UnionNullRecursiveUnionTestRecord, w io.Writer) error {
@@ -35,13 +32,10 @@ func writeUnionNullRecursiveUnionTestRecord(r *UnionNullRecursiveUnionTestRecord
 		return err
 	}
 	switch r.UnionType {
-
 	case UnionNullRecursiveUnionTestRecordTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-
 	case UnionNullRecursiveUnionTestRecordTypeEnumRecursiveUnionTestRecord:
 		return writeRecursiveUnionTestRecord(r.RecursiveUnionTestRecord, w)
-
 	}
 	return fmt.Errorf("invalid value for *UnionNullRecursiveUnionTestRecord")
 }
@@ -61,17 +55,11 @@ func (r *UnionNullRecursiveUnionTestRecord) SetLong(v int64) {
 }
 func (r *UnionNullRecursiveUnionTestRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return r.Null
-
 	case 1:
-
 		r.RecursiveUnionTestRecord = NewRecursiveUnionTestRecord()
-
 		return r.RecursiveUnionTestRecord
-
 	}
 	panic("Unknown field index")
 }

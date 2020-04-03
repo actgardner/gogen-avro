@@ -55,17 +55,14 @@ func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (*UnionRecord,
 
 func writeUnionRecord(r *UnionRecord, w io.Writer) error {
 	var err error
-
 	err = writeUnionNullString(r.A, w)
 	if err != nil {
 		return err
 	}
-
 	err = vm.WriteString(r.Name, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -92,24 +89,18 @@ func (_ *UnionRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *UnionRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.A = NewUnionNullString()
 
 		return r.A
-
 	case 1:
-
 		return (*types.String)(&r.Name)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *UnionRecord) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

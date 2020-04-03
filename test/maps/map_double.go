@@ -60,11 +60,8 @@ func (r *MapDouble) Finalize() {
 func (r *MapDouble) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
 	var v float64
-
 	r.values = append(r.values, v)
-
 	return (*types.Double)(&r.values[len(r.values)-1])
-
 }
 
 func (_ *MapDouble) AppendArray() types.Field { panic("Unsupported operation") }

@@ -44,7 +44,5 @@ func (r *ArrayLongWrapper) AppendArray() types.Field {
 	var v int64
 
 	*r = append(*r, v)
-
 	return (*types.Long)(&(*r)[len(*r)-1])
-
 }

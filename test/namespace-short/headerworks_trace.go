@@ -14,9 +14,7 @@ import (
 
 // Trace
 type HeaderworksTrace struct {
-
 	// Trace Identifier
-
 	TraceId *UnionNullDatatypeUUID
 }
 
@@ -57,12 +55,10 @@ func DeserializeHeaderworksTraceFromSchema(r io.Reader, schema string) (*Headerw
 
 func writeHeaderworksTrace(r *HeaderworksTrace, w io.Writer) error {
 	var err error
-
 	err = writeUnionNullDatatypeUUID(r.TraceId, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -89,25 +85,20 @@ func (_ *HeaderworksTrace) SetUnionElem(v int64) { panic("Unsupported operation"
 
 func (r *HeaderworksTrace) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.TraceId = NewUnionNullDatatypeUUID()
 
 		return r.TraceId
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *HeaderworksTrace) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.TraceId = NewUnionNullDatatypeUUID()
 
 		return
-
 	}
 	panic("Unknown field index")
 }

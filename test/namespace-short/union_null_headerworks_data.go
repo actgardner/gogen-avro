@@ -16,17 +16,14 @@ import (
 type UnionNullHeaderworksDataTypeEnum int
 
 const (
-	UnionNullHeaderworksDataTypeEnumNull UnionNullHeaderworksDataTypeEnum = 0
-
+	UnionNullHeaderworksDataTypeEnumNull            UnionNullHeaderworksDataTypeEnum = 0
 	UnionNullHeaderworksDataTypeEnumHeaderworksData UnionNullHeaderworksDataTypeEnum = 1
 )
 
 type UnionNullHeaderworksData struct {
-	Null *types.NullVal
-
+	Null            *types.NullVal
 	HeaderworksData *HeaderworksData
-
-	UnionType UnionNullHeaderworksDataTypeEnum
+	UnionType       UnionNullHeaderworksDataTypeEnum
 }
 
 func writeUnionNullHeaderworksData(r *UnionNullHeaderworksData, w io.Writer) error {
@@ -35,13 +32,10 @@ func writeUnionNullHeaderworksData(r *UnionNullHeaderworksData, w io.Writer) err
 		return err
 	}
 	switch r.UnionType {
-
 	case UnionNullHeaderworksDataTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-
 	case UnionNullHeaderworksDataTypeEnumHeaderworksData:
 		return writeHeaderworksData(r.HeaderworksData, w)
-
 	}
 	return fmt.Errorf("invalid value for *UnionNullHeaderworksData")
 }
@@ -61,17 +55,11 @@ func (r *UnionNullHeaderworksData) SetLong(v int64) {
 }
 func (r *UnionNullHeaderworksData) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return r.Null
-
 	case 1:
-
 		r.HeaderworksData = NewHeaderworksData()
-
 		return r.HeaderworksData
-
 	}
 	panic("Unknown field index")
 }

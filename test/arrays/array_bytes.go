@@ -44,7 +44,5 @@ func (r *ArrayBytesWrapper) AppendArray() types.Field {
 	var v []byte
 
 	*r = append(*r, v)
-
 	return (*types.Bytes)(&(*r)[len(*r)-1])
-
 }

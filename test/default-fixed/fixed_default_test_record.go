@@ -53,12 +53,10 @@ func DeserializeFixedDefaultTestRecordFromSchema(r io.Reader, schema string) (*F
 
 func writeFixedDefaultTestRecord(r *FixedDefaultTestRecord, w io.Writer) error {
 	var err error
-
 	err = writeTestFixedDefaultType(r.FixedField, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -85,22 +83,17 @@ func (_ *FixedDefaultTestRecord) SetUnionElem(v int64) { panic("Unsupported oper
 
 func (r *FixedDefaultTestRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*TestFixedDefaultTypeWrapper)(&r.FixedField)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *FixedDefaultTestRecord) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		copy(r.FixedField[:], []byte("\x00\x01\x12\x00\x13C\x00\x01\x12\x00\x13S"))
 		return
-
 	}
 	panic("Unknown field index")
 }

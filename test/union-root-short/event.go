@@ -13,17 +13,11 @@ import (
 )
 
 type Event struct {
-
 	// Unique ID for this event.
-
 	Id string
-
 	// Start IP of this observation's IP range.
-
 	Start_ip Ip_address
-
 	// End IP of this observation's IP range.
-
 	End_ip Ip_address
 }
 
@@ -64,22 +58,18 @@ func DeserializeEventFromSchema(r io.Reader, schema string) (*Event, error) {
 
 func writeEvent(r *Event, w io.Writer) error {
 	var err error
-
 	err = vm.WriteString(r.Id, w)
 	if err != nil {
 		return err
 	}
-
 	err = writeIp_address(r.Start_ip, w)
 	if err != nil {
 		return err
 	}
-
 	err = writeIp_address(r.End_ip, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -106,26 +96,18 @@ func (_ *Event) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Event) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.String)(&r.Id)
-
 	case 1:
-
 		return (*Ip_addressWrapper)(&r.Start_ip)
-
 	case 2:
-
 		return (*Ip_addressWrapper)(&r.End_ip)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *Event) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

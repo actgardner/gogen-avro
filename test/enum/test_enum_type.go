@@ -13,29 +13,22 @@ import (
 )
 
 // Test enum
-
 type TestEnumType int32
 
 const (
 	TestEnumTypeTestSymbol1 TestEnumType = 0
-
 	TestEnumTypeTestSymbol2 TestEnumType = 1
-
 	TestEnumTypeTestSymbol3 TestEnumType = 2
 )
 
 func (e TestEnumType) String() string {
 	switch e {
-
 	case TestEnumTypeTestSymbol1:
 		return "TestSymbol1"
-
 	case TestEnumTypeTestSymbol2:
 		return "testSymbol2"
-
 	case TestEnumTypeTestSymbol3:
 		return "testSymbol3"
-
 	}
 	return "unknown"
 }
@@ -46,16 +39,12 @@ func writeTestEnumType(r TestEnumType, w io.Writer) error {
 
 func NewTestEnumTypeValue(raw string) (r TestEnumType, err error) {
 	switch raw {
-
 	case "TestSymbol1":
 		return TestEnumTypeTestSymbol1, nil
-
 	case "testSymbol2":
 		return TestEnumTypeTestSymbol2, nil
-
 	case "testSymbol3":
 		return TestEnumTypeTestSymbol3, nil
-
 	}
 
 	return -1, fmt.Errorf("invalid value for TestEnumType: '%s'", raw)

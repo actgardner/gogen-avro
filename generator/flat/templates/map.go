@@ -60,15 +60,15 @@ func (r {{ .GoType }}) Finalize() {
 func (r {{ .GoType }}) AppendMap(key string) types.Field { 
 	r.keys = append(r.keys, key)
 	var v {{ .ItemType.GoType }}
-	{{ if ne .ItemConstructable "" }}
+	{{ if ne .ItemConstructable "" -}}
 		{{ .ItemConstructable }}
-	{{ end }}
+	{{ end -}}
 	r.values = append(r.values, v)
-	{{ if .ItemType.WrapperType | ne "" }}
+	{{ if .ItemType.WrapperType | ne "" -}}
 	return (*{{ .ItemType.WrapperType }})(&r.values[len(r.values)-1])
-	{{ else }}
+	{{ else -}}
 	return r.values[len(r.values)-1]
-	{{ end }}
+	{{ end -}}
 }
 
 func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }

@@ -42,11 +42,9 @@ func (_ *ArrayChildWrapper) Finalize()                        {}
 func (_ *ArrayChildWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
 func (r *ArrayChildWrapper) AppendArray() types.Field {
 	var v *Child
-
 	v = NewChild()
 
 	*r = append(*r, v)
 
 	return (*r)[len(*r)-1]
-
 }

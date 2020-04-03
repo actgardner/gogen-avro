@@ -17,15 +17,12 @@ type UnionNullIntTypeEnum int
 
 const (
 	UnionNullIntTypeEnumNull UnionNullIntTypeEnum = 0
-
-	UnionNullIntTypeEnumInt UnionNullIntTypeEnum = 1
+	UnionNullIntTypeEnumInt  UnionNullIntTypeEnum = 1
 )
 
 type UnionNullInt struct {
-	Null *types.NullVal
-
-	Int int32
-
+	Null      *types.NullVal
+	Int       int32
 	UnionType UnionNullIntTypeEnum
 }
 
@@ -35,13 +32,10 @@ func writeUnionNullInt(r *UnionNullInt, w io.Writer) error {
 		return err
 	}
 	switch r.UnionType {
-
 	case UnionNullIntTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-
 	case UnionNullIntTypeEnumInt:
 		return vm.WriteInt(r.Int, w)
-
 	}
 	return fmt.Errorf("invalid value for *UnionNullInt")
 }
@@ -61,15 +55,10 @@ func (r *UnionNullInt) SetLong(v int64) {
 }
 func (r *UnionNullInt) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return r.Null
-
 	case 1:
-
 		return (*types.Int)(&r.Int)
-
 	}
 	panic("Unknown field index")
 }

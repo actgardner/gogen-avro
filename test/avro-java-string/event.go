@@ -13,9 +13,7 @@ import (
 )
 
 type Event struct {
-
 	// Unique ID for this event.
-
 	Id string
 }
 
@@ -56,12 +54,10 @@ func DeserializeEventFromSchema(r io.Reader, schema string) (*Event, error) {
 
 func writeEvent(r *Event, w io.Writer) error {
 	var err error
-
 	err = vm.WriteString(r.Id, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -88,18 +84,14 @@ func (_ *Event) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Event) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return (*types.String)(&r.Id)
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *Event) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

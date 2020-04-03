@@ -53,12 +53,10 @@ func DeserializeComplexUnionTestRecordFromSchema(r io.Reader, schema string) (*C
 
 func writeComplexUnionTestRecord(r *ComplexUnionTestRecord, w io.Writer) error {
 	var err error
-
 	err = writeUnionNullArrayIntMapIntNestedUnionRecord(r.UnionField, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -85,20 +83,16 @@ func (_ *ComplexUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported oper
 
 func (r *ComplexUnionTestRecord) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.UnionField = NewUnionNullArrayIntMapIntNestedUnionRecord()
 
 		return r.UnionField
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *ComplexUnionTestRecord) SetDefault(i int) {
 	switch i {
-
 	}
 	panic("Unknown field index")
 }

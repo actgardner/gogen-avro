@@ -14,9 +14,7 @@ import (
 
 // Trace
 type Trace struct {
-
 	// Trace Identifier
-
 	TraceId *UnionNullUUID
 }
 
@@ -57,12 +55,10 @@ func DeserializeTraceFromSchema(r io.Reader, schema string) (*Trace, error) {
 
 func writeTrace(r *Trace, w io.Writer) error {
 	var err error
-
 	err = writeUnionNullUUID(r.TraceId, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -89,25 +85,20 @@ func (_ *Trace) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Trace) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.TraceId = NewUnionNullUUID()
 
 		return r.TraceId
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *Trace) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.TraceId = NewUnionNullUUID()
 
 		return
-
 	}
 	panic("Unknown field index")
 }

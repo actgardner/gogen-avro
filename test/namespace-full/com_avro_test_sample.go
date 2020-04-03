@@ -14,13 +14,9 @@ import (
 
 // GoGen test
 type ComAvroTestSample struct {
-
 	// Core data information required for any event
-
 	Header *UnionNullHeaderworksData
-
 	// Core data information required for any event
-
 	Body *UnionNullBodyworksData
 }
 
@@ -61,17 +57,14 @@ func DeserializeComAvroTestSampleFromSchema(r io.Reader, schema string) (*ComAvr
 
 func writeComAvroTestSample(r *ComAvroTestSample, w io.Writer) error {
 	var err error
-
 	err = writeUnionNullHeaderworksData(r.Header, w)
 	if err != nil {
 		return err
 	}
-
 	err = writeUnionNullBodyworksData(r.Body, w)
 	if err != nil {
 		return err
 	}
-
 	return err
 }
 
@@ -98,36 +91,28 @@ func (_ *ComAvroTestSample) SetUnionElem(v int64) { panic("Unsupported operation
 
 func (r *ComAvroTestSample) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		r.Header = NewUnionNullHeaderworksData()
 
 		return r.Header
-
 	case 1:
-
 		r.Body = NewUnionNullBodyworksData()
 
 		return r.Body
-
 	}
 	panic("Unknown field index")
 }
 
 func (r *ComAvroTestSample) SetDefault(i int) {
 	switch i {
-
 	case 0:
 		r.Header = NewUnionNullHeaderworksData()
 
 		return
-
 	case 1:
 		r.Body = NewUnionNullBodyworksData()
 
 		return
-
 	}
 	panic("Unknown field index")
 }

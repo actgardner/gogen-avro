@@ -16,17 +16,14 @@ import (
 type UnionNullHeaderworksTraceTypeEnum int
 
 const (
-	UnionNullHeaderworksTraceTypeEnumNull UnionNullHeaderworksTraceTypeEnum = 0
-
+	UnionNullHeaderworksTraceTypeEnumNull             UnionNullHeaderworksTraceTypeEnum = 0
 	UnionNullHeaderworksTraceTypeEnumHeaderworksTrace UnionNullHeaderworksTraceTypeEnum = 1
 )
 
 type UnionNullHeaderworksTrace struct {
-	Null *types.NullVal
-
+	Null             *types.NullVal
 	HeaderworksTrace *HeaderworksTrace
-
-	UnionType UnionNullHeaderworksTraceTypeEnum
+	UnionType        UnionNullHeaderworksTraceTypeEnum
 }
 
 func writeUnionNullHeaderworksTrace(r *UnionNullHeaderworksTrace, w io.Writer) error {
@@ -35,13 +32,10 @@ func writeUnionNullHeaderworksTrace(r *UnionNullHeaderworksTrace, w io.Writer) e
 		return err
 	}
 	switch r.UnionType {
-
 	case UnionNullHeaderworksTraceTypeEnumNull:
 		return vm.WriteNull(r.Null, w)
-
 	case UnionNullHeaderworksTraceTypeEnumHeaderworksTrace:
 		return writeHeaderworksTrace(r.HeaderworksTrace, w)
-
 	}
 	return fmt.Errorf("invalid value for *UnionNullHeaderworksTrace")
 }
@@ -61,17 +55,11 @@ func (r *UnionNullHeaderworksTrace) SetLong(v int64) {
 }
 func (r *UnionNullHeaderworksTrace) Get(i int) types.Field {
 	switch i {
-
 	case 0:
-
 		return r.Null
-
 	case 1:
-
 		r.HeaderworksTrace = NewHeaderworksTrace()
-
 		return r.HeaderworksTrace
-
 	}
 	panic("Unknown field index")
 }
