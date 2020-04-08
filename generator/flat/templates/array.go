@@ -24,7 +24,9 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 
 
 
-type {{ .WrapperType }} {{ .GoType }}
+type {{ .WrapperType }} struct {
+	Target *{{ .GoType }}
+}
 
 func (_ *{{ .WrapperType }}) SetBoolean(v bool) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) SetInt(v int32) { panic("Unsupported operation") }
@@ -43,11 +45,11 @@ func (r *{{ .WrapperType }}) AppendArray() types.Field {
 	{{ if .ItemConstructable -}}
 	{{ .ItemConstructable }}
  	{{- end }}
-	*r = append(*r, v)
+	*r.Target = append(*r.Target, v)
         {{ if .ItemType.WrapperType -}} 
-        return (*{{ .ItemType.WrapperType }})(&(*r)[len(*r)-1])
+        return &{{ .ItemType.WrapperType }}{Target: &(*r.Target)[len(*r.Target)-1]}
         {{- else }}
-        return (*r)[len(*r)-1]
+        return (*r.Target)[len(*r.Target)-1]
         {{- end }}
 }
 `

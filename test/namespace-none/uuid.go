@@ -85,7 +85,7 @@ func (_ *UUID) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *UUID) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.String)(&r.Uuid)
+		return &types.String{Target: &r.Uuid}
 	}
 	panic("Unknown field index")
 }

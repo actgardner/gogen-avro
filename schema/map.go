@@ -27,7 +27,7 @@ func (s *MapField) Name() string {
 }
 
 func (s *MapField) GoType() string {
-	return fmt.Sprintf("*%v", s.Name())
+	return fmt.Sprintf("map[string]%v", s.itemType.GoType())
 }
 
 func (s *MapField) SerializerMethod() string {
@@ -53,7 +53,7 @@ func (s *MapField) Definition(scope map[QualifiedName]interface{}) (interface{},
 }
 
 func (s *MapField) ConstructorMethod() string {
-	return fmt.Sprintf("New%v()", s.Name())
+	return fmt.Sprintf("make(%v)", s.GoType())
 }
 
 func (s *MapField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
@@ -74,7 +74,7 @@ func (s *MapField) DefaultValue(lvalue string, rvalue interface{}) (string, erro
 }
 
 func (s *MapField) WrapperType() string {
-	return ""
+	return fmt.Sprintf("%vWrapper", s.Name())
 }
 
 func (s *MapField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {

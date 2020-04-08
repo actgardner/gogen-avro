@@ -15,8 +15,11 @@ func writeIp_address(r Ip_address, w io.Writer) error {
 	return err
 }
 
-type Ip_address Ip_addressWrapper
-type Ip_addressWrapper [16]byte
+type Ip_addressWrapper struct {
+	Target *Ip_address
+}
+
+type Ip_address [16]byte
 
 func (_ *Ip_addressWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
 func (_ *Ip_addressWrapper) SetInt(v int32)      { panic("Unsupported operation") }
@@ -24,7 +27,7 @@ func (_ *Ip_addressWrapper) SetLong(v int64)     { panic("Unsupported operation"
 func (_ *Ip_addressWrapper) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *Ip_addressWrapper) SetDouble(v float64) { panic("Unsupported operation") }
 func (r *Ip_addressWrapper) SetBytes(v []byte) {
-	copy((*r)[:], v)
+	copy((*r.Target)[:], v)
 }
 func (_ *Ip_addressWrapper) SetString(v string)               { panic("Unsupported operation") }
 func (_ *Ip_addressWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }

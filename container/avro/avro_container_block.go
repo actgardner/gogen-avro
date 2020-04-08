@@ -97,11 +97,11 @@ func (_ *AvroContainerBlock) SetUnionElem(v int64) { panic("Unsupported operatio
 func (r *AvroContainerBlock) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.Long)(&r.NumRecords)
+		return &types.Long{Target: &r.NumRecords}
 	case 1:
-		return (*types.Bytes)(&r.RecordBytes)
+		return &types.Bytes{Target: &r.RecordBytes}
 	case 2:
-		return (*SyncWrapper)(&r.Sync)
+		return &SyncWrapper{Target: &r.Sync}
 	}
 	panic("Unknown field index")
 }

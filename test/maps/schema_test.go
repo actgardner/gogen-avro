@@ -15,35 +15,35 @@ const fixtureJson = `
 [
     {
         "IntField": {
-            "m": {"small": 1, "min":-2147483647, "max":2147483647}
+            "small": 1, "min":-2147483647, "max":2147483647
         },
         "LongField": {
-            "m": {"small": 2, "min": 9223372036854775807, "max": -9223372036854775807}
+            "small": 2, "min": 9223372036854775807, "max": -9223372036854775807
         },
         "FloatField": {
-            "m": {"small": 3.4, "verysmall": 3.402823e-38, "large": 3.402823e+38}
+            "small": 3.4, "verysmall": 3.402823e-38, "large": 3.402823e+38
         }, 
         "DoubleField": {
-            "m": {"small": 5.6, "verysmall": 2.2250738585072014e-308}
+            "small": 5.6, "verysmall": 2.2250738585072014e-308
         }, 
         "StringField": {
-            "m": {"short": "789", "longer": "a slightly longer string"}
+            "short": "789", "longer": "a slightly longer string"
         },
         "BoolField": {
-            "m": {"true": true, "false": false}
+            "true": true, "false": false
         }, 
         "BytesField": {
-            "m": {"small": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5n", "longer": "VGhpcyBpcyBhIG11Y2ggbG9uZ2VyIHRlc3Qgc3RyaW5nIGxvbmcgbG9uZw=="}
+            "small": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5n", "longer": "VGhpcyBpcyBhIG11Y2ggbG9uZ2VyIHRlc3Qgc3RyaW5nIGxvbmcgbG9uZw=="
         }
     },
     {
-        "IntField": {"m": {}}, 
-        "LongField": {"m": {}},
-        "FloatField": {"m": {}},
-        "DoubleField": {"m": {}},
-        "StringField": {"m": {}},
-        "BoolField": {"m": {"true": true}},
-        "BytesField": {"m": {}}
+        "IntField": {}, 
+        "LongField": {},
+        "FloatField": {},
+        "DoubleField": {},
+        "StringField": {},
+        "BoolField": {"true": true},
+        "BytesField": {}
     }
 ]
 `
@@ -51,13 +51,13 @@ const fixtureJson = `
 func BenchmarkMapRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
 	record := MapTestRecord{
-		&MapInt{M: map[string]int32{"value1": 1, "value2": 2, "value3": 3}},
-		&MapLong{M: map[string]int64{"value1": 1, "value2": 2, "value3": 3}},
-		&MapDouble{M: map[string]float64{"value1": 1, "value2": 2, "value3": 3}},
-		&MapString{M: map[string]string{"value1": "12345", "value2": "67890", "value3": "abcdefg"}},
-		&MapFloat{M: map[string]float32{"value1": 1, "value2": 2, "value3": 3}},
-		&MapBool{M: map[string]bool{"true": true, "false": false}},
-		&MapBytes{M: map[string][]byte{"value1": {1, 2, 3, 4}, "value2": {100, 200, 255}}},
+		map[string]int32{"value1": 1, "value2": 2, "value3": 3},
+		map[string]int64{"value1": 1, "value2": 2, "value3": 3},
+		map[string]float64{"value1": 1, "value2": 2, "value3": 3},
+		map[string]string{"value1": "12345", "value2": "67890", "value3": "abcdefg"},
+		map[string]float32{"value1": 1, "value2": 2, "value3": 3},
+		map[string]bool{"true": true, "false": false},
+		map[string][]byte{"value1": {1, 2, 3, 4}, "value2": {100, 200, 255}},
 	}
 
 	b.ResetTimer()
@@ -105,12 +105,12 @@ func TestRoundTrip(t *testing.T) {
 
 		datum, err := DeserializeMapTestRecord(&buf)
 		assert.Nil(t, err)
-		assert.Equal(t, datum.IntField.M, f.IntField.M)
-		assert.Equal(t, datum.LongField.M, f.LongField.M)
-		assert.Equal(t, datum.FloatField.M, f.FloatField.M)
-		assert.Equal(t, datum.DoubleField.M, f.DoubleField.M)
-		assert.Equal(t, datum.StringField.M, f.StringField.M)
-		assert.Equal(t, datum.BoolField.M, f.BoolField.M)
-		assert.Equal(t, datum.BytesField.M, f.BytesField.M)
+		assert.Equal(t, datum.IntField, f.IntField)
+		assert.Equal(t, datum.LongField, f.LongField)
+		assert.Equal(t, datum.FloatField, f.FloatField)
+		assert.Equal(t, datum.DoubleField, f.DoubleField)
+		assert.Equal(t, datum.StringField, f.StringField)
+		assert.Equal(t, datum.BoolField, f.BoolField)
+		assert.Equal(t, datum.BytesField, f.BytesField)
 	}
 }

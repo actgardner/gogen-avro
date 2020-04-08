@@ -1,6 +1,8 @@
 package types
 
-type String string
+type String struct {
+	Target *string
+}
 
 func (b *String) SetBoolean(v bool) {
 	panic("Unable to assign boolean to string field")
@@ -27,11 +29,11 @@ func (b *String) SetDouble(v float64) {
 }
 
 func (b *String) SetBytes(v []byte) {
-	*(*string)(b) = string(v)
+	*(b.Target) = string(v)
 }
 
 func (b *String) SetString(v string) {
-	*(*string)(b) = v
+	*(b.Target) = v
 }
 
 func (b *String) Get(i int) Field {

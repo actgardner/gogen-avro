@@ -26,7 +26,9 @@ func writeArrayString(r []string, w io.Writer) error {
 	return vm.WriteLong(0, w)
 }
 
-type ArrayStringWrapper []string
+type ArrayStringWrapper struct {
+	Target *[]string
+}
 
 func (_ *ArrayStringWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
 func (_ *ArrayStringWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
@@ -43,6 +45,6 @@ func (_ *ArrayStringWrapper) SetDefault(i int)                 { panic("Unsuppor
 func (r *ArrayStringWrapper) AppendArray() types.Field {
 	var v string
 
-	*r = append(*r, v)
-	return (*types.String)(&(*r)[len(*r)-1])
+	*r.Target = append(*r.Target, v)
+	return &types.String{Target: &(*r.Target)[len(*r.Target)-1]}
 }

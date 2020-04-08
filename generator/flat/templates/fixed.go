@@ -11,8 +11,11 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	return err
 }
 
-type {{ .GoType }} {{ .WrapperType }}
-type {{ .WrapperType }} [{{ .SizeBytes }}]byte
+type {{ .WrapperType }} struct {
+	Target *{{ .GoType }}
+}
+
+type {{ .GoType }} [{{ .SizeBytes }}]byte
 
 func (_ *{{ .WrapperType }}) SetBoolean(v bool) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) SetInt(v int32) { panic("Unsupported operation") }
@@ -20,7 +23,7 @@ func (_ *{{ .WrapperType }}) SetLong(v int64) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) SetFloat(v float32) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) SetDouble(v float64) { panic("Unsupported operation") }
 func (r *{{ .WrapperType }}) SetBytes(v []byte) { 
-	copy((*r)[:], v)
+	copy((*r.Target)[:], v)
 }
 func (_ *{{ .WrapperType }}) SetString(v string) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) SetUnionElem(v int64) { panic("Unsupported operation") }

@@ -26,7 +26,9 @@ func writeArrayUnionNullInt(r []*UnionNullInt, w io.Writer) error {
 	return vm.WriteLong(0, w)
 }
 
-type ArrayUnionNullIntWrapper []*UnionNullInt
+type ArrayUnionNullIntWrapper struct {
+	Target *[]*UnionNullInt
+}
 
 func (_ *ArrayUnionNullIntWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
 func (_ *ArrayUnionNullIntWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
@@ -44,7 +46,7 @@ func (r *ArrayUnionNullIntWrapper) AppendArray() types.Field {
 	var v *UnionNullInt
 	v = NewUnionNullInt()
 
-	*r = append(*r, v)
+	*r.Target = append(*r.Target, v)
 
-	return (*r)[len(*r)-1]
+	return (*r.Target)[len(*r.Target)-1]
 }

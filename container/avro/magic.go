@@ -16,8 +16,11 @@ func writeMagic(r Magic, w io.Writer) error {
 	return err
 }
 
-type Magic MagicWrapper
-type MagicWrapper [4]byte
+type MagicWrapper struct {
+	Target *Magic
+}
+
+type Magic [4]byte
 
 func (_ *MagicWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
 func (_ *MagicWrapper) SetInt(v int32)      { panic("Unsupported operation") }
@@ -25,7 +28,7 @@ func (_ *MagicWrapper) SetLong(v int64)     { panic("Unsupported operation") }
 func (_ *MagicWrapper) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *MagicWrapper) SetDouble(v float64) { panic("Unsupported operation") }
 func (r *MagicWrapper) SetBytes(v []byte) {
-	copy((*r)[:], v)
+	copy((*r.Target)[:], v)
 }
 func (_ *MagicWrapper) SetString(v string)               { panic("Unsupported operation") }
 func (_ *MagicWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }

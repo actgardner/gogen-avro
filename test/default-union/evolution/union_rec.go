@@ -84,7 +84,7 @@ func (_ *UnionRec) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *UnionRec) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.Int)(&r.A)
+		return &types.Int{Target: &r.A}
 	}
 	panic("Unknown field index")
 }

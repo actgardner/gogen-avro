@@ -108,15 +108,15 @@ func (_ *DemoSchema) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *DemoSchema) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.Int)(&r.IntField)
+		return &types.Int{Target: &r.IntField}
 	case 1:
-		return (*types.Double)(&r.DoubleField)
+		return &types.Double{Target: &r.DoubleField}
 	case 2:
-		return (*types.String)(&r.StringField)
+		return &types.String{Target: &r.StringField}
 	case 3:
-		return (*types.Boolean)(&r.BoolField)
+		return &types.Boolean{Target: &r.BoolField}
 	case 4:
-		return (*types.Bytes)(&r.BytesField)
+		return &types.Bytes{Target: &r.BytesField}
 	}
 	panic("Unknown field index")
 }

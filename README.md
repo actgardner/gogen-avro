@@ -133,7 +133,7 @@ Gogen-avro produces a Go struct which reflects the structure of your Avro schema
 | `string`        | `string`            |                                                                                                                      |
 | `enum`          | custom type       | Generates a type with a constant for each symbol                                                                     |
 | `array<type>`   | `[]<type>`          |                                                                                                                      |
-| `map<type>`     | custom struct | Generates a struct with a field `M`, `M` has the type `map[string]<type>`                                                  |
+| `map<type>`     | `map[string]<type>` |                                                  |
 | `fixed`         | `[<n>]byte`         | Fixed fields are given a custom type, which is an alias for an appropriately sized byte array                        |
 | `union`         | custom struct     | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
 

@@ -87,7 +87,7 @@ func (r *Parent) Get(i int) types.Field {
 	case 0:
 		r.Children = make([]*Child, 0)
 
-		return (*ArrayChildWrapper)(&r.Children)
+		return &ArrayChildWrapper{Target: &r.Children}
 	}
 	panic("Unknown field index")
 }

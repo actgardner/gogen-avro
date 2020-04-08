@@ -25,7 +25,7 @@ const (
 type UnionNullArrayIntMapIntNestedUnionRecord struct {
 	Null              *types.NullVal
 	ArrayInt          []int32
-	MapInt            *MapInt
+	MapInt            map[string]int32
 	NestedUnionRecord *NestedUnionRecord
 	UnionType         UnionNullArrayIntMapIntNestedUnionRecordTypeEnum
 }
@@ -73,10 +73,10 @@ func (r *UnionNullArrayIntMapIntNestedUnionRecord) Get(i int) types.Field {
 		return r.Null
 	case 1:
 		r.ArrayInt = make([]int32, 0)
-		return (*ArrayIntWrapper)(&r.ArrayInt)
+		return &ArrayIntWrapper{Target: (&r.ArrayInt)}
 	case 2:
-		r.MapInt = NewMapInt()
-		return r.MapInt
+		r.MapInt = make(map[string]int32)
+		return &MapIntWrapper{Target: (&r.MapInt)}
 	case 3:
 		r.NestedUnionRecord = NewNestedUnionRecord()
 		return r.NestedUnionRecord

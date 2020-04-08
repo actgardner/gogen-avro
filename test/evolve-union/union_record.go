@@ -96,7 +96,7 @@ func (_ *UnionRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *UnionRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.String)(&r.A)
+		return &types.String{Target: &r.A}
 	case 1:
 		r.Id = NewUnionNullInt()
 

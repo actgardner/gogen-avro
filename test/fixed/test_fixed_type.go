@@ -15,8 +15,11 @@ func writeTestFixedType(r TestFixedType, w io.Writer) error {
 	return err
 }
 
-type TestFixedType TestFixedTypeWrapper
-type TestFixedTypeWrapper [12]byte
+type TestFixedTypeWrapper struct {
+	Target *TestFixedType
+}
+
+type TestFixedType [12]byte
 
 func (_ *TestFixedTypeWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
 func (_ *TestFixedTypeWrapper) SetInt(v int32)      { panic("Unsupported operation") }
@@ -24,7 +27,7 @@ func (_ *TestFixedTypeWrapper) SetLong(v int64)     { panic("Unsupported operati
 func (_ *TestFixedTypeWrapper) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *TestFixedTypeWrapper) SetDouble(v float64) { panic("Unsupported operation") }
 func (r *TestFixedTypeWrapper) SetBytes(v []byte) {
-	copy((*r)[:], v)
+	copy((*r.Target)[:], v)
 }
 func (_ *TestFixedTypeWrapper) SetString(v string)               { panic("Unsupported operation") }
 func (_ *TestFixedTypeWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }

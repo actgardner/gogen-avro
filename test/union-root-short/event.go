@@ -97,11 +97,11 @@ func (_ *Event) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *Event) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.String)(&r.Id)
+		return &types.String{Target: &r.Id}
 	case 1:
-		return (*Ip_addressWrapper)(&r.Start_ip)
+		return &Ip_addressWrapper{Target: &r.Start_ip}
 	case 2:
-		return (*Ip_addressWrapper)(&r.End_ip)
+		return &Ip_addressWrapper{Target: &r.End_ip}
 	}
 	panic("Unknown field index")
 }

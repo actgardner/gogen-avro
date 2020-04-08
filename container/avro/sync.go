@@ -16,8 +16,11 @@ func writeSync(r Sync, w io.Writer) error {
 	return err
 }
 
-type Sync SyncWrapper
-type SyncWrapper [16]byte
+type SyncWrapper struct {
+	Target *Sync
+}
+
+type Sync [16]byte
 
 func (_ *SyncWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
 func (_ *SyncWrapper) SetInt(v int32)      { panic("Unsupported operation") }
@@ -25,7 +28,7 @@ func (_ *SyncWrapper) SetLong(v int64)     { panic("Unsupported operation") }
 func (_ *SyncWrapper) SetFloat(v float32)  { panic("Unsupported operation") }
 func (_ *SyncWrapper) SetDouble(v float64) { panic("Unsupported operation") }
 func (r *SyncWrapper) SetBytes(v []byte) {
-	copy((*r)[:], v)
+	copy((*r.Target)[:], v)
 }
 func (_ *SyncWrapper) SetString(v string)               { panic("Unsupported operation") }
 func (_ *SyncWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }

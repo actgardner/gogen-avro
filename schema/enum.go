@@ -95,7 +95,7 @@ func (s *EnumDefinition) IsReadableBy(d Definition, visited map[QualifiedName]in
 }
 
 func (s *EnumDefinition) WrapperType() string {
-	return "types.Int"
+	return fmt.Sprintf("%vWrapper", s.GoType())
 }
 
 func (s *EnumDefinition) Children() []AvroType {

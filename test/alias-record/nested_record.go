@@ -96,11 +96,11 @@ func (_ *NestedRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *NestedRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.String)(&r.StringField)
+		return &types.String{Target: &r.StringField}
 	case 1:
-		return (*types.Boolean)(&r.BoolField)
+		return &types.Boolean{Target: &r.BoolField}
 	case 2:
-		return (*types.Bytes)(&r.BytesField)
+		return &types.Bytes{Target: &r.BytesField}
 	}
 	panic("Unknown field index")
 }

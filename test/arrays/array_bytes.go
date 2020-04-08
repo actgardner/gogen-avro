@@ -26,7 +26,9 @@ func writeArrayBytes(r [][]byte, w io.Writer) error {
 	return vm.WriteLong(0, w)
 }
 
-type ArrayBytesWrapper [][]byte
+type ArrayBytesWrapper struct {
+	Target *[][]byte
+}
 
 func (_ *ArrayBytesWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
 func (_ *ArrayBytesWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
@@ -43,6 +45,6 @@ func (_ *ArrayBytesWrapper) SetDefault(i int)                 { panic("Unsupport
 func (r *ArrayBytesWrapper) AppendArray() types.Field {
 	var v []byte
 
-	*r = append(*r, v)
-	return (*types.Bytes)(&(*r)[len(*r)-1])
+	*r.Target = append(*r.Target, v)
+	return &types.Bytes{Target: &(*r.Target)[len(*r.Target)-1]}
 }

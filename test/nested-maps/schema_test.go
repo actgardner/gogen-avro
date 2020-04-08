@@ -14,40 +14,28 @@ import (
 const fixtureJson = `
 [
   {
-	"MapOfMaps": {
-      "m": {
-        "NestedMap": {
-          "m": {
-            "NestedArray": ["some","strings"],
-            "NestedArray1": ["other","values"]
-          }
-        }
+    "MapOfMaps": {
+      "NestedMap": {
+        "NestedArray": ["some","strings"],
+        "NestedArray1": ["other","values"]
       }
-	}
+    }
   },
   {
-	"MapOfMaps": {
-      "m": {
-        "NestedMap": {
-          "m": {
-            "NestedArray": ["some","strings"],
-            "NestedArray1": ["other","values"]
-          }
-        }
+    "MapOfMaps": {
+      "NestedMap": {
+         "NestedArray": ["some","strings"],
+         "NestedArray1": ["other","values"]
       }
-	}
+    }
   },
   {
-	"MapOfMaps": {
-      "m": {
-        "NestedMap": {
-          "m": {
-            "NestedArray": ["some","strings"],
-            "NestedArray1": ["other","values"]
-          }
-        }
+    "MapOfMaps": {
+      "NestedMap": {
+        "NestedArray": ["some","strings"],
+        "NestedArray1": ["other","values"]
       }
-	}
+    }
   }
 ]
 `
@@ -55,20 +43,14 @@ const fixtureJson = `
 func BenchmarkMapOfMapsRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
 	record := NestedMap{
-		&MapMapArrayString{
-			M: map[string]*MapArrayString{
-				"key1": {
-					M: map[string][]string{
-						"array1": {"value1", "value2"},
-						"array2": {"value3", "value4"},
-					},
-				},
-				"key2": {
-					M: map[string][]string{
-						"array3": {"value5"},
-						"array4": {},
-					},
-				},
+		map[string]map[string][]string{
+			"key1": map[string][]string{
+				"array1": {"value1", "value2"},
+				"array2": {"value3", "value4"},
+			},
+			"key2": map[string][]string{
+				"array3": {"value5"},
+				"array4": {},
 			},
 		},
 	}

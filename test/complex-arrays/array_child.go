@@ -26,7 +26,9 @@ func writeArrayChild(r []*Child, w io.Writer) error {
 	return vm.WriteLong(0, w)
 }
 
-type ArrayChildWrapper []*Child
+type ArrayChildWrapper struct {
+	Target *[]*Child
+}
 
 func (_ *ArrayChildWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
 func (_ *ArrayChildWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
@@ -44,7 +46,7 @@ func (r *ArrayChildWrapper) AppendArray() types.Field {
 	var v *Child
 	v = NewChild()
 
-	*r = append(*r, v)
+	*r.Target = append(*r.Target, v)
 
-	return (*r)[len(*r)-1]
+	return (*r.Target)[len(*r.Target)-1]
 }

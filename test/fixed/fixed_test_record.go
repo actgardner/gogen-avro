@@ -90,9 +90,9 @@ func (_ *FixedTestRecord) SetUnionElem(v int64) { panic("Unsupported operation")
 func (r *FixedTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*TestFixedTypeWrapper)(&r.FixedField)
+		return &TestFixedTypeWrapper{Target: &r.FixedField}
 	case 1:
-		return (*TestFixedTypeWrapper)(&r.AnotherFixed)
+		return &TestFixedTypeWrapper{Target: &r.AnotherFixed}
 	}
 	panic("Unknown field index")
 }

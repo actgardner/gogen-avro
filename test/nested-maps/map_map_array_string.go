@@ -6,17 +6,18 @@
 package avro
 
 import (
+	"fmt"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-func writeMapMapArrayString(r *MapMapArrayString, w io.Writer) error {
-	err := vm.WriteLong(int64(len(r.M)), w)
-	if err != nil || len(r.M) == 0 {
+func writeMapMapArrayString(r map[string]map[string][]string, w io.Writer) error {
+	err := vm.WriteLong(int64(len(r)), w)
+	if err != nil || len(r) == 0 {
 		return err
 	}
-	for k, e := range r.M {
+	for k, e := range r {
 		err = vm.WriteString(k, w)
 		if err != nil {
 			return err
@@ -29,45 +30,37 @@ func writeMapMapArrayString(r *MapMapArrayString, w io.Writer) error {
 	return vm.WriteLong(0, w)
 }
 
-type MapMapArrayString struct {
+type MapMapArrayStringWrapper struct {
+	Target *map[string]map[string][]string
 	keys   []string
-	values []*MapArrayString
-	M      map[string]*MapArrayString
+	values []map[string][]string
 }
 
-func NewMapMapArrayString() *MapMapArrayString {
-	return &MapMapArrayString{
-		keys:   make([]string, 0),
-		values: make([]*MapArrayString, 0),
-		M:      make(map[string]*MapArrayString),
-	}
-}
-
-func (_ *MapMapArrayString) SetBoolean(v bool)     { panic("Unsupported operation") }
-func (_ *MapMapArrayString) SetInt(v int32)        { panic("Unsupported operation") }
-func (_ *MapMapArrayString) SetLong(v int64)       { panic("Unsupported operation") }
-func (_ *MapMapArrayString) SetFloat(v float32)    { panic("Unsupported operation") }
-func (_ *MapMapArrayString) SetDouble(v float64)   { panic("Unsupported operation") }
-func (_ *MapMapArrayString) SetBytes(v []byte)     { panic("Unsupported operation") }
-func (_ *MapMapArrayString) SetString(v string)    { panic("Unsupported operation") }
-func (_ *MapMapArrayString) SetUnionElem(v int64)  { panic("Unsupported operation") }
-func (_ *MapMapArrayString) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *MapMapArrayString) SetDefault(i int)      { panic("Unsupported operation") }
-func (r *MapMapArrayString) Finalize() {
+func (_ *MapMapArrayStringWrapper) SetBoolean(v bool)     { panic("Unsupported operation") }
+func (_ *MapMapArrayStringWrapper) SetInt(v int32)        { panic("Unsupported operation") }
+func (_ *MapMapArrayStringWrapper) SetLong(v int64)       { panic("Unsupported operation") }
+func (_ *MapMapArrayStringWrapper) SetFloat(v float32)    { panic("Unsupported operation") }
+func (_ *MapMapArrayStringWrapper) SetDouble(v float64)   { panic("Unsupported operation") }
+func (_ *MapMapArrayStringWrapper) SetBytes(v []byte)     { panic("Unsupported operation") }
+func (_ *MapMapArrayStringWrapper) SetString(v string)    { panic("Unsupported operation") }
+func (_ *MapMapArrayStringWrapper) SetUnionElem(v int64)  { panic("Unsupported operation") }
+func (_ *MapMapArrayStringWrapper) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *MapMapArrayStringWrapper) SetDefault(i int)      { panic("Unsupported operation") }
+func (r *MapMapArrayStringWrapper) Finalize() {
+	fmt.Printf("Finalizing!\n")
 	for i := range r.keys {
-		r.M[r.keys[i]] = r.values[i]
+		fmt.Printf("%v\n", r.keys[i])
+		(*r.Target)[r.keys[i]] = r.values[i]
 	}
-	r.keys = nil
-	r.values = nil
 }
 
-func (r *MapMapArrayString) AppendMap(key string) types.Field {
+func (r *MapMapArrayStringWrapper) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
-	var v *MapArrayString
-	v = NewMapArrayString()
+	var v map[string][]string
+	v = make(map[string][]string)
 
 	r.values = append(r.values, v)
-	return r.values[len(r.values)-1]
+	return &MapArrayStringWrapper{Target: &r.values[len(r.values)-1]}
 }
 
-func (_ *MapMapArrayString) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *MapMapArrayStringWrapper) AppendArray() types.Field { panic("Unsupported operation") }

@@ -56,9 +56,9 @@ func (r *UnionStringInt) SetLong(v int64) {
 func (r *UnionStringInt) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.String)(&r.String)
+		return &types.String{Target: (&r.String)}
 	case 1:
-		return (*types.Int)(&r.Int)
+		return &types.Int{Target: (&r.Int)}
 	}
 	panic("Unknown field index")
 }

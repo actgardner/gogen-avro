@@ -90,9 +90,9 @@ func (_ *AliasRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *AliasRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.String)(&r.A)
+		return &types.String{Target: &r.A}
 	case 1:
-		return (*types.String)(&r.C)
+		return &types.String{Target: &r.C}
 	}
 	panic("Unknown field index")
 }

@@ -2,17 +2,18 @@
 package avro
 
 import (
+	"fmt"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
 )
 
-func writeMapInt(r *MapInt, w io.Writer) error {
-	err := vm.WriteLong(int64(len(r.M)), w)
-	if err != nil || len(r.M) == 0 {
+func writeMapInt(r map[string]int32, w io.Writer) error {
+	err := vm.WriteLong(int64(len(r)), w)
+	if err != nil || len(r) == 0 {
 		return err
 	}
-	for k, e := range r.M {
+	for k, e := range r {
 		err = vm.WriteString(k, w)
 		if err != nil {
 			return err
@@ -25,43 +26,35 @@ func writeMapInt(r *MapInt, w io.Writer) error {
 	return vm.WriteLong(0, w)
 }
 
-type MapInt struct {
+type MapIntWrapper struct {
+	Target *map[string]int32
 	keys   []string
 	values []int32
-	M      map[string]int32
 }
 
-func NewMapInt() *MapInt {
-	return &MapInt{
-		keys:   make([]string, 0),
-		values: make([]int32, 0),
-		M:      make(map[string]int32),
-	}
-}
-
-func (_ *MapInt) SetBoolean(v bool)     { panic("Unsupported operation") }
-func (_ *MapInt) SetInt(v int32)        { panic("Unsupported operation") }
-func (_ *MapInt) SetLong(v int64)       { panic("Unsupported operation") }
-func (_ *MapInt) SetFloat(v float32)    { panic("Unsupported operation") }
-func (_ *MapInt) SetDouble(v float64)   { panic("Unsupported operation") }
-func (_ *MapInt) SetBytes(v []byte)     { panic("Unsupported operation") }
-func (_ *MapInt) SetString(v string)    { panic("Unsupported operation") }
-func (_ *MapInt) SetUnionElem(v int64)  { panic("Unsupported operation") }
-func (_ *MapInt) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *MapInt) SetDefault(i int)      { panic("Unsupported operation") }
-func (r *MapInt) Finalize() {
+func (_ *MapIntWrapper) SetBoolean(v bool)     { panic("Unsupported operation") }
+func (_ *MapIntWrapper) SetInt(v int32)        { panic("Unsupported operation") }
+func (_ *MapIntWrapper) SetLong(v int64)       { panic("Unsupported operation") }
+func (_ *MapIntWrapper) SetFloat(v float32)    { panic("Unsupported operation") }
+func (_ *MapIntWrapper) SetDouble(v float64)   { panic("Unsupported operation") }
+func (_ *MapIntWrapper) SetBytes(v []byte)     { panic("Unsupported operation") }
+func (_ *MapIntWrapper) SetString(v string)    { panic("Unsupported operation") }
+func (_ *MapIntWrapper) SetUnionElem(v int64)  { panic("Unsupported operation") }
+func (_ *MapIntWrapper) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ *MapIntWrapper) SetDefault(i int)      { panic("Unsupported operation") }
+func (r *MapIntWrapper) Finalize() {
+	fmt.Printf("Finalizing!\n")
 	for i := range r.keys {
-		r.M[r.keys[i]] = r.values[i]
+		fmt.Printf("%v\n", r.keys[i])
+		(*r.Target)[r.keys[i]] = r.values[i]
 	}
-	r.keys = nil
-	r.values = nil
 }
 
-func (r *MapInt) AppendMap(key string) types.Field {
+func (r *MapIntWrapper) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
 	var v int32
 	r.values = append(r.values, v)
-	return (*types.Int)(&r.values[len(r.values)-1])
+	return &types.Int{Target: &r.values[len(r.values)-1]}
 }
 
-func (_ *MapInt) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ *MapIntWrapper) AppendArray() types.Field { panic("Unsupported operation") }

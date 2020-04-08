@@ -72,15 +72,15 @@ func (r *UnionStringLongIntFloatDoubleNull) SetLong(v int64) {
 func (r *UnionStringLongIntFloatDoubleNull) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.String)(&r.String)
+		return &types.String{Target: (&r.String)}
 	case 1:
-		return (*types.Long)(&r.Long)
+		return &types.Long{Target: (&r.Long)}
 	case 2:
-		return (*types.Int)(&r.Int)
+		return &types.Int{Target: (&r.Int)}
 	case 3:
-		return (*types.Float)(&r.Float)
+		return &types.Float{Target: (&r.Float)}
 	case 4:
-		return (*types.Double)(&r.Double)
+		return &types.Double{Target: (&r.Double)}
 	case 5:
 		return r.Null
 	}

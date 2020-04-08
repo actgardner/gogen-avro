@@ -58,7 +58,7 @@ func (r *UnionNullString) Get(i int) types.Field {
 	case 0:
 		return r.Null
 	case 1:
-		return (*types.String)(&r.String)
+		return &types.String{Target: (&r.String)}
 	}
 	panic("Unknown field index")
 }

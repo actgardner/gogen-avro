@@ -26,7 +26,9 @@ func writeArrayFloat(r []float32, w io.Writer) error {
 	return vm.WriteLong(0, w)
 }
 
-type ArrayFloatWrapper []float32
+type ArrayFloatWrapper struct {
+	Target *[]float32
+}
 
 func (_ *ArrayFloatWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
 func (_ *ArrayFloatWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
@@ -43,6 +45,6 @@ func (_ *ArrayFloatWrapper) SetDefault(i int)                 { panic("Unsupport
 func (r *ArrayFloatWrapper) AppendArray() types.Field {
 	var v float32
 
-	*r = append(*r, v)
-	return (*types.Float)(&(*r)[len(*r)-1])
+	*r.Target = append(*r.Target, v)
+	return &types.Float{Target: &(*r.Target)[len(*r.Target)-1]}
 }

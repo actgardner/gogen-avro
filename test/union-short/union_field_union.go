@@ -76,17 +76,17 @@ func (r *UnionFieldUnion) SetLong(v int64) {
 func (r *UnionFieldUnion) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.Int)(&r.Int)
+		return &types.Int{Target: (&r.Int)}
 	case 1:
-		return (*types.Long)(&r.Long)
+		return &types.Long{Target: (&r.Long)}
 	case 2:
-		return (*types.Float)(&r.Float)
+		return &types.Float{Target: (&r.Float)}
 	case 3:
-		return (*types.Double)(&r.Double)
+		return &types.Double{Target: (&r.Double)}
 	case 4:
-		return (*types.String)(&r.String)
+		return &types.String{Target: (&r.String)}
 	case 5:
-		return (*types.Boolean)(&r.Bool)
+		return &types.Boolean{Target: (&r.Bool)}
 	case 6:
 		return r.Null
 	}

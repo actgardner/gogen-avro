@@ -1,9 +1,11 @@
 package types
 
-type Boolean bool
+type Boolean struct {
+	Target *bool
+}
 
 func (b *Boolean) SetBoolean(v bool) {
-	*(*bool)(b) = v
+	*(b.Target) = v
 }
 
 func (b *Boolean) SetInt(v int32) {

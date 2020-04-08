@@ -26,7 +26,9 @@ func writeArrayBool(r []bool, w io.Writer) error {
 	return vm.WriteLong(0, w)
 }
 
-type ArrayBoolWrapper []bool
+type ArrayBoolWrapper struct {
+	Target *[]bool
+}
 
 func (_ *ArrayBoolWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
 func (_ *ArrayBoolWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
@@ -43,6 +45,6 @@ func (_ *ArrayBoolWrapper) SetDefault(i int)                 { panic("Unsupporte
 func (r *ArrayBoolWrapper) AppendArray() types.Field {
 	var v bool
 
-	*r = append(*r, v)
-	return (*types.Boolean)(&(*r)[len(*r)-1])
+	*r.Target = append(*r.Target, v)
+	return &types.Boolean{Target: &(*r.Target)[len(*r.Target)-1]}
 }

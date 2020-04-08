@@ -16,7 +16,7 @@ import (
 type AvroContainerHeader struct {
 	Magic Magic
 
-	Meta *MapBytes
+	Meta map[string][]byte
 
 	Sync Sync
 }
@@ -97,13 +97,13 @@ func (_ *AvroContainerHeader) SetUnionElem(v int64) { panic("Unsupported operati
 func (r *AvroContainerHeader) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*MagicWrapper)(&r.Magic)
+		return &MagicWrapper{Target: &r.Magic}
 	case 1:
-		r.Meta = NewMapBytes()
+		r.Meta = make(map[string][]byte)
 
-		return r.Meta
+		return &MapBytesWrapper{Target: &r.Meta}
 	case 2:
-		return (*SyncWrapper)(&r.Sync)
+		return &SyncWrapper{Target: &r.Sync}
 	}
 	panic("Unknown field index")
 }

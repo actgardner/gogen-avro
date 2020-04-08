@@ -84,7 +84,7 @@ func (_ *EnumTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") 
 func (r *EnumTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*types.Int)(&r.EnumField)
+		return &TestEnumTypeWrapper{Target: &r.EnumField}
 	}
 	panic("Unknown field index")
 }

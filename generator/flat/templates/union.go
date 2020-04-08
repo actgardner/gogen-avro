@@ -61,7 +61,7 @@ func (r {{ .GoType }}) Get(i int) types.Field {
 		{{ if eq .WrapperType "" -}}
 		return r.{{ .Name }}
 		{{ else -}}
-		return (*{{ .WrapperType }})(&r.{{ .Name }})
+		return &{{ .WrapperType }}{Target: (&r.{{ .Name }})}
 		{{ end -}}
 	{{ end -}}
 	}

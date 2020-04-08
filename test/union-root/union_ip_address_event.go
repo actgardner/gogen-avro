@@ -56,7 +56,7 @@ func (r *UnionIp_addressEvent) SetLong(v int64) {
 func (r *UnionIp_addressEvent) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return (*Ip_addressWrapper)(&r.Ip_address)
+		return &Ip_addressWrapper{Target: (&r.Ip_address)}
 	case 1:
 		r.Event = NewEvent()
 		return r.Event

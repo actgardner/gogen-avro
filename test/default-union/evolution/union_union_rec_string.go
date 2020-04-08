@@ -59,7 +59,7 @@ func (r *UnionUnionRecString) Get(i int) types.Field {
 		r.UnionRec = NewUnionRec()
 		return r.UnionRec
 	case 1:
-		return (*types.String)(&r.String)
+		return &types.String{Target: (&r.String)}
 	}
 	panic("Unknown field index")
 }

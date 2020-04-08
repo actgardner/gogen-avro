@@ -77,10 +77,10 @@ func NewWriter(writer io.Writer, codec Codec, recordsPerBlock int64, schema stri
 func (avroWriter *Writer) writeHeader(schema string) error {
 	header := &avro.AvroContainerHeader{
 		Magic: [4]byte{'O', 'b', 'j', 1},
-		Meta: &avro.MapBytes{M: map[string][]byte{
+		Meta: map[string][]byte{
 			"avro.schema": []byte(schema),
 			"avro.codec":  []byte(avroWriter.codec),
-		}},
+		},
 		Sync: avroWriter.syncMarker,
 	}
 	return header.Serialize(avroWriter.writer)

@@ -1,6 +1,8 @@
 package types
 
-type Bytes []byte
+type Bytes struct {
+	Target *[]byte
+}
 
 func (b *Bytes) SetBoolean(v bool) {
 	panic("Unable to assign bytes to bytes field")
@@ -27,11 +29,11 @@ func (b *Bytes) SetUnionElem(v int64) {
 }
 
 func (b *Bytes) SetBytes(v []byte) {
-	*b = v
+	*(b.Target) = v
 }
 
 func (b *Bytes) SetString(v string) {
-	*b = []byte(v)
+	*(b.Target) = []byte(v)
 }
 
 func (b *Bytes) Get(i int) Field {

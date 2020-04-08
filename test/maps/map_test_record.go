@@ -9,19 +9,19 @@ import (
 )
 
 type MapTestRecord struct {
-	IntField *MapInt
+	IntField map[string]int32
 
-	LongField *MapLong
+	LongField map[string]int64
 
-	DoubleField *MapDouble
+	DoubleField map[string]float64
 
-	StringField *MapString
+	StringField map[string]string
 
-	FloatField *MapFloat
+	FloatField map[string]float32
 
-	BoolField *MapBool
+	BoolField map[string]bool
 
-	BytesField *MapBytes
+	BytesField map[string][]byte
 }
 
 const MapTestRecordAvroCRC64Fingerprint = "<?\x18\xa0\a\xdf^\x9e"
@@ -116,33 +116,33 @@ func (_ *MapTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *MapTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.IntField = NewMapInt()
+		r.IntField = make(map[string]int32)
 
-		return r.IntField
+		return &MapIntWrapper{Target: &r.IntField}
 	case 1:
-		r.LongField = NewMapLong()
+		r.LongField = make(map[string]int64)
 
-		return r.LongField
+		return &MapLongWrapper{Target: &r.LongField}
 	case 2:
-		r.DoubleField = NewMapDouble()
+		r.DoubleField = make(map[string]float64)
 
-		return r.DoubleField
+		return &MapDoubleWrapper{Target: &r.DoubleField}
 	case 3:
-		r.StringField = NewMapString()
+		r.StringField = make(map[string]string)
 
-		return r.StringField
+		return &MapStringWrapper{Target: &r.StringField}
 	case 4:
-		r.FloatField = NewMapFloat()
+		r.FloatField = make(map[string]float32)
 
-		return r.FloatField
+		return &MapFloatWrapper{Target: &r.FloatField}
 	case 5:
-		r.BoolField = NewMapBool()
+		r.BoolField = make(map[string]bool)
 
-		return r.BoolField
+		return &MapBoolWrapper{Target: &r.BoolField}
 	case 6:
-		r.BytesField = NewMapBytes()
+		r.BytesField = make(map[string][]byte)
 
-		return r.BytesField
+		return &MapBytesWrapper{Target: &r.BytesField}
 	}
 	panic("Unknown field index")
 }

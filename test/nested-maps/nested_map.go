@@ -13,7 +13,7 @@ import (
 )
 
 type NestedMap struct {
-	MapOfMaps *MapMapArrayString
+	MapOfMaps map[string]map[string][]string
 }
 
 const NestedMapAvroCRC64Fingerprint = "\xa1\x9e\x89\xd6\xc52@\xf2"
@@ -84,9 +84,9 @@ func (_ *NestedMap) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *NestedMap) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.MapOfMaps = NewMapMapArrayString()
+		r.MapOfMaps = make(map[string]map[string][]string)
 
-		return r.MapOfMaps
+		return &MapMapArrayStringWrapper{Target: &r.MapOfMaps}
 	}
 	panic("Unknown field index")
 }

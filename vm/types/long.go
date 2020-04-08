@@ -1,17 +1,19 @@
 package types
 
-type Long int64
+type Long struct {
+	Target *int64
+}
 
 func (b *Long) SetBoolean(v bool) {
 	panic("Unable to assign boolean to long field")
 }
 
 func (b *Long) SetInt(v int32) {
-	*(*int64)(b) = int64(v)
+	*(b.Target) = int64(v)
 }
 
 func (b *Long) SetLong(v int64) {
-	*(*int64)(b) = v
+	*(b.Target) = v
 }
 
 func (b *Long) SetFloat(v float32) {

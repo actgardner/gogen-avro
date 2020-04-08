@@ -26,7 +26,9 @@ func writeArrayLong(r []int64, w io.Writer) error {
 	return vm.WriteLong(0, w)
 }
 
-type ArrayLongWrapper []int64
+type ArrayLongWrapper struct {
+	Target *[]int64
+}
 
 func (_ *ArrayLongWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
 func (_ *ArrayLongWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
@@ -43,6 +45,6 @@ func (_ *ArrayLongWrapper) SetDefault(i int)                 { panic("Unsupporte
 func (r *ArrayLongWrapper) AppendArray() types.Field {
 	var v int64
 
-	*r = append(*r, v)
-	return (*types.Long)(&(*r)[len(*r)-1])
+	*r.Target = append(*r.Target, v)
+	return &types.Long{Target: &(*r.Target)[len(*r.Target)-1]}
 }

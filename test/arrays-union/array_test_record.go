@@ -86,7 +86,7 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	case 0:
 		r.IntField = make([]*UnionNullInt, 0)
 
-		return (*ArrayUnionNullIntWrapper)(&r.IntField)
+		return &ArrayUnionNullIntWrapper{Target: &r.IntField}
 	}
 	panic("Unknown field index")
 }

@@ -1,13 +1,15 @@
 package types
 
-type Int int32
+type Int struct {
+	Target *int32
+}
 
 func (b *Int) SetBoolean(v bool) {
 	panic("Unable to assign boolean to int field")
 }
 
 func (b *Int) SetInt(v int32) {
-	*(*int32)(b) = v
+	*(b.Target) = v
 }
 
 func (b *Int) SetLong(v int64) {

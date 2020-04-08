@@ -13,7 +13,7 @@ import (
 )
 
 type MapTestRecord struct {
-	IntField *MapUnionNullInt
+	IntField map[string]*UnionNullInt
 }
 
 const MapTestRecordAvroCRC64Fingerprint = "\xf7\xdb\x00\xb2n\xa8u\xbf"
@@ -84,9 +84,9 @@ func (_ *MapTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *MapTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.IntField = NewMapUnionNullInt()
+		r.IntField = make(map[string]*UnionNullInt)
 
-		return r.IntField
+		return &MapUnionNullIntWrapper{Target: &r.IntField}
 	}
 	panic("Unknown field index")
 }

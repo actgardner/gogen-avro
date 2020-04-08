@@ -1,25 +1,27 @@
 package types
 
-type Double float64
+type Double struct {
+	Target *float64
+}
 
 func (b *Double) SetBoolean(v bool) {
 	panic("Unable to assign boolean to double field")
 }
 
 func (b *Double) SetInt(v int32) {
-	*(*float64)(b) = float64(v)
+	*(b.Target) = float64(v)
 }
 
 func (b *Double) SetLong(v int64) {
-	*(*float64)(b) = float64(v)
+	*(b.Target) = float64(v)
 }
 
 func (b *Double) SetFloat(v float32) {
-	*(*float64)(b) = float64(v)
+	*(b.Target) = float64(v)
 }
 
 func (b *Double) SetDouble(v float64) {
-	*(*float64)(b) = v
+	*(b.Target) = v
 }
 
 func (b *Double) SetUnionElem(v int64) {

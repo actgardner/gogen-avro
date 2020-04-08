@@ -1,21 +1,23 @@
 package types
 
-type Float float32
+type Float struct {
+	Target *float32
+}
 
 func (b *Float) SetBoolean(v bool) {
 	panic("Unable to assign boolean to float field")
 }
 
 func (b *Float) SetInt(v int32) {
-	*(*float32)(b) = float32(v)
+	*(b.Target) = float32(v)
 }
 
 func (b *Float) SetLong(v int64) {
-	*(*float32)(b) = float32(v)
+	*(b.Target) = float32(v)
 }
 
 func (b *Float) SetFloat(v float32) {
-	*(*float32)(b) = v
+	*(b.Target) = v
 }
 
 func (b *Float) SetUnionElem(v int64) {
