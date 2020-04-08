@@ -135,26 +135,27 @@ Gogen-avro produces a Go struct which reflects the structure of your Avro schema
 | `array<type>`   | `[]<type>`          |                                                                                                                      |
 | `map<type>`     | `map[string]<type>` |                                                  |
 | `fixed`         | `[<n>]byte`         | Fixed fields are given a custom type, which is an alias for an appropriately sized byte array                        |
-| `union`         | custom struct     | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
+| `union`         | custom struct       | Unions are handled as a struct with one field per possible type, and an enum field to dictate which field to read    |
 
-`union` is more complicated than primitive types. We generate a struct and enum whose name is uniquely determined by the types in the union. For a field whose type is `["null", "int"]` we generate the following:
+`union` is more complicated than primitive types. We generate a struct and enum whose name is uniquely determined by the types in the union. For a field whose type is `["string", "int"]` we generate the following:
 
 ```
-type UnionNullInt struct {
-	// All the possible types the union could take on
-	Null               interface{}
+type UnionStringInt struct {
+	// All the possible types the union could take on, except `null`
+	String             string
 	Int                int32
-	// Which field actually has data in it - defaults to the first type in the list, "null"
-	UnionType          UnionNullTypeEnum
+	// Which field actually has data in it - defaults to the first type in the list
+	UnionType          UnionStringIntTypeEnum
 }
 
-type UnionNullIntTypeEnum int
+type UnionStringIntTypeEnum int
 
 const (
-	UnionNullIntTypeEnumNull            UnionNullIntTypeEnum = 0
-	UnionNullIntTypeEnumInt             UnionNullIntTypeEnum = 1
+	UnionStringIntTypeEnumInt             UnionStringIntTypeEnum = 1
 )
 ```
+
+`null` unions are unique - to set a union to `null`, simply the set the pointer the union to `nil`, This lines up with [Avro's JSON encoding](https://avro.apache.org/docs/current/spec.html#json_encoding).
 
 ### Versioning
 
