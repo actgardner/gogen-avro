@@ -116,16 +116,13 @@ func (r *HeaderworksData) Get(i int) types.Field {
 func (r *HeaderworksData) SetDefault(i int) {
 	switch i {
 	case 0:
-		r.Uuid = NewUnionNullHeaderworksDatatypeUUID()
-
+		r.Uuid = nil
 		return
 	case 1:
-		r.Hostname = NewUnionNullString()
-
+		r.Hostname = nil
 		return
 	case 2:
-		r.Trace = NewUnionNullHeaderworksTrace()
-
+		r.Trace = nil
 		return
 	}
 	panic("Unknown field index")

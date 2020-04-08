@@ -125,8 +125,7 @@ func (r *UnionRecord) SetDefault(i int) {
 		r.Id = "test_id"
 		return
 	case 1:
-		r.UnionNull = NewUnionNullString()
-
+		r.UnionNull = nil
 		return
 	case 2:
 		r.UnionString = NewUnionStringInt()

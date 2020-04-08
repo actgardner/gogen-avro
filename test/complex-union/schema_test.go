@@ -44,6 +44,13 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 		recordField, ok := record["UnionField"]
 		assert.Equal(t, true, ok)
 
+		if f.UnionField == nil {
+			if recordField != nil {
+				t.Fatalf("Expected nil value")
+			}
+			continue
+		}
+
 		switch f.UnionField.UnionType {
 		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt:
 			arr := recordField.(map[string]interface{})["array"].([]interface{})

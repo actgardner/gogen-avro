@@ -12,12 +12,11 @@ import (
 const fixtureJson = `
 [
   {"IntField": { 
-    "M": {
       "a": {"UnionType": 1, "Int": 1}, 
       "b": null, 
       "c": {"UnionType": 1, "Int": 2147483647}
-    }
-  }}
+  } 
+  }
 ]
 `
 

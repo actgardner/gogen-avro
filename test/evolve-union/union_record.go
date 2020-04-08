@@ -112,12 +112,10 @@ func (r *UnionRecord) Get(i int) types.Field {
 func (r *UnionRecord) SetDefault(i int) {
 	switch i {
 	case 1:
-		r.Id = NewUnionNullInt()
-
+		r.Id = nil
 		return
 	case 2:
-		r.Name = NewUnionNullString()
-
+		r.Name = nil
 		return
 	}
 	panic("Unknown field index")

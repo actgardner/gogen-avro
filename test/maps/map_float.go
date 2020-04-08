@@ -43,7 +43,9 @@ func (_ *MapFloatWrapper) SetUnionElem(v int64)  { panic("Unsupported operation"
 func (_ *MapFloatWrapper) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *MapFloatWrapper) SetDefault(i int)      { panic("Unsupported operation") }
 
-func (_ *MapFloatWrapper) NullField(i int) { panic("Unsupported operation") }
+func (r *MapFloatWrapper) NullField(_ int) {
+	panic("Unsupported operation")
+}
 
 func (r *MapFloatWrapper) Finalize() {
 	fmt.Printf("Finalizing!\n")

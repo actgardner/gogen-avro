@@ -96,8 +96,7 @@ func (r *HeaderworksTrace) Get(i int) types.Field {
 func (r *HeaderworksTrace) SetDefault(i int) {
 	switch i {
 	case 0:
-		r.TraceId = NewUnionNullHeaderworksDatatypeUUID()
-
+		r.TraceId = nil
 		return
 	}
 	panic("Unknown field index")

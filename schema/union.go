@@ -98,6 +98,9 @@ func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{
 
 func (s *UnionField) DefaultValue(lvalue string, rvalue interface{}) (string, error) {
 	defaultType := s.itemType[0]
+	if _, ok := defaultType.(*NullField); ok {
+		return fmt.Sprintf("%v = nil", lvalue), nil
+	}
 	init := fmt.Sprintf("%v = %v\n", lvalue, s.ConstructorMethod())
 	lvalue = fmt.Sprintf("%v.%v", lvalue, defaultType.Name())
 	constructorCall := ""

@@ -96,8 +96,7 @@ func (r *Trace) Get(i int) types.Field {
 func (r *Trace) SetDefault(i int) {
 	switch i {
 	case 0:
-		r.TraceId = NewUnionNullUUID()
-
+		r.TraceId = nil
 		return
 	}
 	panic("Unknown field index")

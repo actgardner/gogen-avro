@@ -135,6 +135,7 @@ func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (setT
 			_, err = evalInner(r, program, target, pc)
 			frame.Long = loop
 		case PopLoop:
+			return false, nil
 		case Halt:
 			if inst.Operand == 0 {
 				return false, nil

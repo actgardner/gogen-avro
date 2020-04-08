@@ -47,7 +47,9 @@ func (_ *MapUnionNullIntWrapper) SetUnionElem(v int64)  { panic("Unsupported ope
 func (_ *MapUnionNullIntWrapper) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *MapUnionNullIntWrapper) SetDefault(i int)      { panic("Unsupported operation") }
 
-func (_ *MapUnionNullIntWrapper) NullField(i int) { panic("Unsupported operation") }
+func (r *MapUnionNullIntWrapper) NullField(_ int) {
+	r.values[len(r.values)-1] = nil
+}
 
 func (r *MapUnionNullIntWrapper) Finalize() {
 	fmt.Printf("Finalizing!\n")

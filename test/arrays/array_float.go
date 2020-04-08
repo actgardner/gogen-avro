@@ -42,7 +42,9 @@ func (_ *ArrayFloatWrapper) Get(i int) types.Field            { panic("Unsupport
 func (_ *ArrayFloatWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ArrayFloatWrapper) Finalize()                        {}
 func (_ *ArrayFloatWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) NullField(i int)                  { panic("Unsupported operation") }
+func (r *ArrayFloatWrapper) NullField(i int) {
+	panic("Unsupported operation")
+}
 
 func (r *ArrayFloatWrapper) AppendArray() types.Field {
 	var v float32

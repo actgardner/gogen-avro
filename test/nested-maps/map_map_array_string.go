@@ -47,7 +47,9 @@ func (_ *MapMapArrayStringWrapper) SetUnionElem(v int64)  { panic("Unsupported o
 func (_ *MapMapArrayStringWrapper) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *MapMapArrayStringWrapper) SetDefault(i int)      { panic("Unsupported operation") }
 
-func (_ *MapMapArrayStringWrapper) NullField(i int) { panic("Unsupported operation") }
+func (r *MapMapArrayStringWrapper) NullField(_ int) {
+	panic("Unsupported operation")
+}
 
 func (r *MapMapArrayStringWrapper) Finalize() {
 	fmt.Printf("Finalizing!\n")

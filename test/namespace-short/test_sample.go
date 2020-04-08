@@ -106,12 +106,10 @@ func (r *TestSample) Get(i int) types.Field {
 func (r *TestSample) SetDefault(i int) {
 	switch i {
 	case 0:
-		r.Header = NewUnionNullHeaderworksData()
-
+		r.Header = nil
 		return
 	case 1:
-		r.Body = NewUnionNullBodyworksData()
-
+		r.Body = nil
 		return
 	}
 	panic("Unknown field index")

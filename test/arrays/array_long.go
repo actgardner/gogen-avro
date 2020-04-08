@@ -42,7 +42,9 @@ func (_ *ArrayLongWrapper) Get(i int) types.Field            { panic("Unsupporte
 func (_ *ArrayLongWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ArrayLongWrapper) Finalize()                        {}
 func (_ *ArrayLongWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
-func (_ *ArrayLongWrapper) NullField(i int)                  { panic("Unsupported operation") }
+func (r *ArrayLongWrapper) NullField(i int) {
+	panic("Unsupported operation")
+}
 
 func (r *ArrayLongWrapper) AppendArray() types.Field {
 	var v int64
