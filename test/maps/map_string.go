@@ -42,6 +42,9 @@ func (_ *MapStringWrapper) SetString(v string)    { panic("Unsupported operation
 func (_ *MapStringWrapper) SetUnionElem(v int64)  { panic("Unsupported operation") }
 func (_ *MapStringWrapper) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *MapStringWrapper) SetDefault(i int)      { panic("Unsupported operation") }
+
+func (_ *MapStringWrapper) NullField(i int) { panic("Unsupported operation") }
+
 func (r *MapStringWrapper) Finalize() {
 	fmt.Printf("Finalizing!\n")
 	for i := range r.keys {

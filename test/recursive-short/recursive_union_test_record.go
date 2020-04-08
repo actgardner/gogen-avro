@@ -97,6 +97,15 @@ func (r *RecursiveUnionTestRecord) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *RecursiveUnionTestRecord) NullField(i int) {
+	switch i {
+	case 0:
+		r.RecursiveField = nil
+		return
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *RecursiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *RecursiveUnionTestRecord) Finalize()                        {}

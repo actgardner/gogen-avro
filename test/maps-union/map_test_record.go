@@ -97,6 +97,12 @@ func (r *MapTestRecord) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *MapTestRecord) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *MapTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *MapTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *MapTestRecord) Finalize()                        {}

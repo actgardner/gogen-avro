@@ -17,7 +17,8 @@ type UnionIp_addressEventTypeEnum int
 
 const (
 	UnionIp_addressEventTypeEnumIp_address UnionIp_addressEventTypeEnum = 0
-	UnionIp_addressEventTypeEnumEvent      UnionIp_addressEventTypeEnum = 1
+
+	UnionIp_addressEventTypeEnumEvent UnionIp_addressEventTypeEnum = 1
 )
 
 type UnionIp_addressEvent struct {
@@ -27,6 +28,7 @@ type UnionIp_addressEvent struct {
 }
 
 func writeUnionIp_addressEvent(r *UnionIp_addressEvent, w io.Writer) error {
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
@@ -63,6 +65,7 @@ func (r *UnionIp_addressEvent) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *UnionIp_addressEvent) NullField(i int)                  { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionIp_addressEvent) AppendArray() types.Field         { panic("Unsupported operation") }

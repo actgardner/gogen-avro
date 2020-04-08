@@ -98,6 +98,12 @@ func (r *FixedDefaultTestRecord) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *FixedDefaultTestRecord) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *FixedDefaultTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *FixedDefaultTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *FixedDefaultTestRecord) Finalize()                        {}

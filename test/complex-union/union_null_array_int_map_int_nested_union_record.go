@@ -16,9 +16,10 @@ import (
 type UnionNullArrayIntMapIntNestedUnionRecordTypeEnum int
 
 const (
-	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull              UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 0
-	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt          UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 1
-	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt            UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 2
+	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 1
+
+	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 2
+
 	UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord UnionNullArrayIntMapIntNestedUnionRecordTypeEnum = 3
 )
 
@@ -31,13 +32,17 @@ type UnionNullArrayIntMapIntNestedUnionRecord struct {
 }
 
 func writeUnionNullArrayIntMapIntNestedUnionRecord(r *UnionNullArrayIntMapIntNestedUnionRecord, w io.Writer) error {
+
+	if r == nil {
+		err := vm.WriteLong(0, w)
+		return err
+	}
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
 	}
 	switch r.UnionType {
-	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
 	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt:
 		return writeArrayInt(r.ArrayInt, w)
 	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt:
@@ -83,6 +88,7 @@ func (r *UnionNullArrayIntMapIntNestedUnionRecord) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *UnionNullArrayIntMapIntNestedUnionRecord) NullField(i int)  { panic("Unsupported operation") }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

@@ -127,6 +127,12 @@ func (r *DemoSchema) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *DemoSchema) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *DemoSchema) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *DemoSchema) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *DemoSchema) Finalize()                        {}

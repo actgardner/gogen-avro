@@ -13,7 +13,9 @@ import (
 type {{ .UnionEnumType }} int
 const (
 {{ range $i, $t := .ItemTypes -}}
-	 {{ $.UnionEnumType }}{{ .Name }} {{ $.UnionEnumType }} = {{ $i }}
+	{{ if ne $i $.NullIndex -}}
+	{{ $.UnionEnumType }}{{ .Name }} {{ $.UnionEnumType }} = {{ $i }}
+        {{ end }}
 {{ end -}}
 )
 
@@ -25,15 +27,23 @@ type {{ .Name }} struct {
 }
 
 func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
+	{{ if ne .NullIndex -1 }}
+	if r == nil {
+		err := vm.WriteLong({{ $.NullIndex }}, w)
+		return err
+	}
+        {{ end }}
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
 	}
 	switch r.UnionType{
 	{{ range $i, $t := .ItemTypes -}}
-	case {{ $.ItemName $t }}:
+	  {{ if ne $i $.NullIndex -}}
+	  case {{ $.ItemName $t }}:
 		return {{ .SerializerMethod }}(r.{{ .Name }}, w)
-        {{ end -}}
+          {{ end -}}
+	{{ end -}}
 	}
 	return fmt.Errorf("invalid value for {{ .GoType }}")
 }
@@ -67,6 +77,7 @@ func (r {{ .GoType }}) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ {{ .GoType }}) NullField(i int) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetDefault(i int) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }

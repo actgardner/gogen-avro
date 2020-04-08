@@ -99,6 +99,12 @@ func (r *DatatypeUUID) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *DatatypeUUID) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *DatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *DatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *DatatypeUUID) Finalize()                        {}

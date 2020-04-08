@@ -106,6 +106,12 @@ func (r *Parent) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *Parent) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *Parent) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Parent) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *Parent) Finalize()                        {}

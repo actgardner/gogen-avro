@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// The value of NoopField as the pperand signifies the operand is unused.
+// The value of NoopField as the operand signifies the operand is unused.
 const NoopField = 65535
 
 // Constants for the data types supported by the Read and Set operations.

@@ -52,4 +52,8 @@ func (b *Double) AppendArray() Field {
 	panic("Unable to append array element to from double field")
 }
 
+func (b *Double) NullField(int) {
+	panic("Unable to null field in double field")
+}
+
 func (b *Double) Finalize() {}

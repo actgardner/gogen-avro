@@ -17,11 +17,14 @@ type UnionStringLongIntFloatDoubleNullTypeEnum int
 
 const (
 	UnionStringLongIntFloatDoubleNullTypeEnumString UnionStringLongIntFloatDoubleNullTypeEnum = 0
-	UnionStringLongIntFloatDoubleNullTypeEnumLong   UnionStringLongIntFloatDoubleNullTypeEnum = 1
-	UnionStringLongIntFloatDoubleNullTypeEnumInt    UnionStringLongIntFloatDoubleNullTypeEnum = 2
-	UnionStringLongIntFloatDoubleNullTypeEnumFloat  UnionStringLongIntFloatDoubleNullTypeEnum = 3
+
+	UnionStringLongIntFloatDoubleNullTypeEnumLong UnionStringLongIntFloatDoubleNullTypeEnum = 1
+
+	UnionStringLongIntFloatDoubleNullTypeEnumInt UnionStringLongIntFloatDoubleNullTypeEnum = 2
+
+	UnionStringLongIntFloatDoubleNullTypeEnumFloat UnionStringLongIntFloatDoubleNullTypeEnum = 3
+
 	UnionStringLongIntFloatDoubleNullTypeEnumDouble UnionStringLongIntFloatDoubleNullTypeEnum = 4
-	UnionStringLongIntFloatDoubleNullTypeEnumNull   UnionStringLongIntFloatDoubleNullTypeEnum = 5
 )
 
 type UnionStringLongIntFloatDoubleNull struct {
@@ -35,6 +38,12 @@ type UnionStringLongIntFloatDoubleNull struct {
 }
 
 func writeUnionStringLongIntFloatDoubleNull(r *UnionStringLongIntFloatDoubleNull, w io.Writer) error {
+
+	if r == nil {
+		err := vm.WriteLong(5, w)
+		return err
+	}
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
@@ -50,8 +59,6 @@ func writeUnionStringLongIntFloatDoubleNull(r *UnionStringLongIntFloatDoubleNull
 		return vm.WriteFloat(r.Float, w)
 	case UnionStringLongIntFloatDoubleNullTypeEnumDouble:
 		return vm.WriteDouble(r.Double, w)
-	case UnionStringLongIntFloatDoubleNullTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
 	}
 	return fmt.Errorf("invalid value for *UnionStringLongIntFloatDoubleNull")
 }
@@ -86,6 +93,7 @@ func (r *UnionStringLongIntFloatDoubleNull) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *UnionStringLongIntFloatDoubleNull) NullField(i int)  { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

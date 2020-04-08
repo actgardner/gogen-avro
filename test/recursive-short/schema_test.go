@@ -10,8 +10,8 @@ import (
 // Round-trip some primitive values through our serializer and goavro to verify
 const fixtureJson = `
 [
-{"RecursiveField":{"UnionType":0}},
-{"RecursiveField":{"RecursiveUnionTestRecord":{"RecursiveField": {"UnionType": 0}}, "UnionType":1}}
+{"RecursiveField": null},
+{"RecursiveField":{"RecursiveUnionTestRecord":{"RecursiveField": null}, "UnionType":1}}
 ]
 `
 

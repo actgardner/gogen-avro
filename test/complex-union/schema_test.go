@@ -13,7 +13,7 @@ import (
 // Round-trip some primitive values through our serializer and goavro to verify
 const fixtureJson = `
 [
-	{"UnionField":{"UnionType":0}},
+	{"UnionField": null},
 	{"UnionField":{"ArrayInt":[1,2,3], "UnionType":1}},
 	{"UnionField":{"MapInt":{"a":1, "b":3, "c": 5}, "UnionType":2}},
 	{"UnionField":{"NestedUnionRecord":{"IntField":789}, "UnionType":3}}
@@ -45,10 +45,6 @@ func TestPrimitiveUnionFixture(t *testing.T) {
 		assert.Equal(t, true, ok)
 
 		switch f.UnionField.UnionType {
-		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNull:
-			if recordField != nil {
-				t.Fatalf("Expected nil value for union field, got %v", recordField)
-			}
 		case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt:
 			arr := recordField.(map[string]interface{})["array"].([]interface{})
 			for i, v := range arr {

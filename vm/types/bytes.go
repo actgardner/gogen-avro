@@ -52,4 +52,8 @@ func (b *Bytes) AppendArray() Field {
 	panic("Unable to append array element to from bytes field")
 }
 
+func (b *Bytes) NullField(int) {
+	panic("Unable to null field in bytes field")
+}
+
 func (b *Bytes) Finalize() {}

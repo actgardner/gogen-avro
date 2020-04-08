@@ -111,6 +111,12 @@ func (r *NestedRecord) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *NestedRecord) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *NestedRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *NestedRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *NestedRecord) Finalize()                        {}

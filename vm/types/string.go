@@ -52,4 +52,8 @@ func (b *String) AppendArray() Field {
 	panic("Unable to append array element to from string field")
 }
 
+func (b *String) NullField(int) {
+	panic("Unable to null field in string field")
+}
+
 func (b *String) Finalize() {}

@@ -43,6 +43,8 @@ func (_ *ArrayChildWrapper) Get(i int) types.Field            { panic("Unsupport
 func (_ *ArrayChildWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ArrayChildWrapper) Finalize()                        {}
 func (_ *ArrayChildWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (_ *ArrayChildWrapper) NullField(i int)                  { panic("Unsupported operation") }
+
 func (r *ArrayChildWrapper) AppendArray() types.Field {
 	var v *Child
 	v = NewChild()

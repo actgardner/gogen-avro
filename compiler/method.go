@@ -322,12 +322,18 @@ writer:
 			for readerIndex, r := range unionReader.AvroTypes() {
 				if t.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
 					p.addSwitchCase(switchId, i, readerIndex)
-					p.addLiteral(vm.Enter, readerIndex)
-					err := p.compileType(t, r)
-					if err != nil {
-						return err
+					if _, ok := t.(*schema.NullField); ok {
+						p.addLiteral(vm.SetExitNull, vm.NoopField)
+					} else {
+						p.addLiteral(vm.SetLong, readerIndex)
+						p.addLiteral(vm.Set, vm.Long)
+						p.addLiteral(vm.Enter, readerIndex)
+						err := p.compileType(t, r)
+						if err != nil {
+							return err
+						}
+						p.addLiteral(vm.Exit, vm.NoopField)
 					}
-					p.addLiteral(vm.Exit, vm.NoopField)
 					continue writer
 				}
 			}

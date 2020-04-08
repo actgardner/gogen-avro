@@ -17,7 +17,8 @@ type UnionUnionRecStringTypeEnum int
 
 const (
 	UnionUnionRecStringTypeEnumUnionRec UnionUnionRecStringTypeEnum = 0
-	UnionUnionRecStringTypeEnumString   UnionUnionRecStringTypeEnum = 1
+
+	UnionUnionRecStringTypeEnumString UnionUnionRecStringTypeEnum = 1
 )
 
 type UnionUnionRecString struct {
@@ -27,6 +28,7 @@ type UnionUnionRecString struct {
 }
 
 func writeUnionUnionRecString(r *UnionUnionRecString, w io.Writer) error {
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
@@ -63,6 +65,7 @@ func (r *UnionUnionRecString) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *UnionUnionRecString) NullField(i int)                  { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) AppendArray() types.Field         { panic("Unsupported operation") }

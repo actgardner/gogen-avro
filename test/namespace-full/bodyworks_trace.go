@@ -103,6 +103,15 @@ func (r *BodyworksTrace) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *BodyworksTrace) NullField(i int) {
+	switch i {
+	case 0:
+		r.TraceId = nil
+		return
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *BodyworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *BodyworksTrace) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *BodyworksTrace) Finalize()                        {}

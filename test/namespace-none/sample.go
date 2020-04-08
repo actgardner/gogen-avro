@@ -117,6 +117,18 @@ func (r *Sample) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *Sample) NullField(i int) {
+	switch i {
+	case 0:
+		r.Header = nil
+		return
+	case 1:
+		r.Body = nil
+		return
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *Sample) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Sample) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *Sample) Finalize()                        {}

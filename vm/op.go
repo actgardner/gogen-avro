@@ -16,6 +16,9 @@ const (
 	// Move to the previous frame
 	Exit
 
+	// Set a flag to null this field on exit
+	SetExitNull
+
 	// Append a value to the current target and enter the new value
 	AppendArray
 
@@ -60,6 +63,9 @@ const (
 
 	// Pop the top of the loop stack and store the value in the Long register
 	PopLoop
+
+	// Set the field with the target index to nil
+	NullField
 )
 
 func (o Op) String() string {
@@ -72,6 +78,8 @@ func (o Op) String() string {
 		return "enter"
 	case Exit:
 		return "exit"
+	case SetExitNull:
+		return "set_exit_null"
 	case AppendArray:
 		return "append_array"
 	case AppendMap:

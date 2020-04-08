@@ -95,5 +95,10 @@ func (b *{{ .WrapperType }}) AppendArray() types.Field {
 	panic("Unable to append array element to from int field")
 }
 
+
+func (b *{{ .WrapperType }}) NullField(int) {
+	panic("Unable to null field in int field")
+}
+
 func (b *{{ .WrapperType }}) Finalize() {}
 `

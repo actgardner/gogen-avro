@@ -103,6 +103,12 @@ func (r *AliasRecord) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *AliasRecord) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *AliasRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *AliasRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *AliasRecord) Finalize()                        {}

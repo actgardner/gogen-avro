@@ -95,6 +95,12 @@ func (r *StructTag) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *StructTag) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *StructTag) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *StructTag) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *StructTag) Finalize()                        {}

@@ -97,6 +97,15 @@ func (r *ComplexUnionTestRecord) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *ComplexUnionTestRecord) NullField(i int) {
+	switch i {
+	case 0:
+		r.UnionField = nil
+		return
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *ComplexUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ComplexUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *ComplexUnionTestRecord) Finalize()                        {}

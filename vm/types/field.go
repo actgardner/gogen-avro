@@ -22,6 +22,9 @@ type Field interface {
 	AppendMap(key string) Field
 	AppendArray() Field
 
+	// Set the target field to null
+	NullField(t int)
+
 	// Finalize a field if necessary
 	Finalize()
 }

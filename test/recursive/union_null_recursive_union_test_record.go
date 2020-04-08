@@ -16,7 +16,6 @@ import (
 type UnionNullRecursiveUnionTestRecordTypeEnum int
 
 const (
-	UnionNullRecursiveUnionTestRecordTypeEnumNull                     UnionNullRecursiveUnionTestRecordTypeEnum = 0
 	UnionNullRecursiveUnionTestRecordTypeEnumRecursiveUnionTestRecord UnionNullRecursiveUnionTestRecordTypeEnum = 1
 )
 
@@ -27,13 +26,17 @@ type UnionNullRecursiveUnionTestRecord struct {
 }
 
 func writeUnionNullRecursiveUnionTestRecord(r *UnionNullRecursiveUnionTestRecord, w io.Writer) error {
+
+	if r == nil {
+		err := vm.WriteLong(0, w)
+		return err
+	}
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
 	}
 	switch r.UnionType {
-	case UnionNullRecursiveUnionTestRecordTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
 	case UnionNullRecursiveUnionTestRecordTypeEnumRecursiveUnionTestRecord:
 		return writeRecursiveUnionTestRecord(r.RecursiveUnionTestRecord, w)
 	}
@@ -63,6 +66,7 @@ func (r *UnionNullRecursiveUnionTestRecord) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *UnionNullRecursiveUnionTestRecord) NullField(i int)  { panic("Unsupported operation") }
 func (_ *UnionNullRecursiveUnionTestRecord) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullRecursiveUnionTestRecord) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

@@ -117,6 +117,19 @@ func (r {{ .GoType }}) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r {{ .GoType }}) NullField(i int) { 
+	switch (i) {
+	{{ range $i, $field := .Fields -}}
+        {{ if isNullable $field.Type -}}
+	case {{ $i }}:
+		r.{{ $field.GoName }} = nil
+		return
+	{{ end -}}
+	{{ end -}}
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ {{ .GoType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) Finalize() { }

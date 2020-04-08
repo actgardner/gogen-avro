@@ -42,6 +42,8 @@ func (_ *ArrayStringWrapper) Get(i int) types.Field            { panic("Unsuppor
 func (_ *ArrayStringWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ArrayStringWrapper) Finalize()                        {}
 func (_ *ArrayStringWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (_ *ArrayStringWrapper) NullField(i int)                  { panic("Unsupported operation") }
+
 func (r *ArrayStringWrapper) AppendArray() types.Field {
 	var v string
 

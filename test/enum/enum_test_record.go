@@ -98,6 +98,12 @@ func (r *EnumTestRecord) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *EnumTestRecord) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *EnumTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *EnumTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *EnumTestRecord) Finalize()                        {}

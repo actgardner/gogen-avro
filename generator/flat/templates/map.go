@@ -42,6 +42,9 @@ func (_ *{{ .WrapperType }}) SetString(v string) { panic("Unsupported operation"
 func (_ *{{ .WrapperType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
+
+func (_ *{{ .WrapperType }}) NullField(i int) { panic("Unsupported operation") }
+
 func (r *{{ .WrapperType }}) Finalize() { 
 	fmt.Printf("Finalizing!\n")
 	for i := range r.keys {

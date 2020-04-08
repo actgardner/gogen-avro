@@ -119,7 +119,7 @@ func (s *switchCaseIRInstruction) VMLength() int {
 	if s.readerIndex == -1 {
 		return 1
 	}
-	return 3
+	return 1
 }
 
 func (s *switchCaseIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
@@ -130,8 +130,6 @@ func (s *switchCaseIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, e
 
 	return []vm.Instruction{
 		vm.Instruction{vm.Jump, sw.end},
-		vm.Instruction{vm.SetLong, s.readerIndex},
-		vm.Instruction{vm.Set, vm.Long},
 	}, nil
 }
 

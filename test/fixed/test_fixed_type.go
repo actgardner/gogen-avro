@@ -34,5 +34,6 @@ func (_ *TestFixedTypeWrapper) SetUnionElem(v int64)             { panic("Unsupp
 func (_ *TestFixedTypeWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
 func (_ *TestFixedTypeWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *TestFixedTypeWrapper) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *TestFixedTypeWrapper) NullField(int)                    { panic("Unsupported operation") }
 func (_ *TestFixedTypeWrapper) Finalize()                        {}
 func (_ *TestFixedTypeWrapper) SetDefault(i int)                 { panic("Unsupported operation") }

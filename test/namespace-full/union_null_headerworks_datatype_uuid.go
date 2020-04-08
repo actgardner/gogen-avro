@@ -16,7 +16,6 @@ import (
 type UnionNullHeaderworksDatatypeUUIDTypeEnum int
 
 const (
-	UnionNullHeaderworksDatatypeUUIDTypeEnumNull                    UnionNullHeaderworksDatatypeUUIDTypeEnum = 0
 	UnionNullHeaderworksDatatypeUUIDTypeEnumHeaderworksDatatypeUUID UnionNullHeaderworksDatatypeUUIDTypeEnum = 1
 )
 
@@ -27,13 +26,17 @@ type UnionNullHeaderworksDatatypeUUID struct {
 }
 
 func writeUnionNullHeaderworksDatatypeUUID(r *UnionNullHeaderworksDatatypeUUID, w io.Writer) error {
+
+	if r == nil {
+		err := vm.WriteLong(0, w)
+		return err
+	}
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
 	}
 	switch r.UnionType {
-	case UnionNullHeaderworksDatatypeUUIDTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
 	case UnionNullHeaderworksDatatypeUUIDTypeEnumHeaderworksDatatypeUUID:
 		return writeHeaderworksDatatypeUUID(r.HeaderworksDatatypeUUID, w)
 	}
@@ -63,6 +66,7 @@ func (r *UnionNullHeaderworksDatatypeUUID) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *UnionNullHeaderworksDatatypeUUID) NullField(i int)  { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksDatatypeUUID) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksDatatypeUUID) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

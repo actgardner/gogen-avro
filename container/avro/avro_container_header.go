@@ -114,6 +114,12 @@ func (r *AvroContainerHeader) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *AvroContainerHeader) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *AvroContainerHeader) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *AvroContainerHeader) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *AvroContainerHeader) Finalize()                        {}

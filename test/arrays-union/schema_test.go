@@ -13,7 +13,7 @@ const fixtureJson = `
 [
   {"IntField": [
     {"UnionType": 1, "Int": 1}, 
-    {"UnionType": 0 }, 
+    null, 
     {"UnionType": 1, "Int": 2147483647}
   ]}
 ]

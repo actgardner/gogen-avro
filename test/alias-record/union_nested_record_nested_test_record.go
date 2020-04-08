@@ -16,7 +16,8 @@ import (
 type UnionNestedRecordNestedTestRecordTypeEnum int
 
 const (
-	UnionNestedRecordNestedTestRecordTypeEnumNestedRecord     UnionNestedRecordNestedTestRecordTypeEnum = 0
+	UnionNestedRecordNestedTestRecordTypeEnumNestedRecord UnionNestedRecordNestedTestRecordTypeEnum = 0
+
 	UnionNestedRecordNestedTestRecordTypeEnumNestedTestRecord UnionNestedRecordNestedTestRecordTypeEnum = 1
 )
 
@@ -27,6 +28,7 @@ type UnionNestedRecordNestedTestRecord struct {
 }
 
 func writeUnionNestedRecordNestedTestRecord(r *UnionNestedRecordNestedTestRecord, w io.Writer) error {
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
@@ -64,6 +66,7 @@ func (r *UnionNestedRecordNestedTestRecord) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *UnionNestedRecordNestedTestRecord) NullField(i int)  { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

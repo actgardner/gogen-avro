@@ -10,13 +10,23 @@ type UnionField struct {
 	name       string
 	itemType   []AvroType
 	definition []interface{}
+	nullIndex  int
 }
 
 func NewUnionField(name string, itemType []AvroType, definition []interface{}) *UnionField {
+	nullIndex := -1
+	for i, t := range itemType {
+		if _, ok := t.(*NullField); ok {
+			nullIndex = i
+			break
+		}
+	}
+
 	return &UnionField{
 		name:       name,
 		itemType:   itemType,
 		definition: definition,
+		nullIndex:  nullIndex,
 	}
 }
 
@@ -152,4 +162,8 @@ func (s *UnionField) SimpleName() string {
 
 func (s *UnionField) Children() []AvroType {
 	return s.itemType
+}
+
+func (s *UnionField) NullIndex() int {
+	return s.nullIndex
 }

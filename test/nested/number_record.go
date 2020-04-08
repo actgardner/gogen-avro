@@ -119,6 +119,12 @@ func (r *NumberRecord) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *NumberRecord) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *NumberRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *NumberRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *NumberRecord) Finalize()                        {}

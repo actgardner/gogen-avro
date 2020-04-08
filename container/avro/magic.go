@@ -35,5 +35,6 @@ func (_ *MagicWrapper) SetUnionElem(v int64)             { panic("Unsupported op
 func (_ *MagicWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
 func (_ *MagicWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *MagicWrapper) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *MagicWrapper) NullField(int)                    { panic("Unsupported operation") }
 func (_ *MagicWrapper) Finalize()                        {}
 func (_ *MagicWrapper) SetDefault(i int)                 { panic("Unsupported operation") }

@@ -105,6 +105,15 @@ func (r *UnionRecord) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *UnionRecord) NullField(i int) {
+	switch i {
+	case 0:
+		r.A = nil
+		return
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *UnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *UnionRecord) Finalize()                        {}

@@ -16,13 +16,17 @@ import (
 type UnionIntLongFloatDoubleStringBoolNullTypeEnum int
 
 const (
-	UnionIntLongFloatDoubleStringBoolNullTypeEnumInt    UnionIntLongFloatDoubleStringBoolNullTypeEnum = 0
-	UnionIntLongFloatDoubleStringBoolNullTypeEnumLong   UnionIntLongFloatDoubleStringBoolNullTypeEnum = 1
-	UnionIntLongFloatDoubleStringBoolNullTypeEnumFloat  UnionIntLongFloatDoubleStringBoolNullTypeEnum = 2
+	UnionIntLongFloatDoubleStringBoolNullTypeEnumInt UnionIntLongFloatDoubleStringBoolNullTypeEnum = 0
+
+	UnionIntLongFloatDoubleStringBoolNullTypeEnumLong UnionIntLongFloatDoubleStringBoolNullTypeEnum = 1
+
+	UnionIntLongFloatDoubleStringBoolNullTypeEnumFloat UnionIntLongFloatDoubleStringBoolNullTypeEnum = 2
+
 	UnionIntLongFloatDoubleStringBoolNullTypeEnumDouble UnionIntLongFloatDoubleStringBoolNullTypeEnum = 3
+
 	UnionIntLongFloatDoubleStringBoolNullTypeEnumString UnionIntLongFloatDoubleStringBoolNullTypeEnum = 4
-	UnionIntLongFloatDoubleStringBoolNullTypeEnumBool   UnionIntLongFloatDoubleStringBoolNullTypeEnum = 5
-	UnionIntLongFloatDoubleStringBoolNullTypeEnumNull   UnionIntLongFloatDoubleStringBoolNullTypeEnum = 6
+
+	UnionIntLongFloatDoubleStringBoolNullTypeEnumBool UnionIntLongFloatDoubleStringBoolNullTypeEnum = 5
 )
 
 type UnionIntLongFloatDoubleStringBoolNull struct {
@@ -37,6 +41,12 @@ type UnionIntLongFloatDoubleStringBoolNull struct {
 }
 
 func writeUnionIntLongFloatDoubleStringBoolNull(r *UnionIntLongFloatDoubleStringBoolNull, w io.Writer) error {
+
+	if r == nil {
+		err := vm.WriteLong(6, w)
+		return err
+	}
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
@@ -54,8 +64,6 @@ func writeUnionIntLongFloatDoubleStringBoolNull(r *UnionIntLongFloatDoubleString
 		return vm.WriteString(r.String, w)
 	case UnionIntLongFloatDoubleStringBoolNullTypeEnumBool:
 		return vm.WriteBool(r.Bool, w)
-	case UnionIntLongFloatDoubleStringBoolNullTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
 	}
 	return fmt.Errorf("invalid value for *UnionIntLongFloatDoubleStringBoolNull")
 }
@@ -92,6 +100,7 @@ func (r *UnionIntLongFloatDoubleStringBoolNull) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *UnionIntLongFloatDoubleStringBoolNull) NullField(i int)  { panic("Unsupported operation") }
 func (_ *UnionIntLongFloatDoubleStringBoolNull) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionIntLongFloatDoubleStringBoolNull) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

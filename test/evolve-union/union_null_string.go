@@ -16,7 +16,6 @@ import (
 type UnionNullStringTypeEnum int
 
 const (
-	UnionNullStringTypeEnumNull   UnionNullStringTypeEnum = 0
 	UnionNullStringTypeEnumString UnionNullStringTypeEnum = 1
 )
 
@@ -27,13 +26,17 @@ type UnionNullString struct {
 }
 
 func writeUnionNullString(r *UnionNullString, w io.Writer) error {
+
+	if r == nil {
+		err := vm.WriteLong(0, w)
+		return err
+	}
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
 	}
 	switch r.UnionType {
-	case UnionNullStringTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
 	case UnionNullStringTypeEnumString:
 		return vm.WriteString(r.String, w)
 	}
@@ -62,6 +65,7 @@ func (r *UnionNullString) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *UnionNullString) NullField(i int)                  { panic("Unsupported operation") }
 func (_ *UnionNullString) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *UnionNullString) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionNullString) AppendArray() types.Field         { panic("Unsupported operation") }

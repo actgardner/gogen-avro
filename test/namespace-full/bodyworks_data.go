@@ -131,6 +131,21 @@ func (r *BodyworksData) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *BodyworksData) NullField(i int) {
+	switch i {
+	case 0:
+		r.Uuid = nil
+		return
+	case 1:
+		r.Hostname = nil
+		return
+	case 2:
+		r.Trace = nil
+		return
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *BodyworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *BodyworksData) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *BodyworksData) Finalize()                        {}

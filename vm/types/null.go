@@ -50,4 +50,8 @@ func (b *NullVal) AppendArray() Field {
 	panic("Unable to append array element to from null field")
 }
 
+func (b *NullVal) NullField(int) {
+	panic("Unable to null field in null field")
+}
+
 func (b *NullVal) Finalize() {}

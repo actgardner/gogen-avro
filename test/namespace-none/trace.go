@@ -103,6 +103,15 @@ func (r *Trace) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *Trace) NullField(i int) {
+	switch i {
+	case 0:
+		r.TraceId = nil
+		return
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *Trace) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Trace) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *Trace) Finalize()                        {}

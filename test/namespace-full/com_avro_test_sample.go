@@ -117,6 +117,18 @@ func (r *ComAvroTestSample) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *ComAvroTestSample) NullField(i int) {
+	switch i {
+	case 0:
+		r.Header = nil
+		return
+	case 1:
+		r.Body = nil
+		return
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *ComAvroTestSample) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ComAvroTestSample) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *ComAvroTestSample) Finalize()                        {}

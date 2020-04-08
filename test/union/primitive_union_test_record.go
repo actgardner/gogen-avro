@@ -101,6 +101,15 @@ func (r *PrimitiveUnionTestRecord) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *PrimitiveUnionTestRecord) NullField(i int) {
+	switch i {
+	case 0:
+		r.UnionField = nil
+		return
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *PrimitiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *PrimitiveUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *PrimitiveUnionTestRecord) Finalize()                        {}

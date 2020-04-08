@@ -99,6 +99,12 @@ func (r *BodyworksDatatypeUUID) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *BodyworksDatatypeUUID) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *BodyworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *BodyworksDatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *BodyworksDatatypeUUID) Finalize()                        {}

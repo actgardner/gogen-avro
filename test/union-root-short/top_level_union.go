@@ -17,7 +17,8 @@ type TopLevelUnionTypeEnum int
 
 const (
 	TopLevelUnionTypeEnumIp_address TopLevelUnionTypeEnum = 0
-	TopLevelUnionTypeEnumEvent      TopLevelUnionTypeEnum = 1
+
+	TopLevelUnionTypeEnumEvent TopLevelUnionTypeEnum = 1
 )
 
 type TopLevelUnion struct {
@@ -27,6 +28,7 @@ type TopLevelUnion struct {
 }
 
 func writeTopLevelUnion(r *TopLevelUnion, w io.Writer) error {
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
@@ -63,6 +65,7 @@ func (r *TopLevelUnion) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *TopLevelUnion) NullField(i int)                  { panic("Unsupported operation") }
 func (_ *TopLevelUnion) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *TopLevelUnion) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *TopLevelUnion) AppendArray() types.Field         { panic("Unsupported operation") }

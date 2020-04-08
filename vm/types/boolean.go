@@ -52,4 +52,8 @@ func (b *Boolean) AppendArray() Field {
 	panic("Unable to append array element to from boolean field")
 }
 
+func (b *Boolean) NullField(int) {
+	panic("Unable to null field in boolean field")
+}
+
 func (b *Boolean) Finalize() {}

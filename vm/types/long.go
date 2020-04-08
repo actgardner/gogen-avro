@@ -52,4 +52,8 @@ func (b *Long) AppendArray() Field {
 	panic("Unable to append array element to from long field")
 }
 
+func (b *Long) NullField(int) {
+	panic("Unable to null field in long field")
+}
+
 func (b *Long) Finalize() {}

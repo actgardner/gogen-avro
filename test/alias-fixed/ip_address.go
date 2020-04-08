@@ -34,5 +34,6 @@ func (_ *Ip_addressWrapper) SetUnionElem(v int64)             { panic("Unsupport
 func (_ *Ip_addressWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
 func (_ *Ip_addressWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *Ip_addressWrapper) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ *Ip_addressWrapper) NullField(int)                    { panic("Unsupported operation") }
 func (_ *Ip_addressWrapper) Finalize()                        {}
 func (_ *Ip_addressWrapper) SetDefault(i int)                 { panic("Unsupported operation") }

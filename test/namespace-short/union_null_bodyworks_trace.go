@@ -16,7 +16,6 @@ import (
 type UnionNullBodyworksTraceTypeEnum int
 
 const (
-	UnionNullBodyworksTraceTypeEnumNull           UnionNullBodyworksTraceTypeEnum = 0
 	UnionNullBodyworksTraceTypeEnumBodyworksTrace UnionNullBodyworksTraceTypeEnum = 1
 )
 
@@ -27,13 +26,17 @@ type UnionNullBodyworksTrace struct {
 }
 
 func writeUnionNullBodyworksTrace(r *UnionNullBodyworksTrace, w io.Writer) error {
+
+	if r == nil {
+		err := vm.WriteLong(0, w)
+		return err
+	}
+
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
 		return err
 	}
 	switch r.UnionType {
-	case UnionNullBodyworksTraceTypeEnumNull:
-		return vm.WriteNull(r.Null, w)
 	case UnionNullBodyworksTraceTypeEnumBodyworksTrace:
 		return writeBodyworksTrace(r.BodyworksTrace, w)
 	}
@@ -63,6 +66,7 @@ func (r *UnionNullBodyworksTrace) Get(i int) types.Field {
 	}
 	panic("Unknown field index")
 }
+func (_ *UnionNullBodyworksTrace) NullField(i int)                  { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksTrace) AppendArray() types.Field         { panic("Unsupported operation") }

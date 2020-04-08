@@ -42,6 +42,8 @@ func (_ *ArrayBytesWrapper) Get(i int) types.Field            { panic("Unsupport
 func (_ *ArrayBytesWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ArrayBytesWrapper) Finalize()                        {}
 func (_ *ArrayBytesWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (_ *ArrayBytesWrapper) NullField(i int)                  { panic("Unsupported operation") }
+
 func (r *ArrayBytesWrapper) AppendArray() types.Field {
 	var v []byte
 

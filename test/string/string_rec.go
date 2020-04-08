@@ -95,6 +95,12 @@ func (r *StringRec) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
+func (r *StringRec) NullField(i int) {
+	switch i {
+	}
+	panic("Not a nullable field index")
+}
+
 func (_ *StringRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *StringRec) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *StringRec) Finalize()                        {}
