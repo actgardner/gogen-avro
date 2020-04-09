@@ -49,7 +49,11 @@ func (f *Field) Doc() string {
 
 // Tags returns a field go struct tags if defined.
 func (f *Field) Tags() string {
-	return f.fieldTags
+	jsonTag := fmt.Sprintf("json:%q", f.avroName)
+	if f.fieldTags == "" {
+		return jsonTag
+	}
+	return f.fieldTags + " " + jsonTag
 }
 
 func (f *Field) GoName() string {
