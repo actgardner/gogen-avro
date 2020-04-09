@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -49,6 +50,21 @@ func NewTestEnumTypeValue(raw string) (r TestEnumType, err error) {
 	}
 
 	return -1, fmt.Errorf("invalid value for TestEnumType: '%s'", raw)
+}
+
+func (b *TestEnumType) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]byte(b.String()))
+}
+
+func (b *TestEnumType) UnmarshalJSON(data []byte) error {
+	var stringVal string
+	err := json.Unmarshal(data, &stringVal)
+	if err != nil {
+		return err
+	}
+	val, err := NewTestEnumTypeValue(stringVal)
+	*b = val
+	return err
 }
 
 type TestEnumTypeWrapper struct {

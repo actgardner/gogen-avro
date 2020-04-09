@@ -2,7 +2,6 @@ package templates
 
 const MapTemplate = `
 import (
-	"fmt"
 	"io"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"github.com/actgardner/gogen-avro/vm"
@@ -52,9 +51,7 @@ func (r *{{ .WrapperType }}) NullField(_ int) {
 }
 
 func (r *{{ .WrapperType }}) Finalize() { 
-	fmt.Printf("Finalizing!\n")
 	for i := range r.keys {
-		fmt.Printf("%v\n", r.keys[i])
 		(*r.Target)[r.keys[i]] = r.values[i]
 	}
 }

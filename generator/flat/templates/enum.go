@@ -2,6 +2,7 @@ package templates
 
 const EnumTemplate = `
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -20,10 +21,10 @@ const (
 
 func (e {{ .GoType  }}) String() string {
 	switch e {
-{{ range $i, $symbol := .Symbols -}}
+	{{ range $i, $symbol := .Symbols -}}
 	case {{ $.SymbolName $symbol }}:
 		return {{ printf "%q" $symbol }}
-{{ end -}}
+	{{ end -}}
 	}
 	return "unknown"
 }
@@ -41,6 +42,21 @@ func {{ .FromStringMethod }}(raw string) (r {{ .GoType }}, err error) {
 	}
 
 	return -1, fmt.Errorf("invalid value for {{ $.GoType }}: '%s'", raw)
+}
+
+func (b *{{ .GoType }}) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]byte(b.String()))
+}
+
+func (b *{{ .GoType }}) UnmarshalJSON(data []byte) (error) {
+	var stringVal string
+	err := json.Unmarshal(data, &stringVal)
+	if err != nil {
+		return err
+	}
+	val, err := {{ .FromStringMethod }}(stringVal)
+	*b = val
+	return err
 }
 
 type {{ .WrapperType }} struct {

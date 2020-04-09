@@ -7,7 +7,6 @@
 package avro
 
 import (
-	"fmt"
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
 	"io"
@@ -53,9 +52,7 @@ func (r *MapBytesWrapper) NullField(_ int) {
 }
 
 func (r *MapBytesWrapper) Finalize() {
-	fmt.Printf("Finalizing!\n")
 	for i := range r.keys {
-		fmt.Printf("%v\n", r.keys[i])
 		(*r.Target)[r.keys[i]] = r.values[i]
 	}
 }

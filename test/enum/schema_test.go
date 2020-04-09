@@ -14,10 +14,10 @@ import (
 const fixtureJson = `
 [
 	{
-		"EnumField": 0
+		"EnumField": "TestSymbol1"
 	},
 	{
-		"EnumField": 2
+		"EnumField": "testSymbol2"
 	}
 ]
 `
