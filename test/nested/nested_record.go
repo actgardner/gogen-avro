@@ -13,11 +13,11 @@ import (
 )
 
 type NestedRecord struct {
-	StringField string
+	StringField string `json:"StringField"`
 
-	BoolField bool
+	BoolField bool `json:"BoolField"`
 
-	BytesField []byte
+	BytesField []byte `json:"BytesField"`
 }
 
 const NestedRecordAvroCRC64Fingerprint = "\x81\x8d\xc3K?\xe83\xcc"

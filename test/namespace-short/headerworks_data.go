@@ -15,11 +15,11 @@ import (
 // Common information related to the event which must be included in any clean event
 type HeaderworksData struct {
 	// Unique identifier for the event used for de-duplication and tracing.
-	Uuid *UnionNullDatatypeUUID
+	Uuid *UnionNullDatatypeUUID `json:"uuid"`
 	// Fully qualified name of the host that generated the event that generated the data.
-	Hostname *UnionNullString
+	Hostname *UnionNullString `json:"hostname"`
 	// Trace information not redundant with this object
-	Trace *UnionNullHeaderworksTrace
+	Trace *UnionNullHeaderworksTrace `json:"trace"`
 }
 
 const HeaderworksDataAvroCRC64Fingerprint = "6<\xf6?EE\xcd\v"

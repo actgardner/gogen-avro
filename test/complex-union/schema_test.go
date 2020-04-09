@@ -14,9 +14,9 @@ import (
 const fixtureJson = `
 [
 	{"UnionField": null},
-	{"UnionField":{"ArrayInt":[1,2,3], "UnionType":1}},
-	{"UnionField":{"MapInt":{"a":1, "b":3, "c": 5}, "UnionType":2}},
-	{"UnionField":{"NestedUnionRecord":{"IntField":789}, "UnionType":3}}
+	{"UnionField":{"array":[1,2,3]}},
+	{"UnionField":{"map":{"a":1, "b":3, "c": 5}}},
+	{"UnionField":{"NestedUnionRecord":{"IntField":789}}}
 ]
 `
 

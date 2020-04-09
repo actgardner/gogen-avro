@@ -14,6 +14,7 @@ func NewFloatField(definition interface{}) *FloatField {
 		name:             "Float",
 		goType:           "float32",
 		serializerMethod: "vm.WriteFloat",
+		unionKey:         "float",
 	}}
 }
 

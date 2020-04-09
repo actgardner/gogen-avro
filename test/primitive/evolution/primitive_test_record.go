@@ -13,21 +13,21 @@ import (
 )
 
 type PrimitiveTestRecord struct {
-	LongField int64
+	LongField int64 `json:"LongField"`
 
-	StringField string
+	StringField string `json:"StringField"`
 
-	FloatField float32
+	FloatField float32 `json:"FloatField"`
 
-	BytesField []byte
+	BytesField []byte `json:"BytesField"`
 
-	DoubleField float64
+	DoubleField float64 `json:"DoubleField"`
 
-	IntField int32
+	IntField int32 `json:"IntField"`
 
-	BoolField bool
+	BoolField bool `json:"BoolField"`
 
-	NewString string
+	NewString string `json:"NewString"`
 }
 
 const PrimitiveTestRecordAvroCRC64Fingerprint = "VL:(h\xc7\xd4w"

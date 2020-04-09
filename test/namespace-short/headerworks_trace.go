@@ -15,7 +15,7 @@ import (
 // Trace
 type HeaderworksTrace struct {
 	// Trace Identifier
-	TraceId *UnionNullDatatypeUUID
+	TraceId *UnionNullDatatypeUUID `json:"traceId"`
 }
 
 const HeaderworksTraceAvroCRC64Fingerprint = "\x8a\xdfu\xe7˻\xa6\xbc"

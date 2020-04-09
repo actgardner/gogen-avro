@@ -13,7 +13,7 @@ import (
 )
 
 type ComplexUnionTestRecord struct {
-	UnionField *UnionNullArrayIntMapIntNestedUnionRecord
+	UnionField *UnionNullArrayIntMapIntNestedUnionRecord `json:"UnionField"`
 }
 
 const ComplexUnionTestRecordAvroCRC64Fingerprint = ")h\bbm{\xe0\xbe"

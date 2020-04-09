@@ -15,9 +15,9 @@ import (
 // GoGen test
 type ComAvroTestSample struct {
 	// Core data information required for any event
-	Header *UnionNullHeaderworksData
+	Header *UnionNullHeaderworksData `json:"header"`
 	// Core data information required for any event
-	Body *UnionNullBodyworksData
+	Body *UnionNullBodyworksData `json:"body"`
 }
 
 const ComAvroTestSampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"

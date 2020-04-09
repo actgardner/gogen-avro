@@ -15,11 +15,11 @@ import (
 // Common information related to the event which must be included in any clean event
 type Data struct {
 	// Unique identifier for the event used for de-duplication and tracing.
-	Uuid *UnionNullUUID
+	Uuid *UnionNullUUID `json:"uuid"`
 	// Fully qualified name of the host that generated the event that generated the data.
-	Hostname *UnionNullString
+	Hostname *UnionNullString `json:"hostname"`
 	// Trace information not redundant with this object
-	Trace *UnionNullTrace
+	Trace *UnionNullTrace `json:"trace"`
 }
 
 const DataAvroCRC64Fingerprint = "\xa5\xec\x1f\xf5k\x15\xc1!"

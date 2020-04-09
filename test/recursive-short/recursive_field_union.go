@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -71,3 +72,26 @@ func (_ *RecursiveFieldUnion) SetDefault(i int)                 { panic("Unsuppo
 func (_ *RecursiveFieldUnion) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) Finalize()                        {}
+
+func (r *RecursiveFieldUnion) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType {
+	case RecursiveFieldUnionTypeEnumRecursiveUnionTestRecord:
+		return json.Marshal(map[string]interface{}{"RecursiveUnionTestRecord": r.RecursiveUnionTestRecord})
+	}
+	return nil, fmt.Errorf("invalid value for *RecursiveFieldUnion")
+}
+
+func (r *RecursiveFieldUnion) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	if value, ok := fields["RecursiveUnionTestRecord"]; ok {
+		r.UnionType = 1
+		return json.Unmarshal([]byte(value), &r.RecursiveUnionTestRecord)
+	}
+	return fmt.Errorf("invalid value for *RecursiveFieldUnion")
+}

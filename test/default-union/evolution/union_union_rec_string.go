@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -70,3 +71,32 @@ func (_ *UnionUnionRecString) SetDefault(i int)                 { panic("Unsuppo
 func (_ *UnionUnionRecString) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *UnionUnionRecString) Finalize()                        {}
+
+func (r *UnionUnionRecString) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType {
+	case UnionUnionRecStringTypeEnumUnionRec:
+		return json.Marshal(map[string]interface{}{"unionRec": r.UnionRec})
+	case UnionUnionRecStringTypeEnumString:
+		return json.Marshal(map[string]interface{}{"string": r.String})
+	}
+	return nil, fmt.Errorf("invalid value for *UnionUnionRecString")
+}
+
+func (r *UnionUnionRecString) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	if value, ok := fields["unionRec"]; ok {
+		r.UnionType = 0
+		return json.Unmarshal([]byte(value), &r.UnionRec)
+	}
+	if value, ok := fields["string"]; ok {
+		r.UnionType = 1
+		return json.Unmarshal([]byte(value), &r.String)
+	}
+	return fmt.Errorf("invalid value for *UnionUnionRecString")
+}

@@ -14,11 +14,11 @@ import (
 )
 
 type AvroContainerBlock struct {
-	NumRecords int64
+	NumRecords int64 `json:"numRecords"`
 
-	RecordBytes []byte
+	RecordBytes []byte `json:"recordBytes"`
 
-	Sync Sync
+	Sync Sync `json:"sync"`
 }
 
 const AvroContainerBlockAvroCRC64Fingerprint = "\x0e\xecj@ٔ\xe14"

@@ -14,11 +14,11 @@ import (
 )
 
 type AvroContainerHeader struct {
-	Magic Magic
+	Magic Magic `json:"magic"`
 
-	Meta map[string][]byte
+	Meta map[string][]byte `json:"meta"`
 
-	Sync Sync
+	Sync Sync `json:"sync"`
 }
 
 const AvroContainerHeaderAvroCRC64Fingerprint = "\xc0\x12\x03\xc0wi\xf96"

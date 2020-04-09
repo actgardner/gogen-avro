@@ -13,7 +13,7 @@ import (
 )
 
 type FixedDefaultTestRecord struct {
-	FixedField TestFixedDefaultType
+	FixedField TestFixedDefaultType `json:"FixedField"`
 }
 
 const FixedDefaultTestRecordAvroCRC64Fingerprint = "\xac\xb5kw\x1eWK\xcf"

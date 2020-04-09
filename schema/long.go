@@ -14,6 +14,7 @@ func NewLongField(definition interface{}) *LongField {
 		name:             "Long",
 		goType:           "int64",
 		serializerMethod: "vm.WriteLong",
+		unionKey:         "long",
 	}}
 }
 

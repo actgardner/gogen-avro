@@ -111,3 +111,7 @@ func (s *ArrayField) ItemConstructable() string {
 func (s *ArrayField) Children() []AvroType {
 	return []AvroType{s.itemType}
 }
+
+func (s *ArrayField) UnionKey() string {
+	return "array"
+}

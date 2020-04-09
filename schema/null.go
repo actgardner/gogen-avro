@@ -10,6 +10,7 @@ func NewNullField(definition interface{}) *NullField {
 		name:             "Null",
 		goType:           "*types.NullVal",
 		serializerMethod: "vm.WriteNull",
+		unionKey:         "null",
 	}}
 }
 

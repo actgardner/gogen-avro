@@ -14,6 +14,7 @@ func NewBoolField(definition interface{}) *BoolField {
 		name:             "Bool",
 		goType:           "bool",
 		serializerMethod: "vm.WriteBool",
+		unionKey:         "boolean",
 	}}
 }
 

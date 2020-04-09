@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -71,3 +72,26 @@ func (_ *UnionNullHeaderworksTrace) SetDefault(i int)                 { panic("U
 func (_ *UnionNullHeaderworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksTrace) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksTrace) Finalize()                        {}
+
+func (r *UnionNullHeaderworksTrace) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType {
+	case UnionNullHeaderworksTraceTypeEnumHeaderworksTrace:
+		return json.Marshal(map[string]interface{}{"Trace": r.HeaderworksTrace})
+	}
+	return nil, fmt.Errorf("invalid value for *UnionNullHeaderworksTrace")
+}
+
+func (r *UnionNullHeaderworksTrace) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	if value, ok := fields["Trace"]; ok {
+		r.UnionType = 1
+		return json.Unmarshal([]byte(value), &r.HeaderworksTrace)
+	}
+	return fmt.Errorf("invalid value for *UnionNullHeaderworksTrace")
+}

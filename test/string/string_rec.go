@@ -13,7 +13,7 @@ import (
 )
 
 type StringRec struct {
-	ProductName string
+	ProductName string `json:"productName"`
 }
 
 const StringRecAvroCRC64Fingerprint = "w\x836\xab\x9d\xe9\x00\x15"

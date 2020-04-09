@@ -15,9 +15,9 @@ import (
 // GoGen test
 type Sample struct {
 	// Core data information required for any event
-	Header *UnionNullData
+	Header *UnionNullData `json:"header"`
 	// Core data information required for any event
-	Body *UnionNullData
+	Body *UnionNullData `json:"body"`
 }
 
 const SampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"

@@ -13,7 +13,7 @@ import (
 )
 
 type EnumTestRecord struct {
-	EnumField TestEnumType
+	EnumField TestEnumType `json:"EnumField"`
 }
 
 const EnumTestRecordAvroCRC64Fingerprint = "\x8e\x96\x00̛x3\xfa"

@@ -14,6 +14,7 @@ func NewIntField(definition interface{}) *IntField {
 		name:             "Int",
 		goType:           "int32",
 		serializerMethod: "vm.WriteInt",
+		unionKey:         "int",
 	}}
 }
 

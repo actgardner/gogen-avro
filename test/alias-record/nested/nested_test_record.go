@@ -13,9 +13,9 @@ import (
 )
 
 type NestedTestRecord struct {
-	NumberField *NumberRecord
+	NumberField *NumberRecord `json:"NumberField"`
 
-	OtherField *NestedRecord
+	OtherField *NestedRecord `json:"OtherField"`
 }
 
 const NestedTestRecordAvroCRC64Fingerprint = "b{m\\D\xbe\xaa\x96"

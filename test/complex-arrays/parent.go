@@ -13,7 +13,7 @@ import (
 )
 
 type Parent struct {
-	Children []*Child
+	Children []*Child `json:"Children"`
 }
 
 const ParentAvroCRC64Fingerprint = "p\x9fn\xf8\x11i\x98\x9b"

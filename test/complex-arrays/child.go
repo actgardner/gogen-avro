@@ -13,7 +13,7 @@ import (
 )
 
 type Child struct {
-	Name string
+	Name string `json:"name"`
 }
 
 const ChildAvroCRC64Fingerprint = "\xad$C\xb1bU\xc0\x12"

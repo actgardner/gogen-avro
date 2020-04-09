@@ -13,13 +13,13 @@ import (
 )
 
 type NumberRecord struct {
-	IntField int32
+	IntField int32 `json:"IntField"`
 
-	LongField int64
+	LongField int64 `json:"LongField"`
 
-	FloatField float32
+	FloatField float32 `json:"FloatField"`
 
-	DoubleField float64
+	DoubleField float64 `json:"DoubleField"`
 }
 
 const NumberRecordAvroCRC64Fingerprint = "\xf4Zu\xd5Nt'~"

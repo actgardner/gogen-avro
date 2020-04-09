@@ -14,12 +14,12 @@ import (
 // Round-trip some primitive values through our serializer and goavro to verify
 const fixtureJson = `
 [
-{"UnionField":{"Int":1, "UnionType":0}},
-{"UnionField":{"Long":2, "UnionType":1}},
-{"UnionField":{"Float":3.4, "UnionType":2}},
-{"UnionField":{"Double":5.6, "UnionType":3}},
-{"UnionField":{"String":"testString", "UnionType":4}},
-{"UnionField":{"Bool":true, "UnionType":5}},
+{"UnionField":{"int":1}},
+{"UnionField":{"long":2}},
+{"UnionField":{"float":3.4}},
+{"UnionField":{"double":5.6}},
+{"UnionField":{"string":"testString"}},
+{"UnionField":{"boolean":true}},
 {"UnionField":null}
 ]
 `

@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -109,3 +110,56 @@ func (_ *UnionIntLongFloatDoubleStringBoolNull) AppendArray() types.Field {
 	panic("Unsupported operation")
 }
 func (_ *UnionIntLongFloatDoubleStringBoolNull) Finalize() {}
+
+func (r *UnionIntLongFloatDoubleStringBoolNull) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType {
+	case UnionIntLongFloatDoubleStringBoolNullTypeEnumInt:
+		return json.Marshal(map[string]interface{}{"int": r.Int})
+	case UnionIntLongFloatDoubleStringBoolNullTypeEnumLong:
+		return json.Marshal(map[string]interface{}{"long": r.Long})
+	case UnionIntLongFloatDoubleStringBoolNullTypeEnumFloat:
+		return json.Marshal(map[string]interface{}{"float": r.Float})
+	case UnionIntLongFloatDoubleStringBoolNullTypeEnumDouble:
+		return json.Marshal(map[string]interface{}{"double": r.Double})
+	case UnionIntLongFloatDoubleStringBoolNullTypeEnumString:
+		return json.Marshal(map[string]interface{}{"string": r.String})
+	case UnionIntLongFloatDoubleStringBoolNullTypeEnumBool:
+		return json.Marshal(map[string]interface{}{"boolean": r.Bool})
+	}
+	return nil, fmt.Errorf("invalid value for *UnionIntLongFloatDoubleStringBoolNull")
+}
+
+func (r *UnionIntLongFloatDoubleStringBoolNull) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	if value, ok := fields["int"]; ok {
+		r.UnionType = 0
+		return json.Unmarshal([]byte(value), &r.Int)
+	}
+	if value, ok := fields["long"]; ok {
+		r.UnionType = 1
+		return json.Unmarshal([]byte(value), &r.Long)
+	}
+	if value, ok := fields["float"]; ok {
+		r.UnionType = 2
+		return json.Unmarshal([]byte(value), &r.Float)
+	}
+	if value, ok := fields["double"]; ok {
+		r.UnionType = 3
+		return json.Unmarshal([]byte(value), &r.Double)
+	}
+	if value, ok := fields["string"]; ok {
+		r.UnionType = 4
+		return json.Unmarshal([]byte(value), &r.String)
+	}
+	if value, ok := fields["boolean"]; ok {
+		r.UnionType = 5
+		return json.Unmarshal([]byte(value), &r.Bool)
+	}
+	return fmt.Errorf("invalid value for *UnionIntLongFloatDoubleStringBoolNull")
+}

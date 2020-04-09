@@ -14,7 +14,7 @@ import (
 
 type Event struct {
 	// Unique ID for this event.
-	Id string
+	Id string `json:"id"`
 }
 
 const EventAvroCRC64Fingerprint = "\xe8\x8cH,\xc2W\x8a\xe0"

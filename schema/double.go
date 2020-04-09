@@ -14,6 +14,7 @@ func NewDoubleField(definition interface{}) *DoubleField {
 		name:             "Double",
 		goType:           "float64",
 		serializerMethod: "vm.WriteDouble",
+		unionKey:         "double",
 	}}
 }
 

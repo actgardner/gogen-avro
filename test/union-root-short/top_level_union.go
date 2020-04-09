@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -70,3 +71,32 @@ func (_ *TopLevelUnion) SetDefault(i int)                 { panic("Unsupported o
 func (_ *TopLevelUnion) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *TopLevelUnion) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *TopLevelUnion) Finalize()                        {}
+
+func (r *TopLevelUnion) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType {
+	case TopLevelUnionTypeEnumIp_address:
+		return json.Marshal(map[string]interface{}{"ip_address": r.Ip_address})
+	case TopLevelUnionTypeEnumEvent:
+		return json.Marshal(map[string]interface{}{"event": r.Event})
+	}
+	return nil, fmt.Errorf("invalid value for *TopLevelUnion")
+}
+
+func (r *TopLevelUnion) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	if value, ok := fields["ip_address"]; ok {
+		r.UnionType = 0
+		return json.Unmarshal([]byte(value), &r.Ip_address)
+	}
+	if value, ok := fields["event"]; ok {
+		r.UnionType = 1
+		return json.Unmarshal([]byte(value), &r.Event)
+	}
+	return fmt.Errorf("invalid value for *TopLevelUnion")
+}

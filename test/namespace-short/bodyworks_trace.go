@@ -15,7 +15,7 @@ import (
 // Trace
 type BodyworksTrace struct {
 	// Trace Identifier
-	TraceId *UnionNullDatatypeUUID
+	TraceId *UnionNullDatatypeUUID `json:"traceId"`
 }
 
 const BodyworksTraceAvroCRC64Fingerprint = "\x83<\x8e\xd5T\xfc\x8d\x94"

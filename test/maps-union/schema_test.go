@@ -12,9 +12,9 @@ import (
 const fixtureJson = `
 [
   {"IntField": { 
-      "a": {"UnionType": 1, "Int": 1}, 
+      "a": {"int": 1}, 
       "b": null, 
-      "c": {"UnionType": 1, "Int": 2147483647}
+      "c": {"int": 2147483647}
   } 
   }
 ]

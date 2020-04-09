@@ -13,7 +13,7 @@ import (
 )
 
 type StructTag struct {
-	ProductName string `validate:"true"`
+	ProductName string `validate:"true" json:"productName"`
 }
 
 const StructTagAvroCRC64Fingerprint = "\x92\xb7Dk\xe2\x1e\xef\xfc"

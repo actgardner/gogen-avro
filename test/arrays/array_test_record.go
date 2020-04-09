@@ -13,19 +13,19 @@ import (
 )
 
 type ArrayTestRecord struct {
-	IntField []int32
+	IntField []int32 `json:"IntField"`
 
-	LongField []int64
+	LongField []int64 `json:"LongField"`
 
-	DoubleField []float64
+	DoubleField []float64 `json:"DoubleField"`
 
-	StringField []string
+	StringField []string `json:"StringField"`
 
-	FloatField []float32
+	FloatField []float32 `json:"FloatField"`
 
-	BoolField []bool
+	BoolField []bool `json:"BoolField"`
 
-	BytesField [][]byte
+	BytesField [][]byte `json:"BytesField"`
 }
 
 const ArrayTestRecordAvroCRC64Fingerprint = "\"I\xbbnO\x1c#,"

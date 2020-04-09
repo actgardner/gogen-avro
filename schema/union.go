@@ -170,3 +170,7 @@ func (s *UnionField) Children() []AvroType {
 func (s *UnionField) NullIndex() int {
 	return s.nullIndex
 }
+
+func (s *UnionField) UnionKey() string {
+	panic("Unions within unions are not supported")
+}

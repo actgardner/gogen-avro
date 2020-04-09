@@ -15,7 +15,7 @@ import (
 // Trace
 type Trace struct {
 	// Trace Identifier
-	TraceId *UnionNullUUID
+	TraceId *UnionNullUUID `json:"traceId"`
 }
 
 const TraceAvroCRC64Fingerprint = "\x83<\x8e\xd5T\xfc\x8d\x94"

@@ -105,3 +105,7 @@ func (s *MapField) ItemConstructable() string {
 func (s *MapField) Children() []AvroType {
 	return []AvroType{s.itemType}
 }
+
+func (s *MapField) UnionKey() string {
+	return "map"
+}

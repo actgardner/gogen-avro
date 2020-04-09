@@ -65,3 +65,7 @@ func (s *Reference) Children() []AvroType {
 	// References can only point to Definitions and thus have no children
 	return []AvroType{}
 }
+
+func (s *Reference) UnionKey() string {
+	return s.TypeName.Name
+}

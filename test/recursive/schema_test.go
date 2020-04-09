@@ -11,7 +11,7 @@ import (
 const fixtureJson = `
 [
 {"RecursiveField": null},
-{"RecursiveField":{"RecursiveUnionTestRecord":{"RecursiveField": null}, "UnionType":1}}
+{"RecursiveField":{"RecursiveUnionTestRecord":{"RecursiveField": null}}}
 ]
 `
 

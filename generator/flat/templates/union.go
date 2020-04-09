@@ -2,8 +2,9 @@ package templates
 
 const UnionTemplate = `
 import (
-	"io"
+	"encoding/json"
 	"fmt"
+	"io"
 
 	"github.com/actgardner/gogen-avro/vm"
 	"github.com/actgardner/gogen-avro/vm/types"
@@ -82,4 +83,35 @@ func (_ {{ .GoType }}) SetDefault(i int) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) Finalize()  { }
+
+func (r {{ .GoType }}) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType{
+	{{ range $i, $t := .ItemTypes -}}
+	{{ if ne $i $.NullIndex -}}
+	case {{ $.ItemName $t }}:
+		return json.Marshal(map[string]interface{}{"{{ .UnionKey }}": r.{{ .Name }}})
+        {{ end -}}
+	{{ end -}}
+	}
+	return nil, fmt.Errorf("invalid value for {{ .GoType }}")
+}
+
+func (r {{ .GoType }}) UnmarshalJSON(data []byte) (error) {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	{{ range $i, $t := .ItemTypes -}}
+	{{ if ne $i $.NullIndex -}}
+	if value,  ok := fields["{{ .UnionKey }}"]; ok {
+		r.UnionType = {{ $i }}
+		return json.Unmarshal([]byte(value), &r.{{ .Name }})
+	}
+        {{ end -}}
+	{{ end -}}
+	return fmt.Errorf("invalid value for {{ .GoType }}")
+}
 `

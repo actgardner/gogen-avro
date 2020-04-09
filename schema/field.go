@@ -2,6 +2,8 @@
 package schema
 
 import (
+	"fmt"
+
 	"github.com/actgardner/gogen-avro/generator"
 )
 

@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -97,3 +98,38 @@ func (_ *UnionNullArrayIntMapIntNestedUnionRecord) AppendArray() types.Field {
 	panic("Unsupported operation")
 }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) Finalize() {}
+
+func (r *UnionNullArrayIntMapIntNestedUnionRecord) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType {
+	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumArrayInt:
+		return json.Marshal(map[string]interface{}{"array": r.ArrayInt})
+	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumMapInt:
+		return json.Marshal(map[string]interface{}{"map": r.MapInt})
+	case UnionNullArrayIntMapIntNestedUnionRecordTypeEnumNestedUnionRecord:
+		return json.Marshal(map[string]interface{}{"NestedUnionRecord": r.NestedUnionRecord})
+	}
+	return nil, fmt.Errorf("invalid value for *UnionNullArrayIntMapIntNestedUnionRecord")
+}
+
+func (r *UnionNullArrayIntMapIntNestedUnionRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	if value, ok := fields["array"]; ok {
+		r.UnionType = 1
+		return json.Unmarshal([]byte(value), &r.ArrayInt)
+	}
+	if value, ok := fields["map"]; ok {
+		r.UnionType = 2
+		return json.Unmarshal([]byte(value), &r.MapInt)
+	}
+	if value, ok := fields["NestedUnionRecord"]; ok {
+		r.UnionType = 3
+		return json.Unmarshal([]byte(value), &r.NestedUnionRecord)
+	}
+	return fmt.Errorf("invalid value for *UnionNullArrayIntMapIntNestedUnionRecord")
+}

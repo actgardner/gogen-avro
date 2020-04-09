@@ -13,7 +13,7 @@ import (
 )
 
 type MapTestRecord struct {
-	IntField map[string]*UnionNullInt
+	IntField map[string]*UnionNullInt `json:"IntField"`
 }
 
 const MapTestRecordAvroCRC64Fingerprint = "\xf7\xdb\x00\xb2n\xa8u\xbf"

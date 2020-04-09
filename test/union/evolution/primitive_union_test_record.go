@@ -13,7 +13,7 @@ import (
 )
 
 type PrimitiveUnionTestRecord struct {
-	UnionField *UnionStringLongIntFloatDoubleNull
+	UnionField *UnionStringLongIntFloatDoubleNull `json:"UnionField"`
 }
 
 const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "Bʍ\xd3c\xcfu\xd5"

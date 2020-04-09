@@ -14,7 +14,7 @@ import (
 
 // A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014
 type HeaderworksDatatypeUUID struct {
-	Uuid string
+	Uuid string `json:"uuid"`
 }
 
 const HeaderworksDatatypeUUIDAvroCRC64Fingerprint = "\xabK\x8cN\xf4L\xb6S"

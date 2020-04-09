@@ -13,7 +13,7 @@ import (
 )
 
 type UnionRec struct {
-	A int32
+	A int32 `json:"a"`
 }
 
 const UnionRecAvroCRC64Fingerprint = "1\xf9\xae\xb7W\x80#\xf9"

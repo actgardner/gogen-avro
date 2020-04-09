@@ -13,7 +13,7 @@ import (
 )
 
 type RecursiveUnionTestRecord struct {
-	RecursiveField *UnionNullRecursiveUnionTestRecord
+	RecursiveField *UnionNullRecursiveUnionTestRecord `json:"RecursiveField"`
 }
 
 const RecursiveUnionTestRecordAvroCRC64Fingerprint = "\xc6U)C\v\x8a\xa6\x89"

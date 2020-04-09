@@ -9,19 +9,19 @@ import (
 )
 
 type MapTestRecord struct {
-	IntField map[string]int32
+	IntField map[string]int32 `json:"IntField"`
 
-	LongField map[string]int64
+	LongField map[string]int64 `json:"LongField"`
 
-	DoubleField map[string]float64
+	DoubleField map[string]float64 `json:"DoubleField"`
 
-	StringField map[string]string
+	StringField map[string]string `json:"StringField"`
 
-	FloatField map[string]float32
+	FloatField map[string]float32 `json:"FloatField"`
 
-	BoolField map[string]bool
+	BoolField map[string]bool `json:"BoolField"`
 
-	BytesField map[string][]byte
+	BytesField map[string][]byte `json:"BytesField"`
 }
 
 const MapTestRecordAvroCRC64Fingerprint = "<?\x18\xa0\a\xdf^\x9e"

@@ -6,6 +6,7 @@ type PrimitiveField struct {
 	name             string
 	goType           string
 	serializerMethod string
+	unionKey         string
 }
 
 func (s *PrimitiveField) Name() string {
@@ -35,4 +36,8 @@ func (s *PrimitiveField) SimpleName() string {
 
 func (s *PrimitiveField) Children() []AvroType {
 	return []AvroType{}
+}
+
+func (s *PrimitiveField) UnionKey() string {
+	return s.unionKey
 }

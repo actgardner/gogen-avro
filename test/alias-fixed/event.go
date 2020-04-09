@@ -15,11 +15,11 @@ import (
 // The test record
 type Event struct {
 	// Unique ID for this event.
-	Id string
+	Id string `json:"id"`
 	// Start IP of this observation's IP range.
-	Start_ip Ip_address
+	Start_ip Ip_address `json:"start_ip"`
 	// End IP of this observation's IP range.
-	End_ip Ip_address
+	End_ip Ip_address `json:"end_ip"`
 }
 
 const EventAvroCRC64Fingerprint = "\xebZ\xc0m\xf9OV\x97"

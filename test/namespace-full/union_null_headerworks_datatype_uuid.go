@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -73,3 +74,26 @@ func (_ *UnionNullHeaderworksDatatypeUUID) AppendMap(key string) types.Field {
 }
 func (_ *UnionNullHeaderworksDatatypeUUID) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksDatatypeUUID) Finalize()                {}
+
+func (r *UnionNullHeaderworksDatatypeUUID) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType {
+	case UnionNullHeaderworksDatatypeUUIDTypeEnumHeaderworksDatatypeUUID:
+		return json.Marshal(map[string]interface{}{"UUID": r.HeaderworksDatatypeUUID})
+	}
+	return nil, fmt.Errorf("invalid value for *UnionNullHeaderworksDatatypeUUID")
+}
+
+func (r *UnionNullHeaderworksDatatypeUUID) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	if value, ok := fields["UUID"]; ok {
+		r.UnionType = 1
+		return json.Unmarshal([]byte(value), &r.HeaderworksDatatypeUUID)
+	}
+	return fmt.Errorf("invalid value for *UnionNullHeaderworksDatatypeUUID")
+}

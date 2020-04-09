@@ -13,7 +13,7 @@ import (
 )
 
 type NestedMap struct {
-	MapOfMaps map[string]map[string][]string
+	MapOfMaps map[string]map[string][]string `json:"MapOfMaps"`
 }
 
 const NestedMapAvroCRC64Fingerprint = "\xa1\x9e\x89\xd6\xc52@\xf2"

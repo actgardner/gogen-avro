@@ -13,7 +13,7 @@ import (
 )
 
 type NestedUnionRecord struct {
-	IntField int32
+	IntField int32 `json:"IntField"`
 }
 
 const NestedUnionRecordAvroCRC64Fingerprint = "#\xb6\xed\xa0\x87F=\xef"

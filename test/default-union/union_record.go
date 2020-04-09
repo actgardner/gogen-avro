@@ -13,9 +13,9 @@ import (
 )
 
 type UnionRecord struct {
-	Id string
+	Id string `json:"id"`
 
-	Age int32
+	Age int32 `json:"age"`
 }
 
 const UnionRecordAvroCRC64Fingerprint = "XXv\f\x93)\xf7\xe2"

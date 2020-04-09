@@ -12,9 +12,9 @@ import (
 const fixtureJson = `
 [
 {"Header": null, "Body": null},
-{"Header": {"UnionType": 1, "HeaderworksData": {"UUID": null, "Hostname": null, "Trace": null}}, "Body": null},
-{"Header": null, "Body": {"UnionType": 1, "BodyworksData": {"UUID": null, "Hostname": null, "Trace": null}}},
-{"Header": {"UnionType": 1, "HeaderworksData": {"UUID": null, "Hostname": null, "Trace": null}}, "Body": {"UnionType": 1, "BodyworksData": {"UUID": null, "Hostname": null, "Trace": null}}}
+{"Header": {"Data": {"UUID": null, "Hostname": null, "Trace": null}}, "Body": null},
+{"Header": null, "Body": {"Data": {"UUID": null, "Hostname": null, "Trace": null}}},
+{"Header": {"Data": {"UUID": null, "Hostname": null, "Trace": null}}, "Body": {"Data": {"UUID": null, "Hostname": null, "Trace": null}}}
 ]`
 
 func TestRoundTrip(t *testing.T) {

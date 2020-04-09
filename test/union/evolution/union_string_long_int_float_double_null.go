@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -100,3 +101,50 @@ func (_ *UnionStringLongIntFloatDoubleNull) AppendMap(key string) types.Field {
 }
 func (_ *UnionStringLongIntFloatDoubleNull) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionStringLongIntFloatDoubleNull) Finalize()                {}
+
+func (r *UnionStringLongIntFloatDoubleNull) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType {
+	case UnionStringLongIntFloatDoubleNullTypeEnumString:
+		return json.Marshal(map[string]interface{}{"string": r.String})
+	case UnionStringLongIntFloatDoubleNullTypeEnumLong:
+		return json.Marshal(map[string]interface{}{"long": r.Long})
+	case UnionStringLongIntFloatDoubleNullTypeEnumInt:
+		return json.Marshal(map[string]interface{}{"int": r.Int})
+	case UnionStringLongIntFloatDoubleNullTypeEnumFloat:
+		return json.Marshal(map[string]interface{}{"float": r.Float})
+	case UnionStringLongIntFloatDoubleNullTypeEnumDouble:
+		return json.Marshal(map[string]interface{}{"double": r.Double})
+	}
+	return nil, fmt.Errorf("invalid value for *UnionStringLongIntFloatDoubleNull")
+}
+
+func (r *UnionStringLongIntFloatDoubleNull) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	if value, ok := fields["string"]; ok {
+		r.UnionType = 0
+		return json.Unmarshal([]byte(value), &r.String)
+	}
+	if value, ok := fields["long"]; ok {
+		r.UnionType = 1
+		return json.Unmarshal([]byte(value), &r.Long)
+	}
+	if value, ok := fields["int"]; ok {
+		r.UnionType = 2
+		return json.Unmarshal([]byte(value), &r.Int)
+	}
+	if value, ok := fields["float"]; ok {
+		r.UnionType = 3
+		return json.Unmarshal([]byte(value), &r.Float)
+	}
+	if value, ok := fields["double"]; ok {
+		r.UnionType = 4
+		return json.Unmarshal([]byte(value), &r.Double)
+	}
+	return fmt.Errorf("invalid value for *UnionStringLongIntFloatDoubleNull")
+}

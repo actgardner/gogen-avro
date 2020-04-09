@@ -14,6 +14,7 @@ func NewStringField(definition interface{}) *StringField {
 		name:             "String",
 		goType:           "string",
 		serializerMethod: "vm.WriteString",
+		unionKey:         "string",
 	}}
 }
 

@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -70,3 +71,26 @@ func (_ *UnionNullInt) SetDefault(i int)                 { panic("Unsupported op
 func (_ *UnionNullInt) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionNullInt) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *UnionNullInt) Finalize()                        {}
+
+func (r *UnionNullInt) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType {
+	case UnionNullIntTypeEnumInt:
+		return json.Marshal(map[string]interface{}{"int": r.Int})
+	}
+	return nil, fmt.Errorf("invalid value for *UnionNullInt")
+}
+
+func (r *UnionNullInt) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	if value, ok := fields["int"]; ok {
+		r.UnionType = 1
+		return json.Unmarshal([]byte(value), &r.Int)
+	}
+	return fmt.Errorf("invalid value for *UnionNullInt")
+}

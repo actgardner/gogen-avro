@@ -13,9 +13,9 @@ import (
 )
 
 type FixedTestRecord struct {
-	FixedField TestFixedType
+	FixedField TestFixedType `json:"FixedField"`
 
-	AnotherFixed TestFixedType
+	AnotherFixed TestFixedType `json:"AnotherFixed"`
 }
 
 const FixedTestRecordAvroCRC64Fingerprint = "\xbaK\xf9~\x1f\xc0\xf1R"

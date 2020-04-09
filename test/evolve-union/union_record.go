@@ -13,11 +13,11 @@ import (
 )
 
 type UnionRecord struct {
-	A string
+	A string `json:"a"`
 
-	Id *UnionNullInt
+	Id *UnionNullInt `json:"id"`
 
-	Name *UnionNullString
+	Name *UnionNullString `json:"name"`
 }
 
 const UnionRecordAvroCRC64Fingerprint = "\xfeS\x1bd\xa1\xfc͒"

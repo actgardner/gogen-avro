@@ -15,11 +15,11 @@ import (
 // Common information related to the event which must be included in any clean event
 type BodyworksData struct {
 	// Unique identifier for the event used for de-duplication and tracing.
-	Uuid *UnionNullBodyworksDatatypeUUID
+	Uuid *UnionNullBodyworksDatatypeUUID `json:"uuid"`
 	// Fully qualified name of the host that generated the event that generated the data.
-	Hostname *UnionNullString
+	Hostname *UnionNullString `json:"hostname"`
 	// Trace information not redundant with this object
-	Trace *UnionNullBodyworksTrace
+	Trace *UnionNullBodyworksTrace `json:"trace"`
 }
 
 const BodyworksDataAvroCRC64Fingerprint = "\xa5\xec\x1f\xf5k\x15\xc1!"

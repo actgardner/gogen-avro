@@ -13,7 +13,7 @@ import (
 )
 
 type ArrayTestRecord struct {
-	IntField []*UnionNullInt
+	IntField []*UnionNullInt `json:"IntField"`
 }
 
 const ArrayTestRecordAvroCRC64Fingerprint = "t\x06\x9e\xc8\u0088\xa0\xcb"

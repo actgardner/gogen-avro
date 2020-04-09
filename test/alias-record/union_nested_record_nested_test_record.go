@@ -6,6 +6,7 @@
 package avro
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -73,3 +74,32 @@ func (_ *UnionNestedRecordNestedTestRecord) AppendMap(key string) types.Field {
 }
 func (_ *UnionNestedRecordNestedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *UnionNestedRecordNestedTestRecord) Finalize()                {}
+
+func (r *UnionNestedRecordNestedTestRecord) MarshalJSON() ([]byte, error) {
+	if r == nil {
+		return []byte("null"), nil
+	}
+	switch r.UnionType {
+	case UnionNestedRecordNestedTestRecordTypeEnumNestedRecord:
+		return json.Marshal(map[string]interface{}{"NestedRecord": r.NestedRecord})
+	case UnionNestedRecordNestedTestRecordTypeEnumNestedTestRecord:
+		return json.Marshal(map[string]interface{}{"NestedTestRecord": r.NestedTestRecord})
+	}
+	return nil, fmt.Errorf("invalid value for *UnionNestedRecordNestedTestRecord")
+}
+
+func (r *UnionNestedRecordNestedTestRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+	if value, ok := fields["NestedRecord"]; ok {
+		r.UnionType = 0
+		return json.Unmarshal([]byte(value), &r.NestedRecord)
+	}
+	if value, ok := fields["NestedTestRecord"]; ok {
+		r.UnionType = 1
+		return json.Unmarshal([]byte(value), &r.NestedTestRecord)
+	}
+	return fmt.Errorf("invalid value for *UnionNestedRecordNestedTestRecord")
+}

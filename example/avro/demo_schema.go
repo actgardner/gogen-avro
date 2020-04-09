@@ -13,15 +13,15 @@ import (
 )
 
 type DemoSchema struct {
-	IntField int32
+	IntField int32 `json:"IntField"`
 
-	DoubleField float64
+	DoubleField float64 `json:"DoubleField"`
 
-	StringField string
+	StringField string `json:"StringField"`
 
-	BoolField bool
+	BoolField bool `json:"BoolField"`
 
-	BytesField []byte
+	BytesField []byte `json:"BytesField"`
 }
 
 const DemoSchemaAvroCRC64Fingerprint = "\xc4V\xa9\x04ʛf\xad"

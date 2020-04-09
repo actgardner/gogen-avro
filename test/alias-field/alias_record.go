@@ -13,9 +13,9 @@ import (
 )
 
 type AliasRecord struct {
-	A string
+	A string `json:"a"`
 
-	C string
+	C string `json:"c"`
 }
 
 const AliasRecordAvroCRC64Fingerprint = "B~_@rz\xdb\xc7"

@@ -14,6 +14,7 @@ func NewBytesField(definition interface{}) *BytesField {
 		name:             "Bytes",
 		goType:           "[]byte",
 		serializerMethod: "vm.WriteBytes",
+		unionKey:         "bytes",
 	}}
 }
 
