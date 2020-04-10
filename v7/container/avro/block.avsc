@@ -1,0 +1,8 @@
+{
+ "type": "record", "name": "AvroContainerBlock",
+ "fields" : [
+   {"name": "numRecords", "type": "long"},
+   {"name": "recordBytes", "type": "bytes"},
+   {"name": "sync", "type": {"type": "fixed", "name": "sync", "size": 16}}
+  ]
+}

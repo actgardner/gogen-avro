@@ -1,0 +1,15 @@
+{
+	"type": "record",
+	"name": "ComplexUnionTestRecord",
+	"fields": [
+		{
+			"name": "UnionField", 
+			"type": [
+				"null",
+				{"type": "array", "items": "int"},
+				{"type": "map", "values": "int"},
+				{"type": "record", "name": "NestedUnionRecord", "fields":[{"name": "IntField", "type": "int"}]}	
+			]
+		}
+	]
+}

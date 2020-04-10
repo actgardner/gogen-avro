@@ -1,0 +1,16 @@
+{
+	"type": "record",
+	"name": "FixedTestRecord",
+	"fields": [{
+		"name": "FixedField",
+		"type": {
+			"name": "TestFixedType",
+			"size": 12,
+			"type": "fixed"
+		}
+	},
+	{
+		"name": "AnotherFixed",
+		"type": "TestFixedType"
+	}]
+}

@@ -1,0 +1,10 @@
+{
+  "name" : "StringRec",
+  "type" : "record",
+  "fields" : [
+    {
+      "name" : "productName",
+      "type" : "string"
+    }
+  ]
+}
