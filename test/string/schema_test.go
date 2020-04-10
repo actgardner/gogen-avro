@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/actgardner/gogen-avro/vm"
+
 	"github.com/stretchr/testify/assert"
 )
 

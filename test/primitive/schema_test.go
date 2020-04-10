@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/resolver"
 	"github.com/actgardner/gogen-avro/vm"
 
-	"github.com/linkedin/goavro"
+	"github.com/linkedin/goavro/v2"
 	"github.com/stretchr/testify/assert"
 )
 
