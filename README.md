@@ -156,13 +156,17 @@ Before version 6.0 this project used gopkg.in for versioning of both the code ge
 
 See [Releases](https://github.com/actgardner/gogen-avro/releases) for the changelogs.
 
+### Companies/Projects Using gogen-avro
+
+If you're using gogen-avro in production, let us know! File an issue or open a PR to add your company or project here.
+
 ### Reporting Issues
 
 When reporting issues, please include your reader and writer schemas, and the output from the compiler logs by adding this to one of your source files:
 
 ```
 import (
-	"github.com/actgardner/gogen-avro/compiler"
+	"github.com/actgardner/gogen-avro/v7/compiler"
 )
 
 func init() {
