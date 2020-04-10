@@ -1,7 +1,0 @@
-{
-	"type": "record",
-	"name": "RecursiveUnionTestRecord",
-	"fields": [
-		{"name": "RecursiveField", "type": ["null", "RecursiveUnionTestRecord"]}
-	]
-}

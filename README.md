@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/actgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/actgardner/gogen-avro)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/actgardner/gogen-avro/master/LICENSE)
-[![Version 6.5.0](https://img.shields.io/badge/version-6.5.0-lightgrey.svg)](https://github.com/actgardner/gogen-avro/releases)
+[![Version 7.0.0](https://img.shields.io/badge/version-7.0.0-lightgrey.svg)](https://github.com/actgardner/gogen-avro/releases)
 
 Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules. 
 
@@ -29,21 +29,13 @@ Generates type-safe Go code based on your Avro schemas, including serializers an
 
 gogen-avro has two parts: a tool which you install on your system (usually on your GOPATH) to generate code, and a runtime library that gets imported.
 
-To install the gogen-avro executable to `$GOPATH/bin/` and generate structs, first download the repository:
+To generate structs, install the command-line tool:
 
 ```
-go get -d github.com/actgardner/gogen-avro/cmd/gogen-avro
+go install github.com/actgardner/gogen-avro/cmd/gogen-avro/v7/cmd/...
 ```
 
-Then run:
-
-```
-go install github.com/actgardner/gogen-avro/cmd/gogen-avro
-```
-
-We recommend pinning a specific SHA of the gogen-avro tool when you compile your schemas with a tool like [retool](https://github.com/twitchtv/retool). This will ensure your builds are repeatable.
-
-For the library imports, you should manage the dependency on this repo using [dep](https://github.com/golang/dep) or a similar tool, like any other library.
+This will put the `gogen-avro` binary in `$GOPATH/bin`, which should be part of your PATH.
 
 ### Usage
 
@@ -53,14 +45,11 @@ To generate Go source files from one or more Avro schema files, run:
 gogen-avro [--containers=false] [--sources-comment=false] [--short-unions=false] [--package=<package name>] <output directory> <avro schema files>
 ```
 
-You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/blob/master/test/primitive/generate.go#L3)):
+You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/blob/master/v7/test/primitive/generate.go#L3)):
 
 ```
 //go:generate $GOPATH/bin/gogen-avro . primitives.avsc
 ```
-
-Note: If you want to parse multiple `.avsc` files into a single Go package (a single folder), make sure you put them all in one line. gogen-avro produces a file, `primitive.go`, that will be overwritten if you run it multiple times with different `.avsc` files and the same output folder.
-
 
 ### Generated Methods 
 
@@ -83,27 +72,27 @@ Read Avro data from the given `io.Reader` and deserialize it into the generated 
 
 ### Working with Object Container Files (OCF)
 
-An example of how to write a container file can be found in [example/container/example.go](https://github.com/actgardner/gogen-avro/blob/master/example/container/example.go).
+An example of how to write a container file can be found in [example/container/example.go](https://github.com/actgardner/gogen-avro/blob/master/v7/example/container/example.go).
 
-[Godocs for the container package](https://godoc.org/github.com/actgardner/gogen-avro/container)
+[Godocs for the container package](https://godoc.org/github.com/actgardner/gogen-avro/v7/container)
 
 ### Single-Object Encoding
 
-An example of how to read and write Single-Object encoded messages (for use with Kafka, for instance) can be found in [example/single_object/example.go](https://github.com/actgardner/gogen-avro/blob/master/example/single_object/example.go).
+An example of how to read and write Single-Object encoded messages (for use with Kafka, for instance) can be found in [example/single_object/example.go](https://github.com/actgardner/gogen-avro/blob/master/example/v7/single_object/example.go).
 
-[Godocs for the soe package](https://godoc.org/github.com/actgardner/gogen-avro/soe)
+[Godocs for the soe package](https://godoc.org/github.com/actgardner/gogen-avro/v7/soe)
 
-### Example
+### Examples
 
-The `example` directory contains simple example projects with an Avro schema. Once you've installed gogen-avro on your GOPATH, you can install the example projects:
+The `example` directory contains simple example projects with an Avro schema. Once you've installed the CLI tool you can install the example projects:
 
 ```
 # Build the Go source files from the Avro schema using the generate directive
-go generate github.com/actgardner/gogen-avro/example
+go generate github.com/actgardner/gogen-avro/v7/example
 
 # Install the example projects on the GOPATH
-go install github.com/actgardner/gogen-avro/example/record
-go install github.com/actgardner/gogen-avro/example/container
+go install github.com/actgardner/gogen-avro/v7/example/record
+go install github.com/actgardner/gogen-avro/v7/example/container
 ```
 
 ### Naming
@@ -159,9 +148,13 @@ const (
 
 ### Versioning
 
-Until version 6.0 this project used gopkg.in for versioning of both the code generation tool and library. Older versions are still available on gopkg.in.
+As of v7, this project uses go modules. Imports should be written as `github.com/actgardner/gogen-avro/v7`. Generated code will reference the same major version as the CLI tool.
 
-Releases from 6.0 onward use semver tags (ex. `v6.0.0`) which are compatible with dep and modules. See [Releases](https://github.com/actgardner/gogen-avro/releases).
+v6.x releases used semver tags (ex. `v6.0.0`) which are compatible with dep and modules. 
+
+Before version 6.0 this project used gopkg.in for versioning of both the code generation tool and library. Older versions are still available on gopkg.in.
+
+See [Releases](https://github.com/actgardner/gogen-avro/releases) for the changelogs.
 
 ### Reporting Issues
 
@@ -179,6 +172,8 @@ func init() {
 
 The logs will be printed on stdout.
 
-### Thanks
+### Alternatives
 
-Thanks to LinkedIn's [goavro library](https://github.com/linkedin/goavro), for providing the encoders for primitives.
+This project is designed to generate type-safe code from Avro schemas. In cases where the application logic is tied to the Avro schema this makes developing code easier and less error-prone by removing run-time type casting.
+There are cases where generated code may not be appropriate - if you need to handle many different schemas in a generic way, or if the schema data isn't available at compile-time. 
+In these cases the [goavro library](https://github.com/linkedin/goavro) is a flexible, comprehensive alternative.
