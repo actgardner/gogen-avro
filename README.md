@@ -21,7 +21,7 @@ Generates type-safe Go code based on your Avro schemas, including serializers an
    * [Type Conversion](#type-conversion)
    * [Versioning](#Versioning)
    * [Reporting Issues](#reporting-issues)
-   * [Thanks](#thanks)
+   * [Alternatives](#alternatives)
 <!--te-->
 
 
@@ -32,7 +32,7 @@ gogen-avro has two parts: a tool which you install on your system (usually on yo
 To generate structs, install the command-line tool:
 
 ```
-go install github.com/actgardner/gogen-avro/cmd/gogen-avro/v7/cmd/...
+go install github.com/actgardner/gogen-avro/v7/cmd/...
 ```
 
 This will put the `gogen-avro` binary in `$GOPATH/bin`, which should be part of your PATH.
@@ -78,7 +78,7 @@ An example of how to write a container file can be found in [example/container/e
 
 ### Single-Object Encoding
 
-An example of how to read and write Single-Object encoded messages (for use with Kafka, for instance) can be found in [example/single_object/example.go](https://github.com/actgardner/gogen-avro/blob/master/example/v7/single_object/example.go).
+An example of how to read and write Single-Object encoded messages (for use with Kafka, for instance) can be found in [example/single_object/example.go](https://github.com/actgardner/gogen-avro/blob/master/v7/example/single_object/example.go).
 
 [Godocs for the soe package](https://godoc.org/github.com/actgardner/gogen-avro/v7/soe)
 
