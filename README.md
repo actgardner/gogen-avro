@@ -20,7 +20,7 @@ Generates type-safe Go code based on your Avro schemas, including serializers an
    * [Naming](#naming)
    * [Type Conversion](#type-conversion)
    * [Versioning](#Versioning)
-   # [Companies/Projects Using gogen-avro](companies-projects-using-gogen-avro)
+   * [Companies/Projects Using gogen-avro](companies-projects-using-gogen-avro)
    * [Reporting Issues](#reporting-issues)
    * [Alternatives](#alternatives)
 <!--te-->
