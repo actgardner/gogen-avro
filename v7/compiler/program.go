@@ -12,11 +12,12 @@ import (
 // control with jumps to absolute offsets.
 
 type irProgram struct {
-	main     *irMethod
-	methods  map[string]*irMethod
-	blocks   []*irBlock
-	switches []*irSwitch
-	errors   []string
+	main          *irMethod
+	methods       map[string]*irMethod
+	blocks        []*irBlock
+	switches      []*irSwitch
+	errors        []string
+	allowLaxNames bool
 }
 
 type irBlock struct {
