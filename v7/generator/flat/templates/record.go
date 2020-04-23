@@ -57,6 +57,11 @@ func Deserialize{{ .Name }}FromSchema(r io.Reader, schema string) ({{ .GoType }}
 
 func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	var err error
+
+	if r == nil {
+		return nil
+	}
+	
 	{{ range $i, $field := .Fields -}}
 	err = {{ .Type.SerializerMethod }}( r.{{ .GoName }}, w)
 	if err != nil {
