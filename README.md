@@ -16,7 +16,7 @@ Generates type-safe Go code based on your Avro schemas, including serializers an
    * [Generated Methods](#generated-methods)
    * [Working with Object Container Files (OCF)](#working-with-object-container-files-ocf)
    * [Single Object Encoding](#single-object-encoding)
-   * [Example](#example)
+   * [Examples](#examples)
    * [Naming](#naming)
    * [Type Conversion](#type-conversion)
    * [Versioning](#Versioning)
