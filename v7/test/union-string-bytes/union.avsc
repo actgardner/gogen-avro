@@ -1,0 +1,10 @@
+{
+	"type": "record",
+	"name": "PrimitiveUnionTestRecord",
+	"fields": [
+		{
+                    "name": "UnionField", 
+                    "type": ["bytes", "string"]
+                }
+	]
+}

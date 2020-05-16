@@ -318,7 +318,27 @@ writer:
 				return err
 			}
 		} else if unionReader, ok := reader.(*schema.UnionField); ok {
-			// If the reader is also a union, read into the first supported type
+			// If the reader is a union, check whether the written type is string or bytes
+			// If so, try and find an exact match to work around the case of [bytes, string]
+			_, isString := t.(*schema.StringField)
+			_, isBytes := t.(*schema.BytesField)
+			if isString || isBytes {
+				for readerIndex, r := range unionReader.AvroTypes() {
+					p.addSwitchCase(switchId, i, readerIndex)
+					if r.Name() == t.Name() {
+						p.addLiteral(vm.SetLong, readerIndex)
+						p.addLiteral(vm.Set, vm.Long)
+						p.addLiteral(vm.Enter, readerIndex)
+						err := p.compileType(t, r)
+						if err != nil {
+							return err
+						}
+						p.addLiteral(vm.Exit, vm.NoopField)
+						continue writer
+					}
+				}
+			}
+
 			for readerIndex, r := range unionReader.AvroTypes() {
 				if t.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
 					p.addSwitchCase(switchId, i, readerIndex)
