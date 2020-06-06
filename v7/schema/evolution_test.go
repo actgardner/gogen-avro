@@ -42,7 +42,8 @@ func TestIsReadableBy(t *testing.T) {
 
 		// Record fields are matched by name
 		{`{"type": "record", "name": "test", "fields": [{"name": "a", "type": "int"}]}`, `{"type": "record", "name": "test", "fields": [{"name": "a", "type": "long"}]}`, true},
-		{`{"type": "record", "name": "test", "fields": [{"name": "a", "type": "int"}]}`, `{"type": "record", "name": "test", "fields": [{"name": "a", "type": "string"}]}`, false},
+		{`{"type": "record", "name": "test", "fields": [{"name": "a", "type": "int"}]}`, `{"type": "record", "name": "test", "fields": [{"name": "a", "type": "string"}]}`, true},
+		{`{"type": "record", "name": "test", "fields": [{"name": "a", "type": "int"}]}`, `{"type": "record", "name": "test2", "fields": [{"name": "a", "type": "long"}]}`, false},
 
 		// Any type can be promoted to a union of that type and another
 		{`"boolean"`, `["boolean", "string"]`, true},

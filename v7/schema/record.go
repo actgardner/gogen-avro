@@ -142,22 +142,7 @@ func (s *RecordDefinition) IsReadableBy(d Definition, visited map[QualifiedName]
 		return false
 	}
 
-	visited[s.name] = true
-
-	for _, readerField := range reader.Fields() {
-		writerField := s.GetReaderField(readerField)
-		// Two schemas are incompatible if the reader has a field with no default value that is not present in the writer schema
-		if writerField == nil && !readerField.HasDefault() {
-			return false
-		}
-
-		// The two schemas are incompatible if two fields with the same name have different schemas
-		if writerField != nil && !writerField.Type().IsReadableBy(readerField.Type(), visited) {
-			return false
-		}
-
-	}
-	return true
+	return reader.AvroName().Name == s.AvroName().Name
 }
 
 func (s *RecordDefinition) WrapperType() string {
