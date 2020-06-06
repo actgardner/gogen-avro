@@ -11,7 +11,9 @@ import (
 // Round-trip some primitive values through our serializer and goavro to verify
 const fixtureJson = `
 [
-{"UnionField":{"string":"testString"}}
+{"UnionField":{"string":"testString"}},
+{"UnionField":{"record1":{"intfield":1}}},
+{"UnionField":{"record2":{"intfield":1}}}
 ]
 `
 

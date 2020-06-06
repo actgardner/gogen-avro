@@ -13,10 +13,10 @@ import (
 )
 
 type PrimitiveUnionTestRecord struct {
-	UnionField *UnionBytesString `json:"UnionField"`
+	UnionField *UnionBytesStringRecord1Record2 `json:"UnionField"`
 }
 
-const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "\xf3 \xd5\xf4\n\v\xaez"
+const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "N\xf1pp\x85\x9d\xed="
 
 func NewPrimitiveUnionTestRecord() *PrimitiveUnionTestRecord {
 	return &PrimitiveUnionTestRecord{}
@@ -53,7 +53,7 @@ func DeserializePrimitiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 func writePrimitiveUnionTestRecord(r *PrimitiveUnionTestRecord, w io.Writer) error {
 	var err error
-	err = writeUnionBytesString(r.UnionField, w)
+	err = writeUnionBytesStringRecord1Record2(r.UnionField, w)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (r *PrimitiveUnionTestRecord) Serialize(w io.Writer) error {
 }
 
 func (r *PrimitiveUnionTestRecord) Schema() string {
-	return "{\"fields\":[{\"name\":\"UnionField\",\"type\":[\"bytes\",\"string\"]}],\"name\":\"PrimitiveUnionTestRecord\",\"type\":\"record\"}"
+	return "{\"fields\":[{\"name\":\"UnionField\",\"type\":[\"bytes\",\"string\",{\"fields\":[{\"name\":\"intfield\",\"type\":\"int\"}],\"name\":\"record1\",\"type\":\"record\"},{\"fields\":[{\"name\":\"intfield\",\"type\":\"int\"}],\"name\":\"record2\",\"type\":\"record\"}]}],\"name\":\"PrimitiveUnionTestRecord\",\"type\":\"record\"}"
 }
 
 func (r *PrimitiveUnionTestRecord) SchemaName() string {
@@ -84,7 +84,7 @@ func (_ *PrimitiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported op
 func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.UnionField = NewUnionBytesString()
+		r.UnionField = NewUnionBytesStringRecord1Record2()
 
 		return r.UnionField
 	}

@@ -318,14 +318,15 @@ writer:
 				return err
 			}
 		} else if unionReader, ok := reader.(*schema.UnionField); ok {
-			// If the reader is a union, check whether the written type is string or bytes
-			// If so, try and find an exact match to work around the case of [bytes, string]
-			_, isString := t.(*schema.StringField)
-			_, isBytes := t.(*schema.BytesField)
-			if isString || isBytes {
-				for readerIndex, r := range unionReader.AvroTypes() {
+			// Always try to find an extact match by name before trying to handle evolution
+			for readerIndex, r := range unionReader.AvroTypes() {
+				if r.Name() == t.Name() {
+					log("Union types have exact match by name: %q %q", r.Name(), t.Name())
 					p.addSwitchCase(switchId, i, readerIndex)
-					if r.Name() == t.Name() {
+					if _, ok := t.(*schema.NullField); ok {
+						p.addLiteral(vm.SetExitNull, vm.NoopField)
+					} else {
+						p.addSwitchCase(switchId, i, readerIndex)
 						p.addLiteral(vm.SetLong, readerIndex)
 						p.addLiteral(vm.Set, vm.Long)
 						p.addLiteral(vm.Enter, readerIndex)
@@ -334,13 +335,14 @@ writer:
 							return err
 						}
 						p.addLiteral(vm.Exit, vm.NoopField)
-						continue writer
 					}
+					continue writer
 				}
 			}
 
 			for readerIndex, r := range unionReader.AvroTypes() {
 				if t.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
+					log("Union types are readable: %q %q", r.Name(), t.Name())
 					p.addSwitchCase(switchId, i, readerIndex)
 					if _, ok := t.(*schema.NullField); ok {
 						p.addLiteral(vm.SetExitNull, vm.NoopField)
@@ -362,10 +364,14 @@ writer:
 			p.addLiteral(vm.Halt, typedErrId)
 		} else if t.IsReadableBy(reader, make(map[schema.QualifiedName]interface{})) {
 			// If the reader is not a union but it can read this union field, support it
-			p.addSwitchCase(switchId, i, -1)
-			err := p.compileType(t, reader)
-			if err != nil {
-				return err
+			if _, ok := t.(*schema.NullField); ok {
+				p.addLiteral(vm.SetExitNull, vm.NoopField)
+			} else {
+				p.addSwitchCase(switchId, i, -1)
+				err := p.compileType(t, reader)
+				if err != nil {
+					return err
+				}
 			}
 		} else {
 			p.addSwitchCase(switchId, i, -1)
