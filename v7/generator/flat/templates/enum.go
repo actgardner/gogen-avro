@@ -45,7 +45,7 @@ func {{ .FromStringMethod }}(raw string) (r {{ .GoType }}, err error) {
 }
 
 func (b *{{ .GoType }}) MarshalJSON() ([]byte, error) {
-	return json.Marshal([]byte(b.String()))
+	return json.Marshal(b.String())
 }
 
 func (b *{{ .GoType }}) UnmarshalJSON(data []byte) (error) {

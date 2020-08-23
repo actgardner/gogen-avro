@@ -76,3 +76,11 @@ func TestInvalidStringConversion(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, TestEnumType(-1), enumified)
 }
+
+func TestMarshalUnmarshal(t *testing.T) {
+	expected := EnumTestRecord{EnumField: TestEnumTypeTestSymbol3}
+	bytes, _ := json.Marshal(&expected)
+	var result EnumTestRecord
+	json.Unmarshal(bytes, &result)
+	assert.Equal(t, expected, result)
+}
