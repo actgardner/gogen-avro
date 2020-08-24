@@ -32,9 +32,17 @@ func readBytes(r io.Reader) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// makeslice can fail depending on available memory.
+	// We arbitrarily limit string size to sane default (~2.2GB).
+	if size < 0 || size > math.MaxInt32 {
+		return nil, fmt.Errorf("bytes length out of range: %d", size)
+	}
+
 	if size == 0 {
 		return []byte{}, nil
 	}
+
 	bb := make([]byte, size)
 	_, err = io.ReadFull(r, bb)
 	return bb, err
