@@ -1,4 +1,4 @@
-package jit
+package main
 
 import (
 	"encoding/binary"

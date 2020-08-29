@@ -1,92 +1,104 @@
 package main
 
 import (
-	"encoding/binary"
+	"bytes"
 	"fmt"
+	"io"
 	"reflect"
 	"syscall"
 	"unsafe"
 )
 
-func PrintHello() {
-	fmt.Printf("Hello World!\n")
-}
-
 type program struct {
-	ops    []byte
+	prog   []byte
+	ops    []Op
 	offset int
 }
 
-func newProgram(size int) (*program, error) {
-	executableFunc, err := syscall.Mmap(
+func newProgram() (*program, error) {
+	prog, err := syscall.Mmap(
 		-1,
 		0,
-		size,
+		128,
 		syscall.PROT_READ|syscall.PROT_WRITE|syscall.PROT_EXEC,
 		syscall.MAP_PRIVATE|syscall.MAP_ANON)
 	if err != nil {
 		return nil, err
 	}
-	return &program{executableFunc, 0}, nil
+	return &program{prog, nil, 0}, nil
 }
 
-func (p *program) appendBytes(ops ...byte) {
-	copy(p.ops[p.offset:], ops)
-	p.offset += len(ops)
+func (p *program) appendOp(op Op) {
+	p.ops = append(p.ops, op)
+	p.offset += len(op.Bytes)
 }
 
+// call just computes the offset for a Go method and CALLs, without setting up the stack
 func (p *program) call(addr uintptr) {
-	// Grow the stack by 8 (subq	$0x8, %rsp)
-	p.appendBytes(0x48, 0x83, 0xec, 0x08)
-
-	// Copy BP to the stack (movq	%rbp, (%rsp))
-	p.appendBytes(0x48, 0x89, 0x2c, 0x24)
-
-	// Load new RBP (leaq	(%rsp), %rbp)
-	p.appendBytes(0x48, 0x8d, 0x2c, 0x24)
-
-	// Calculate the jump relative to the next instruction and encode it as 32-bit signed int
-	rip := uintptr(unsafe.Pointer(&p.ops[0])) + uintptr(p.offset) + 5
+	// Calculate the call relative to the next instruction and encode it as 32-bit signed int
+	rip := uintptr(unsafe.Pointer(&p.prog[0])) + uintptr(p.offset) + 5
 	addrDiff := int32(int64(addr) - int64(rip))
-	binary.LittleEndian.PutUint32(p.ops[p.offset+1:], *((*uint32)(unsafe.Pointer(&addrDiff))))
-	p.ops[p.offset] = 0xe8
-
-	p.offset += 5
-
-	// movq	(%rsp), %rbp
-	p.appendBytes(0x48, 0x8b, 0x2c, 0x24)
-
-	// addq	$0x8, %rsp
-	p.appendBytes(0x48, 0x83, 0xc4, 0x08)
+	fmt.Printf("Addr: %x, rip: %x, diff: %x\n", addr, rip, addrDiff)
+	p.appendOp(CallRIP(addrDiff))
 }
 
-func (p *program) int3() {
-	p.ops[p.offset] = 0xcc
-	p.offset += 1
-}
+func (p *program) callAssigner(addr uintptr) {
+	p.appendOp(SubqImm(Rsp, 0x48))
+	p.appendOp(MovqSourceIDRSP(Rbp, 0x40))
+	p.appendOp(LeaqSourceIDRSP(Rbp, 0x40))
+	p.appendOp(MovqDestIDRSP(Rax, 0x50))
+	p.appendOp(MovqDestIDRSP(Rcx, 0x58))
+	p.appendOp(MovqSourceIDRSP(Rax, 0x0))
+	p.appendOp(MovqSourceIDRSP(Rcx, 0x8))
+	p.appendOp(MovqDestIDRSP(Rax, 0x60))
+	p.appendOp(MovqDestIDRSP(Rcx, 0x68))
+	p.appendOp(MovqSourceIDRSP(Rax, 0x10))
+	p.appendOp(MovqSourceIDRSP(Rcx, 0x18))
 
-func (p *program) ret() {
-	p.ops[p.offset] = 0xc3
-	p.ops[p.offset+1] = 0xcc
-	p.offset += 2
+	p.call(addr)
+
+	p.appendOp(MovqDestIDRSP(Rax, 0x28))
+	p.appendOp(MovqDestIDRSP(Rcx, 0x20))
+	p.appendOp(MovqSourceIDRSP(Rcx, 0x30))
+	p.appendOp(MovqSourceIDRSP(Rax, 0x38))
+	p.appendOp(MovqSourceIDRSP(Rcx, 0x70))
+	p.appendOp(MovqSourceIDRSP(Rax, 0x78))
+	p.appendOp(MovqDestIDRSP(Rbp, 0x40))
+	p.appendOp(AddqImm(Rsp, 0x48))
+
+	p.appendOp(Ret())
 }
 
 func (p *program) funcPtr() unsafe.Pointer {
-	prog := uintptr(unsafe.Pointer(&p.ops))
+	offset := 0
+	for _, op := range p.ops {
+		fmt.Printf("% x\t\t%v\n", op.Bytes, op.Mnemonic)
+		copy(p.prog[offset:], op.Bytes)
+		offset += len(op.Bytes)
+	}
+	prog := uintptr(unsafe.Pointer(&p.prog))
 	return unsafe.Pointer(&prog)
 }
 
+type Assigner func(r io.Reader, f Field) error
+
+func callAssign(r io.Reader, f Field) error {
+	return assignBool(r, f)
+}
+
 func main() {
-	p, err := newProgram(128)
+	p, err := newProgram()
 	if err != nil {
 		fmt.Printf("mmap error: %v", err)
-		return
 	}
+	p.callAssigner(reflect.ValueOf(assignBool).Pointer())
 
-	p.call(reflect.ValueOf(PrintHello).Pointer())
-	//p.int3()
-	p.ret()
 	fn := p.funcPtr()
-	exeFn := *(*func())(fn)
-	exeFn()
+	exeFn := *(*Assigner)(fn)
+	var val bool
+	target := &Boolean{&val}
+	r := bytes.NewBuffer([]byte{0x1})
+	err = exeFn(r, target)
+	//err := callAssign(r, target)
+	fmt.Printf("Result: %v %v\n", val, err)
 }
