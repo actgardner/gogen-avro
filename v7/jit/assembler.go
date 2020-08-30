@@ -70,28 +70,28 @@ func CallRIP(rip int32) Op {
 	b[0] = 0xe8
 	binary.LittleEndian.PutUint32(b[1:], *((*uint32)(unsafe.Pointer(&rip))))
 	return Op{
-		Mnemonic: fmt.Sprintf("callq(%x)", rip),
+		Mnemonic: fmt.Sprintf("callq(%#x)", rip),
 		Bytes:    b,
 	}
 }
 
 func LeaqSourceIDRSP(dest Register, disp byte) Op {
 	return Op{
-		Mnemonic: fmt.Sprintf("leaq %X(%%%s) %%%s", disp, Rsp, dest),
+		Mnemonic: fmt.Sprintf("leaq %#x(%%%s) %%%s", disp, Rsp, dest),
 		Bytes:    []byte{0x48, 0x8d, encodeModRM(1, byte(dest), byte(Rsp)), encodeModRM(0, byte(Rsp), byte(Rsp)), disp},
 	}
 }
 
 func SubqImm(r Register, v byte) Op {
 	return Op{
-		Mnemonic: fmt.Sprintf("subq $%X, %%%s", v, r),
+		Mnemonic: fmt.Sprintf("subq $%#x, %%%s", v, r),
 		Bytes:    []byte{0x48, 0x83, encodeModRM(3, 5, byte(r)), v},
 	}
 }
 
 func AddqImm(r Register, v byte) Op {
 	return Op{
-		Mnemonic: fmt.Sprintf("addq $%X, %%%s", v, r),
+		Mnemonic: fmt.Sprintf("addq $%#x, %%%s", v, r),
 		Bytes:    []byte{0x48, 0x83, encodeModRM(3, 0, byte(r)), v},
 	}
 }
@@ -100,7 +100,7 @@ func AddqImm(r Register, v byte) Op {
 // Because SIB is computed differently for RSP
 func MovqDestIDRSP(dst Register, disp byte) Op {
 	return Op{
-		Mnemonic: fmt.Sprintf("movq %%%s, %X(%%%s)", dst, disp, Rsp),
+		Mnemonic: fmt.Sprintf("movq %#x(%%%s), %%%s", disp, Rsp, dst),
 		Bytes:    []byte{0x48, 0x8b, encodeModRM(1, byte(dst), byte(Rsp)), encodeModRM(0, byte(Rsp), byte(Rsp)), disp},
 	}
 }
@@ -109,7 +109,7 @@ func MovqDestIDRSP(dst Register, disp byte) Op {
 // Because SIB is computed differently for RSP
 func MovqSourceIDRSP(src Register, disp byte) Op {
 	return Op{
-		Mnemonic: fmt.Sprintf("movq %X(%%%s), %%%s", disp, Rsp, src),
+		Mnemonic: fmt.Sprintf("movq %%%s, %#x(%%%s)", src, disp, Rsp),
 		Bytes:    []byte{0x48, 0x89, encodeModRM(1, byte(src), byte(Rsp)), encodeModRM(0, byte(Rsp), byte(Rsp)), disp},
 	}
 }
