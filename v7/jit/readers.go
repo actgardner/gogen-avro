@@ -5,72 +5,75 @@ import (
 	"fmt"
 	"io"
 	"math"
+
+	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
 
 type ByteReader interface {
 	ReadByte() (byte, error)
 }
 
-func assignBool(r io.Reader, f Field) error {
+func assignBoolToBool(r io.Reader, t *bool) error {
 	v, err := readBool(r)
 	if err != nil {
 		return err
 	}
-	f.SetBoolean(v)
+
+	*t = v
 	return nil
 }
 
-func assignInt(r io.Reader, f Field) error {
+func assignIntToInt(r io.Reader, t *int32) error {
 	v, err := readInt(r)
 	if err != nil {
 		return err
 	}
-	f.SetInt(v)
+	*t = v
 	return nil
 }
 
-func assignLong(r io.Reader, f Field) error {
+func assignLongToLong(r io.Reader, t *int64) error {
 	v, err := readLong(r)
 	if err != nil {
 		return err
 	}
-	f.SetLong(v)
+	*t = v
 	return nil
 }
 
-func assignFloat(r io.Reader, f Field) error {
+func assignFloatToFloat(r io.Reader, t *float32) error {
 	v, err := readFloat(r)
 	if err != nil {
 		return err
 	}
-	f.SetFloat(v)
+	*t = v
 	return nil
 }
 
-func assignDouble(r io.Reader, f Field) error {
+func assignDoubleToDouble(r io.Reader, t *float64) error {
 	v, err := readDouble(r)
 	if err != nil {
 		return err
 	}
-	f.SetDouble(v)
+	*t = v
 	return nil
 }
 
-func assignBytes(r io.Reader, f Field) error {
+func assignBytesToBytes(r io.Reader, t *[]byte) error {
 	v, err := readBytes(r)
 	if err != nil {
 		return err
 	}
-	f.SetBytes(v)
+	*t = v
 	return nil
 }
 
-func assignString(r io.Reader, f Field) error {
+func assignStringToString(r io.Reader, t *string) error {
 	v, err := readString(r)
 	if err != nil {
 		return err
 	}
-	f.SetString(v)
+	*t = v
 	return nil
 }
 

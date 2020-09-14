@@ -1,89 +1,33 @@
 package main
 
-import (
-	"bytes"
-	"fmt"
-	"io"
-	"reflect"
-	"syscall"
-	"unsafe"
-)
+type Assigner func(r io.Reader, f types.Field) error
 
-type program struct {
-	prog   []byte
-	ops    []Op
-	offset int
-}
-
-func newProgram() (*program, error) {
-	prog, err := syscall.Mmap(
-		-1,
-		0,
-		128,
-		syscall.PROT_READ|syscall.PROT_WRITE|syscall.PROT_EXEC,
-		syscall.MAP_PRIVATE|syscall.MAP_ANON)
+func assign(r io.Reader, record *primitive.PrimitiveTestRecord) error {
+	f := record.Get(0)
+	err := assignInt(r, f)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &program{prog, nil, 0}, nil
-}
 
-func (p *program) appendOp(op Op) {
-	p.ops = append(p.ops, op)
-	p.offset += len(op.Bytes)
-}
-
-// call just computes the offset for a Go method and CALLs, without setting up the stack
-func (p *program) call(addr uintptr) {
-	// Calculate the call relative to the next instruction and encode it as 32-bit signed int
-	rip := uintptr(unsafe.Pointer(&p.prog[0])) + uintptr(p.offset) + 5
-	addrDiff := int32(int64(addr) - int64(rip))
-	fmt.Printf("Addr: %x, rip: %x, diff: %x\n", addr, rip, addrDiff)
-	p.appendOp(CallRIP(addrDiff))
-}
-
-func (p *program) callAssigner(addr uintptr) {
-	p.appendOp(SubqImm(Rsp, 0x48))
-	p.appendOp(MovqSourceIDRSP(Rbp, 0x40))
-	p.appendOp(LeaqSourceIDRSP(Rbp, 0x40))
-	p.appendOp(MovqDestIDRSP(Rax, 0x50))
-	p.appendOp(MovqDestIDRSP(Rcx, 0x58))
-	p.appendOp(MovqSourceIDRSP(Rax, 0x0))
-	p.appendOp(MovqSourceIDRSP(Rcx, 0x8))
-	p.appendOp(MovqDestIDRSP(Rax, 0x60))
-	p.appendOp(MovqDestIDRSP(Rcx, 0x68))
-	p.appendOp(MovqSourceIDRSP(Rax, 0x10))
-	p.appendOp(MovqSourceIDRSP(Rcx, 0x18))
-
-	p.call(addr)
-
-	p.appendOp(MovqDestIDRSP(Rax, 0x28))
-	p.appendOp(MovqDestIDRSP(Rcx, 0x20))
-	p.appendOp(MovqSourceIDRSP(Rcx, 0x30))
-	p.appendOp(MovqSourceIDRSP(Rax, 0x38))
-	p.appendOp(MovqSourceIDRSP(Rcx, 0x70))
-	p.appendOp(MovqSourceIDRSP(Rax, 0x78))
-	p.appendOp(MovqDestIDRSP(Rbp, 0x40))
-	p.appendOp(AddqImm(Rsp, 0x48))
-
-	p.appendOp(Ret())
-}
-
-func (p *program) funcPtr() unsafe.Pointer {
-	offset := 0
-	for _, op := range p.ops {
-		fmt.Printf("% x\t\t%v\n", op.Bytes, op.Mnemonic)
-		copy(p.prog[offset:], op.Bytes)
-		offset += len(op.Bytes)
+	f = record.Get(1)
+	err = assignLong(r, f)
+	if err != nil {
+		return err
 	}
-	prog := uintptr(unsafe.Pointer(&p.prog))
-	return unsafe.Pointer(&prog)
-}
 
-type Assigner func(r io.Reader, f Field) error
+	f = record.Get(2)
+	err = assignFloat(r, f)
+	if err != nil {
+		return err
+	}
 
-func callAssign(r io.Reader, f Field) error {
-	return assignBool(r, f)
+	f = record.Get(3)
+	err = assignDouble(r, f)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func main() {
@@ -93,12 +37,24 @@ func main() {
 	}
 	p.callAssigner(reflect.ValueOf(assignBool).Pointer())
 
-	fn := p.funcPtr()
-	exeFn := *(*Assigner)(fn)
-	var val bool
-	target := &Boolean{&val}
-	r := bytes.NewBuffer([]byte{0x1})
-	err = exeFn(r, target)
-	//err := callAssign(r, target)
-	fmt.Printf("Result: %v %v\n", val, err)
+	//fn := p.funcPtr()
+	//exeFn := *(*Assigner)(fn)
+
+	src := primitive.PrimitiveTestRecord{
+		IntField:    1,
+		LongField:   2,
+		FloatField:  3.2,
+		DoubleField: 4.1,
+		BoolField:   true,
+		StringField: "string",
+	}
+
+	var buf bytes.Buffer
+	err = src.Serialize(&buf)
+	//var target primitive.PrimitiveTestRecord
+
+	//err = exeFn(buf, &target)
+	var target primitive.PrimitiveTestRecord
+	f := assign(&buf, &target)
+	fmt.Printf("Result: %v\n", f)
 }

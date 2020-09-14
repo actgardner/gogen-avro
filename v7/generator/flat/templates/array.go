@@ -6,6 +6,7 @@ import (
 
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 	"github.com/actgardner/gogen-avro/v7/vm"
+	"github.com/actgardner/gogen-avro/v7/jit"
 )
 
 func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
@@ -21,8 +22,6 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	}
 	return vm.WriteLong(0,w)
 }
-
-
 
 type {{ .WrapperType }} struct {
 	Target *{{ .GoType }}

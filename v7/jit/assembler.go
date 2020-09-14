@@ -75,7 +75,7 @@ func CallRIP(rip int32) Op {
 	}
 }
 
-func LeaqSourceIDRSP(dest Register, disp byte) Op {
+func LeaqSrcIDRSP(dest Register, disp byte) Op {
 	return Op{
 		Mnemonic: fmt.Sprintf("leaq %#x(%%%s) %%%s", disp, Rsp, dest),
 		Bytes:    []byte{0x48, 0x8d, encodeModRM(1, byte(dest), byte(Rsp)), encodeModRM(0, byte(Rsp), byte(Rsp)), disp},
@@ -96,20 +96,30 @@ func AddqImm(r Register, v byte) Op {
 	}
 }
 
-// Move quadword to RSP + 8-bit displacement from register
+// Move quadword from  + 8-bit displacement to register
 // Because SIB is computed differently for RSP
-func MovqDestIDRSP(dst Register, disp byte) Op {
+func MovqSrcIDRSP(dst Register, disp byte) Op {
 	return Op{
 		Mnemonic: fmt.Sprintf("movq %#x(%%%s), %%%s", disp, Rsp, dst),
 		Bytes:    []byte{0x48, 0x8b, encodeModRM(1, byte(dst), byte(Rsp)), encodeModRM(0, byte(Rsp), byte(Rsp)), disp},
 	}
 }
 
-// Move quadword from RSP + 8-bit displacement to register
+// Move quadword to RSP + 8-bit displacement from register
 // Because SIB is computed differently for RSP
-func MovqSourceIDRSP(src Register, disp byte) Op {
+func MovqDestIDRSP(src Register, disp byte) Op {
 	return Op{
 		Mnemonic: fmt.Sprintf("movq %%%s, %#x(%%%s)", src, disp, Rsp),
 		Bytes:    []byte{0x48, 0x89, encodeModRM(1, byte(src), byte(Rsp)), encodeModRM(0, byte(Rsp), byte(Rsp)), disp},
 	}
 }
+
+/*
+// Move immediate quadword to RSP
+func MovqDestRSPImm(src Register, imm int32) Op {
+	return Op{
+		Mnemonic: fmt.Sprintf("movq %#X, (%%%s)", imm, Rsp),
+		Bytes:    []byte{0xc7, 0x89, encodeModRM(1, byte(src), byte(Rsp)), encodeModRM(0, byte(Rsp), byte(Rsp)), disp},
+	}
+}
+*/

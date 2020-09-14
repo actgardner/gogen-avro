@@ -3,6 +3,7 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -17,10 +18,19 @@ const fixtureJson = `
 		"EnumField": "TestSymbol1"
 	},
 	{
-		"EnumField": "testSymbol2"
+		"EnumField": "testSymbol3"
 	}
 ]
 `
+
+func TestMarshalUnmarshal(t *testing.T) {
+	expected := EnumTestRecord{EnumField: TestEnumTypeTestSymbol3}
+	bytes, _ := json.Marshal(&expected)
+	fmt.Printf("JSON: %s\n", bytes)
+	var result EnumTestRecord
+	json.Unmarshal(bytes, &result)
+	assert.Equal(t, expected, result)
+}
 
 func TestEnumFixture(t *testing.T) {
 	fixtures := make([]EnumTestRecord, 0)
@@ -68,6 +78,7 @@ func TestRoundTrip(t *testing.T) {
 		datum, err := DeserializeEnumTestRecord(&buf)
 		assert.Nil(t, err)
 		assert.Equal(t, *datum, f)
+		fmt.Printf("Datum: %v %v\n", datum, f)
 	}
 }
 

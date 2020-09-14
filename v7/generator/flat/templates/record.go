@@ -55,6 +55,14 @@ func Deserialize{{ .Name }}FromSchema(r io.Reader, schema string) ({{ .GoType }}
 	return t, err
 }
 
+type {{.Name}}ReadMethod func (io.Reader, *{{ .GoType}}) error
+
+func Get{{.WrapperType}}ReadMethod() {{.WrapperTypeReadMethod}} {
+	t := {{ .ConstructorMethod }}
+	return {WrapperReadMethod{}}(jit.Compile([]byte(t.Schema()), t))
+}
+
+
 func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	var err error
 	{{ range $i, $field := .Fields -}}

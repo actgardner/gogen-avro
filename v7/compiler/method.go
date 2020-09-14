@@ -111,47 +111,19 @@ func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 	case *schema.UnionField:
 		return p.compileUnion(v, reader)
 	case *schema.IntField:
-		p.addLiteral(vm.Read, vm.Int)
-		if reader != nil {
-			p.addLiteral(vm.Set, vm.Int)
-		}
-		return nil
+		return uintptr(unsafe.Pointer(assignIntToInt))
 	case *schema.LongField:
-		p.addLiteral(vm.Read, vm.Long)
-		if reader != nil {
-			p.addLiteral(vm.Set, vm.Long)
-		}
-		return nil
+		return uintptr(unsafe.Pointer(assignLongToLong))
 	case *schema.StringField:
-		p.addLiteral(vm.Read, vm.String)
-		if reader != nil {
-			p.addLiteral(vm.Set, vm.String)
-		}
-		return nil
+		return uintptr(unsafe.Pointer(assignStringToString))
 	case *schema.BytesField:
-		p.addLiteral(vm.Read, vm.Bytes)
-		if reader != nil {
-			p.addLiteral(vm.Set, vm.Bytes)
-		}
-		return nil
+		return uintptr(unsafe.Pointer(assignBytesToBytes))
 	case *schema.FloatField:
-		p.addLiteral(vm.Read, vm.Float)
-		if reader != nil {
-			p.addLiteral(vm.Set, vm.Float)
-		}
-		return nil
+		return uintptr(unsafe.Pointer(assignFloatToFloat))
 	case *schema.DoubleField:
-		p.addLiteral(vm.Read, vm.Double)
-		if reader != nil {
-			p.addLiteral(vm.Set, vm.Double)
-		}
-		return nil
+		return uintptr(unsafe.Pointer(assignDoubleToDouble))
 	case *schema.BoolField:
-		p.addLiteral(vm.Read, vm.Boolean)
-		if reader != nil {
-			p.addLiteral(vm.Set, vm.Boolean)
-		}
-		return nil
+		return uintptr(unsafe.Pointer(assignBoolToBool))
 	case *schema.NullField:
 		return nil
 	}

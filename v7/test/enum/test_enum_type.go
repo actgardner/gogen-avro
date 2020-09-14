@@ -53,7 +53,7 @@ func NewTestEnumTypeValue(raw string) (r TestEnumType, err error) {
 }
 
 func (b *TestEnumType) MarshalJSON() ([]byte, error) {
-	return json.Marshal([]byte(b.String()))
+	return json.Marshal(b.String())
 }
 
 func (b *TestEnumType) UnmarshalJSON(data []byte) error {
