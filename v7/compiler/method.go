@@ -160,7 +160,7 @@ func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 
 func (p *irMethod) compileRef(writer, reader *schema.Reference) error {
 	log("compileRef()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	if reader != nil && writer.TypeName.Name != reader.TypeName.Name {
+	if !p.program.allowLaxNames && reader != nil && writer.TypeName.Name != reader.TypeName.Name {
 		return fmt.Errorf("Incompatible types by name: %v %v", reader, writer)
 	}
 
