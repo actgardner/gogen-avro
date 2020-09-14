@@ -9,17 +9,18 @@ import (
 )
 
 func TestLaxNames(t *testing.T) {
-	record := NewRecordSchema()
+	recordFoo := NewRecordFoo()
+	recordBar := NewRecordBar()
 
 	// Should throw an error by default
-	_, err := compiler.CompileSchemaBytes([]byte(record.Schema()), []byte(record.Schema()))
+	_, err := compiler.CompileSchemaBytes([]byte(recordFoo.Schema()), []byte(recordBar.Schema()))
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "Incompatible types by name")
 
 	// With AllowLaxNames() option it should compile schemas successfully
 	program, err := compiler.CompileSchemaBytes(
-		[]byte(record.Schema()),
-		[]byte(record.Schema()),
+		[]byte(recordFoo.Schema()),
+		[]byte(recordBar.Schema()),
 		compiler.AllowLaxNames(),
 	)
 	assert.Nil(t, err)
