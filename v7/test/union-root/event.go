@@ -29,7 +29,7 @@ func NewEvent() *Event {
 
 func DeserializeEvent(r io.Reader) (*Event, error) {
 	t := NewEvent()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func DeserializeEvent(r io.Reader) (*Event, error) {
 func DeserializeEventFromSchema(r io.Reader, schema string) (*Event, error) {
 	t := NewEvent()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (r *Event) Serialize(w io.Writer) error {
 	return writeEvent(r, w)
 }
 
-func (r *Event) Schema() string {
+func (r *Event) AvroRecordSchema() string {
 	return "{\"fields\":[{\"doc\":\"Unique ID for this event.\",\"metadata\":{\"key\":\"field1\"},\"name\":\"id\",\"type\":\"string\"},{\"doc\":\"Start IP of this observation's IP range.\",\"metadata\":{\"key\":\"field2\"},\"name\":\"start_ip\",\"type\":{\"key\":\"value\",\"metadata\":{\"a\":\"b\",\"c\":123},\"name\":\"ip_address\",\"size\":16,\"type\":\"fixed\"}},{\"doc\":\"End IP of this observation's IP range.\",\"metadata\":{\"key\":\"field3\"},\"name\":\"end_ip\",\"type\":\"ip_address\"}],\"metadata\":{\"key\":\"value\"},\"name\":\"event\",\"subject\":\"event\",\"type\":\"record\"}"
 }
 

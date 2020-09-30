@@ -24,7 +24,7 @@ func NewMapTestRecord() *MapTestRecord {
 
 func DeserializeMapTestRecord(r io.Reader) (*MapTestRecord, error) {
 	t := NewMapTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeMapTestRecord(r io.Reader) (*MapTestRecord, error) {
 func DeserializeMapTestRecordFromSchema(r io.Reader, schema string) (*MapTestRecord, error) {
 	t := NewMapTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *MapTestRecord) Serialize(w io.Writer) error {
 	return writeMapTestRecord(r, w)
 }
 
-func (r *MapTestRecord) Schema() string {
+func (r *MapTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":{\"type\":\"map\",\"values\":[\"null\",\"int\"]}}],\"name\":\"MapTestRecord\",\"type\":\"record\"}"
 }
 

@@ -28,7 +28,7 @@ func {{ .ConstructorMethod }} ({{ .GoType}}) {
 
 func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {
 	t := {{ .ConstructorMethod }}
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {
 func Deserialize{{ .Name }}FromSchema(r io.Reader, schema string) ({{ .GoType }}, error) {
 	t := {{ .ConstructorMethod }}
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (r {{ .GoType }}) Serialize(w io.Writer) error {
 	return {{ .SerializerMethod }}(r, w)
 }
 
-func (r {{ .GoType }}) Schema() string {
+func (r {{ .GoType }}) AvroRecordSchema() string {
 	return {{ printf "%q" .Schema }}
 }
 
@@ -117,7 +117,7 @@ func (r {{ .GoType }}) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
-func (r {{ .GoType }}) NullField(i int) { 
+func (r {{ .GoType }}) NullField(i int) {
 	switch (i) {
 	{{ range $i, $field := .Fields -}}
         {{ if isNullable $field.Type -}}

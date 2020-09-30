@@ -15,7 +15,7 @@ import (
 
 func NewSampleWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
 	str := NewSample()
-	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
+	return container.NewWriter(writer, codec, recordsPerBlock, str.AvroRecordSchema())
 }
 
 // container reader
@@ -31,7 +31,7 @@ func NewSampleReader(r io.Reader) (*SampleReader, error) {
 	}
 
 	t := NewSample()
-	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}

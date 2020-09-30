@@ -24,7 +24,7 @@ func NewStructTag() *StructTag {
 
 func DeserializeStructTag(r io.Reader) (*StructTag, error) {
 	t := NewStructTag()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeStructTag(r io.Reader) (*StructTag, error) {
 func DeserializeStructTagFromSchema(r io.Reader, schema string) (*StructTag, error) {
 	t := NewStructTag()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *StructTag) Serialize(w io.Writer) error {
 	return writeStructTag(r, w)
 }
 
-func (r *StructTag) Schema() string {
+func (r *StructTag) AvroRecordSchema() string {
 	return "{\"fields\":[{\"golang.tags\":\"validate:\\\"true\\\"\",\"name\":\"productName\",\"type\":\"string\"}],\"name\":\"StructTag\",\"type\":\"record\"}"
 }
 

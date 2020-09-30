@@ -28,7 +28,7 @@ func NewUnionRecord() *UnionRecord {
 
 func DeserializeUnionRecord(r io.Reader) (*UnionRecord, error) {
 	t := NewUnionRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func DeserializeUnionRecord(r io.Reader) (*UnionRecord, error) {
 func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (*UnionRecord, error) {
 	t := NewUnionRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (r *UnionRecord) Serialize(w io.Writer) error {
 	return writeUnionRecord(r, w)
 }
 
-func (r *UnionRecord) Schema() string {
+func (r *UnionRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"a\",\"type\":\"string\"},{\"default\":null,\"name\":\"id\",\"type\":[\"null\",\"int\"]},{\"default\":null,\"name\":\"name\",\"type\":[\"null\",\"string\"]}],\"name\":\"UnionRecord\",\"type\":\"record\"}"
 }
 

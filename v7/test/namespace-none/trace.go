@@ -26,7 +26,7 @@ func NewTrace() *Trace {
 
 func DeserializeTrace(r io.Reader) (*Trace, error) {
 	t := NewTrace()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func DeserializeTrace(r io.Reader) (*Trace, error) {
 func DeserializeTraceFromSchema(r io.Reader, schema string) (*Trace, error) {
 	t := NewTrace()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (r *Trace) Serialize(w io.Writer) error {
 	return writeTrace(r, w)
 }
 
-func (r *Trace) Schema() string {
+func (r *Trace) AvroRecordSchema() string {
 	return "{\"doc\":\"Trace\",\"fields\":[{\"default\":null,\"doc\":\"Trace Identifier\",\"name\":\"traceId\",\"type\":[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"headerworks.datatype\",\"type\":\"record\"}]}],\"name\":\"bodyworks.Trace\",\"type\":\"record\"}"
 }
 

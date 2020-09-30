@@ -25,7 +25,7 @@ func NewEvent() *Event {
 
 func DeserializeEvent(r io.Reader) (*Event, error) {
 	t := NewEvent()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func DeserializeEvent(r io.Reader) (*Event, error) {
 func DeserializeEventFromSchema(r io.Reader, schema string) (*Event, error) {
 	t := NewEvent()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (r *Event) Serialize(w io.Writer) error {
 	return writeEvent(r, w)
 }
 
-func (r *Event) Schema() string {
+func (r *Event) AvroRecordSchema() string {
 	return "{\"fields\":[{\"doc\":\"Unique ID for this event.\",\"name\":\"id\",\"type\":{\"avro.java.string\":\"String\",\"type\":\"string\"}}],\"name\":\"event\",\"subject\":\"event\",\"type\":\"record\"}"
 }
 

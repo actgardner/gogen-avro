@@ -27,7 +27,7 @@ func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}
 }
 
 func TestRootUnionFixture(t *testing.T) {
-	codec, err := goavro.NewCodec(fixtures[0].Schema())
+	codec, err := goavro.NewCodec(fixtures[0].AvroRecordSchema())
 	assert.Nil(t, err)
 
 	var buf bytes.Buffer

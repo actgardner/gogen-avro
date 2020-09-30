@@ -22,7 +22,7 @@ func TestEvolution(t *testing.T) {
 
 	newAliasRecord := evolution.NewAliasRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(oldAliasRecord.Schema()), []byte(newAliasRecord.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(oldAliasRecord.AvroRecordSchema()), []byte(newAliasRecord.AvroRecordSchema()))
 	assert.Nil(t, err)
 
 	err = vm.Eval(bytes.NewReader(buf.Bytes()), deser, newAliasRecord)

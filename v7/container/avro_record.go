@@ -9,5 +9,5 @@ import (
 */
 type AvroRecord interface {
 	Serialize(io.Writer) error
-	Schema() string
+	AvroRecordSchema() string
 }

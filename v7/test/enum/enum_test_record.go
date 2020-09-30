@@ -24,7 +24,7 @@ func NewEnumTestRecord() *EnumTestRecord {
 
 func DeserializeEnumTestRecord(r io.Reader) (*EnumTestRecord, error) {
 	t := NewEnumTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeEnumTestRecord(r io.Reader) (*EnumTestRecord, error) {
 func DeserializeEnumTestRecordFromSchema(r io.Reader, schema string) (*EnumTestRecord, error) {
 	t := NewEnumTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *EnumTestRecord) Serialize(w io.Writer) error {
 	return writeEnumTestRecord(r, w)
 }
 
-func (r *EnumTestRecord) Schema() string {
+func (r *EnumTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"default\":\"testSymbol3\",\"name\":\"EnumField\",\"type\":{\"doc\":\"Test enum\",\"name\":\"TestEnumType\",\"symbols\":[\"TestSymbol1\",\"testSymbol2\",\"testSymbol3\"],\"type\":\"enum\"}}],\"name\":\"EnumTestRecord\",\"type\":\"record\"}"
 }
 

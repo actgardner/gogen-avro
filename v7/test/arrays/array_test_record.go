@@ -36,7 +36,7 @@ func NewArrayTestRecord() *ArrayTestRecord {
 
 func DeserializeArrayTestRecord(r io.Reader) (*ArrayTestRecord, error) {
 	t := NewArrayTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func DeserializeArrayTestRecord(r io.Reader) (*ArrayTestRecord, error) {
 func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (*ArrayTestRecord, error) {
 	t := NewArrayTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (r *ArrayTestRecord) Serialize(w io.Writer) error {
 	return writeArrayTestRecord(r, w)
 }
 
-func (r *ArrayTestRecord) Schema() string {
+func (r *ArrayTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"default\":[1,2,3,4],\"name\":\"IntField\",\"type\":{\"items\":\"int\",\"type\":\"array\"}},{\"default\":[5,6,7,8],\"name\":\"LongField\",\"type\":{\"items\":\"long\",\"type\":\"array\"}},{\"default\":[1.5,2.4],\"name\":\"DoubleField\",\"type\":{\"items\":\"double\",\"type\":\"array\"}},{\"default\":[\"abc\",\"def\"],\"name\":\"StringField\",\"type\":{\"items\":\"string\",\"type\":\"array\"}},{\"default\":[1.23,3.45],\"name\":\"FloatField\",\"type\":{\"items\":\"float\",\"type\":\"array\"}},{\"default\":[true,false],\"name\":\"BoolField\",\"type\":{\"items\":\"boolean\",\"type\":\"array\"}},{\"default\":[\"abc\",\"def\"],\"name\":\"BytesField\",\"type\":{\"items\":\"bytes\",\"type\":\"array\"}}],\"name\":\"ArrayTestRecord\",\"type\":\"record\"}"
 }
 

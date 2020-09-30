@@ -25,7 +25,7 @@ func NewBodyworksDatatypeUUID() *BodyworksDatatypeUUID {
 
 func DeserializeBodyworksDatatypeUUID(r io.Reader) (*BodyworksDatatypeUUID, error) {
 	t := NewBodyworksDatatypeUUID()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func DeserializeBodyworksDatatypeUUID(r io.Reader) (*BodyworksDatatypeUUID, erro
 func DeserializeBodyworksDatatypeUUIDFromSchema(r io.Reader, schema string) (*BodyworksDatatypeUUID, error) {
 	t := NewBodyworksDatatypeUUID()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (r *BodyworksDatatypeUUID) Serialize(w io.Writer) error {
 	return writeBodyworksDatatypeUUID(r, w)
 }
 
-func (r *BodyworksDatatypeUUID) Schema() string {
+func (r *BodyworksDatatypeUUID) AvroRecordSchema() string {
 	return "{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"bodyworks.datatype.UUID\",\"type\":\"record\"}"
 }
 

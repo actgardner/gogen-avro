@@ -24,7 +24,7 @@ func NewNestedUnionRecord() *NestedUnionRecord {
 
 func DeserializeNestedUnionRecord(r io.Reader) (*NestedUnionRecord, error) {
 	t := NewNestedUnionRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeNestedUnionRecord(r io.Reader) (*NestedUnionRecord, error) {
 func DeserializeNestedUnionRecordFromSchema(r io.Reader, schema string) (*NestedUnionRecord, error) {
 	t := NewNestedUnionRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *NestedUnionRecord) Serialize(w io.Writer) error {
 	return writeNestedUnionRecord(r, w)
 }
 
-func (r *NestedUnionRecord) Schema() string {
+func (r *NestedUnionRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"}],\"name\":\"NestedUnionRecord\",\"type\":\"record\"}"
 }
 

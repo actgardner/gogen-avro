@@ -24,7 +24,7 @@ func NewRecordBar() *RecordBar {
 
 func DeserializeRecordBar(r io.Reader) (*RecordBar, error) {
 	t := NewRecordBar()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeRecordBar(r io.Reader) (*RecordBar, error) {
 func DeserializeRecordBarFromSchema(r io.Reader, schema string) (*RecordBar, error) {
 	t := NewRecordBar()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *RecordBar) Serialize(w io.Writer) error {
 	return writeRecordBar(r, w)
 }
 
-func (r *RecordBar) Schema() string {
+func (r *RecordBar) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"id\",\"type\":\"string\"}],\"name\":\"RecordBar\",\"type\":\"record\"}"
 }
 

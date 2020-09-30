@@ -30,7 +30,7 @@ func NewNumberRecord() *NumberRecord {
 
 func DeserializeNumberRecord(r io.Reader) (*NumberRecord, error) {
 	t := NewNumberRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func DeserializeNumberRecord(r io.Reader) (*NumberRecord, error) {
 func DeserializeNumberRecordFromSchema(r io.Reader, schema string) (*NumberRecord, error) {
 	t := NewNumberRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (r *NumberRecord) Serialize(w io.Writer) error {
 	return writeNumberRecord(r, w)
 }
 
-func (r *NumberRecord) Schema() string {
+func (r *NumberRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"LongField\",\"type\":\"long\"},{\"name\":\"FloatField\",\"type\":\"float\"},{\"name\":\"DoubleField\",\"type\":\"double\"}],\"name\":\"NumberRecord\",\"type\":\"record\"}"
 }
 

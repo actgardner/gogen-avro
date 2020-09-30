@@ -26,7 +26,7 @@ func NewFixedTestRecord() *FixedTestRecord {
 
 func DeserializeFixedTestRecord(r io.Reader) (*FixedTestRecord, error) {
 	t := NewFixedTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func DeserializeFixedTestRecord(r io.Reader) (*FixedTestRecord, error) {
 func DeserializeFixedTestRecordFromSchema(r io.Reader, schema string) (*FixedTestRecord, error) {
 	t := NewFixedTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (r *FixedTestRecord) Serialize(w io.Writer) error {
 	return writeFixedTestRecord(r, w)
 }
 
-func (r *FixedTestRecord) Schema() string {
+func (r *FixedTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"FixedField\",\"type\":{\"name\":\"TestFixedType\",\"size\":12,\"type\":\"fixed\"}},{\"name\":\"AnotherFixed\",\"type\":\"TestFixedType\"}],\"name\":\"FixedTestRecord\",\"type\":\"record\"}"
 }
 

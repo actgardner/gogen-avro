@@ -24,7 +24,7 @@ func NewNestedTestRecord() *NestedTestRecord {
 
 func DeserializeNestedTestRecord(r io.Reader) (*NestedTestRecord, error) {
 	t := NewNestedTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeNestedTestRecord(r io.Reader) (*NestedTestRecord, error) {
 func DeserializeNestedTestRecordFromSchema(r io.Reader, schema string) (*NestedTestRecord, error) {
 	t := NewNestedTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *NestedTestRecord) Serialize(w io.Writer) error {
 	return writeNestedTestRecord(r, w)
 }
 
-func (r *NestedTestRecord) Schema() string {
+func (r *NestedTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"OtherField\",\"type\":{\"aliases\":[\"aliasedRecord\"],\"fields\":[{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"NestedRecord\",\"type\":\"record\"}}],\"name\":\"NestedTestRecord\",\"type\":\"record\"}"
 }
 

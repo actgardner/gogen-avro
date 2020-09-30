@@ -24,7 +24,7 @@ func NewArrayTestRecord() *ArrayTestRecord {
 
 func DeserializeArrayTestRecord(r io.Reader) (*ArrayTestRecord, error) {
 	t := NewArrayTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeArrayTestRecord(r io.Reader) (*ArrayTestRecord, error) {
 func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (*ArrayTestRecord, error) {
 	t := NewArrayTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *ArrayTestRecord) Serialize(w io.Writer) error {
 	return writeArrayTestRecord(r, w)
 }
 
-func (r *ArrayTestRecord) Schema() string {
+func (r *ArrayTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":{\"items\":[\"null\",\"int\"],\"type\":\"array\"}}],\"name\":\"ArrayTestRecord\",\"type\":\"record\"}"
 }
 

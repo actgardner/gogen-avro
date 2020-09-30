@@ -24,7 +24,7 @@ func NewPrimitiveUnionTestRecord() *PrimitiveUnionTestRecord {
 
 func DeserializePrimitiveUnionTestRecord(r io.Reader) (*PrimitiveUnionTestRecord, error) {
 	t := NewPrimitiveUnionTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializePrimitiveUnionTestRecord(r io.Reader) (*PrimitiveUnionTestRecord
 func DeserializePrimitiveUnionTestRecordFromSchema(r io.Reader, schema string) (*PrimitiveUnionTestRecord, error) {
 	t := NewPrimitiveUnionTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *PrimitiveUnionTestRecord) Serialize(w io.Writer) error {
 	return writePrimitiveUnionTestRecord(r, w)
 }
 
-func (r *PrimitiveUnionTestRecord) Schema() string {
+func (r *PrimitiveUnionTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"UnionField\",\"type\":[\"string\",\"long\",\"int\",\"float\",\"double\",\"null\"]}],\"name\":\"PrimitiveUnionTestRecord\",\"type\":\"record\"}"
 }
 

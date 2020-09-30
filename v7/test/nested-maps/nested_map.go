@@ -24,7 +24,7 @@ func NewNestedMap() *NestedMap {
 
 func DeserializeNestedMap(r io.Reader) (*NestedMap, error) {
 	t := NewNestedMap()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeNestedMap(r io.Reader) (*NestedMap, error) {
 func DeserializeNestedMapFromSchema(r io.Reader, schema string) (*NestedMap, error) {
 	t := NewNestedMap()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *NestedMap) Serialize(w io.Writer) error {
 	return writeNestedMap(r, w)
 }
 
-func (r *NestedMap) Schema() string {
+func (r *NestedMap) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"MapOfMaps\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"map\",\"values\":{\"items\":\"string\",\"type\":\"array\"}}}}],\"name\":\"NestedMap\",\"type\":\"record\"}"
 }
 

@@ -29,7 +29,7 @@ func NewAvroContainerBlock() *AvroContainerBlock {
 
 func DeserializeAvroContainerBlock(r io.Reader) (*AvroContainerBlock, error) {
 	t := NewAvroContainerBlock()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func DeserializeAvroContainerBlock(r io.Reader) (*AvroContainerBlock, error) {
 func DeserializeAvroContainerBlockFromSchema(r io.Reader, schema string) (*AvroContainerBlock, error) {
 	t := NewAvroContainerBlock()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (r *AvroContainerBlock) Serialize(w io.Writer) error {
 	return writeAvroContainerBlock(r, w)
 }
 
-func (r *AvroContainerBlock) Schema() string {
+func (r *AvroContainerBlock) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"numRecords\",\"type\":\"long\"},{\"name\":\"recordBytes\",\"type\":\"bytes\"},{\"name\":\"sync\",\"type\":{\"name\":\"sync\",\"size\":16,\"type\":\"fixed\"}}],\"name\":\"AvroContainerBlock\",\"type\":\"record\"}"
 }
 

@@ -24,7 +24,7 @@ func NewUnionRec() *UnionRec {
 
 func DeserializeUnionRec(r io.Reader) (*UnionRec, error) {
 	t := NewUnionRec()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeUnionRec(r io.Reader) (*UnionRec, error) {
 func DeserializeUnionRecFromSchema(r io.Reader, schema string) (*UnionRec, error) {
 	t := NewUnionRec()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *UnionRec) Serialize(w io.Writer) error {
 	return writeUnionRec(r, w)
 }
 
-func (r *UnionRec) Schema() string {
+func (r *UnionRec) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"a\",\"type\":\"int\"}],\"name\":\"unionRec\",\"type\":\"record\"}"
 }
 

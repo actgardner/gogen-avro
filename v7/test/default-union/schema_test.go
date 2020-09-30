@@ -19,7 +19,7 @@ func TestEvolution(t *testing.T) {
 
 	newUnionRecord := evolution.NewUnionRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(oldUnionRecord.Schema()), []byte(newUnionRecord.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(oldUnionRecord.AvroRecordSchema()), []byte(newUnionRecord.AvroRecordSchema()))
 	assert.Nil(t, err)
 
 	err = vm.Eval(bytes.NewReader(buf.Bytes()), deser, newUnionRecord)

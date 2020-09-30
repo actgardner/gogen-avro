@@ -24,7 +24,7 @@ func NewRecord2() *Record2 {
 
 func DeserializeRecord2(r io.Reader) (*Record2, error) {
 	t := NewRecord2()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeRecord2(r io.Reader) (*Record2, error) {
 func DeserializeRecord2FromSchema(r io.Reader, schema string) (*Record2, error) {
 	t := NewRecord2()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *Record2) Serialize(w io.Writer) error {
 	return writeRecord2(r, w)
 }
 
-func (r *Record2) Schema() string {
+func (r *Record2) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"intfield\",\"type\":\"int\"}],\"name\":\"record2\",\"type\":\"record\"}"
 }
 

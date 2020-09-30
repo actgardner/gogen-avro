@@ -38,7 +38,7 @@ func NewPrimitiveTestRecord() *PrimitiveTestRecord {
 
 func DeserializePrimitiveTestRecord(r io.Reader) (*PrimitiveTestRecord, error) {
 	t := NewPrimitiveTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func DeserializePrimitiveTestRecord(r io.Reader) (*PrimitiveTestRecord, error) {
 func DeserializePrimitiveTestRecordFromSchema(r io.Reader, schema string) (*PrimitiveTestRecord, error) {
 	t := NewPrimitiveTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (r *PrimitiveTestRecord) Serialize(w io.Writer) error {
 	return writePrimitiveTestRecord(r, w)
 }
 
-func (r *PrimitiveTestRecord) Schema() string {
+func (r *PrimitiveTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"LongField\",\"type\":\"long\"},{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"FloatField\",\"type\":\"float\"},{\"name\":\"BytesField\",\"type\":\"bytes\"},{\"name\":\"DoubleField\",\"type\":\"double\"},{\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"default\":\"somedefault\",\"name\":\"NewString\",\"type\":\"string\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
 }
 

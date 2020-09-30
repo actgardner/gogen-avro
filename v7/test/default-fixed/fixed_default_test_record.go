@@ -24,7 +24,7 @@ func NewFixedDefaultTestRecord() *FixedDefaultTestRecord {
 
 func DeserializeFixedDefaultTestRecord(r io.Reader) (*FixedDefaultTestRecord, error) {
 	t := NewFixedDefaultTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeFixedDefaultTestRecord(r io.Reader) (*FixedDefaultTestRecord, er
 func DeserializeFixedDefaultTestRecordFromSchema(r io.Reader, schema string) (*FixedDefaultTestRecord, error) {
 	t := NewFixedDefaultTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *FixedDefaultTestRecord) Serialize(w io.Writer) error {
 	return writeFixedDefaultTestRecord(r, w)
 }
 
-func (r *FixedDefaultTestRecord) Schema() string {
+func (r *FixedDefaultTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"default\":\"\\u0000\\u0001\\u0012\\u0000\\u0013C\\u0000\\u0001\\u0012\\u0000\\u0013S\",\"name\":\"FixedField\",\"type\":{\"name\":\"TestFixedDefaultType\",\"size\":12,\"type\":\"fixed\"}}],\"name\":\"FixedDefaultTestRecord\",\"type\":\"record\"}"
 }
 

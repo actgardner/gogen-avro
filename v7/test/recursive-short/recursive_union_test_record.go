@@ -24,7 +24,7 @@ func NewRecursiveUnionTestRecord() *RecursiveUnionTestRecord {
 
 func DeserializeRecursiveUnionTestRecord(r io.Reader) (*RecursiveUnionTestRecord, error) {
 	t := NewRecursiveUnionTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeRecursiveUnionTestRecord(r io.Reader) (*RecursiveUnionTestRecord
 func DeserializeRecursiveUnionTestRecordFromSchema(r io.Reader, schema string) (*RecursiveUnionTestRecord, error) {
 	t := NewRecursiveUnionTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *RecursiveUnionTestRecord) Serialize(w io.Writer) error {
 	return writeRecursiveUnionTestRecord(r, w)
 }
 
-func (r *RecursiveUnionTestRecord) Schema() string {
+func (r *RecursiveUnionTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"RecursiveField\",\"type\":[\"null\",\"RecursiveUnionTestRecord\"]}],\"name\":\"RecursiveUnionTestRecord\",\"type\":\"record\"}"
 }
 

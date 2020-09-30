@@ -28,7 +28,7 @@ func TestDeflateEncoding(t *testing.T) {
 func TestEventSchemaMetadata(t *testing.T) {
 	event := &Event{}
 	var eventJson map[string]interface{}
-	assert.Nil(t, json.Unmarshal([]byte(event.Schema()), &eventJson))
+	assert.Nil(t, json.Unmarshal([]byte(event.AvroRecordSchema()), &eventJson))
 	metadata, ok := eventJson["metadata"]
 	assert.Equal(t, ok, true)
 	metadataMap, ok := metadata.(map[string]interface{})
@@ -39,7 +39,7 @@ func TestEventSchemaMetadata(t *testing.T) {
 func TestIPSchemaMetadata(t *testing.T) {
 	event := &Event{}
 	var eventJson map[string]interface{}
-	assert.Nil(t, json.Unmarshal([]byte(event.Schema()), &eventJson))
+	assert.Nil(t, json.Unmarshal([]byte(event.AvroRecordSchema()), &eventJson))
 	fields, ok := eventJson["fields"]
 	assert.Equal(t, ok, true)
 	fieldList, ok := fields.([]interface{})

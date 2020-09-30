@@ -25,7 +25,7 @@ func NewChild() *Child {
 
 func DeserializeChild(r io.Reader) (*Child, error) {
 	t := NewChild()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func DeserializeChild(r io.Reader) (*Child, error) {
 func DeserializeChildFromSchema(r io.Reader, schema string) (*Child, error) {
 	t := NewChild()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (r *Child) Serialize(w io.Writer) error {
 	return writeChild(r, w)
 }
 
-func (r *Child) Schema() string {
+func (r *Child) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"name\",\"type\":\"string\"}],\"name\":\"child\",\"type\":\"record\"}"
 }
 

@@ -32,7 +32,7 @@ func NewDemoSchema() *DemoSchema {
 
 func DeserializeDemoSchema(r io.Reader) (*DemoSchema, error) {
 	t := NewDemoSchema()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func DeserializeDemoSchema(r io.Reader) (*DemoSchema, error) {
 func DeserializeDemoSchemaFromSchema(r io.Reader, schema string) (*DemoSchema, error) {
 	t := NewDemoSchema()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (r *DemoSchema) Serialize(w io.Writer) error {
 	return writeDemoSchema(r, w)
 }
 
-func (r *DemoSchema) Schema() string {
+func (r *DemoSchema) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"DoubleField\",\"type\":\"double\"},{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"DemoSchema\",\"type\":\"record\"}"
 }
 

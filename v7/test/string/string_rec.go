@@ -24,7 +24,7 @@ func NewStringRec() *StringRec {
 
 func DeserializeStringRec(r io.Reader) (*StringRec, error) {
 	t := NewStringRec()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeStringRec(r io.Reader) (*StringRec, error) {
 func DeserializeStringRecFromSchema(r io.Reader, schema string) (*StringRec, error) {
 	t := NewStringRec()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *StringRec) Serialize(w io.Writer) error {
 	return writeStringRec(r, w)
 }
 
-func (r *StringRec) Schema() string {
+func (r *StringRec) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"productName\",\"type\":\"string\"}],\"name\":\"StringRec\",\"type\":\"record\"}"
 }
 

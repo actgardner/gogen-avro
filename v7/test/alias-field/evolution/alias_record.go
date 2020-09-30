@@ -26,7 +26,7 @@ func NewAliasRecord() *AliasRecord {
 
 func DeserializeAliasRecord(r io.Reader) (*AliasRecord, error) {
 	t := NewAliasRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func DeserializeAliasRecord(r io.Reader) (*AliasRecord, error) {
 func DeserializeAliasRecordFromSchema(r io.Reader, schema string) (*AliasRecord, error) {
 	t := NewAliasRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (r *AliasRecord) Serialize(w io.Writer) error {
 	return writeAliasRecord(r, w)
 }
 
-func (r *AliasRecord) Schema() string {
+func (r *AliasRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"aliases\":[\"a\"],\"name\":\"b\",\"type\":\"string\"},{\"name\":\"d\",\"type\":\"string\"}],\"name\":\"AliasRecord\",\"type\":\"record\"}"
 }
 

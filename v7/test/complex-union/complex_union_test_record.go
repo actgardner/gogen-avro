@@ -24,7 +24,7 @@ func NewComplexUnionTestRecord() *ComplexUnionTestRecord {
 
 func DeserializeComplexUnionTestRecord(r io.Reader) (*ComplexUnionTestRecord, error) {
 	t := NewComplexUnionTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func DeserializeComplexUnionTestRecord(r io.Reader) (*ComplexUnionTestRecord, er
 func DeserializeComplexUnionTestRecordFromSchema(r io.Reader, schema string) (*ComplexUnionTestRecord, error) {
 	t := NewComplexUnionTestRecord()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (r *ComplexUnionTestRecord) Serialize(w io.Writer) error {
 	return writeComplexUnionTestRecord(r, w)
 }
 
-func (r *ComplexUnionTestRecord) Schema() string {
+func (r *ComplexUnionTestRecord) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"UnionField\",\"type\":[\"null\",{\"items\":\"int\",\"type\":\"array\"},{\"type\":\"map\",\"values\":\"int\"},{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"}],\"name\":\"NestedUnionRecord\",\"type\":\"record\"}]}],\"name\":\"ComplexUnionTestRecord\",\"type\":\"record\"}"
 }
 

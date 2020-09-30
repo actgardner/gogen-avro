@@ -29,7 +29,7 @@ func NewAvroContainerHeader() *AvroContainerHeader {
 
 func DeserializeAvroContainerHeader(r io.Reader) (*AvroContainerHeader, error) {
 	t := NewAvroContainerHeader()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(t.AvroRecordSchema()), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func DeserializeAvroContainerHeader(r io.Reader) (*AvroContainerHeader, error) {
 func DeserializeAvroContainerHeaderFromSchema(r io.Reader, schema string) (*AvroContainerHeader, error) {
 	t := NewAvroContainerHeader()
 
-	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.AvroRecordSchema()))
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (r *AvroContainerHeader) Serialize(w io.Writer) error {
 	return writeAvroContainerHeader(r, w)
 }
 
-func (r *AvroContainerHeader) Schema() string {
+func (r *AvroContainerHeader) AvroRecordSchema() string {
 	return "{\"fields\":[{\"name\":\"magic\",\"type\":{\"name\":\"Magic\",\"size\":4,\"type\":\"fixed\"}},{\"name\":\"meta\",\"type\":{\"type\":\"map\",\"values\":\"bytes\"}},{\"name\":\"sync\",\"type\":{\"name\":\"Sync\",\"size\":16,\"type\":\"fixed\"}}],\"name\":\"AvroContainerHeader\",\"type\":\"record\"}"
 }
 
