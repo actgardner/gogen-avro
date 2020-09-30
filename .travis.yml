@@ -1,12 +1,11 @@
 language: go
 
 go:
-  - "1.11"
-  - "1.12"
-  - "1.13"
+  - "1.14"
+  - "1.15"
   - tip
 
-install: go get -t -v ./cmd/...
+install: go get -t -v ./v7/cmd/...
 
 script:
-  - bash -ex test.sh 
+  - cd v7 && bash -ex test.sh 

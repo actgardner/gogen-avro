@@ -1,0 +1,23 @@
+{
+        "type": "record",
+        "name": "PrimitiveUnionTestRecord",
+        "fields": [
+        	{
+                    "name": "UnionField", 
+                    "type": [
+        		"bytes", 
+        		"string",
+			{
+				"type": "record",
+				"name": "record1",
+				"fields": [{"name": "intfield", "type": "int"}]
+			},
+                        {
+				"type": "record",
+				"name": "record2",
+				"fields": [{"name": "intfield", "type": "int"}]
+			}
+        	    ]
+                }
+        ]
+}
