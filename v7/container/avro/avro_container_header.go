@@ -16,7 +16,7 @@ import (
 type AvroContainerHeader struct {
 	Magic Magic `json:"magic"`
 
-	Meta map[string][]byte `json:"meta"`
+	Meta map[string]Bytes `json:"meta"`
 
 	Sync Sync `json:"sync"`
 }
@@ -99,7 +99,7 @@ func (r *AvroContainerHeader) Get(i int) types.Field {
 	case 0:
 		return &MagicWrapper{Target: &r.Magic}
 	case 1:
-		r.Meta = make(map[string][]byte)
+		r.Meta = make(map[string]Bytes)
 
 		return &MapBytesWrapper{Target: &r.Meta}
 	case 2:

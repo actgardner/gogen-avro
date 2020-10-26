@@ -21,7 +21,7 @@ type DemoSchema struct {
 
 	BoolField bool `json:"BoolField"`
 
-	BytesField []byte `json:"BytesField"`
+	BytesField Bytes `json:"BytesField"`
 }
 
 const DemoSchemaAvroCRC64Fingerprint = "\xc4V\xa9\x04ʛf\xad"
@@ -116,7 +116,7 @@ func (r *DemoSchema) Get(i int) types.Field {
 	case 3:
 		return &types.Boolean{Target: &r.BoolField}
 	case 4:
-		return &types.Bytes{Target: &r.BytesField}
+		return &BytesWrapper{Target: &r.BytesField}
 	}
 	panic("Unknown field index")
 }
