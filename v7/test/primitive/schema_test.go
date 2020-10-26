@@ -3,11 +3,12 @@ package avro
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
-	"reflect"
 	"testing"
 
 	"github.com/actgardner/gogen-avro/v7/compiler"
+	"github.com/actgardner/gogen-avro/v7/container"
 	"github.com/actgardner/gogen-avro/v7/parser"
 	"github.com/actgardner/gogen-avro/v7/resolver"
 	"github.com/actgardner/gogen-avro/v7/vm"
@@ -16,66 +17,78 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Round-trip some primitive values through our serializer and goavro to verify
-const fixtureJson = `
-[
-{"IntField": 1, "LongField": 2, "FloatField": 3.4, "DoubleField": 5.6, "StringField": "789", "BoolField": true, "BytesField": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5n"},
-{"IntField": 2147483647, "LongField": 9223372036854775807, "FloatField": 3.402823e+38, "DoubleField": 1.7976931348623157e+308, "StringField": "", "BoolField": false, "BytesField": ""},
-{"IntField": -2147483647, "LongField": -9223372036854775807, "FloatField": 3.402823e-38, "DoubleField": 2.2250738585072014e-308, "StringField": "", "BoolField": true, "BytesField": ""}
-]
-`
-
-func compareFixtureGoAvro(t *testing.T, actual interface{}, expected interface{}) {
-	record := actual.(map[string]interface{})
-	value := reflect.ValueOf(expected)
-	for i := 0; i < value.NumField(); i++ {
-		fieldName := value.Type().Field(i).Name
-		structVal := value.Field(i).Interface()
-		avroVal, ok := record[fieldName]
-		assert.Equal(t, true, ok)
-		assert.Equal(t, structVal, avroVal)
+// Get the schema file and test fixture data from our conventional paths
+func LoadTestData() (*goavro.Codec, []json.RawMessage, error) {
+	schema, err := ioutil.ReadFile("schema.avsc")
+	if err != nil {
+		return nil, nil, err
 	}
+
+	codec, err := goavro.NewCodec(string(schema))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fixtureJson, err := ioutil.ReadFile("fixtures.json")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fixtures := make([]json.RawMessage, 0)
+	if err := json.Unmarshal([]byte(fixtureJson), &fixtures); err != nil {
+		return nil, nil, err
+	}
+
+	return codec, fixtures, nil
 }
 
-func TestPrimitiveFixture(t *testing.T) {
-	fixtures := make([]PrimitiveTestRecord, 0)
-	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	assert.Nil(t, err)
-
-	schemaJson, err := ioutil.ReadFile("primitives.avsc")
-	assert.Nil(t, err)
-
-	codec, err := goavro.NewCodec(string(schemaJson))
-	assert.Nil(t, err)
-
-	var buf bytes.Buffer
-	for _, f := range fixtures {
-		buf.Reset()
-		err = f.Serialize(&buf)
-		assert.Nil(t, err)
-
-		datum, remaining, err := codec.NativeFromBinary(buf.Bytes())
-		assert.Nil(t, err)
-		assert.Equal(t, 0, len(remaining))
-		compareFixtureGoAvro(t, datum, f)
+// Deserialize an JSON-encoded Avro payload using gogen-avro and return the Avro-encoded bytes and native representation
+func GGDeserializeFixture(fixture json.RawMessage, fixtureType container.AvroRecord) ([]byte, error) {
+	if err := json.Unmarshal([]byte(fixture), &fixtureType); err != nil {
+		return nil, err
 	}
+
+	var avroBytes bytes.Buffer
+	if err := fixtureType.Serialize(&avroBytes); err != nil {
+		return nil, err
+	}
+	return avroBytes.Bytes(), nil
 }
 
-func TestRoundTrip(t *testing.T) {
-	fixtures := make([]PrimitiveTestRecord, 0)
-	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	assert.Nil(t, err)
+// Deserialize an JSON-encoded Avro payload using goavro and return the Avro-encoded bytes and the native representation
+func GADeserializeFixture(fixture json.RawMessage, codec *goavro.Codec) ([]byte, error) {
+	native, _, err := codec.NativeFromTextual([]byte(fixture))
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("Native: %v\n", native)
 
-	var buf bytes.Buffer
+	binary, err := codec.BinaryFromNative(nil, native)
+	if err != nil {
+		return nil, err
+	}
+	return binary, nil
+}
+
+func TestRoundTrips(t *testing.T) {
+	codec, fixtures, err := LoadTestData()
+	assert.NoError(t, err)
+
 	for _, f := range fixtures {
-		buf.Reset()
-		err = f.Serialize(&buf)
-		assert.Nil(t, err)
+		var record PrimitiveTestRecord
+		ggBytes, err := GGDeserializeFixture(f, &record)
+		assert.NoError(t, err)
 
-		target, err := DeserializePrimitiveTestRecord(&buf)
-		assert.Nil(t, err)
+		gaBytes, err := GADeserializeFixture(f, codec)
+		assert.NoError(t, err)
 
-		assert.Equal(t, target, &f)
+		// Confirm gogen-avro and goavro serialize the data exactly the same
+		assert.Equal(t, ggBytes, gaBytes)
+
+		// Confirm that gogen-avro can deserialize the data from goavro
+		deserRecord, err := DeserializePrimitiveTestRecord(bytes.NewBuffer(gaBytes))
+		assert.NoError(t, err)
+		assert.Equal(t, &record, deserRecord)
 	}
 }
 
