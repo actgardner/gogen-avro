@@ -12,7 +12,7 @@ func NewBytesField(definition interface{}) *BytesField {
 	return &BytesField{PrimitiveField{
 		definition:       definition,
 		name:             "Bytes",
-		goType:           "[]byte",
+		goType:           "Bytes",
 		serializerMethod: "vm.WriteBytes",
 		unionKey:         "bytes",
 	}}
@@ -27,7 +27,7 @@ func (s *BytesField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 }
 
 func (s *BytesField) WrapperType() string {
-	return "types.Bytes"
+	return "BytesWrapper"
 }
 
 func (s *BytesField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {

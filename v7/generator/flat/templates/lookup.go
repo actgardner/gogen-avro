@@ -17,6 +17,8 @@ func Template(t avro.Node) (string, error) {
 	switch t.(type) {
 	case *avro.ArrayField:
 		templateDef = ArrayTemplate
+	case *avro.BytesField:
+		templateDef = BytesTemplate
 	case *avro.MapField:
 		templateDef = MapTemplate
 	case *avro.UnionField:

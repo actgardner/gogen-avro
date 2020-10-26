@@ -16,7 +16,7 @@ import (
 type AvroContainerBlock struct {
 	NumRecords int64 `json:"numRecords"`
 
-	RecordBytes []byte `json:"recordBytes"`
+	RecordBytes Bytes `json:"recordBytes"`
 
 	Sync Sync `json:"sync"`
 }
@@ -99,7 +99,7 @@ func (r *AvroContainerBlock) Get(i int) types.Field {
 	case 0:
 		return &types.Long{Target: &r.NumRecords}
 	case 1:
-		return &types.Bytes{Target: &r.RecordBytes}
+		return &BytesWrapper{Target: &r.RecordBytes}
 	case 2:
 		return &SyncWrapper{Target: &r.Sync}
 	}
