@@ -7,8 +7,10 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/v7/vm/types"
+	"encoding/json"
 	"io"
+
+	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
 
 func writeSync(r Sync, w io.Writer) error {
@@ -21,6 +23,23 @@ type SyncWrapper struct {
 }
 
 type Sync [16]byte
+
+func (b *Sync) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	copy((*b)[:], []byte(s))
+	return nil
+}
+
+func (b Sync) MarshalJSON() ([]byte, error) {
+	j, err := json.Marshal(string(b[:]))
+	if err != nil {
+		return nil, err
+	}
+	return j, nil
+}
 
 func (_ *SyncWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
 func (_ *SyncWrapper) SetInt(v int32)      { panic("Unsupported operation") }

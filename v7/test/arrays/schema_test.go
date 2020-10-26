@@ -64,7 +64,7 @@ func TestArrayFixture(t *testing.T) {
 
 func BenchmarkArrayRecord(b *testing.B) {
 	buf := new(bytes.Buffer)
-	record := ArrayTestRecord{[]int32{1, 2, 3}, []int64{4, 5, 6}, []float64{3.4, 5.6, 7.8}, []string{"abc", "def", "ghi"}, []float32{10.1, 10.2, 10.3}, []bool{true, false}, [][]byte{{1, 2, 3, 4}}}
+	record := ArrayTestRecord{[]int32{1, 2, 3}, []int64{4, 5, 6}, []float64{3.4, 5.6, 7.8}, []string{"abc", "def", "ghi"}, []float32{10.1, 10.2, 10.3}, []bool{true, false}, []Bytes{{1, 2, 3, 4}}}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
 
-func writeArrayBytes(r [][]byte, w io.Writer) error {
+func writeArrayBytes(r []Bytes, w io.Writer) error {
 	err := vm.WriteLong(int64(len(r)), w)
 	if err != nil || len(r) == 0 {
 		return err
@@ -27,7 +27,7 @@ func writeArrayBytes(r [][]byte, w io.Writer) error {
 }
 
 type ArrayBytesWrapper struct {
-	Target *[][]byte
+	Target *[]Bytes
 }
 
 func (_ *ArrayBytesWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
@@ -47,8 +47,8 @@ func (r *ArrayBytesWrapper) NullField(i int) {
 }
 
 func (r *ArrayBytesWrapper) AppendArray() types.Field {
-	var v []byte
+	var v Bytes
 
 	*r.Target = append(*r.Target, v)
-	return &types.Bytes{Target: &(*r.Target)[len(*r.Target)-1]}
+	return &BytesWrapper{Target: &(*r.Target)[len(*r.Target)-1]}
 }

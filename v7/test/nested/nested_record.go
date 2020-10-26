@@ -17,7 +17,7 @@ type NestedRecord struct {
 
 	BoolField bool `json:"BoolField"`
 
-	BytesField []byte `json:"BytesField"`
+	BytesField Bytes `json:"BytesField"`
 }
 
 const NestedRecordAvroCRC64Fingerprint = "\x81\x8d\xc3K?\xe83\xcc"
@@ -100,7 +100,7 @@ func (r *NestedRecord) Get(i int) types.Field {
 	case 1:
 		return &types.Boolean{Target: &r.BoolField}
 	case 2:
-		return &types.Bytes{Target: &r.BytesField}
+		return &BytesWrapper{Target: &r.BytesField}
 	}
 	panic("Unknown field index")
 }

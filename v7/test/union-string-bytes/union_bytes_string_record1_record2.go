@@ -27,7 +27,7 @@ const (
 )
 
 type UnionBytesStringRecord1Record2 struct {
-	Bytes     []byte
+	Bytes     Bytes
 	String    string
 	Record1   *Record1
 	Record2   *Record2
@@ -69,7 +69,7 @@ func (r *UnionBytesStringRecord1Record2) SetLong(v int64) {
 func (r *UnionBytesStringRecord1Record2) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.Bytes{Target: (&r.Bytes)}
+		return &BytesWrapper{Target: (&r.Bytes)}
 	case 1:
 		return &types.String{Target: (&r.String)}
 	case 2:

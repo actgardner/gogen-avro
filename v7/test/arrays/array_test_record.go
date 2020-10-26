@@ -25,7 +25,7 @@ type ArrayTestRecord struct {
 
 	BoolField []bool `json:"BoolField"`
 
-	BytesField [][]byte `json:"BytesField"`
+	BytesField []Bytes `json:"BytesField"`
 }
 
 const ArrayTestRecordAvroCRC64Fingerprint = "\"I\xbbnO\x1c#,"
@@ -144,7 +144,7 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 
 		return &ArrayBoolWrapper{Target: &r.BoolField}
 	case 6:
-		r.BytesField = make([][]byte, 0)
+		r.BytesField = make([]Bytes, 0)
 
 		return &ArrayBytesWrapper{Target: &r.BytesField}
 	}
@@ -194,7 +194,7 @@ func (r *ArrayTestRecord) SetDefault(i int) {
 
 		return
 	case 6:
-		r.BytesField = make([][]byte, 2)
+		r.BytesField = make([]Bytes, 2)
 		r.BytesField[0] = []byte("abc")
 		r.BytesField[1] = []byte("def")
 
