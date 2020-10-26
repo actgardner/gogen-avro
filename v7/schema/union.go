@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/actgardner/gogen-avro/v7/generator"
@@ -82,6 +83,15 @@ func (s *UnionField) ItemConstructor(f AvroType) string {
 
 func (s *UnionField) Attribute(name string) interface{} {
 	return nil
+}
+
+func (s *UnionField) Schema() (string, error) {
+	def, err := s.Definition(make(map[QualifiedName]interface{}))
+	if err != nil {
+		return "", err
+	}
+	jsonBytes, err := json.Marshal(def)
+	return string(jsonBytes), err
 }
 
 func (s *UnionField) Definition(scope map[QualifiedName]interface{}) (interface{}, error) {

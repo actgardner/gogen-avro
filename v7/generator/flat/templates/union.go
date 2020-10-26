@@ -7,6 +7,7 @@ import (
 	"io"
 
 	"github.com/actgardner/gogen-avro/v7/vm"
+	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
 
@@ -51,6 +52,24 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 
 func {{ .ConstructorMethod }} {{ .GoType }} {
 	return &{{ .Name }}{}
+}
+
+func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {
+	t := {{ .ConstructorMethod }}
+	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
+func (r {{ .GoType }}) Schema() string {
+	return {{ printf "%q" .Schema }}
 }
 
 func (_ {{ .GoType }}) SetBoolean(v bool) { panic("Unsupported operation") }
