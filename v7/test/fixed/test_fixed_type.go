@@ -6,8 +6,10 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/v7/vm/types"
+	"encoding/json"
 	"io"
+
+	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
 
 func writeTestFixedType(r TestFixedType, w io.Writer) error {
@@ -20,6 +22,23 @@ type TestFixedTypeWrapper struct {
 }
 
 type TestFixedType [12]byte
+
+func (b *TestFixedType) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	copy((*b)[:], []byte(s))
+	return nil
+}
+
+func (b TestFixedType) MarshalJSON() ([]byte, error) {
+	j, err := json.Marshal(string(b[:]))
+	if err != nil {
+		return nil, err
+	}
+	return j, nil
+}
 
 func (_ *TestFixedTypeWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
 func (_ *TestFixedTypeWrapper) SetInt(v int32)      { panic("Unsupported operation") }

@@ -19,7 +19,7 @@ type PrimitiveTestRecord struct {
 
 	FloatField float32 `json:"FloatField"`
 
-	BytesField []byte `json:"BytesField"`
+	BytesField Bytes `json:"BytesField"`
 
 	DoubleField float64 `json:"DoubleField"`
 
@@ -132,7 +132,7 @@ func (r *PrimitiveTestRecord) Get(i int) types.Field {
 	case 2:
 		return &types.Float{Target: &r.FloatField}
 	case 3:
-		return &types.Bytes{Target: &r.BytesField}
+		return &BytesWrapper{Target: &r.BytesField}
 	case 4:
 		return &types.Double{Target: &r.DoubleField}
 	case 5:

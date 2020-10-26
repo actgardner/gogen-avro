@@ -21,7 +21,7 @@ type MapTestRecord struct {
 
 	BoolField map[string]bool `json:"BoolField"`
 
-	BytesField map[string][]byte `json:"BytesField"`
+	BytesField map[string]Bytes `json:"BytesField"`
 }
 
 const MapTestRecordAvroCRC64Fingerprint = "<?\x18\xa0\a\xdf^\x9e"
@@ -140,7 +140,7 @@ func (r *MapTestRecord) Get(i int) types.Field {
 
 		return &MapBoolWrapper{Target: &r.BoolField}
 	case 6:
-		r.BytesField = make(map[string][]byte)
+		r.BytesField = make(map[string]Bytes)
 
 		return &MapBytesWrapper{Target: &r.BytesField}
 	}

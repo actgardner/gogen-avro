@@ -57,7 +57,7 @@ func BenchmarkMapRecord(b *testing.B) {
 		map[string]string{"value1": "12345", "value2": "67890", "value3": "abcdefg"},
 		map[string]float32{"value1": 1, "value2": 2, "value3": 3},
 		map[string]bool{"true": true, "false": false},
-		map[string][]byte{"value1": {1, 2, 3, 4}, "value2": {100, 200, 255}},
+		map[string]Bytes{"value1": {1, 2, 3, 4}, "value2": {100, 200, 255}},
 	}
 
 	b.ResetTimer()

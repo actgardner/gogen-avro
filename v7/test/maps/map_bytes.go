@@ -7,7 +7,7 @@ import (
 	"io"
 )
 
-func writeMapBytes(r map[string][]byte, w io.Writer) error {
+func writeMapBytes(r map[string]Bytes, w io.Writer) error {
 	err := vm.WriteLong(int64(len(r)), w)
 	if err != nil || len(r) == 0 {
 		return err
@@ -26,9 +26,9 @@ func writeMapBytes(r map[string][]byte, w io.Writer) error {
 }
 
 type MapBytesWrapper struct {
-	Target *map[string][]byte
+	Target *map[string]Bytes
 	keys   []string
-	values [][]byte
+	values []Bytes
 }
 
 func (_ *MapBytesWrapper) SetBoolean(v bool)     { panic("Unsupported operation") }
@@ -54,9 +54,9 @@ func (r *MapBytesWrapper) Finalize() {
 
 func (r *MapBytesWrapper) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
-	var v []byte
+	var v Bytes
 	r.values = append(r.values, v)
-	return &types.Bytes{Target: &r.values[len(r.values)-1]}
+	return &BytesWrapper{Target: &r.values[len(r.values)-1]}
 }
 
 func (_ *MapBytesWrapper) AppendArray() types.Field { panic("Unsupported operation") }
