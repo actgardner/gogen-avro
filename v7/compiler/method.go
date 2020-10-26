@@ -111,19 +111,47 @@ func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 	case *schema.UnionField:
 		return p.compileUnion(v, reader)
 	case *schema.IntField:
-		return uintptr(unsafe.Pointer(assignIntToInt))
+		p.addLiteral(vm.Read, vm.Int)
+		if reader != nil {
+			p.addLiteral(vm.Set, vm.Int)
+		}
+		return nil
 	case *schema.LongField:
-		return uintptr(unsafe.Pointer(assignLongToLong))
+		p.addLiteral(vm.Read, vm.Long)
+		if reader != nil {
+			p.addLiteral(vm.Set, vm.Long)
+		}
+		return nil
 	case *schema.StringField:
-		return uintptr(unsafe.Pointer(assignStringToString))
+		p.addLiteral(vm.Read, vm.String)
+		if reader != nil {
+			p.addLiteral(vm.Set, vm.String)
+		}
+		return nil
 	case *schema.BytesField:
-		return uintptr(unsafe.Pointer(assignBytesToBytes))
+		p.addLiteral(vm.Read, vm.Bytes)
+		if reader != nil {
+			p.addLiteral(vm.Set, vm.Bytes)
+		}
+		return nil
 	case *schema.FloatField:
-		return uintptr(unsafe.Pointer(assignFloatToFloat))
+		p.addLiteral(vm.Read, vm.Float)
+		if reader != nil {
+			p.addLiteral(vm.Set, vm.Float)
+		}
+		return nil
 	case *schema.DoubleField:
-		return uintptr(unsafe.Pointer(assignDoubleToDouble))
+		p.addLiteral(vm.Read, vm.Double)
+		if reader != nil {
+			p.addLiteral(vm.Set, vm.Double)
+		}
+		return nil
 	case *schema.BoolField:
-		return uintptr(unsafe.Pointer(assignBoolToBool))
+		p.addLiteral(vm.Read, vm.Boolean)
+		if reader != nil {
+			p.addLiteral(vm.Set, vm.Boolean)
+		}
+		return nil
 	case *schema.NullField:
 		return nil
 	}
@@ -132,7 +160,7 @@ func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 
 func (p *irMethod) compileRef(writer, reader *schema.Reference) error {
 	log("compileRef()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	if reader != nil && writer.TypeName.Name != reader.TypeName.Name {
+	if !p.program.allowLaxNames && reader != nil && writer.TypeName.Name != reader.TypeName.Name {
 		return fmt.Errorf("Incompatible types by name: %v %v", reader, writer)
 	}
 

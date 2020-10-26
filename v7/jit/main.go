@@ -1,28 +1,23 @@
 package main
 
+import (
+	"io"
+)
+
 type Assigner func(r io.Reader, f types.Field) error
 
 func assign(r io.Reader, record *primitive.PrimitiveTestRecord) error {
-	f := record.Get(0)
-	err := assignInt(r, f)
+	err := assignIntToInt(r, &f.IntField)
 	if err != nil {
 		return err
 	}
 
-	f = record.Get(1)
-	err = assignLong(r, f)
+	err = assignLongToLong(r, &f.LongField)
 	if err != nil {
 		return err
 	}
 
-	f = record.Get(2)
-	err = assignFloat(r, f)
-	if err != nil {
-		return err
-	}
-
-	f = record.Get(3)
-	err = assignDouble(r, f)
+	err = assignFloatToFloat(r, &f.FloatField)
 	if err != nil {
 		return err
 	}

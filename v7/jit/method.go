@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"reflect"
 	"syscall"
 	"unsafe"
 
