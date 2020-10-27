@@ -54,6 +54,10 @@ func {{ .ConstructorMethod }} {{ .GoType }} {
 	return &{{ .Name }}{}
 }
 
+func (r {{ .GoType }}) Serialize(w io.Writer) error {
+	return {{ .SerializerMethod }}(r, w)
+}
+
 func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {
 	t := {{ .ConstructorMethod }}
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))

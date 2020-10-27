@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"io"
 
+	"github.com/actgardner/gogen-avro/v7/util"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
 
@@ -29,16 +30,13 @@ func (b *Magic) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	copy((*b)[:], []byte(s))
+	codepoints := util.DecodeByteString(s)
+	copy((*b)[:], codepoints)
 	return nil
 }
 
 func (b Magic) MarshalJSON() ([]byte, error) {
-	j, err := json.Marshal(string(b[:]))
-	if err != nil {
-		return nil, err
-	}
-	return j, nil
+	return []byte(util.EncodeByteString(b[:])), nil
 }
 
 func (_ *MagicWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }

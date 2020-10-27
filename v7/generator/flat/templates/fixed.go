@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 
 	"github.com/actgardner/gogen-avro/v7/vm/types"
+	"github.com/actgardner/gogen-avro/v7/util"
 )
 
 func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
@@ -24,16 +25,13 @@ func (b *{{ .GoType }}) UnmarshalJSON(data []byte) (error) {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	copy((*b)[:], []byte(s))
+	codepoints := util.DecodeByteString(s)
+	copy((*b)[:], codepoints)
 	return nil
 }
 
 func (b {{ .GoType }}) MarshalJSON() ([]byte, error) {
-	j, err := json.Marshal(string(b[:]))
-	if err != nil {
-		return nil, err
-	}
-	return j, nil
+	return []byte(util.EncodeByteString(b[:])), nil
 }
 
 func (_ *{{ .WrapperType }}) SetBoolean(v bool) { panic("Unsupported operation") }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/actgardner/gogen-avro/v7/vm/types"
+	"github.com/actgardner/gogen-avro/v7/util"
 )
 
 type Bytes []byte
@@ -14,16 +15,12 @@ func (b *Bytes) UnmarshalJSON(data []byte) (error) {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	*b = []byte(s)
+	*b = util.DecodeByteString(s)
 	return nil
 }
 
 func (b Bytes) MarshalJSON() ([]byte, error) {
-	j, err := json.Marshal(string(b))
-	if err != nil {
-		return nil, err
-	}
-	return j, nil
+	return []byte(util.EncodeByteString(b)), nil
 }
 
 type BytesWrapper struct {
