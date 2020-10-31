@@ -1,9 +1,6 @@
 package schema
 
-/*
-  A named Reference to a user-defined type (fixed, enum, record). Just a wrapper with a name around a Definition.
-*/
-
+// Reference to a user-defined type (fixed, enum, record). Just a wrapper with a name around a Definition.
 type Reference struct {
 	TypeName QualifiedName
 	Def      Definition
@@ -67,5 +64,5 @@ func (s *Reference) Children() []AvroType {
 }
 
 func (s *Reference) UnionKey() string {
-	return s.TypeName.Name
+	return s.Def.AvroName().String()
 }
