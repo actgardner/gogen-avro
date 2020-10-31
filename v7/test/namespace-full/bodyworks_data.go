@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 // Common information related to the event which must be included in any clean event
 type BodyworksData struct {
@@ -149,4 +154,52 @@ func (_ *BodyworksData) Finalize()                        {}
 
 func (_ *BodyworksData) AvroCRC64Fingerprint() []byte {
 	return []byte(BodyworksDataAvroCRC64Fingerprint)
+}
+
+func (r *BodyworksData) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["uuid"], err = json.Marshal(r.Uuid)
+	if err != nil {
+		return nil, err
+	}
+	output["hostname"], err = json.Marshal(r.Hostname)
+	if err != nil {
+		return nil, err
+	}
+	output["trace"], err = json.Marshal(r.Trace)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *BodyworksData) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["uuid"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Uuid); err != nil {
+			return err
+		}
+	} else {
+		r.Uuid = nil
+	}
+	if val, ok := fields["hostname"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Hostname); err != nil {
+			return err
+		}
+	} else {
+		r.Hostname = nil
+	}
+	if val, ok := fields["trace"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Trace); err != nil {
+			return err
+		}
+	} else {
+		r.Trace = nil
+	}
+	return nil
 }

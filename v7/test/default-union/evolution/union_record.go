@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type UnionRecord struct {
 	Id string `json:"id"`
@@ -156,4 +161,67 @@ func (_ *UnionRecord) Finalize()                        {}
 
 func (_ *UnionRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(UnionRecordAvroCRC64Fingerprint)
+}
+
+func (r *UnionRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["id"], err = json.Marshal(r.Id)
+	if err != nil {
+		return nil, err
+	}
+	output["unionNull"], err = json.Marshal(r.UnionNull)
+	if err != nil {
+		return nil, err
+	}
+	output["unionString"], err = json.Marshal(r.UnionString)
+	if err != nil {
+		return nil, err
+	}
+	output["unionRecord"], err = json.Marshal(r.UnionRecord)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *UnionRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["id"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Id); err != nil {
+			return err
+		}
+	} else {
+		r.Id = "test_id"
+	}
+	if val, ok := fields["unionNull"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.UnionNull); err != nil {
+			return err
+		}
+	} else {
+		r.UnionNull = nil
+	}
+	if val, ok := fields["unionString"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.UnionString); err != nil {
+			return err
+		}
+	} else {
+		r.UnionString = NewUnionStringInt()
+		r.UnionString.String = "hello"
+	}
+	if val, ok := fields["unionRecord"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.UnionRecord); err != nil {
+			return err
+		}
+	} else {
+		r.UnionRecord = NewUnionUnionRecString()
+		r.UnionRecord.UnionRec = NewUnionRec()
+		r.UnionRecord.UnionRec.A = 1
+
+	}
+	return nil
 }

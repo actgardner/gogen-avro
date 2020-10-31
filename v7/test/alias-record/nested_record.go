@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type NestedRecord struct {
 	StringField string `json:"StringField"`
@@ -123,4 +128,52 @@ func (_ *NestedRecord) Finalize()                        {}
 
 func (_ *NestedRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(NestedRecordAvroCRC64Fingerprint)
+}
+
+func (r *NestedRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["StringField"], err = json.Marshal(r.StringField)
+	if err != nil {
+		return nil, err
+	}
+	output["BoolField"], err = json.Marshal(r.BoolField)
+	if err != nil {
+		return nil, err
+	}
+	output["BytesField"], err = json.Marshal(r.BytesField)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *NestedRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["StringField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.StringField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for StringField")
+	}
+	if val, ok := fields["BoolField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.BoolField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for BoolField")
+	}
+	if val, ok := fields["BytesField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.BytesField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for BytesField")
+	}
+	return nil
 }

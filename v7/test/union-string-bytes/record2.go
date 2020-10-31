@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type Record2 struct {
 	Intfield int32 `json:"intfield"`
@@ -107,4 +112,30 @@ func (_ *Record2) Finalize()                        {}
 
 func (_ *Record2) AvroCRC64Fingerprint() []byte {
 	return []byte(Record2AvroCRC64Fingerprint)
+}
+
+func (r *Record2) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["intfield"], err = json.Marshal(r.Intfield)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *Record2) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["intfield"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Intfield); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for intfield")
+	}
+	return nil
 }

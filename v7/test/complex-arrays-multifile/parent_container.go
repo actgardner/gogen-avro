@@ -14,37 +14,37 @@ import (
 	"github.com/actgardner/gogen-avro/v7/vm"
 )
 
-func NewChildWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
-	str := NewChild()
+func NewParentWriter(writer io.Writer, codec container.Codec, recordsPerBlock int64) (*container.Writer, error) {
+	str := NewParent()
 	return container.NewWriter(writer, codec, recordsPerBlock, str.Schema())
 }
 
 // container reader
-type ChildReader struct {
+type ParentReader struct {
 	r io.Reader
 	p *vm.Program
 }
 
-func NewChildReader(r io.Reader) (*ChildReader, error) {
+func NewParentReader(r io.Reader) (*ParentReader, error) {
 	containerReader, err := container.NewReader(r)
 	if err != nil {
 		return nil, err
 	}
 
-	t := NewChild()
+	t := NewParent()
 	deser, err := compiler.CompileSchemaBytes([]byte(containerReader.AvroContainerSchema()), []byte(t.Schema()))
 	if err != nil {
 		return nil, err
 	}
 
-	return &ChildReader{
+	return &ParentReader{
 		r: containerReader,
 		p: deser,
 	}, nil
 }
 
-func (r ChildReader) Read() (*Child, error) {
-	t := NewChild()
+func (r ParentReader) Read() (*Parent, error) {
+	t := NewParent()
 	err := vm.Eval(r.r, r.p, t)
 	return t, err
 }

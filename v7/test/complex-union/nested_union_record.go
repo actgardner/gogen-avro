@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type NestedUnionRecord struct {
 	IntField int32 `json:"IntField"`
@@ -107,4 +112,30 @@ func (_ *NestedUnionRecord) Finalize()                        {}
 
 func (_ *NestedUnionRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(NestedUnionRecordAvroCRC64Fingerprint)
+}
+
+func (r *NestedUnionRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["IntField"], err = json.Marshal(r.IntField)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *NestedUnionRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["IntField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.IntField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for IntField")
+	}
+	return nil
 }

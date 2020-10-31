@@ -7,11 +7,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type AvroContainerBlock struct {
 	NumRecords int64 `json:"numRecords"`
@@ -124,4 +129,52 @@ func (_ *AvroContainerBlock) Finalize()                        {}
 
 func (_ *AvroContainerBlock) AvroCRC64Fingerprint() []byte {
 	return []byte(AvroContainerBlockAvroCRC64Fingerprint)
+}
+
+func (r *AvroContainerBlock) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["numRecords"], err = json.Marshal(r.NumRecords)
+	if err != nil {
+		return nil, err
+	}
+	output["recordBytes"], err = json.Marshal(r.RecordBytes)
+	if err != nil {
+		return nil, err
+	}
+	output["sync"], err = json.Marshal(r.Sync)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *AvroContainerBlock) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["numRecords"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.NumRecords); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for numRecords")
+	}
+	if val, ok := fields["recordBytes"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.RecordBytes); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for recordBytes")
+	}
+	if val, ok := fields["sync"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Sync); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for sync")
+	}
+	return nil
 }

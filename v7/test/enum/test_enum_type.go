@@ -52,7 +52,7 @@ func NewTestEnumTypeValue(raw string) (r TestEnumType, err error) {
 	return -1, fmt.Errorf("invalid value for TestEnumType: '%s'", raw)
 }
 
-func (b *TestEnumType) MarshalJSON() ([]byte, error) {
+func (b TestEnumType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(b.String())
 }
 

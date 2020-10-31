@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 // Trace
 type HeaderworksTrace struct {
@@ -117,4 +122,30 @@ func (_ *HeaderworksTrace) Finalize()                        {}
 
 func (_ *HeaderworksTrace) AvroCRC64Fingerprint() []byte {
 	return []byte(HeaderworksTraceAvroCRC64Fingerprint)
+}
+
+func (r *HeaderworksTrace) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["traceId"], err = json.Marshal(r.TraceId)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *HeaderworksTrace) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["traceId"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.TraceId); err != nil {
+			return err
+		}
+	} else {
+		r.TraceId = nil
+	}
+	return nil
 }

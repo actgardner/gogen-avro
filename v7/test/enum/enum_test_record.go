@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type EnumTestRecord struct {
 	EnumField TestEnumType `json:"EnumField"`
@@ -110,4 +115,30 @@ func (_ *EnumTestRecord) Finalize()                        {}
 
 func (_ *EnumTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(EnumTestRecordAvroCRC64Fingerprint)
+}
+
+func (r *EnumTestRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["EnumField"], err = json.Marshal(r.EnumField)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *EnumTestRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["EnumField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.EnumField); err != nil {
+			return err
+		}
+	} else {
+		r.EnumField = TestEnumTypeTestSymbol3
+	}
+	return nil
 }

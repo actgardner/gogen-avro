@@ -51,12 +51,11 @@ func GGJSONToAvroBytes(fixture json.RawMessage, fixtureType container.AvroRecord
 }
 
 func GAJSONToAvroBytes(fixture json.RawMessage, codec *goavro.Codec) ([]byte, error) {
+	fmt.Printf("JSON: %s\n", fixture)
 	native, _, err := codec.NativeFromTextual([]byte(fixture))
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Printf("Native: %s\n", fixture)
 
 	binary, err := codec.BinaryFromNative(nil, native)
 	if err != nil {

@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type RecursiveUnionTestRecord struct {
 	RecursiveField *UnionNullRecursiveUnionTestRecord `json:"RecursiveField"`
@@ -112,4 +117,30 @@ func (_ *RecursiveUnionTestRecord) Finalize()                        {}
 
 func (_ *RecursiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(RecursiveUnionTestRecordAvroCRC64Fingerprint)
+}
+
+func (r *RecursiveUnionTestRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["RecursiveField"], err = json.Marshal(r.RecursiveField)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *RecursiveUnionTestRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["RecursiveField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.RecursiveField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for RecursiveField")
+	}
+	return nil
 }

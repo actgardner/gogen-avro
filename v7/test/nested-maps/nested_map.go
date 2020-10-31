@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type NestedMap struct {
 	MapOfMaps map[string]map[string][]string `json:"MapOfMaps"`
@@ -109,4 +114,30 @@ func (_ *NestedMap) Finalize()                        {}
 
 func (_ *NestedMap) AvroCRC64Fingerprint() []byte {
 	return []byte(NestedMapAvroCRC64Fingerprint)
+}
+
+func (r *NestedMap) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["MapOfMaps"], err = json.Marshal(r.MapOfMaps)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *NestedMap) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["MapOfMaps"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.MapOfMaps); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for MapOfMaps")
+	}
+	return nil
 }

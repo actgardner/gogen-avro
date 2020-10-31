@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type ComplexUnionTestRecord struct {
 	UnionField *UnionNullArrayIntMapIntNestedUnionRecord `json:"UnionField"`
@@ -112,4 +117,30 @@ func (_ *ComplexUnionTestRecord) Finalize()                        {}
 
 func (_ *ComplexUnionTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(ComplexUnionTestRecordAvroCRC64Fingerprint)
+}
+
+func (r *ComplexUnionTestRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["UnionField"], err = json.Marshal(r.UnionField)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *ComplexUnionTestRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["UnionField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.UnionField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for UnionField")
+	}
+	return nil
 }

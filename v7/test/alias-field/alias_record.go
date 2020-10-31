@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type AliasRecord struct {
 	A string `json:"a"`
@@ -115,4 +120,41 @@ func (_ *AliasRecord) Finalize()                        {}
 
 func (_ *AliasRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(AliasRecordAvroCRC64Fingerprint)
+}
+
+func (r *AliasRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["a"], err = json.Marshal(r.A)
+	if err != nil {
+		return nil, err
+	}
+	output["c"], err = json.Marshal(r.C)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *AliasRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["a"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.A); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for a")
+	}
+	if val, ok := fields["c"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.C); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for c")
+	}
+	return nil
 }

@@ -44,7 +44,7 @@ func {{ .FromStringMethod }}(raw string) (r {{ .GoType }}, err error) {
 	return -1, fmt.Errorf("invalid value for {{ $.GoType }}: '%s'", raw)
 }
 
-func (b *{{ .GoType }}) MarshalJSON() ([]byte, error) {
+func (b {{ .GoType }}) MarshalJSON() ([]byte, error) {
 	return json.Marshal(b.String())
 }
 

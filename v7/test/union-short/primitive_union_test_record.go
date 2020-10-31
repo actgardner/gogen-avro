@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type PrimitiveUnionTestRecord struct {
 	UnionField *UnionIntLongFloatDoubleStringBoolNull `json:"UnionField"`
@@ -116,4 +121,31 @@ func (_ *PrimitiveUnionTestRecord) Finalize()                        {}
 
 func (_ *PrimitiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(PrimitiveUnionTestRecordAvroCRC64Fingerprint)
+}
+
+func (r *PrimitiveUnionTestRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["UnionField"], err = json.Marshal(r.UnionField)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *PrimitiveUnionTestRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["UnionField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.UnionField); err != nil {
+			return err
+		}
+	} else {
+		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
+		r.UnionField.Int = 1234
+	}
+	return nil
 }

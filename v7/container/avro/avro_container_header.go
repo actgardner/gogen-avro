@@ -7,11 +7,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type AvroContainerHeader struct {
 	Magic Magic `json:"magic"`
@@ -126,4 +131,52 @@ func (_ *AvroContainerHeader) Finalize()                        {}
 
 func (_ *AvroContainerHeader) AvroCRC64Fingerprint() []byte {
 	return []byte(AvroContainerHeaderAvroCRC64Fingerprint)
+}
+
+func (r *AvroContainerHeader) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["magic"], err = json.Marshal(r.Magic)
+	if err != nil {
+		return nil, err
+	}
+	output["meta"], err = json.Marshal(r.Meta)
+	if err != nil {
+		return nil, err
+	}
+	output["sync"], err = json.Marshal(r.Sync)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *AvroContainerHeader) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["magic"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Magic); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for magic")
+	}
+	if val, ok := fields["meta"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Meta); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for meta")
+	}
+	if val, ok := fields["sync"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Sync); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for sync")
+	}
+	return nil
 }

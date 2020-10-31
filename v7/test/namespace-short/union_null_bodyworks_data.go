@@ -112,6 +112,9 @@ func (r *UnionNullBodyworksData) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
 	if value, ok := fields["bodyworks.Data"]; ok {
 		r.UnionType = 1
 		return json.Unmarshal([]byte(value), &r.BodyworksData)

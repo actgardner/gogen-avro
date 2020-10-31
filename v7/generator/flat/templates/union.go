@@ -127,6 +127,9 @@ func (r {{ .GoType }}) UnmarshalJSON(data []byte) (error) {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
 	{{ range $i, $t := .ItemTypes -}}
 	{{ if ne $i $.NullIndex -}}
 	if value,  ok := fields["{{ .UnionKey }}"]; ok {

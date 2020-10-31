@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type PrimitiveTestRecord struct {
 	IntField int32 `json:"IntField"`
@@ -155,4 +160,96 @@ func (_ *PrimitiveTestRecord) Finalize()                        {}
 
 func (_ *PrimitiveTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(PrimitiveTestRecordAvroCRC64Fingerprint)
+}
+
+func (r *PrimitiveTestRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["IntField"], err = json.Marshal(r.IntField)
+	if err != nil {
+		return nil, err
+	}
+	output["LongField"], err = json.Marshal(r.LongField)
+	if err != nil {
+		return nil, err
+	}
+	output["FloatField"], err = json.Marshal(r.FloatField)
+	if err != nil {
+		return nil, err
+	}
+	output["DoubleField"], err = json.Marshal(r.DoubleField)
+	if err != nil {
+		return nil, err
+	}
+	output["StringField"], err = json.Marshal(r.StringField)
+	if err != nil {
+		return nil, err
+	}
+	output["BoolField"], err = json.Marshal(r.BoolField)
+	if err != nil {
+		return nil, err
+	}
+	output["BytesField"], err = json.Marshal(r.BytesField)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *PrimitiveTestRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["IntField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.IntField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for IntField")
+	}
+	if val, ok := fields["LongField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.LongField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for LongField")
+	}
+	if val, ok := fields["FloatField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.FloatField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for FloatField")
+	}
+	if val, ok := fields["DoubleField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.DoubleField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for DoubleField")
+	}
+	if val, ok := fields["StringField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.StringField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for StringField")
+	}
+	if val, ok := fields["BoolField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.BoolField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for BoolField")
+	}
+	if val, ok := fields["BytesField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.BytesField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for BytesField")
+	}
+	return nil
 }

@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type FixedTestRecord struct {
 	FixedField TestFixedType `json:"FixedField"`
@@ -115,4 +120,41 @@ func (_ *FixedTestRecord) Finalize()                        {}
 
 func (_ *FixedTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(FixedTestRecordAvroCRC64Fingerprint)
+}
+
+func (r *FixedTestRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["FixedField"], err = json.Marshal(r.FixedField)
+	if err != nil {
+		return nil, err
+	}
+	output["AnotherFixed"], err = json.Marshal(r.AnotherFixed)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *FixedTestRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["FixedField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.FixedField); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for FixedField")
+	}
+	if val, ok := fields["AnotherFixed"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.AnotherFixed); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for AnotherFixed")
+	}
+	return nil
 }

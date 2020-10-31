@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type ArrayTestRecord struct {
 	IntField []int32 `json:"IntField"`
@@ -215,4 +220,121 @@ func (_ *ArrayTestRecord) Finalize()                        {}
 
 func (_ *ArrayTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(ArrayTestRecordAvroCRC64Fingerprint)
+}
+
+func (r *ArrayTestRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["IntField"], err = json.Marshal(r.IntField)
+	if err != nil {
+		return nil, err
+	}
+	output["LongField"], err = json.Marshal(r.LongField)
+	if err != nil {
+		return nil, err
+	}
+	output["DoubleField"], err = json.Marshal(r.DoubleField)
+	if err != nil {
+		return nil, err
+	}
+	output["StringField"], err = json.Marshal(r.StringField)
+	if err != nil {
+		return nil, err
+	}
+	output["FloatField"], err = json.Marshal(r.FloatField)
+	if err != nil {
+		return nil, err
+	}
+	output["BoolField"], err = json.Marshal(r.BoolField)
+	if err != nil {
+		return nil, err
+	}
+	output["BytesField"], err = json.Marshal(r.BytesField)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *ArrayTestRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["IntField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.IntField); err != nil {
+			return err
+		}
+	} else {
+		r.IntField = make([]int32, 4)
+		r.IntField[0] = 1
+		r.IntField[1] = 2
+		r.IntField[2] = 3
+		r.IntField[3] = 4
+
+	}
+	if val, ok := fields["LongField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.LongField); err != nil {
+			return err
+		}
+	} else {
+		r.LongField = make([]int64, 4)
+		r.LongField[0] = 5
+		r.LongField[1] = 6
+		r.LongField[2] = 7
+		r.LongField[3] = 8
+
+	}
+	if val, ok := fields["DoubleField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.DoubleField); err != nil {
+			return err
+		}
+	} else {
+		r.DoubleField = make([]float64, 2)
+		r.DoubleField[0] = 1.5
+		r.DoubleField[1] = 2.4
+
+	}
+	if val, ok := fields["StringField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.StringField); err != nil {
+			return err
+		}
+	} else {
+		r.StringField = make([]string, 2)
+		r.StringField[0] = "abc"
+		r.StringField[1] = "def"
+
+	}
+	if val, ok := fields["FloatField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.FloatField); err != nil {
+			return err
+		}
+	} else {
+		r.FloatField = make([]float32, 2)
+		r.FloatField[0] = 1.23
+		r.FloatField[1] = 3.45
+
+	}
+	if val, ok := fields["BoolField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.BoolField); err != nil {
+			return err
+		}
+	} else {
+		r.BoolField = make([]bool, 2)
+		r.BoolField[0] = true
+		r.BoolField[1] = false
+
+	}
+	if val, ok := fields["BytesField"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.BytesField); err != nil {
+			return err
+		}
+	} else {
+		r.BytesField = make([]Bytes, 2)
+		r.BytesField[0] = []byte("abc")
+		r.BytesField[1] = []byte("def")
+
+	}
+	return nil
 }

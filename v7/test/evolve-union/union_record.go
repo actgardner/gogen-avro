@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type UnionRecord struct {
 	A string `json:"a"`
@@ -139,4 +144,52 @@ func (_ *UnionRecord) Finalize()                        {}
 
 func (_ *UnionRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(UnionRecordAvroCRC64Fingerprint)
+}
+
+func (r *UnionRecord) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["a"], err = json.Marshal(r.A)
+	if err != nil {
+		return nil, err
+	}
+	output["id"], err = json.Marshal(r.Id)
+	if err != nil {
+		return nil, err
+	}
+	output["name"], err = json.Marshal(r.Name)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *UnionRecord) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["a"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.A); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for a")
+	}
+	if val, ok := fields["id"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Id); err != nil {
+			return err
+		}
+	} else {
+		r.Id = nil
+	}
+	if val, ok := fields["name"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Name); err != nil {
+			return err
+		}
+	} else {
+		r.Name = nil
+	}
+	return nil
 }

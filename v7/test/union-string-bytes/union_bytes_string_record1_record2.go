@@ -134,6 +134,9 @@ func (r *UnionBytesStringRecord1Record2) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
 	if value, ok := fields["bytes"]; ok {
 		r.UnionType = 0
 		return json.Unmarshal([]byte(value), &r.Bytes)

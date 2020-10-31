@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 // A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014
 type BodyworksDatatypeUUID struct {
@@ -111,4 +116,30 @@ func (_ *BodyworksDatatypeUUID) Finalize()                        {}
 
 func (_ *BodyworksDatatypeUUID) AvroCRC64Fingerprint() []byte {
 	return []byte(BodyworksDatatypeUUIDAvroCRC64Fingerprint)
+}
+
+func (r *BodyworksDatatypeUUID) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["uuid"], err = json.Marshal(r.Uuid)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *BodyworksDatatypeUUID) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["uuid"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Uuid); err != nil {
+			return err
+		}
+	} else {
+		r.Uuid = ""
+	}
+	return nil
 }

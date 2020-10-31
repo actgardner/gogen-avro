@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 // GoGen test
 type TestSample struct {
@@ -133,4 +138,41 @@ func (_ *TestSample) Finalize()                        {}
 
 func (_ *TestSample) AvroCRC64Fingerprint() []byte {
 	return []byte(TestSampleAvroCRC64Fingerprint)
+}
+
+func (r *TestSample) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["header"], err = json.Marshal(r.Header)
+	if err != nil {
+		return nil, err
+	}
+	output["body"], err = json.Marshal(r.Body)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *TestSample) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["header"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Header); err != nil {
+			return err
+		}
+	} else {
+		r.Header = nil
+	}
+	if val, ok := fields["body"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Body); err != nil {
+			return err
+		}
+	} else {
+		r.Body = nil
+	}
+	return nil
 }

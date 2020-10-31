@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type RecordSchema struct {
 	Data []*UnionRecordFooRecordBar `json:"data"`
@@ -109,4 +114,30 @@ func (_ *RecordSchema) Finalize()                        {}
 
 func (_ *RecordSchema) AvroCRC64Fingerprint() []byte {
 	return []byte(RecordSchemaAvroCRC64Fingerprint)
+}
+
+func (r *RecordSchema) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["data"], err = json.Marshal(r.Data)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *RecordSchema) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["data"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Data); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for data")
+	}
+	return nil
 }

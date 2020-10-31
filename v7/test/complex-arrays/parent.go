@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type Parent struct {
 	Children []*Child `json:"Children"`
@@ -118,4 +123,36 @@ func (_ *Parent) Finalize()                        {}
 
 func (_ *Parent) AvroCRC64Fingerprint() []byte {
 	return []byte(ParentAvroCRC64Fingerprint)
+}
+
+func (r *Parent) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["Children"], err = json.Marshal(r.Children)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *Parent) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["Children"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Children); err != nil {
+			return err
+		}
+	} else {
+		r.Children = make([]*Child, 2)
+		r.Children[0] = NewChild()
+		r.Children[0].Name = "record1"
+
+		r.Children[1] = NewChild()
+		r.Children[1].Name = "record2"
+
+	}
+	return nil
 }

@@ -2,11 +2,16 @@ package templates
 
 const RecordTemplate = `
 import (
+	"encoding/json"
+	"fmt"
 	"io"
+
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/compiler"
 )
+
+var _ = fmt.Printf
 
 {{ if ne .Doc "" }}// {{ .Doc}}{{ end }}
 type {{ .Name }} struct {
@@ -137,5 +142,39 @@ func (_ {{ .GoType }}) Finalize() { }
 
 func (_ {{ .GoType}}) AvroCRC64Fingerprint() []byte {
   return []byte({{ .Name }}AvroCRC64Fingerprint)
+}
+
+func (r {{ .GoType }}) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	{{ range $i, $field := .Fields -}}
+	output[{{ printf "%q" $field.Name }}], err = json.Marshal(r.{{ $field.GoName}})
+	if err != nil {
+		return nil, err
+	}
+	{{ end -}}
+	return json.Marshal(output)	
+}
+
+func (r {{ .GoType }}) UnmarshalJSON(data []byte) (error) {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	{{ range $i, $field := .Fields -}}
+	if val, ok := fields[{{ printf "%q" $field.Name }}]; ok {
+		if err := json.Unmarshal([]byte(val), &r.{{ $field.GoName}}); err != nil {
+			return err
+		}
+	} else {
+        	{{ if .HasDefault -}}
+       	 	{{ $.DefaultForField $field }}
+		{{ else -}}
+		return fmt.Errorf("no value specified for {{ $field.Name }}")
+		{{ end -}}
+	}
+	{{ end -}}
+	return nil
 }
 `

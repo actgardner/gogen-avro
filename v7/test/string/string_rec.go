@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type StringRec struct {
 	ProductName string `json:"productName"`
@@ -107,4 +112,30 @@ func (_ *StringRec) Finalize()                        {}
 
 func (_ *StringRec) AvroCRC64Fingerprint() []byte {
 	return []byte(StringRecAvroCRC64Fingerprint)
+}
+
+func (r *StringRec) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["productName"], err = json.Marshal(r.ProductName)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *StringRec) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["productName"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.ProductName); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for productName")
+	}
+	return nil
 }

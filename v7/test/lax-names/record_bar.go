@@ -6,11 +6,16 @@
 package avro
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+
 	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
-	"io"
 )
+
+var _ = fmt.Printf
 
 type RecordBar struct {
 	Id string `json:"id"`
@@ -107,4 +112,30 @@ func (_ *RecordBar) Finalize()                        {}
 
 func (_ *RecordBar) AvroCRC64Fingerprint() []byte {
 	return []byte(RecordBarAvroCRC64Fingerprint)
+}
+
+func (r *RecordBar) MarshalJSON() ([]byte, error) {
+	var err error
+	output := make(map[string]json.RawMessage)
+	output["id"], err = json.Marshal(r.Id)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(output)
+}
+
+func (r *RecordBar) UnmarshalJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if val, ok := fields["id"]; ok {
+		if err := json.Unmarshal([]byte(val), &r.Id); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("no value specified for id")
+	}
+	return nil
 }
