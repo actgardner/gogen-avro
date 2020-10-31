@@ -1,8 +1,8 @@
 [
-	{
-		"EnumField": "TestSymbol1"
-	},
-	{
-		"EnumField": "testSymbol2"
-	}
+  {
+    "EnumField": "TestSymbol1"
+  },
+  {
+    "EnumField": "testSymbol2"
+  }
 ]

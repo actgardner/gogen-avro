@@ -1,5 +1,22 @@
 [
-  {"Children": []},
-  {"Children": [{"name": "test-record"}]},
-  {"Children": [{"name": "test-record"}, {"name": "test-record-2"}]}
+  {
+    "Children": []
+  },
+  {
+    "Children": [
+      {
+        "name": "test-record"
+      }
+    ]
+  },
+  {
+    "Children": [
+      {
+        "name": "test-record"
+      },
+      {
+        "name": "test-record-2"
+      }
+    ]
+  }
 ]

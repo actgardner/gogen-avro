@@ -3,7 +3,6 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"testing"
@@ -51,7 +50,6 @@ func GGJSONToAvroBytes(fixture json.RawMessage, fixtureType container.AvroRecord
 }
 
 func GAJSONToAvroBytes(fixture json.RawMessage, codec *goavro.Codec) ([]byte, error) {
-	fmt.Printf("JSON: %s\n", fixture)
 	native, _, err := codec.NativeFromTextual([]byte(fixture))
 	if err != nil {
 		return nil, err

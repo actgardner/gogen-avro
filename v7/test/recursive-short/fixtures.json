@@ -1,4 +1,12 @@
 [
-{"RecursiveField": null},
-{"RecursiveField":{"RecursiveUnionTestRecord":{"RecursiveField": null}}}
+  {
+    "RecursiveField": null
+  },
+  {
+    "RecursiveField": {
+      "RecursiveUnionTestRecord": {
+        "RecursiveField": null
+      }
+    }
+  }
 ]

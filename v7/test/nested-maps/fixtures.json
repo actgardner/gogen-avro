@@ -2,24 +2,42 @@
   {
     "MapOfMaps": {
       "NestedMap": {
-        "NestedArray": ["some","strings"],
-        "NestedArray1": ["other","values"]
+        "NestedArray": [
+          "some",
+          "strings"
+        ],
+        "NestedArray1": [
+          "other",
+          "values"
+        ]
       }
     }
   },
   {
     "MapOfMaps": {
       "NestedMap": {
-         "NestedArray": ["some","strings"],
-         "NestedArray1": ["other","values"]
+        "NestedArray": [
+          "some",
+          "strings"
+        ],
+        "NestedArray1": [
+          "other",
+          "values"
+        ]
       }
     }
   },
   {
     "MapOfMaps": {
       "NestedMap": {
-        "NestedArray": ["some","strings"],
-        "NestedArray1": ["other","values"]
+        "NestedArray": [
+          "some",
+          "strings"
+        ],
+        "NestedArray1": [
+          "other",
+          "values"
+        ]
       }
     }
   }
