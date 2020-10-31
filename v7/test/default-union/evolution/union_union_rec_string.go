@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
@@ -45,6 +46,28 @@ func writeUnionUnionRecString(r *UnionUnionRecString, w io.Writer) error {
 
 func NewUnionUnionRecString() *UnionUnionRecString {
 	return &UnionUnionRecString{}
+}
+
+func (r *UnionUnionRecString) Serialize(w io.Writer) error {
+	return writeUnionUnionRecString(r, w)
+}
+
+func DeserializeUnionUnionRecString(r io.Reader) (*UnionUnionRecString, error) {
+	t := NewUnionUnionRecString()
+	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
+func (r *UnionUnionRecString) Schema() string {
+	return "[{\"fields\":[{\"name\":\"a\",\"type\":\"int\"}],\"name\":\"unionRec\",\"type\":\"record\"},\"string\"]"
 }
 
 func (_ *UnionUnionRecString) SetBoolean(v bool)   { panic("Unsupported operation") }

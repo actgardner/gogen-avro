@@ -2,11 +2,7 @@
   {
     "type": "fixed",
     "size": 16,
-    "name": "ip_address",
-    "aliases": [
-      "IPAddr",
-      "ipAddr"
-    ]
+    "name": "ip_address"
   },
   {
       "type": "record",
@@ -21,12 +17,12 @@
           },
           {
               "name": "start_ip",
-              "type": "IPAddr",
+              "type": "ip_address",
               "doc": "Start IP of this observation's IP range."
           },
           {
               "name": "end_ip",
-              "type": "ipAddr",
+              "type": "ip_address",
               "doc": "End IP of this observation's IP range."
           }
       ]

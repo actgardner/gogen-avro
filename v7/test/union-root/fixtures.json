@@ -1,0 +1,9 @@
+[
+{"UnionField":{"int":1}},
+{"UnionField":{"long":2}},
+{"UnionField":{"float":3.4}},
+{"UnionField":{"double":5.6}},
+{"UnionField":{"string":"testString"}},
+{"UnionField":{"boolean":true}},
+{"UnionField": null}
+]

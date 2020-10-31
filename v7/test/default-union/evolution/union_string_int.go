@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
@@ -45,6 +46,28 @@ func writeUnionStringInt(r *UnionStringInt, w io.Writer) error {
 
 func NewUnionStringInt() *UnionStringInt {
 	return &UnionStringInt{}
+}
+
+func (r *UnionStringInt) Serialize(w io.Writer) error {
+	return writeUnionStringInt(r, w)
+}
+
+func DeserializeUnionStringInt(r io.Reader) (*UnionStringInt, error) {
+	t := NewUnionStringInt()
+	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
+func (r *UnionStringInt) Schema() string {
+	return "[\"string\",\"int\"]"
 }
 
 func (_ *UnionStringInt) SetBoolean(v bool)   { panic("Unsupported operation") }

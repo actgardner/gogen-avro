@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
@@ -71,6 +72,28 @@ func writeUnionFieldUnion(r *UnionFieldUnion, w io.Writer) error {
 
 func NewUnionFieldUnion() *UnionFieldUnion {
 	return &UnionFieldUnion{}
+}
+
+func (r *UnionFieldUnion) Serialize(w io.Writer) error {
+	return writeUnionFieldUnion(r, w)
+}
+
+func DeserializeUnionFieldUnion(r io.Reader) (*UnionFieldUnion, error) {
+	t := NewUnionFieldUnion()
+	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
+func (r *UnionFieldUnion) Schema() string {
+	return "[\"int\",\"long\",\"float\",\"double\",\"string\",\"boolean\",\"null\"]"
 }
 
 func (_ *UnionFieldUnion) SetBoolean(v bool)   { panic("Unsupported operation") }

@@ -1,3 +1,3 @@
 package avro
 
-//go:generate $GOPATH/bin/gogen-avro --namespaced-names short --containers . namespace.avsc
+//go:generate $GOPATH/bin/gogen-avro -containers --namespaced-names short . schema.avsc

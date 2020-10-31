@@ -1,3 +1,3 @@
 package avro
 
-//go:generate $GOPATH/bin/gogen-avro --short-unions . recursive.avsc
+//go:generate $GOPATH/bin/gogen-avro --short-unions -containers . schema.avsc

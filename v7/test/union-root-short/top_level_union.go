@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
@@ -45,6 +46,28 @@ func writeTopLevelUnion(r *TopLevelUnion, w io.Writer) error {
 
 func NewTopLevelUnion() *TopLevelUnion {
 	return &TopLevelUnion{}
+}
+
+func (r *TopLevelUnion) Serialize(w io.Writer) error {
+	return writeTopLevelUnion(r, w)
+}
+
+func DeserializeTopLevelUnion(r io.Reader) (*TopLevelUnion, error) {
+	t := NewTopLevelUnion()
+	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
+func (r *TopLevelUnion) Schema() string {
+	return "[{\"key\":\"value\",\"metadata\":{\"a\":\"b\",\"c\":123},\"name\":\"ip_address\",\"size\":16,\"type\":\"fixed\"},{\"fields\":[{\"doc\":\"Unique ID for this event.\",\"metadata\":{\"key\":\"field1\"},\"name\":\"id\",\"type\":\"string\"},{\"doc\":\"Start IP of this observation's IP range.\",\"metadata\":{\"key\":\"field2\"},\"name\":\"start_ip\",\"type\":\"ip_address\"},{\"doc\":\"End IP of this observation's IP range.\",\"metadata\":{\"key\":\"field3\"},\"name\":\"end_ip\",\"type\":\"ip_address\"}],\"metadata\":{\"key\":\"value\"},\"name\":\"event\",\"subject\":\"event\",\"type\":\"record\"}]"
 }
 
 func (_ *TopLevelUnion) SetBoolean(v bool)   { panic("Unsupported operation") }

@@ -1,38 +1,15 @@
 package avro
 
 import (
-	"bytes"
-	"encoding/json"
+	"io"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/actgardner/gogen-avro/v7/container"
+	"github.com/actgardner/gogen-avro/v7/test"
 )
 
-// Round-trip some primitive values through our serializer and goavro to verify
-const fixtureJson = `
-[
-  {"IntField": [
-    {"int": 1}, 
-    null, 
-    {"int": 2147483647}
-  ]}
-]
-`
-
 func TestRoundTrip(t *testing.T) {
-	fixtures := make([]*ArrayTestRecord, 0)
-	err := json.Unmarshal([]byte(fixtureJson), &fixtures)
-	assert.Nil(t, err)
-
-	var buf bytes.Buffer
-	for _, f := range fixtures {
-		buf.Reset()
-		err = f.Serialize(&buf)
-		assert.Nil(t, err)
-
-		datum, err := DeserializeArrayTestRecord(&buf)
-		assert.Nil(t, err)
-
-		assert.Equal(t, datum, f)
-	}
+	test.RoundTrip(t, func() container.AvroRecord { return &ArrayTestRecord{} }, func(r io.Reader) (interface{}, error) {
+		return DeserializeArrayTestRecord(r)
+	})
 }

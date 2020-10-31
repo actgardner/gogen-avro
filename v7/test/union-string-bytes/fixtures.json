@@ -1,0 +1,6 @@
+[
+{"UnionField":{"string":"testString"}},
+{"UnionField":{"bytes":"\u0001\u0004\u0006"}},
+{"UnionField":{"record1":{"intfield":1}}},
+{"UnionField":{"record2":{"intfield":1}}}
+]

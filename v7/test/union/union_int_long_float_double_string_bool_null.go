@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/actgardner/gogen-avro/v7/compiler"
 	"github.com/actgardner/gogen-avro/v7/vm"
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
@@ -71,6 +72,28 @@ func writeUnionIntLongFloatDoubleStringBoolNull(r *UnionIntLongFloatDoubleString
 
 func NewUnionIntLongFloatDoubleStringBoolNull() *UnionIntLongFloatDoubleStringBoolNull {
 	return &UnionIntLongFloatDoubleStringBoolNull{}
+}
+
+func (r *UnionIntLongFloatDoubleStringBoolNull) Serialize(w io.Writer) error {
+	return writeUnionIntLongFloatDoubleStringBoolNull(r, w)
+}
+
+func DeserializeUnionIntLongFloatDoubleStringBoolNull(r io.Reader) (*UnionIntLongFloatDoubleStringBoolNull, error) {
+	t := NewUnionIntLongFloatDoubleStringBoolNull()
+	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
+func (r *UnionIntLongFloatDoubleStringBoolNull) Schema() string {
+	return "[\"int\",\"long\",\"float\",\"double\",\"string\",\"boolean\",\"null\"]"
 }
 
 func (_ *UnionIntLongFloatDoubleStringBoolNull) SetBoolean(v bool)   { panic("Unsupported operation") }
