@@ -145,6 +145,8 @@ func (r *BodyworksTrace) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.TraceId = NewUnionNullDatatypeUUID()
+
 		r.TraceId = nil
 	}
 	return nil

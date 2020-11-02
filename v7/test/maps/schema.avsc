@@ -2,12 +2,12 @@
 	"type": "record",
 	"name": "MapTestRecord",
 	"fields": [
-		{"name": "IntField", "type": {"type": "map", "values": "int"}},
-		{"name": "LongField", "type": {"type": "map", "values": "long"}},
-		{"name": "DoubleField", "type": {"type": "map", "values": "double"}},
-		{"name": "StringField", "type": {"type": "map", "values": "string"}},
-		{"name": "FloatField", "type": {"type": "map", "values": "float"}},
-		{"name": "BoolField", "type": {"type": "map", "values": "boolean"}},
-		{"name": "BytesField", "type": {"type": "map", "values": "bytes"}}
+		{"name": "IntField", "type": {"type": "map", "values": "int"}, "default": {"default": 1}},
+		{"name": "LongField", "type": {"type": "map", "values": "long"}, "default": {"default": 2}},
+		{"name": "DoubleField", "type": {"type": "map", "values": "double"}, "default": {"default": 1e3}},
+		{"name": "StringField", "type": {"type": "map", "values": "string"}, "default": {"default": "defaultstring"}},
+		{"name": "FloatField", "type": {"type": "map", "values": "float"}, "default": {"default": 236}},
+		{"name": "BoolField", "type": {"type": "map", "values": "boolean"}, "default": {"default": true}},
+		{"name": "BytesField", "type": {"type": "map", "values": "bytes"}, "default": {"default": "\u0003\u000f\u00de"}}
 	]
 }

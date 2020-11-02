@@ -106,7 +106,7 @@ func (r *MapTestRecord) Serialize(w io.Writer) error {
 }
 
 func (r *MapTestRecord) Schema() string {
-	return "{\"fields\":[{\"name\":\"IntField\",\"type\":{\"type\":\"map\",\"values\":\"int\"}},{\"name\":\"LongField\",\"type\":{\"type\":\"map\",\"values\":\"long\"}},{\"name\":\"DoubleField\",\"type\":{\"type\":\"map\",\"values\":\"double\"}},{\"name\":\"StringField\",\"type\":{\"type\":\"map\",\"values\":\"string\"}},{\"name\":\"FloatField\",\"type\":{\"type\":\"map\",\"values\":\"float\"}},{\"name\":\"BoolField\",\"type\":{\"type\":\"map\",\"values\":\"boolean\"}},{\"name\":\"BytesField\",\"type\":{\"type\":\"map\",\"values\":\"bytes\"}}],\"name\":\"MapTestRecord\",\"type\":\"record\"}"
+	return "{\"fields\":[{\"default\":{\"default\":1},\"name\":\"IntField\",\"type\":{\"type\":\"map\",\"values\":\"int\"}},{\"default\":{\"default\":2},\"name\":\"LongField\",\"type\":{\"type\":\"map\",\"values\":\"long\"}},{\"default\":{\"default\":1000},\"name\":\"DoubleField\",\"type\":{\"type\":\"map\",\"values\":\"double\"}},{\"default\":{\"default\":\"defaultstring\"},\"name\":\"StringField\",\"type\":{\"type\":\"map\",\"values\":\"string\"}},{\"default\":{\"default\":236},\"name\":\"FloatField\",\"type\":{\"type\":\"map\",\"values\":\"float\"}},{\"default\":{\"default\":true},\"name\":\"BoolField\",\"type\":{\"type\":\"map\",\"values\":\"boolean\"}},{\"default\":{\"default\":\"\\u0003\\u000fÞ\"},\"name\":\"BytesField\",\"type\":{\"type\":\"map\",\"values\":\"bytes\"}}],\"name\":\"MapTestRecord\",\"type\":\"record\"}"
 }
 
 func (r *MapTestRecord) SchemaName() string {
@@ -158,6 +158,34 @@ func (r *MapTestRecord) Get(i int) types.Field {
 
 func (r *MapTestRecord) SetDefault(i int) {
 	switch i {
+	case 0:
+		r.IntField["default"] = 1
+
+		return
+	case 1:
+		r.LongField["default"] = 2
+
+		return
+	case 2:
+		r.DoubleField["default"] = 1000
+
+		return
+	case 3:
+		r.StringField["default"] = "defaultstring"
+
+		return
+	case 4:
+		r.FloatField["default"] = 236
+
+		return
+	case 5:
+		r.BoolField["default"] = true
+
+		return
+	case 6:
+		r.BytesField["default"] = []byte("\x03\x0fÞ")
+
+		return
 	}
 	panic("Unknown field index")
 }
@@ -221,49 +249,70 @@ func (r *MapTestRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for IntField")
+		r.IntField = make(map[string]int32)
+
+		r.IntField["default"] = 1
+
 	}
 	if val, ok := fields["LongField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.LongField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for LongField")
+		r.LongField = make(map[string]int64)
+
+		r.LongField["default"] = 2
+
 	}
 	if val, ok := fields["DoubleField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.DoubleField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for DoubleField")
+		r.DoubleField = make(map[string]float64)
+
+		r.DoubleField["default"] = 1000
+
 	}
 	if val, ok := fields["StringField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.StringField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for StringField")
+		r.StringField = make(map[string]string)
+
+		r.StringField["default"] = "defaultstring"
+
 	}
 	if val, ok := fields["FloatField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.FloatField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for FloatField")
+		r.FloatField = make(map[string]float32)
+
+		r.FloatField["default"] = 236
+
 	}
 	if val, ok := fields["BoolField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.BoolField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for BoolField")
+		r.BoolField = make(map[string]bool)
+
+		r.BoolField["default"] = true
+
 	}
 	if val, ok := fields["BytesField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.BytesField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for BytesField")
+		r.BytesField = make(map[string]Bytes)
+
+		r.BytesField["default"] = []byte("\x03\x0fÞ")
+
 	}
 	return nil
 }

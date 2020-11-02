@@ -106,7 +106,7 @@ func (r *PrimitiveTestRecord) Serialize(w io.Writer) error {
 }
 
 func (r *PrimitiveTestRecord) Schema() string {
-	return "{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"LongField\",\"type\":\"long\"},{\"name\":\"FloatField\",\"type\":\"float\"},{\"name\":\"DoubleField\",\"type\":\"double\"},{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
+	return "{\"fields\":[{\"default\":12345689,\"name\":\"IntField\",\"type\":\"int\"},{\"default\":234567890,\"name\":\"LongField\",\"type\":\"long\"},{\"default\":100000000,\"name\":\"FloatField\",\"type\":\"float\"},{\"default\":800000,\"name\":\"DoubleField\",\"type\":\"double\"},{\"default\":\"defaultstring\",\"name\":\"StringField\",\"type\":\"string\"},{\"default\":true,\"name\":\"BoolField\",\"type\":\"boolean\"},{\"default\":\"\\u0004\\u0001\\u0005ý\",\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
 }
 
 func (r *PrimitiveTestRecord) SchemaName() string {
@@ -144,6 +144,27 @@ func (r *PrimitiveTestRecord) Get(i int) types.Field {
 
 func (r *PrimitiveTestRecord) SetDefault(i int) {
 	switch i {
+	case 0:
+		r.IntField = 1.2345689e+07
+		return
+	case 1:
+		r.LongField = 2.3456789e+08
+		return
+	case 2:
+		r.FloatField = 1e+08
+		return
+	case 3:
+		r.DoubleField = 800000
+		return
+	case 4:
+		r.StringField = "defaultstring"
+		return
+	case 5:
+		r.BoolField = true
+		return
+	case 6:
+		r.BytesField = []byte("\x04\x01\x05ý")
+		return
 	}
 	panic("Unknown field index")
 }
@@ -207,49 +228,49 @@ func (r *PrimitiveTestRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for IntField")
+		r.IntField = 1.2345689e+07
 	}
 	if val, ok := fields["LongField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.LongField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for LongField")
+		r.LongField = 2.3456789e+08
 	}
 	if val, ok := fields["FloatField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.FloatField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for FloatField")
+		r.FloatField = 1e+08
 	}
 	if val, ok := fields["DoubleField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.DoubleField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for DoubleField")
+		r.DoubleField = 800000
 	}
 	if val, ok := fields["StringField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.StringField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for StringField")
+		r.StringField = "defaultstring"
 	}
 	if val, ok := fields["BoolField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.BoolField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for BoolField")
+		r.BoolField = true
 	}
 	if val, ok := fields["BytesField"]; ok {
 		if err := json.Unmarshal([]byte(val), &r.BytesField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for BytesField")
+		r.BytesField = []byte("\x04\x01\x05ý")
 	}
 	return nil
 }

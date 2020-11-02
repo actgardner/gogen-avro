@@ -145,6 +145,8 @@ func (r *PrimitiveUnionTestRecord) UnmarshalJSON(data []byte) error {
 		}
 	} else {
 		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
+
+		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
 		r.UnionField.Int = 1234
 	}
 	return nil

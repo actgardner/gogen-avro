@@ -203,6 +203,8 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.UnionNull = NewUnionNullString()
+
 		r.UnionNull = nil
 	}
 	if val, ok := fields["unionString"]; ok {
@@ -211,6 +213,8 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 		}
 	} else {
 		r.UnionString = NewUnionStringInt()
+
+		r.UnionString = NewUnionStringInt()
 		r.UnionString.String = "hello"
 	}
 	if val, ok := fields["unionRecord"]; ok {
@@ -218,6 +222,8 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.UnionRecord = NewUnionUnionRecString()
+
 		r.UnionRecord = NewUnionUnionRecString()
 		r.UnionRecord.UnionRec = NewUnionRec()
 		r.UnionRecord.UnionRec.A = 1

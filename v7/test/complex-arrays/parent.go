@@ -146,6 +146,8 @@ func (r *Parent) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Children = make([]*Child, 0)
+
 		r.Children = make([]*Child, 2)
 		r.Children[0] = NewChild()
 		r.Children[0].Name = "record1"

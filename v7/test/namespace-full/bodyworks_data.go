@@ -185,6 +185,8 @@ func (r *BodyworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Uuid = NewUnionNullBodyworksDatatypeUUID()
+
 		r.Uuid = nil
 	}
 	if val, ok := fields["hostname"]; ok {
@@ -192,6 +194,8 @@ func (r *BodyworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Hostname = NewUnionNullString()
+
 		r.Hostname = nil
 	}
 	if val, ok := fields["trace"]; ok {
@@ -199,6 +203,8 @@ func (r *BodyworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Trace = NewUnionNullBodyworksTrace()
+
 		r.Trace = nil
 	}
 	return nil

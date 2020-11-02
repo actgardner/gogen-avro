@@ -185,6 +185,8 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Uuid = NewUnionNullHeaderworksDatatypeUUID()
+
 		r.Uuid = nil
 	}
 	if val, ok := fields["hostname"]; ok {
@@ -192,6 +194,8 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Hostname = NewUnionNullString()
+
 		r.Hostname = nil
 	}
 	if val, ok := fields["trace"]; ok {
@@ -199,6 +203,8 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Trace = NewUnionNullHeaderworksTrace()
+
 		r.Trace = nil
 	}
 	return nil

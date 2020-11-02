@@ -182,6 +182,8 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Id = NewUnionNullInt()
+
 		r.Id = nil
 	}
 	if val, ok := fields["name"]; ok {
@@ -189,6 +191,8 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Name = NewUnionNullString()
+
 		r.Name = nil
 	}
 	return nil

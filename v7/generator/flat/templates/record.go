@@ -169,6 +169,9 @@ func (r {{ .GoType }}) UnmarshalJSON(data []byte) (error) {
 		}
 	} else {
         	{{ if .HasDefault -}}
+		{{ if $.ConstructableForField $field | ne "" -}}
+		{{ $.ConstructableForField $field }}
+		{{ end -}}
        	 	{{ $.DefaultForField $field }}
 		{{ else -}}
 		return fmt.Errorf("no value specified for {{ $field.Name }}")

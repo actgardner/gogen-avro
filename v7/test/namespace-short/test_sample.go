@@ -165,6 +165,8 @@ func (r *TestSample) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Header = NewUnionNullHeaderworksData()
+
 		r.Header = nil
 	}
 	if val, ok := fields["body"]; ok {
@@ -172,6 +174,8 @@ func (r *TestSample) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
+		r.Body = NewUnionNullBodyworksData()
+
 		r.Body = nil
 	}
 	return nil
