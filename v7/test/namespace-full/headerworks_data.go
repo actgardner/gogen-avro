@@ -180,7 +180,15 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["uuid"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["uuid"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Uuid); err != nil {
 			return err
 		}
@@ -189,7 +197,14 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 
 		r.Uuid = nil
 	}
-	if val, ok := fields["hostname"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["hostname"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Hostname); err != nil {
 			return err
 		}
@@ -198,7 +213,14 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 
 		r.Hostname = nil
 	}
-	if val, ok := fields["trace"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["trace"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Trace); err != nil {
 			return err
 		}

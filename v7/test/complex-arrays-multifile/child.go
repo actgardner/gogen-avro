@@ -131,7 +131,15 @@ func (r *Child) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["name"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["name"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Name); err != nil {
 			return err
 		}

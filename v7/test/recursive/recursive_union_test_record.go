@@ -135,7 +135,15 @@ func (r *RecursiveUnionTestRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["RecursiveField"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["RecursiveField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.RecursiveField); err != nil {
 			return err
 		}

@@ -132,7 +132,15 @@ func (r *PrimitiveUnionTestRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["UnionField"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["UnionField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.UnionField); err != nil {
 			return err
 		}

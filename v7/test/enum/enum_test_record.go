@@ -133,7 +133,15 @@ func (r *EnumTestRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["EnumField"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["EnumField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.EnumField); err != nil {
 			return err
 		}

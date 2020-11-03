@@ -130,7 +130,15 @@ func (r *StringRec) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["productName"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["productName"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.ProductName); err != nil {
 			return err
 		}

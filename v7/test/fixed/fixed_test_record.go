@@ -142,14 +142,29 @@ func (r *FixedTestRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["FixedField"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["FixedField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.FixedField); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for FixedField")
 	}
-	if val, ok := fields["AnotherFixed"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["AnotherFixed"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.AnotherFixed); err != nil {
 			return err
 		}

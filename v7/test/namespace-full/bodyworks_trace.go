@@ -140,7 +140,15 @@ func (r *BodyworksTrace) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["traceId"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["traceId"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.TraceId); err != nil {
 			return err
 		}

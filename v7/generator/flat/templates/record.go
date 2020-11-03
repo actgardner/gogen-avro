@@ -162,8 +162,21 @@ func (r {{ .GoType }}) UnmarshalJSON(data []byte) (error) {
 		return err
 	}
 
+	var val json.RawMessage
 	{{ range $i, $field := .Fields -}}
-	if val, ok := fields[{{ printf "%q" $field.Name }}]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields[{{ printf "%q" $field.Name }}]; ok {
+			return v
+		}
+		{{ range $j, $alias := $field.Aliases -}}
+		if v, ok := fields[{{ printf "%q" $alias }}]; ok {
+			return v
+		}
+		{{ end -}}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.{{ $field.GoName}}); err != nil {
 			return err
 		}

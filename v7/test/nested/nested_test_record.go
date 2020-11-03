@@ -146,14 +146,29 @@ func (r *NestedTestRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["NumberField"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["NumberField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.NumberField); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for NumberField")
 	}
-	if val, ok := fields["OtherField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["OtherField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.OtherField); err != nil {
 			return err
 		}

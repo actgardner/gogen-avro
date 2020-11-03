@@ -262,7 +262,15 @@ func (r *ArrayTestRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["IntField"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["IntField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.IntField); err != nil {
 			return err
 		}
@@ -276,7 +284,14 @@ func (r *ArrayTestRecord) UnmarshalJSON(data []byte) error {
 		r.IntField[3] = 4
 
 	}
-	if val, ok := fields["LongField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["LongField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.LongField); err != nil {
 			return err
 		}
@@ -290,7 +305,14 @@ func (r *ArrayTestRecord) UnmarshalJSON(data []byte) error {
 		r.LongField[3] = 8
 
 	}
-	if val, ok := fields["DoubleField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["DoubleField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.DoubleField); err != nil {
 			return err
 		}
@@ -302,7 +324,14 @@ func (r *ArrayTestRecord) UnmarshalJSON(data []byte) error {
 		r.DoubleField[1] = 2.4
 
 	}
-	if val, ok := fields["StringField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["StringField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.StringField); err != nil {
 			return err
 		}
@@ -314,7 +343,14 @@ func (r *ArrayTestRecord) UnmarshalJSON(data []byte) error {
 		r.StringField[1] = "def"
 
 	}
-	if val, ok := fields["FloatField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["FloatField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.FloatField); err != nil {
 			return err
 		}
@@ -326,7 +362,14 @@ func (r *ArrayTestRecord) UnmarshalJSON(data []byte) error {
 		r.FloatField[1] = 3.45
 
 	}
-	if val, ok := fields["BoolField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["BoolField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.BoolField); err != nil {
 			return err
 		}
@@ -338,7 +381,14 @@ func (r *ArrayTestRecord) UnmarshalJSON(data []byte) error {
 		r.BoolField[1] = false
 
 	}
-	if val, ok := fields["BytesField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["BytesField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.BytesField); err != nil {
 			return err
 		}

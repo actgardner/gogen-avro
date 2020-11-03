@@ -9,7 +9,8 @@ import (
 )
 
 func TestRoundTrip(t *testing.T) {
-	test.RoundTrip(t, func() container.AvroRecord { return &ArrayTestRecord{} }, func(r io.Reader) (interface{}, error) {
-		return DeserializeArrayTestRecord(r)
-	})
+	test.RoundTrip(t, func() container.AvroRecord { return &ArrayTestRecord{} },
+		func(r io.Reader) (container.AvroRecord, error) {
+			return DeserializeArrayTestRecord(r)
+		})
 }

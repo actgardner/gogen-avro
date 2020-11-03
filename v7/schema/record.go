@@ -95,15 +95,7 @@ func (r *RecordDefinition) RecordReaderTypeName() string {
 	return r.Name() + "Reader"
 }
 
-func (r *RecordDefinition) GetReaderField(writerField *Field) *Field {
-	for _, f := range r.fields {
-		if f.IsSameField(writerField) {
-			return f
-		}
-	}
-	return nil
-}
-
+// FieldByName finds a field in the reader schema whose name or aliases match a name in the writer schema.
 func (r *RecordDefinition) FieldByName(field string) *Field {
 	for _, f := range r.fields {
 		if f.NameMatchesAliases(field) {

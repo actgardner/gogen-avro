@@ -130,7 +130,15 @@ func (r *UnionRec) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["a"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["a"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.A); err != nil {
 			return err
 		}

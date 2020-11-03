@@ -8,7 +8,6 @@
   },
   {
     "name": "c",
-    "aliases": ["d"],
     "type": "string"
   }
 ]

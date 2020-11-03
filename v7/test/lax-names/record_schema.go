@@ -132,7 +132,15 @@ func (r *RecordSchema) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["data"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["data"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Data); err != nil {
 			return err
 		}

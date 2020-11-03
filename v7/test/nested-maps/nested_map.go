@@ -132,7 +132,15 @@ func (r *NestedMap) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["MapOfMaps"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["MapOfMaps"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.MapOfMaps); err != nil {
 			return err
 		}

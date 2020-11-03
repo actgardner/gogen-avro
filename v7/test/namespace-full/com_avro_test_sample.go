@@ -160,7 +160,15 @@ func (r *ComAvroTestSample) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["header"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["header"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Header); err != nil {
 			return err
 		}
@@ -169,7 +177,14 @@ func (r *ComAvroTestSample) UnmarshalJSON(data []byte) error {
 
 		r.Header = nil
 	}
-	if val, ok := fields["body"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["body"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Body); err != nil {
 			return err
 		}

@@ -9,7 +9,9 @@ import (
 )
 
 func TestRoundTrip(t *testing.T) {
-	test.RoundTripExactBytes(t, func() container.AvroRecord { return &UnionNestedRecordNestedTestRecord{} }, func(r io.Reader) (interface{}, error) {
-		return DeserializeUnionNestedRecordNestedTestRecord(r)
-	})
+	test.RoundTripExactBytes(t,
+		func() container.AvroRecord { return &UnionNestedRecordNestedTestRecord{} },
+		func(r io.Reader) (container.AvroRecord, error) {
+			return DeserializeUnionNestedRecordNestedTestRecord(r)
+		})
 }

@@ -133,7 +133,15 @@ func (r *Parent) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["Children"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["Children"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Children); err != nil {
 			return err
 		}

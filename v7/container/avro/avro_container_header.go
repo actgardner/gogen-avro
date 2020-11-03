@@ -157,21 +157,43 @@ func (r *AvroContainerHeader) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["magic"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["magic"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Magic); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for magic")
 	}
-	if val, ok := fields["meta"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["meta"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Meta); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for meta")
 	}
-	if val, ok := fields["sync"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["sync"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Sync); err != nil {
 			return err
 		}

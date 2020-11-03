@@ -134,7 +134,15 @@ func (r *BodyworksDatatypeUUID) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["uuid"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["uuid"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Uuid); err != nil {
 			return err
 		}

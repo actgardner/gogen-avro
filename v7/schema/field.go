@@ -62,28 +62,18 @@ func (f *Field) GoName() string {
 	return generator.ToPublicName(f.avroName)
 }
 
-// IsSameField checks whether two fields have the same name or any of their aliases are the same, in which case they're the same for purposes of schema evolution
-func (f *Field) IsSameField(otherField *Field) bool {
-	if otherField.NameMatchesAliases(f.avroName) {
-		return true
-	}
-
-	for _, n := range f.aliases {
-		if otherField.NameMatchesAliases(n) {
-			return true
-		}
-	}
-
-	return false
+func (f *Field) Aliases() []string {
+	return f.aliases
 }
 
-func (f *Field) NameMatchesAliases(name string) bool {
-	if name == f.avroName {
+// NameMatchesAliases checks whether this field, in the reader schema, has a name or alias equal to the name in the writer schema
+func (f *Field) NameMatchesAliases(writerName string) bool {
+	if writerName == f.avroName {
 		return true
 	}
 
 	for _, n := range f.aliases {
-		if n == name {
+		if n == writerName {
 			return true
 		}
 	}

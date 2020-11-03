@@ -191,14 +191,29 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["id"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["id"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Id); err != nil {
 			return err
 		}
 	} else {
 		r.Id = "test_id"
 	}
-	if val, ok := fields["unionNull"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["unionNull"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.UnionNull); err != nil {
 			return err
 		}
@@ -207,7 +222,14 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 
 		r.UnionNull = nil
 	}
-	if val, ok := fields["unionString"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["unionString"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.UnionString); err != nil {
 			return err
 		}
@@ -217,7 +239,14 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 		r.UnionString = NewUnionStringInt()
 		r.UnionString.String = "hello"
 	}
-	if val, ok := fields["unionRecord"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["unionRecord"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.UnionRecord); err != nil {
 			return err
 		}

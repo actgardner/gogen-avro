@@ -148,14 +148,29 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["id"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["id"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Id); err != nil {
 			return err
 		}
 	} else {
 		r.Id = "test_id"
 	}
-	if val, ok := fields["age"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["age"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Age); err != nil {
 			return err
 		}

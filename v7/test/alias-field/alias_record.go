@@ -76,7 +76,7 @@ func (r *AliasRecord) Serialize(w io.Writer) error {
 }
 
 func (r *AliasRecord) Schema() string {
-	return "{\"fields\":[{\"name\":\"a\",\"type\":\"string\"},{\"aliases\":[\"d\"],\"name\":\"c\",\"type\":\"string\"}],\"name\":\"AliasRecord\",\"type\":\"record\"}"
+	return "{\"fields\":[{\"name\":\"a\",\"type\":\"string\"},{\"name\":\"c\",\"type\":\"string\"}],\"name\":\"AliasRecord\",\"type\":\"record\"}"
 }
 
 func (r *AliasRecord) SchemaName() string {
@@ -142,14 +142,29 @@ func (r *AliasRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["a"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["a"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.A); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for a")
 	}
-	if val, ok := fields["c"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["c"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.C); err != nil {
 			return err
 		}

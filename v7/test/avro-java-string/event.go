@@ -131,7 +131,15 @@ func (r *Event) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["id"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["id"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Id); err != nil {
 			return err
 		}

@@ -13,9 +13,22 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type RecordFactory func() container.AvroRecord
+type DeserMethod func(io.Reader) (container.AvroRecord, error)
+
 // Get the schema file from our conventional path
 func LoadTestSchema() (*goavro.Codec, error) {
 	schema, err := ioutil.ReadFile("schema.avsc")
+	if err != nil {
+		return nil, err
+	}
+
+	return goavro.NewCodec(string(schema))
+}
+
+// Get the schema file for evolution tests from our conventional path
+func LoadEvolutionSchema() (*goavro.Codec, error) {
+	schema, err := ioutil.ReadFile("evolution.avsc")
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +81,7 @@ func GAJSONToAvroBytes(fixture json.RawMessage, codec *goavro.Codec) ([]byte, er
 // - goavro can decode JSON-encoded data from gogen-avro and the Go data is identical
 //
 // For schemas with maps use RoundTrip instead since maps are not encoded deterministically.
-func RoundTripExactBytes(t *testing.T, recordFunc func() container.AvroRecord, deserMethod func(io.Reader) (interface{}, error)) {
+func RoundTripExactBytes(t *testing.T, recordFunc RecordFactory, deserMethod DeserMethod) {
 	codec, err := LoadTestSchema()
 	assert.NoError(t, err)
 
@@ -104,7 +117,7 @@ func RoundTripExactBytes(t *testing.T, recordFunc func() container.AvroRecord, d
 // - gogen-avro can decode avro-enocded data from goavro and the Go data is identical
 // - goavro can decode JSON-encoded data from gogen-avro and the Go data is identical
 //
-func RoundTrip(t *testing.T, recordFunc func() container.AvroRecord, deserMethod func(io.Reader) (interface{}, error)) {
+func RoundTrip(t *testing.T, recordFunc RecordFactory, deserMethod DeserMethod) {
 	codec, err := LoadTestSchema()
 	assert.NoError(t, err)
 
@@ -141,7 +154,7 @@ func RoundTrip(t *testing.T, recordFunc func() container.AvroRecord, deserMethod
 
 // RoundTripGoGenOnly tests that a JSON fixture can be serialized as avro bytes, then re-serialized into equivalent JSON.
 // This is used for tests that can't use goavro because the definitions are spread across multiple schema files.
-func RoundTripGoGenOnly(t *testing.T, recordFunc func() container.AvroRecord, deserMethod func(io.Reader) (interface{}, error)) {
+func RoundTripGoGenOnly(t *testing.T, recordFunc RecordFactory, deserMethod DeserMethod) {
 	fixtures, err := LoadTestFixtures()
 	assert.NoError(t, err)
 
@@ -162,5 +175,48 @@ func RoundTripGoGenOnly(t *testing.T, recordFunc func() container.AvroRecord, de
 		assert.NoError(t, json.Unmarshal(f, &expected))
 		assert.NoError(t, json.Unmarshal(ggJson, &actual))
 		assert.Equal(t, expected, actual)
+	}
+}
+
+// RoundTripEvolution tests that:
+// - JSON fixtures in the old schema deserialize in the new schema the same in gogen-avro and goavro
+// - Avro serialized fixtures in the old schema deserialize in the new schema tbe same in gogen-avro and goavro
+func RoundTripEvolution(t *testing.T, oldRecordFunc, newRecordFunc RecordFactory, newDeserMethod DeserMethod) {
+	codec, err := LoadEvolutionSchema()
+	assert.NoError(t, err)
+
+	fixtures, err := LoadTestFixtures()
+	assert.NoError(t, err)
+
+	for _, f := range fixtures {
+		// Serialize the fixture into Avro bytes using the old schema
+		oldRecord := oldRecordFunc()
+		ggBytes, err := GGJSONToAvroBytes(f, oldRecord)
+		assert.NoError(t, err)
+
+		// Deserialize and re-serialize the bytes with the new schema, the bytes should be the same for both gogen-avro and goavro
+		ggNewRecord, err := newDeserMethod(bytes.NewBuffer(ggBytes))
+		assert.NoError(t, err)
+
+		gaNewRecord, _, err := codec.NativeFromBinary(ggBytes)
+		assert.NoError(t, err)
+
+		var ggNewBytes bytes.Buffer
+		err = ggNewRecord.Serialize(&ggNewBytes)
+		assert.NoError(t, err)
+
+		gaNewBytes, err := codec.BinaryFromNative(nil, gaNewRecord)
+		assert.NoError(t, err)
+
+		assert.Equal(t, gaNewBytes, ggNewBytes.Bytes())
+
+		// Deserialize the fixtures and reserialize as Avro bytes
+		newJSONRecord := newRecordFunc()
+		ggJSONBytes, err := GGJSONToAvroBytes(f, newJSONRecord)
+		assert.NoError(t, err)
+
+		gaJSONBytes, err := GAJSONToAvroBytes(f, codec)
+		assert.NoError(t, err)
+		assert.Equal(t, gaJSONBytes, ggJSONBytes)
 	}
 }

@@ -11,9 +11,11 @@ import (
 )
 
 func TestRoundTrip(t *testing.T) {
-	test.RoundTripExactBytes(t, func() container.AvroRecord { return &EnumTestRecord{} }, func(r io.Reader) (interface{}, error) {
-		return DeserializeEnumTestRecord(r)
-	})
+	test.RoundTripExactBytes(t,
+		func() container.AvroRecord { return &EnumTestRecord{} },
+		func(r io.Reader) (container.AvroRecord, error) {
+			return DeserializeEnumTestRecord(r)
+		})
 }
 
 func TestInvalidStringConversion(t *testing.T) {

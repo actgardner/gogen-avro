@@ -155,21 +155,43 @@ func (r *AvroContainerBlock) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["numRecords"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["numRecords"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.NumRecords); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for numRecords")
 	}
-	if val, ok := fields["recordBytes"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["recordBytes"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.RecordBytes); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for recordBytes")
 	}
-	if val, ok := fields["sync"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["sync"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Sync); err != nil {
 			return err
 		}

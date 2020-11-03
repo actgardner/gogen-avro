@@ -170,14 +170,29 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["a"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["a"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.A); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for a")
 	}
-	if val, ok := fields["id"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["id"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Id); err != nil {
 			return err
 		}
@@ -186,7 +201,14 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 
 		r.Id = nil
 	}
-	if val, ok := fields["name"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["name"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Name); err != nil {
 			return err
 		}

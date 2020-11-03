@@ -249,14 +249,10 @@ func (p *irMethod) compileArray(writer, reader *schema.ArrayField) error {
 func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error {
 	// Look up whether there's a corresonding target field and if so, parse the source field into that target
 	log("compileRecord()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
+	defaultFields := make(map[string]*schema.Field)
 	if reader != nil {
 		for _, field := range reader.Fields() {
-			if writerField := writer.GetReaderField(field); writerField == nil {
-				if !field.HasDefault() {
-					return fmt.Errorf("Incompatible schemas: field %v in reader is not present in writer and has no default value", field.Name())
-				}
-				p.addLiteral(vm.SetDefault, field.Index())
-			}
+			defaultFields[field.Name()] = field
 		}
 	}
 
@@ -264,8 +260,9 @@ func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error 
 		var readerType schema.AvroType
 		var readerField *schema.Field
 		if reader != nil {
-			readerField = reader.GetReaderField(field)
+			readerField = reader.FieldByName(field.Name())
 			if readerField != nil {
+				delete(defaultFields, readerField.Name())
 				if !field.Type().IsReadableBy(readerField.Type(), make(map[schema.QualifiedName]interface{})) {
 					return fmt.Errorf("Incompatible schemas: field %v in reader has incompatible type in writer", field.Name())
 				}
@@ -281,6 +278,14 @@ func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error 
 			p.addLiteral(vm.Exit, vm.NoopField)
 		}
 	}
+
+	for _, field := range defaultFields {
+		if !field.HasDefault() {
+			return fmt.Errorf("Incompatible schemas: field %v in reader is not present in writer and has no default value", field.Name())
+		}
+		p.addLiteral(vm.SetDefault, field.Index())
+	}
+
 	return nil
 }
 

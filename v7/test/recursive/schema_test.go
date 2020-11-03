@@ -9,7 +9,9 @@ import (
 )
 
 func TestRoundTrip(t *testing.T) {
-	test.RoundTripExactBytes(t, func() container.AvroRecord { return &RecursiveUnionTestRecord{} }, func(r io.Reader) (interface{}, error) {
-		return DeserializeRecursiveUnionTestRecord(r)
-	})
+	test.RoundTripExactBytes(t,
+		func() container.AvroRecord { return &RecursiveUnionTestRecord{} },
+		func(r io.Reader) (container.AvroRecord, error) {
+			return DeserializeRecursiveUnionTestRecord(r)
+		})
 }

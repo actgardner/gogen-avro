@@ -1,33 +1,17 @@
 package avro
 
 import (
-	"bytes"
+	"io"
 	"testing"
 
-	"github.com/actgardner/gogen-avro/v7/compiler"
+	"github.com/actgardner/gogen-avro/v7/container"
+	"github.com/actgardner/gogen-avro/v7/test"
 	evolution "github.com/actgardner/gogen-avro/v7/test/alias-field/evolution"
-	"github.com/actgardner/gogen-avro/v7/vm"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestEvolution(t *testing.T) {
-	oldAliasRecord := NewAliasRecord()
-	oldAliasRecord.A = "hi"
-	oldAliasRecord.C = "bye"
-
-	var buf bytes.Buffer
-	err := oldAliasRecord.Serialize(&buf)
-	assert.Nil(t, err)
-
-	newAliasRecord := evolution.NewAliasRecord()
-
-	deser, err := compiler.CompileSchemaBytes([]byte(oldAliasRecord.Schema()), []byte(newAliasRecord.Schema()))
-	assert.Nil(t, err)
-
-	err = vm.Eval(bytes.NewReader(buf.Bytes()), deser, newAliasRecord)
-	assert.Nil(t, err)
-
-	assert.Equal(t, "hi", newAliasRecord.B)
-	assert.Equal(t, "bye", newAliasRecord.D)
+	test.RoundTripEvolution(t,
+		func() container.AvroRecord { return NewAliasRecord() },
+		func() container.AvroRecord { return evolution.NewAliasRecord() },
+		func(r io.Reader) (container.AvroRecord, error) { return evolution.DeserializeAliasRecord(r) })
 }

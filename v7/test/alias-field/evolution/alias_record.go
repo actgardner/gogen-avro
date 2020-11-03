@@ -20,10 +20,10 @@ var _ = fmt.Printf
 type AliasRecord struct {
 	B string `json:"b"`
 
-	D string `json:"d"`
+	C string `json:"c"`
 }
 
-const AliasRecordAvroCRC64Fingerprint = "wT\xf0\x8a+ɨ\xce"
+const AliasRecordAvroCRC64Fingerprint = "\xe1\xea\xa47\xf7\x00\xf78"
 
 func NewAliasRecord() *AliasRecord {
 	return &AliasRecord{}
@@ -64,7 +64,7 @@ func writeAliasRecord(r *AliasRecord, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	err = vm.WriteString(r.D, w)
+	err = vm.WriteString(r.C, w)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (r *AliasRecord) Serialize(w io.Writer) error {
 }
 
 func (r *AliasRecord) Schema() string {
-	return "{\"fields\":[{\"aliases\":[\"a\"],\"name\":\"b\",\"type\":\"string\"},{\"name\":\"d\",\"type\":\"string\"}],\"name\":\"AliasRecord\",\"type\":\"record\"}"
+	return "{\"fields\":[{\"aliases\":[\"a\"],\"name\":\"b\",\"type\":\"string\"},{\"name\":\"c\",\"type\":\"string\"}],\"name\":\"AliasRecord\",\"type\":\"record\"}"
 }
 
 func (r *AliasRecord) SchemaName() string {
@@ -97,7 +97,7 @@ func (r *AliasRecord) Get(i int) types.Field {
 	case 0:
 		return &types.String{Target: &r.B}
 	case 1:
-		return &types.String{Target: &r.D}
+		return &types.String{Target: &r.C}
 	}
 	panic("Unknown field index")
 }
@@ -129,7 +129,7 @@ func (r *AliasRecord) MarshalJSON() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	output["d"], err = json.Marshal(r.D)
+	output["c"], err = json.Marshal(r.C)
 	if err != nil {
 		return nil, err
 	}
@@ -142,19 +142,37 @@ func (r *AliasRecord) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["b"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["b"]; ok {
+			return v
+		}
+		if v, ok := fields["a"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.B); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for b")
 	}
-	if val, ok := fields["d"]; ok {
-		if err := json.Unmarshal([]byte(val), &r.D); err != nil {
+	val = func() json.RawMessage {
+		if v, ok := fields["c"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
+		if err := json.Unmarshal([]byte(val), &r.C); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for d")
+		return fmt.Errorf("no value specified for c")
 	}
 	return nil
 }

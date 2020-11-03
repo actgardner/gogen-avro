@@ -156,21 +156,43 @@ func (r *Event) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["id"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["id"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Id); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for id")
 	}
-	if val, ok := fields["start_ip"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["start_ip"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.Start_ip); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for start_ip")
 	}
-	if val, ok := fields["end_ip"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["end_ip"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.End_ip); err != nil {
 			return err
 		}

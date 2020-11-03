@@ -178,35 +178,71 @@ func (r *DemoSchema) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if val, ok := fields["IntField"]; ok {
+	var val json.RawMessage
+	val = func() json.RawMessage {
+		if v, ok := fields["IntField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.IntField); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for IntField")
 	}
-	if val, ok := fields["DoubleField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["DoubleField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.DoubleField); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for DoubleField")
 	}
-	if val, ok := fields["StringField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["StringField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.StringField); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for StringField")
 	}
-	if val, ok := fields["BoolField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["BoolField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.BoolField); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for BoolField")
 	}
-	if val, ok := fields["BytesField"]; ok {
+	val = func() json.RawMessage {
+		if v, ok := fields["BytesField"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
 		if err := json.Unmarshal([]byte(val), &r.BytesField); err != nil {
 			return err
 		}
