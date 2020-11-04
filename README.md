@@ -3,15 +3,17 @@
 
 [![Build Status](https://travis-ci.org/actgardner/gogen-avro.svg?branch=master)](https://travis-ci.org/actgardner/gogen-avro)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/actgardner/gogen-avro/master/LICENSE)
-[![Version 7.0.0](https://img.shields.io/badge/version-7.0.0-lightgrey.svg)](https://github.com/actgardner/gogen-avro/releases)
+[![Version 7.2.0](https://img.shields.io/badge/version-7.2.0-lightgrey.svg)](https://github.com/actgardner/gogen-avro/releases)
 
-Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules. 
+Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules.
+Also supports deserializing generic Avro data (in beta).
 
 ### Table of contents
 
 <!--ts-->
    * [Table of contents](#table-of-contents)
    * [Installation](#installation)
+   * [Generic Data](#generic-data)
    * [Usage](#usage)
    * [Generated Methods](#generated-methods)
    * [Working with Object Container Files (OCF)](#working-with-object-container-files-ocf)
@@ -30,13 +32,26 @@ Generates type-safe Go code based on your Avro schemas, including serializers an
 
 gogen-avro has two parts: a tool which you install on your system (usually on your GOPATH) to generate code, and a runtime library that gets imported.
 
-To generate structs, install the command-line tool:
+To generate structs, install the command-line tool (this isn't necessary for the generic package):
 
 ```
 go get github.com/actgardner/gogen-avro/v7/cmd/...
 ```
 
 This will put the `gogen-avro` binary in `$GOPATH/bin`, which should be part of your PATH.
+
+### Generic Data
+
+_Note: Generic data is support is currently beta. Please report any issues or feature requests!_
+
+To deserialize generic Avro data into Go structs without generating code, instantiate a new `generic.Codec` with the reader and writer schemas:
+
+```
+import "github.com/actgardner/gogen-avro/v7/generic"
+
+codec, err := NewCodecFromSchema(writerSchema, readerSchema) // writerSchema and readerSchema may be the same schema if you're not dealing with evolution
+datum, err := codec.Deserialize(r) // r is an io.Reader with the Avro-encoded bytes
+```
 
 ### Usage
 
