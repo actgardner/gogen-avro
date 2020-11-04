@@ -1,0 +1,22 @@
+[
+  {
+    "data": {
+      "NestedTestRecord": {
+        "OtherField": {
+          "StringField": "789",
+          "BoolField": true,
+          "BytesField": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5n"
+        }
+      }
+    },
+    "expected": {
+      "NestedTestRecord": {
+        "OtherField": {
+          "StringField": "789",
+          "BoolField": true,
+          "BytesField": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5n"
+        }
+      }
+    }
+  }
+]

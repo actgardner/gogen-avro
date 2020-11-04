@@ -67,7 +67,7 @@ func DeserializeUnionNestedRecordNestedTestRecord(r io.Reader) (*UnionNestedReco
 }
 
 func (r *UnionNestedRecordNestedTestRecord) Schema() string {
-	return "[{\"aliases\":[\"aliasedRecord\"],\"fields\":[{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"NestedRecord\",\"type\":\"record\"},{\"fields\":[{\"name\":\"OtherField\",\"type\":\"NestedRecord\"}],\"name\":\"NestedTestRecord\",\"type\":\"record\"}]"
+	return "[{\"fields\":[{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"NestedRecord\",\"type\":\"record\"},{\"fields\":[{\"name\":\"OtherField\",\"type\":\"NestedRecord\"}],\"name\":\"NestedTestRecord\",\"type\":\"record\"}]"
 }
 
 func (_ *UnionNestedRecordNestedTestRecord) SetBoolean(v bool)   { panic("Unsupported operation") }

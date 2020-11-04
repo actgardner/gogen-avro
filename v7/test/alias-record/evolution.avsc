@@ -1,6 +1,9 @@
 [{
 	"type": "record",
-	"name": "NestedRecord",
+	"name": "aliasedRecord",
+	"aliases": [
+		"NestedRecord"
+	],
 	"fields": [{
 		"name": "StringField",
 		"type": "string"
@@ -16,6 +19,6 @@
 	"name": "NestedTestRecord",
 	"fields": [{
 		"name": "OtherField",
-		"type": "NestedRecord"
+		"type": "aliasedRecord"
 	}]
 }]

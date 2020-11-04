@@ -16,6 +16,12 @@ import (
 type RecordFactory func() container.AvroRecord
 type DeserMethod func(io.Reader) (container.AvroRecord, error)
 
+type EvolutionFixture struct {
+	Data     json.RawMessage
+	Expected json.RawMessage
+	Err      *string
+}
+
 // Get the schema file from our conventional path
 func LoadTestSchema() (*goavro.Codec, error) {
 	schema, err := ioutil.ReadFile("schema.avsc")
@@ -43,6 +49,20 @@ func LoadTestFixtures() ([]json.RawMessage, error) {
 	}
 
 	fixtures := make([]json.RawMessage, 0)
+	if err := json.Unmarshal([]byte(fixtureJson), &fixtures); err != nil {
+		return nil, err
+	}
+
+	return fixtures, nil
+}
+
+func LoadEvolutionFixtures() ([]EvolutionFixture, error) {
+	fixtureJson, err := ioutil.ReadFile("evolution.json")
+	if err != nil {
+		return nil, err
+	}
+
+	fixtures := make([]EvolutionFixture, 0)
 	if err := json.Unmarshal([]byte(fixtureJson), &fixtures); err != nil {
 		return nil, err
 	}
@@ -178,45 +198,30 @@ func RoundTripGoGenOnly(t *testing.T, recordFunc RecordFactory, deserMethod Dese
 	}
 }
 
-// RoundTripEvolution tests that:
-// - JSON fixtures in the old schema deserialize in the new schema the same in gogen-avro and goavro
-// - Avro serialized fixtures in the old schema deserialize in the new schema tbe same in gogen-avro and goavro
 func RoundTripEvolution(t *testing.T, oldRecordFunc, newRecordFunc RecordFactory, newDeserMethod DeserMethod) {
-	codec, err := LoadEvolutionSchema()
-	assert.NoError(t, err)
-
-	fixtures, err := LoadTestFixtures()
+	fixtures, err := LoadEvolutionFixtures()
 	assert.NoError(t, err)
 
 	for _, f := range fixtures {
 		// Serialize the fixture into Avro bytes using the old schema
 		oldRecord := oldRecordFunc()
-		ggBytes, err := GGJSONToAvroBytes(f, oldRecord)
+		oldBytes, err := GGJSONToAvroBytes(f.Data, oldRecord)
 		assert.NoError(t, err)
 
-		// Deserialize and re-serialize the bytes with the new schema, the bytes should be the same for both gogen-avro and goavro
-		ggNewRecord, err := newDeserMethod(bytes.NewBuffer(ggBytes))
+		// Deserialize the Avro data with the new schema and compare to the expected JSON deserialization
+		newRecord, err := newDeserMethod(bytes.NewBuffer(oldBytes))
 		assert.NoError(t, err)
 
-		gaNewRecord, _, err := codec.NativeFromBinary(ggBytes)
+		expectedRecord := newRecordFunc()
+		err = json.Unmarshal([]byte(f.Expected), &expectedRecord)
 		assert.NoError(t, err)
 
-		var ggNewBytes bytes.Buffer
-		err = ggNewRecord.Serialize(&ggNewBytes)
-		assert.NoError(t, err)
+		assert.Equal(t, expectedRecord, newRecord)
 
-		gaNewBytes, err := codec.BinaryFromNative(nil, gaNewRecord)
+		// Deserialize the JSON fixture with the new schema
+		jsonRecord := newRecordFunc()
+		err = json.Unmarshal([]byte(f.Data), &jsonRecord)
 		assert.NoError(t, err)
-
-		assert.Equal(t, gaNewBytes, ggNewBytes.Bytes())
-
-		// Deserialize the fixtures and reserialize as Avro bytes
-		newJSONRecord := newRecordFunc()
-		ggJSONBytes, err := GGJSONToAvroBytes(f, newJSONRecord)
-		assert.NoError(t, err)
-
-		gaJSONBytes, err := GAJSONToAvroBytes(f, codec)
-		assert.NoError(t, err)
-		assert.Equal(t, gaJSONBytes, ggJSONBytes)
+		assert.Equal(t, expectedRecord, jsonRecord)
 	}
 }
