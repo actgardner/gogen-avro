@@ -23,7 +23,7 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 	var pc int
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("Panic at pc %v - %v", pc, r)
+			err = fmt.Errorf("Panic at pc %v - %v (%v)", pc, r, program.Instructions[pc])
 		}
 	}()
 

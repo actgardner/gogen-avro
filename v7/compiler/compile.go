@@ -13,12 +13,12 @@ import (
 // If you're reading records from an OCF you can use the New<RecordType>Reader()
 // method that's generated for you, which will parse the schemas automatically.
 func CompileSchemaBytes(writer, reader []byte, opts ...Option) (*vm.Program, error) {
-	readerType, err := parseSchema(reader)
+	readerType, err := ParseSchema(reader)
 	if err != nil {
 		return nil, err
 	}
 
-	writerType, err := parseSchema(writer)
+	writerType, err := ParseSchema(writer)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func CompileSchemaBytes(writer, reader []byte, opts ...Option) (*vm.Program, err
 	return Compile(writerType, readerType, opts...)
 }
 
-func parseSchema(s []byte) (schema.AvroType, error) {
+func ParseSchema(s []byte) (schema.AvroType, error) {
 	ns := parser.NewNamespace(false)
 	sType, err := ns.TypeForSchema(s)
 	if err != nil {
