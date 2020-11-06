@@ -18,24 +18,22 @@ import (
 var _ = fmt.Printf
 
 type PrimitiveTestRecord struct {
-	LongField int64 `json:"LongField"`
+	NewLongField int64 `json:"NewLongField"`
 
-	StringField string `json:"StringField"`
+	NewStringField string `json:"NewStringField"`
 
-	FloatField float32 `json:"FloatField"`
+	NewFloatField float32 `json:"NewFloatField"`
 
-	BytesField Bytes `json:"BytesField"`
+	NewBytesField Bytes `json:"NewBytesField"`
 
-	DoubleField float64 `json:"DoubleField"`
+	NewDoubleField float64 `json:"NewDoubleField"`
 
-	IntField int32 `json:"IntField"`
+	NewIntField int32 `json:"NewIntField"`
 
-	BoolField bool `json:"BoolField"`
-
-	NewString string `json:"NewString"`
+	NewBoolField bool `json:"NewBoolField"`
 }
 
-const PrimitiveTestRecordAvroCRC64Fingerprint = "VL:(h\xc7\xd4w"
+const PrimitiveTestRecordAvroCRC64Fingerprint = "d\xa9\x9e\xb8\x86&\xa6\x17"
 
 func NewPrimitiveTestRecord() *PrimitiveTestRecord {
 	return &PrimitiveTestRecord{}
@@ -72,35 +70,31 @@ func DeserializePrimitiveTestRecordFromSchema(r io.Reader, schema string) (*Prim
 
 func writePrimitiveTestRecord(r *PrimitiveTestRecord, w io.Writer) error {
 	var err error
-	err = vm.WriteLong(r.LongField, w)
+	err = vm.WriteLong(r.NewLongField, w)
 	if err != nil {
 		return err
 	}
-	err = vm.WriteString(r.StringField, w)
+	err = vm.WriteString(r.NewStringField, w)
 	if err != nil {
 		return err
 	}
-	err = vm.WriteFloat(r.FloatField, w)
+	err = vm.WriteFloat(r.NewFloatField, w)
 	if err != nil {
 		return err
 	}
-	err = vm.WriteBytes(r.BytesField, w)
+	err = vm.WriteBytes(r.NewBytesField, w)
 	if err != nil {
 		return err
 	}
-	err = vm.WriteDouble(r.DoubleField, w)
+	err = vm.WriteDouble(r.NewDoubleField, w)
 	if err != nil {
 		return err
 	}
-	err = vm.WriteInt(r.IntField, w)
+	err = vm.WriteInt(r.NewIntField, w)
 	if err != nil {
 		return err
 	}
-	err = vm.WriteBool(r.BoolField, w)
-	if err != nil {
-		return err
-	}
-	err = vm.WriteString(r.NewString, w)
+	err = vm.WriteBool(r.NewBoolField, w)
 	if err != nil {
 		return err
 	}
@@ -112,7 +106,7 @@ func (r *PrimitiveTestRecord) Serialize(w io.Writer) error {
 }
 
 func (r *PrimitiveTestRecord) Schema() string {
-	return "{\"fields\":[{\"name\":\"LongField\",\"type\":\"long\"},{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"FloatField\",\"type\":\"float\"},{\"name\":\"BytesField\",\"type\":\"bytes\"},{\"name\":\"DoubleField\",\"type\":\"double\"},{\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"default\":\"somedefault\",\"name\":\"NewString\",\"type\":\"string\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
+	return "{\"fields\":[{\"default\":1234,\"name\":\"NewLongField\",\"type\":\"long\"},{\"default\":\"testdefault\",\"name\":\"NewStringField\",\"type\":\"string\"},{\"default\":12.34,\"name\":\"NewFloatField\",\"type\":\"float\"},{\"default\":\"\\u0000ÿ\\u0001þ\",\"name\":\"NewBytesField\",\"type\":\"bytes\"},{\"default\":56.78,\"name\":\"NewDoubleField\",\"type\":\"double\"},{\"default\":5678,\"name\":\"NewIntField\",\"type\":\"int\"},{\"default\":true,\"name\":\"NewBoolField\",\"type\":\"boolean\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
 }
 
 func (r *PrimitiveTestRecord) SchemaName() string {
@@ -131,29 +125,45 @@ func (_ *PrimitiveTestRecord) SetUnionElem(v int64) { panic("Unsupported operati
 func (r *PrimitiveTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.Long{Target: &r.LongField}
+		return &types.Long{Target: &r.NewLongField}
 	case 1:
-		return &types.String{Target: &r.StringField}
+		return &types.String{Target: &r.NewStringField}
 	case 2:
-		return &types.Float{Target: &r.FloatField}
+		return &types.Float{Target: &r.NewFloatField}
 	case 3:
-		return &BytesWrapper{Target: &r.BytesField}
+		return &BytesWrapper{Target: &r.NewBytesField}
 	case 4:
-		return &types.Double{Target: &r.DoubleField}
+		return &types.Double{Target: &r.NewDoubleField}
 	case 5:
-		return &types.Int{Target: &r.IntField}
+		return &types.Int{Target: &r.NewIntField}
 	case 6:
-		return &types.Boolean{Target: &r.BoolField}
-	case 7:
-		return &types.String{Target: &r.NewString}
+		return &types.Boolean{Target: &r.NewBoolField}
 	}
 	panic("Unknown field index")
 }
 
 func (r *PrimitiveTestRecord) SetDefault(i int) {
 	switch i {
-	case 7:
-		r.NewString = "somedefault"
+	case 0:
+		r.NewLongField = 1234
+		return
+	case 1:
+		r.NewStringField = "testdefault"
+		return
+	case 2:
+		r.NewFloatField = 12.34
+		return
+	case 3:
+		r.NewBytesField = []byte("\x00\xff\x01\xfe")
+		return
+	case 4:
+		r.NewDoubleField = 56.78
+		return
+	case 5:
+		r.NewIntField = 5678
+		return
+	case 6:
+		r.NewBoolField = true
 		return
 	}
 	panic("Unknown field index")
@@ -176,35 +186,31 @@ func (_ *PrimitiveTestRecord) AvroCRC64Fingerprint() []byte {
 func (r *PrimitiveTestRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
-	output["LongField"], err = json.Marshal(r.LongField)
+	output["NewLongField"], err = json.Marshal(r.NewLongField)
 	if err != nil {
 		return nil, err
 	}
-	output["StringField"], err = json.Marshal(r.StringField)
+	output["NewStringField"], err = json.Marshal(r.NewStringField)
 	if err != nil {
 		return nil, err
 	}
-	output["FloatField"], err = json.Marshal(r.FloatField)
+	output["NewFloatField"], err = json.Marshal(r.NewFloatField)
 	if err != nil {
 		return nil, err
 	}
-	output["BytesField"], err = json.Marshal(r.BytesField)
+	output["NewBytesField"], err = json.Marshal(r.NewBytesField)
 	if err != nil {
 		return nil, err
 	}
-	output["DoubleField"], err = json.Marshal(r.DoubleField)
+	output["NewDoubleField"], err = json.Marshal(r.NewDoubleField)
 	if err != nil {
 		return nil, err
 	}
-	output["IntField"], err = json.Marshal(r.IntField)
+	output["NewIntField"], err = json.Marshal(r.NewIntField)
 	if err != nil {
 		return nil, err
 	}
-	output["BoolField"], err = json.Marshal(r.BoolField)
-	if err != nil {
-		return nil, err
-	}
-	output["NewString"], err = json.Marshal(r.NewString)
+	output["NewBoolField"], err = json.Marshal(r.NewBoolField)
 	if err != nil {
 		return nil, err
 	}
@@ -219,116 +225,102 @@ func (r *PrimitiveTestRecord) UnmarshalJSON(data []byte) error {
 
 	var val json.RawMessage
 	val = func() json.RawMessage {
-		if v, ok := fields["LongField"]; ok {
+		if v, ok := fields["NewLongField"]; ok {
 			return v
 		}
 		return nil
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.LongField); err != nil {
+		if err := json.Unmarshal([]byte(val), &r.NewLongField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for LongField")
+		r.NewLongField = 1234
 	}
 	val = func() json.RawMessage {
-		if v, ok := fields["StringField"]; ok {
+		if v, ok := fields["NewStringField"]; ok {
 			return v
 		}
 		return nil
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.StringField); err != nil {
+		if err := json.Unmarshal([]byte(val), &r.NewStringField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for StringField")
+		r.NewStringField = "testdefault"
 	}
 	val = func() json.RawMessage {
-		if v, ok := fields["FloatField"]; ok {
+		if v, ok := fields["NewFloatField"]; ok {
 			return v
 		}
 		return nil
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.FloatField); err != nil {
+		if err := json.Unmarshal([]byte(val), &r.NewFloatField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for FloatField")
+		r.NewFloatField = 12.34
 	}
 	val = func() json.RawMessage {
-		if v, ok := fields["BytesField"]; ok {
+		if v, ok := fields["NewBytesField"]; ok {
 			return v
 		}
 		return nil
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.BytesField); err != nil {
+		if err := json.Unmarshal([]byte(val), &r.NewBytesField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for BytesField")
+		r.NewBytesField = []byte("\x00\xff\x01\xfe")
 	}
 	val = func() json.RawMessage {
-		if v, ok := fields["DoubleField"]; ok {
+		if v, ok := fields["NewDoubleField"]; ok {
 			return v
 		}
 		return nil
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.DoubleField); err != nil {
+		if err := json.Unmarshal([]byte(val), &r.NewDoubleField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for DoubleField")
+		r.NewDoubleField = 56.78
 	}
 	val = func() json.RawMessage {
-		if v, ok := fields["IntField"]; ok {
+		if v, ok := fields["NewIntField"]; ok {
 			return v
 		}
 		return nil
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.IntField); err != nil {
+		if err := json.Unmarshal([]byte(val), &r.NewIntField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for IntField")
+		r.NewIntField = 5678
 	}
 	val = func() json.RawMessage {
-		if v, ok := fields["BoolField"]; ok {
+		if v, ok := fields["NewBoolField"]; ok {
 			return v
 		}
 		return nil
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.BoolField); err != nil {
+		if err := json.Unmarshal([]byte(val), &r.NewBoolField); err != nil {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for BoolField")
-	}
-	val = func() json.RawMessage {
-		if v, ok := fields["NewString"]; ok {
-			return v
-		}
-		return nil
-	}()
-
-	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.NewString); err != nil {
-			return err
-		}
-	} else {
-		r.NewString = "somedefault"
+		r.NewBoolField = true
 	}
 	return nil
 }

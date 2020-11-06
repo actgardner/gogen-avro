@@ -89,9 +89,9 @@ func (s *EnumDefinition) DefaultValue(lvalue string, rvalue interface{}) (string
 	return fmt.Sprintf("%v = %v", lvalue, generator.ToPublicName(s.GoType()+strings.Title(rvalue.(string)))), nil
 }
 
-func (s *EnumDefinition) IsReadableBy(d Definition, visited map[QualifiedName]interface{}) bool {
-	otherEnum, ok := d.(*EnumDefinition)
-	return ok && otherEnum.name == s.name
+func (s *EnumDefinition) IsReadableBy(d Definition) bool {
+	_, ok := d.(*EnumDefinition)
+	return ok && hasMatchingName(s.AvroName(), d)
 }
 
 func (s *EnumDefinition) WrapperType() string {

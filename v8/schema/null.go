@@ -22,10 +22,10 @@ func (s *NullField) WrapperType() string {
 	return ""
 }
 
-func (s *NullField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
+func (s *NullField) IsReadableBy(f AvroType) bool {
 	if union, ok := f.(*UnionField); ok {
 		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
+			if s.IsReadableBy(t) {
 				return true
 			}
 		}

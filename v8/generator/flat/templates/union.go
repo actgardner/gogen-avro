@@ -72,6 +72,20 @@ func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {
 	return t, err
 }
 
+func Deserialize{{ .Name }}FromSchema(r io.Reader, schema string) ({{ .GoType }}, error) {
+	t := {{ .ConstructorMethod }}
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r {{ .GoType }}) Schema() string {
 	return {{ printf "%q" .Schema }}
 }

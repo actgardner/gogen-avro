@@ -183,7 +183,7 @@ func (r *MapTestRecord) SetDefault(i int) {
 
 		return
 	case 6:
-		r.BytesField["default"] = []byte("\x03\x0fÞ")
+		r.BytesField["default"] = []byte("\x03\x0f\xde")
 
 		return
 	}
@@ -361,7 +361,7 @@ func (r *MapTestRecord) UnmarshalJSON(data []byte) error {
 	} else {
 		r.BytesField = make(map[string]Bytes)
 
-		r.BytesField["default"] = []byte("\x03\x0fÞ")
+		r.BytesField["default"] = []byte("\x03\x0f\xde")
 
 	}
 	return nil

@@ -2,13 +2,12 @@
 	"type": "record",
 	"name": "PrimitiveTestRecord",
 	"fields": [
-		{"name": "LongField", "type": "long"},
-		{"name": "StringField", "type": "string"},
-		{"name": "FloatField", "type": "float"},
-		{"name": "BytesField", "type": "bytes"},
-		{"name": "DoubleField", "type": "double"},
-		{"name": "IntField", "type": "int"},
-		{"name": "BoolField", "type": "boolean"},
-		{"name": "NewString", "type": "string", "default": "somedefault"}
+		{"name": "NewLongField", "type": "long", "default": 1234},
+		{"name": "NewStringField", "type": "string", "default": "testdefault"},
+		{"name": "NewFloatField", "type": "float", "default": 12.34},
+		{"name": "NewBytesField", "type": "bytes", "default": "\u0000\u00ff\u0001\u00fe"},
+		{"name": "NewDoubleField", "type": "double", "default": 56.78},
+		{"name": "NewIntField", "type": "int", "default": 5678},
+		{"name": "NewBoolField", "type": "boolean", "default": true}
 	]
 }

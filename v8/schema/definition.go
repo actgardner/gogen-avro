@@ -23,8 +23,20 @@ type Definition interface {
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
 	DefaultValue(lvalue string, rvalue interface{}) (string, error)
 
-	IsReadableBy(f Definition, visited map[QualifiedName]interface{}) bool
+	IsReadableBy(f Definition) bool
 	WrapperType() string
+}
+
+func hasMatchingName(writerName QualifiedName, reader Definition) bool {
+	if writerName.Name == reader.AvroName().Name {
+		return true
+	}
+	for _, name := range reader.Aliases() {
+		if name.Name == writerName.Name {
+			return true
+		}
+	}
+	return false
 }
 
 func copyDefinition(x map[string]interface{}) map[string]interface{} {

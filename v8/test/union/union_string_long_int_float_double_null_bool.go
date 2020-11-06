@@ -92,6 +92,20 @@ func DeserializeUnionStringLongIntFloatDoubleNullBool(r io.Reader) (*UnionString
 	return t, err
 }
 
+func DeserializeUnionStringLongIntFloatDoubleNullBoolFromSchema(r io.Reader, schema string) (*UnionStringLongIntFloatDoubleNullBool, error) {
+	t := NewUnionStringLongIntFloatDoubleNullBool()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionStringLongIntFloatDoubleNullBool) Schema() string {
 	return "[\"string\",\"long\",\"int\",\"float\",\"double\",\"null\",\"boolean\"]"
 }

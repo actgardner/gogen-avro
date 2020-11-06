@@ -66,6 +66,20 @@ func DeserializeUnionUnionRecString(r io.Reader) (*UnionUnionRecString, error) {
 	return t, err
 }
 
+func DeserializeUnionUnionRecStringFromSchema(r io.Reader, schema string) (*UnionUnionRecString, error) {
+	t := NewUnionUnionRecString()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionUnionRecString) Schema() string {
 	return "[{\"fields\":[{\"name\":\"a\",\"type\":\"int\"}],\"name\":\"unionRec\",\"type\":\"record\"},\"string\"]"
 }

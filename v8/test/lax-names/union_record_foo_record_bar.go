@@ -66,6 +66,20 @@ func DeserializeUnionRecordFooRecordBar(r io.Reader) (*UnionRecordFooRecordBar, 
 	return t, err
 }
 
+func DeserializeUnionRecordFooRecordBarFromSchema(r io.Reader, schema string) (*UnionRecordFooRecordBar, error) {
+	t := NewUnionRecordFooRecordBar()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionRecordFooRecordBar) Schema() string {
 	return "[{\"fields\":[{\"name\":\"id\",\"type\":\"string\"}],\"name\":\"RecordFoo\",\"type\":\"record\"},{\"fields\":[{\"name\":\"id\",\"type\":\"string\"}],\"name\":\"RecordBar\",\"type\":\"record\"}]"
 }

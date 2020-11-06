@@ -21,7 +21,7 @@ func TestEvolution(t *testing.T) {
 	test.RoundTripEvolution(t,
 		func() container.AvroRecord { return &UnionNestedRecordNestedTestRecord{} },
 		func() container.AvroRecord { return &evolution.UnionAliasedRecordNestedTestRecord{} },
-		func(r io.Reader) (container.AvroRecord, error) {
-			return evolution.DeserializeUnionAliasedRecordNestedTestRecord(r)
+		func(r io.Reader, schema string) (container.AvroRecord, error) {
+			return evolution.DeserializeUnionAliasedRecordNestedTestRecordFromSchema(r, schema)
 		})
 }

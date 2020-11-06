@@ -2,6 +2,8 @@ package schema
 
 import (
 	"fmt"
+
+	"github.com/actgardner/gogen-avro/v8/util"
 )
 
 type BytesField struct {
@@ -23,17 +25,19 @@ func (s *BytesField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 		return "", fmt.Errorf("Expected string as default for field %v, got %q", lvalue, rvalue)
 	}
 
-	return fmt.Sprintf("%v = []byte(%q)", lvalue, rvalue), nil
+	b := util.DecodeByteString(rvalue.(string))
+
+	return fmt.Sprintf("%v = []byte(%q)", lvalue, b), nil
 }
 
 func (s *BytesField) WrapperType() string {
 	return "BytesWrapper"
 }
 
-func (s *BytesField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
+func (s *BytesField) IsReadableBy(f AvroType) bool {
 	if union, ok := f.(*UnionField); ok {
 		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
+			if s.IsReadableBy(t) {
 				return true
 			}
 		}

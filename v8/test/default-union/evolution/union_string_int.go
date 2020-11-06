@@ -66,6 +66,20 @@ func DeserializeUnionStringInt(r io.Reader) (*UnionStringInt, error) {
 	return t, err
 }
 
+func DeserializeUnionStringIntFromSchema(r io.Reader, schema string) (*UnionStringInt, error) {
+	t := NewUnionStringInt()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionStringInt) Schema() string {
 	return "[\"string\",\"int\"]"
 }

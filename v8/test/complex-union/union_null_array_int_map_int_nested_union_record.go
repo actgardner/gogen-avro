@@ -77,6 +77,20 @@ func DeserializeUnionNullArrayIntMapIntNestedUnionRecord(r io.Reader) (*UnionNul
 	return t, err
 }
 
+func DeserializeUnionNullArrayIntMapIntNestedUnionRecordFromSchema(r io.Reader, schema string) (*UnionNullArrayIntMapIntNestedUnionRecord, error) {
+	t := NewUnionNullArrayIntMapIntNestedUnionRecord()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionNullArrayIntMapIntNestedUnionRecord) Schema() string {
 	return "[\"null\",{\"items\":\"int\",\"type\":\"array\"},{\"type\":\"map\",\"values\":\"int\"},{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"}],\"name\":\"NestedUnionRecord\",\"type\":\"record\"}]"
 }

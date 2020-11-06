@@ -67,6 +67,20 @@ func DeserializeUnionNullRecursiveUnionTestRecord(r io.Reader) (*UnionNullRecurs
 	return t, err
 }
 
+func DeserializeUnionNullRecursiveUnionTestRecordFromSchema(r io.Reader, schema string) (*UnionNullRecursiveUnionTestRecord, error) {
+	t := NewUnionNullRecursiveUnionTestRecord()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionNullRecursiveUnionTestRecord) Schema() string {
 	return "[\"null\",{\"fields\":[{\"name\":\"RecursiveField\",\"type\":[\"null\",\"RecursiveUnionTestRecord\"]}],\"name\":\"RecursiveUnionTestRecord\",\"type\":\"record\"}]"
 }

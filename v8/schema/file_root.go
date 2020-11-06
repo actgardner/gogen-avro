@@ -46,7 +46,7 @@ func (f *FileRoot) DefaultValue(lvalue string, rvalue interface{}) (string, erro
 	return "", nil
 }
 
-func (f *FileRoot) IsReadableBy(_ Definition, _ map[QualifiedName]interface{}) bool {
+func (f *FileRoot) IsReadableBy(_ Definition) bool {
 	return false
 }
 

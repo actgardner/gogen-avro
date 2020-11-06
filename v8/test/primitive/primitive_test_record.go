@@ -163,7 +163,7 @@ func (r *PrimitiveTestRecord) SetDefault(i int) {
 		r.BoolField = true
 		return
 	case 6:
-		r.BytesField = []byte("\x04\x01\x05ý")
+		r.BytesField = []byte("\x04\x01\x05\xfd")
 		return
 	}
 	panic("Unknown field index")
@@ -320,7 +320,7 @@ func (r *PrimitiveTestRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.BytesField = []byte("\x04\x01\x05ý")
+		r.BytesField = []byte("\x04\x01\x05\xfd")
 	}
 	return nil
 }

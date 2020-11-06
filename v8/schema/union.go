@@ -125,17 +125,17 @@ func (s *UnionField) WrapperType() string {
 	return ""
 }
 
-func (s *UnionField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
+func (s *UnionField) IsReadableBy(f AvroType) bool {
 	// Report if *any* writer type could be deserialized by the reader
 	for _, t := range s.AvroTypes() {
 		if readerUnion, ok := f.(*UnionField); ok {
 			for _, rt := range readerUnion.AvroTypes() {
-				if t.IsReadableBy(rt, visited) {
+				if t.IsReadableBy(rt) {
 					return true
 				}
 			}
 		} else {
-			if t.IsReadableBy(f, visited) {
+			if t.IsReadableBy(f) {
 				return true
 			}
 		}

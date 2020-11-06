@@ -3,6 +3,7 @@ package test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"testing"
@@ -15,6 +16,7 @@ import (
 
 type RecordFactory func() container.AvroRecord
 type DeserMethod func(io.Reader) (container.AvroRecord, error)
+type EvolutionDeserMethod func(io.Reader, string) (container.AvroRecord, error)
 
 type EvolutionFixture struct {
 	Data     json.RawMessage
@@ -23,23 +25,8 @@ type EvolutionFixture struct {
 }
 
 // Get the schema file from our conventional path
-func LoadTestSchema() (*goavro.Codec, error) {
-	schema, err := ioutil.ReadFile("schema.avsc")
-	if err != nil {
-		return nil, err
-	}
-
-	return goavro.NewCodec(string(schema))
-}
-
-// Get the schema file for evolution tests from our conventional path
-func LoadEvolutionSchema() (*goavro.Codec, error) {
-	schema, err := ioutil.ReadFile("evolution.avsc")
-	if err != nil {
-		return nil, err
-	}
-
-	return goavro.NewCodec(string(schema))
+func LoadTestSchema() ([]byte, error) {
+	return ioutil.ReadFile("schema.avsc")
 }
 
 func LoadTestFixtures() ([]json.RawMessage, error) {
@@ -102,7 +89,10 @@ func GAJSONToAvroBytes(fixture json.RawMessage, codec *goavro.Codec) ([]byte, er
 //
 // For schemas with maps use RoundTrip instead since maps are not encoded deterministically.
 func RoundTripExactBytes(t *testing.T, recordFunc RecordFactory, deserMethod DeserMethod) {
-	codec, err := LoadTestSchema()
+	schema, err := LoadTestSchema()
+	assert.NoError(t, err)
+
+	codec, err := goavro.NewCodec(string(schema))
 	assert.NoError(t, err)
 
 	fixtures, err := LoadTestFixtures()
@@ -138,7 +128,10 @@ func RoundTripExactBytes(t *testing.T, recordFunc RecordFactory, deserMethod Des
 // - goavro can decode JSON-encoded data from gogen-avro and the Go data is identical
 //
 func RoundTrip(t *testing.T, recordFunc RecordFactory, deserMethod DeserMethod) {
-	codec, err := LoadTestSchema()
+	schema, err := LoadTestSchema()
+	assert.NoError(t, err)
+
+	codec, err := goavro.NewCodec(string(schema))
 	assert.NoError(t, err)
 
 	fixtures, err := LoadTestFixtures()
@@ -198,7 +191,10 @@ func RoundTripGoGenOnly(t *testing.T, recordFunc RecordFactory, deserMethod Dese
 	}
 }
 
-func RoundTripEvolution(t *testing.T, oldRecordFunc, newRecordFunc RecordFactory, newDeserMethod DeserMethod) {
+func RoundTripEvolution(t *testing.T, oldRecordFunc, newRecordFunc RecordFactory, newDeserMethod EvolutionDeserMethod) {
+	oldSchema, err := LoadTestSchema()
+	assert.NoError(t, err)
+
 	fixtures, err := LoadEvolutionFixtures()
 	assert.NoError(t, err)
 
@@ -208,8 +204,10 @@ func RoundTripEvolution(t *testing.T, oldRecordFunc, newRecordFunc RecordFactory
 		oldBytes, err := GGJSONToAvroBytes(f.Data, oldRecord)
 		assert.NoError(t, err)
 
+		fmt.Printf("old: %v\n", oldBytes)
+
 		// Deserialize the Avro data with the new schema and compare to the expected JSON deserialization
-		newRecord, err := newDeserMethod(bytes.NewBuffer(oldBytes))
+		newRecord, err := newDeserMethod(bytes.NewBuffer(oldBytes), string(oldSchema))
 		assert.NoError(t, err)
 
 		expectedRecord := newRecordFunc()

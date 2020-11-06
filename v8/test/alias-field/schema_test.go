@@ -13,5 +13,7 @@ func TestEvolution(t *testing.T) {
 	test.RoundTripEvolution(t,
 		func() container.AvroRecord { return NewAliasRecord() },
 		func() container.AvroRecord { return evolution.NewAliasRecord() },
-		func(r io.Reader) (container.AvroRecord, error) { return evolution.DeserializeAliasRecord(r) })
+		func(r io.Reader, schema string) (container.AvroRecord, error) {
+			return evolution.DeserializeAliasRecordFromSchema(r, schema)
+		})
 }

@@ -66,6 +66,20 @@ func DeserializeUnionAliasedRecordNestedTestRecord(r io.Reader) (*UnionAliasedRe
 	return t, err
 }
 
+func DeserializeUnionAliasedRecordNestedTestRecordFromSchema(r io.Reader, schema string) (*UnionAliasedRecordNestedTestRecord, error) {
+	t := NewUnionAliasedRecordNestedTestRecord()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionAliasedRecordNestedTestRecord) Schema() string {
 	return "[{\"aliases\":[\"NestedRecord\"],\"fields\":[{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"aliasedRecord\",\"type\":\"record\"},{\"fields\":[{\"name\":\"OtherField\",\"type\":\"aliasedRecord\"}],\"name\":\"NestedTestRecord\",\"type\":\"record\"}]"
 }

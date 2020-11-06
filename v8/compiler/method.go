@@ -76,7 +76,7 @@ func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 	if _, ok := writer.(*schema.UnionField); !ok {
 		if readerUnion, ok := reader.(*schema.UnionField); ok {
 			for readerIndex, r := range readerUnion.AvroTypes() {
-				if writer.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
+				if writer.IsReadableBy(r) {
 					p.addLiteral(vm.SetLong, readerIndex)
 					p.addLiteral(vm.Set, vm.Long)
 					p.addLiteral(vm.Enter, readerIndex)
@@ -160,7 +160,7 @@ func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 
 func (p *irMethod) compileRef(writer, reader *schema.Reference) error {
 	log("compileRef()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	if !p.program.allowLaxNames && reader != nil && writer.TypeName.Name != reader.TypeName.Name {
+	if !p.program.allowLaxNames && reader != nil && !writer.IsReadableBy(reader) {
 		return fmt.Errorf("Incompatible types by name: %v %v", reader, writer)
 	}
 
@@ -263,7 +263,7 @@ func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error 
 			readerField = reader.FieldByName(field.Name())
 			if readerField != nil {
 				delete(defaultFields, readerField.Name())
-				if !field.Type().IsReadableBy(readerField.Type(), make(map[schema.QualifiedName]interface{})) {
+				if !field.Type().IsReadableBy(readerField.Type()) {
 					return fmt.Errorf("Incompatible schemas: field %v in reader has incompatible type in writer", field.Name())
 				}
 				readerType = readerField.Type()
@@ -346,7 +346,7 @@ writer:
 			}
 
 			for readerIndex, r := range unionReader.AvroTypes() {
-				if t.IsReadableBy(r, make(map[schema.QualifiedName]interface{})) {
+				if t.IsReadableBy(r) {
 					log("Union types are readable: %q %q", r.Name(), t.Name())
 					p.addSwitchCase(switchId, i, readerIndex)
 					if _, ok := t.(*schema.NullField); ok {
@@ -367,7 +367,7 @@ writer:
 			p.addSwitchCase(switchId, i, -1)
 			typedErrId := p.addError(fmt.Sprintf("Reader schema has no field for type %v in union", t.Name()))
 			p.addLiteral(vm.Halt, typedErrId)
-		} else if t.IsReadableBy(reader, make(map[schema.QualifiedName]interface{})) {
+		} else if t.IsReadableBy(reader) {
 			// If the reader is not a union but it can read this union field, support it
 			if _, ok := t.(*schema.NullField); ok {
 				p.addLiteral(vm.SetExitNull, vm.NoopField)

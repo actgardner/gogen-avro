@@ -67,6 +67,20 @@ func DeserializeUnionNullInt(r io.Reader) (*UnionNullInt, error) {
 	return t, err
 }
 
+func DeserializeUnionNullIntFromSchema(r io.Reader, schema string) (*UnionNullInt, error) {
+	t := NewUnionNullInt()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionNullInt) Schema() string {
 	return "[\"null\",\"int\"]"
 }

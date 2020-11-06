@@ -77,16 +77,16 @@ func (s *MapField) WrapperType() string {
 	return fmt.Sprintf("%vWrapper", s.Name())
 }
 
-func (s *MapField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
+func (s *MapField) IsReadableBy(f AvroType) bool {
 	if union, ok := f.(*UnionField); ok {
 		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
+			if s.IsReadableBy(t) {
 				return true
 			}
 		}
 	}
 	if reader, ok := f.(*MapField); ok {
-		return s.ItemType().IsReadableBy(reader.ItemType(), visited)
+		return s.ItemType().IsReadableBy(reader.ItemType())
 	}
 	return false
 }

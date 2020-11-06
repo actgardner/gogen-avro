@@ -5,7 +5,6 @@ import (
 
 	"github.com/actgardner/gogen-avro/v8/parser"
 	"github.com/actgardner/gogen-avro/v8/resolver"
-	"github.com/actgardner/gogen-avro/v8/schema"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -74,6 +73,6 @@ func TestIsReadableBy(t *testing.T) {
 		for _, def := range ns2.Roots {
 			assert.Nil(t, resolver.ResolveDefinition(def, ns2.Definitions))
 		}
-		assert.Equal(t, c.isReadable, writer.IsReadableBy(reader, make(map[schema.QualifiedName]interface{})))
+		assert.Equal(t, c.isReadable, writer.IsReadableBy(reader))
 	}
 }

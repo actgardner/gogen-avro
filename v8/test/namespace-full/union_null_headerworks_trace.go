@@ -67,6 +67,20 @@ func DeserializeUnionNullHeaderworksTrace(r io.Reader) (*UnionNullHeaderworksTra
 	return t, err
 }
 
+func DeserializeUnionNullHeaderworksTraceFromSchema(r io.Reader, schema string) (*UnionNullHeaderworksTrace, error) {
+	t := NewUnionNullHeaderworksTrace()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionNullHeaderworksTrace) Schema() string {
 	return "[\"null\",{\"doc\":\"Trace\",\"fields\":[{\"default\":null,\"doc\":\"Trace Identifier\",\"name\":\"traceId\",\"type\":[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"headerworks.datatype\",\"type\":\"record\"}]}],\"name\":\"Trace\",\"type\":\"record\"}]"
 }

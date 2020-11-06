@@ -76,6 +76,20 @@ func DeserializeUnionBytesStringRecord1Record2(r io.Reader) (*UnionBytesStringRe
 	return t, err
 }
 
+func DeserializeUnionBytesStringRecord1Record2FromSchema(r io.Reader, schema string) (*UnionBytesStringRecord1Record2, error) {
+	t := NewUnionBytesStringRecord1Record2()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionBytesStringRecord1Record2) Schema() string {
 	return "[\"bytes\",\"string\",{\"fields\":[{\"name\":\"intfield\",\"type\":\"int\"}],\"name\":\"record1\",\"type\":\"record\"},{\"fields\":[{\"name\":\"intfield\",\"type\":\"int\"}],\"name\":\"record2\",\"type\":\"record\"}]"
 }

@@ -66,6 +66,20 @@ func DeserializeUnionIp_addressEvent(r io.Reader) (*UnionIp_addressEvent, error)
 	return t, err
 }
 
+func DeserializeUnionIp_addressEventFromSchema(r io.Reader, schema string) (*UnionIp_addressEvent, error) {
+	t := NewUnionIp_addressEvent()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionIp_addressEvent) Schema() string {
 	return "[{\"name\":\"ip_address\",\"size\":16,\"type\":\"fixed\"},{\"doc\":\"The test record\",\"fields\":[{\"doc\":\"Unique ID for this event.\",\"name\":\"id\",\"type\":\"string\"},{\"doc\":\"Start IP of this observation's IP range.\",\"name\":\"start_ip\",\"type\":\"ip_address\"},{\"doc\":\"End IP of this observation's IP range.\",\"name\":\"end_ip\",\"type\":\"ip_address\"}],\"name\":\"event\",\"subject\":\"event\",\"type\":\"record\"}]"
 }

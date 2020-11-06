@@ -124,17 +124,9 @@ func (r *RecordDefinition) Fields() []*Field {
 	return r.fields
 }
 
-func (s *RecordDefinition) IsReadableBy(d Definition, visited map[QualifiedName]interface{}) bool {
-	// If there's a circular reference, don't evaluate every field on the second pass
-	if _, ok := visited[s.name]; ok {
-		return true
-	}
-	reader, ok := d.(*RecordDefinition)
-	if !ok {
-		return false
-	}
-
-	return reader.AvroName().Name == s.AvroName().Name
+func (s *RecordDefinition) IsReadableBy(d Definition) bool {
+	_, ok := d.(*RecordDefinition)
+	return ok && hasMatchingName(s.AvroName(), d)
 }
 
 func (s *RecordDefinition) WrapperType() string {

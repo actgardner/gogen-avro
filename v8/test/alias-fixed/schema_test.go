@@ -21,7 +21,7 @@ func TestEvolution(t *testing.T) {
 	test.RoundTripEvolution(t,
 		func() container.AvroRecord { return &UnionIp_addressEvent{} },
 		func() container.AvroRecord { return &evolution.UnionIPAddressEvent{} },
-		func(r io.Reader) (container.AvroRecord, error) {
-			return evolution.DeserializeUnionIPAddressEvent(r)
+		func(r io.Reader, schema string) (container.AvroRecord, error) {
+			return evolution.DeserializeUnionIPAddressEventFromSchema(r, schema)
 		})
 }

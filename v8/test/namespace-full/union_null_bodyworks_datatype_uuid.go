@@ -67,6 +67,20 @@ func DeserializeUnionNullBodyworksDatatypeUUID(r io.Reader) (*UnionNullBodyworks
 	return t, err
 }
 
+func DeserializeUnionNullBodyworksDatatypeUUIDFromSchema(r io.Reader, schema string) (*UnionNullBodyworksDatatypeUUID, error) {
+	t := NewUnionNullBodyworksDatatypeUUID()
+	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
+	if err != nil {
+		return nil, err
+	}
+
+	err = vm.Eval(r, deser, t)
+	if err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 func (r *UnionNullBodyworksDatatypeUUID) Schema() string {
 	return "[\"null\",{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"UUID\",\"namespace\":\"bodyworks.datatype\",\"type\":\"record\"}]"
 }

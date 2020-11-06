@@ -30,10 +30,10 @@ func (s *StringField) WrapperType() string {
 	return "types.String"
 }
 
-func (s *StringField) IsReadableBy(f AvroType, visited map[QualifiedName]interface{}) bool {
+func (s *StringField) IsReadableBy(f AvroType) bool {
 	if union, ok := f.(*UnionField); ok {
 		for _, t := range union.AvroTypes() {
-			if s.IsReadableBy(t, visited) {
+			if s.IsReadableBy(t) {
 				return true
 			}
 		}
