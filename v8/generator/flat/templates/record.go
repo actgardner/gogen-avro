@@ -18,9 +18,9 @@ type {{ .Name }} struct {
 {{ range $i, $field := .Fields -}}
 	{{ if ne $field.Doc "" }}// {{ $field.Doc }}{{ end }}
 	{{ if ne $field.Tags "" -}}
-		{{ $field.SimpleName }} {{ $field.Type.GoType }} ` + "`{{ $field.Tags }}`" + `
+		{{ $field.GoName }} {{ $field.Type.GoType }} ` + "`{{ $field.Tags }}`" + `
 	{{ else -}}
-		{{ $field.SimpleName }} {{ $field.Type.GoType }}
+		{{ $field.GoName }} {{ $field.Type.GoType }}
 	{{ end -}}
 {{ end }}
 }

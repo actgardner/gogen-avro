@@ -30,10 +30,6 @@ func (s *PrimitiveField) Definition(_ map[QualifiedName]interface{}) (interface{
 	return s.definition, nil
 }
 
-func (s *PrimitiveField) SimpleName() string {
-	return s.name
-}
-
 func (s *PrimitiveField) Children() []AvroType {
 	return []AvroType{}
 }

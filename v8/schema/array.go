@@ -97,10 +97,6 @@ func (s *ArrayField) IsReadableBy(f AvroType) bool {
 	return false
 }
 
-func (s *ArrayField) SimpleName() string {
-	return s.Name()
-}
-
 func (s *ArrayField) ItemConstructable() string {
 	if constructor, ok := getConstructableForType(s.itemType); ok {
 		return fmt.Sprintf("v = %v\n", constructor.ConstructorMethod())

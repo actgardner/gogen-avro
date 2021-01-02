@@ -91,10 +91,6 @@ func (s *MapField) IsReadableBy(f AvroType) bool {
 	return false
 }
 
-func (s *MapField) SimpleName() string {
-	return s.Name()
-}
-
 func (s *MapField) ItemConstructable() string {
 	if constructor, ok := getConstructableForType(s.itemType); ok {
 		return fmt.Sprintf("v = %v\n", constructor.ConstructorMethod())

@@ -169,10 +169,6 @@ func (s *UnionField) Equals(reader *UnionField) bool {
 	return true
 }
 
-func (s *UnionField) SimpleName() string {
-	return s.GoType()
-}
-
 func (s *UnionField) Children() []AvroType {
 	return s.itemType
 }

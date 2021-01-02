@@ -7,6 +7,30 @@ import (
 	"github.com/actgardner/gogen-avro/v8/generator"
 )
 
+// invalidFieldNames is a list of field names that conflict with hard-coded method names on
+// generated structs. These are converted to `Field_<name>` in the resulting struct to avoid errors.
+var invalidFieldNames = map[string]interface{}{
+	"Schema":               true,
+	"Serialize":            true,
+	"SchemaName":           true,
+	"MarshalJSON":          true,
+	"UnmarshalJSON":        true,
+	"AvroCRC64Fingerprint": true,
+	"SetBoolean":           true,
+	"SetInt":               true,
+	"SetLong":              true,
+	"SetFloat":             true,
+	"SetDouble":            true,
+	"SetBytes":             true,
+	"SetString":            true,
+	"Get":                  true,
+	"SetDefault":           true,
+	"AppendMap":            true,
+	"AppendArray":          true,
+	"NullField":            true,
+	"Finalize":             true,
+}
+
 type Field struct {
 	avroName   string
 	avroType   AvroType
@@ -37,10 +61,6 @@ func (f *Field) Name() string {
 	return f.avroName
 }
 
-func (f *Field) SimpleName() string {
-	return generator.ToPublicSimpleName(f.avroName)
-}
-
 func (f *Field) Index() int {
 	return f.index
 }
@@ -59,7 +79,11 @@ func (f *Field) Tags() string {
 }
 
 func (f *Field) GoName() string {
-	return generator.ToPublicName(f.avroName)
+	name := generator.ToPublicName(f.avroName)
+	if _, ok := invalidFieldNames[name]; ok {
+		return "Field_" + name
+	}
+	return name
 }
 
 func (f *Field) Aliases() []string {

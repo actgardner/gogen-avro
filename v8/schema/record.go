@@ -33,10 +33,6 @@ func (r *RecordDefinition) Name() string {
 	return generator.ToPublicName(r.name.String())
 }
 
-func (r *RecordDefinition) SimpleName() string {
-	return generator.ToPublicName(r.name.Name)
-}
-
 func (r *RecordDefinition) GoType() string {
 	return fmt.Sprintf("*%v", r.Name())
 }
