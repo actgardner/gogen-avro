@@ -18,10 +18,6 @@ func (f *FileRoot) Name() string {
 	return ""
 }
 
-func (f *FileRoot) SimpleName() string {
-	return ""
-}
-
 func (f *FileRoot) GoType() string {
 	return ""
 }

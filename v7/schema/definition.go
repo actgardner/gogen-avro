@@ -10,7 +10,6 @@ type Definition interface {
 
 	// A user-friendly name that can be built into a Go string (for unions, mostly)
 	Name() string
-	SimpleName() string
 
 	GoType() string
 

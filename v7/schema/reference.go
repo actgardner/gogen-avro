@@ -19,10 +19,6 @@ func (s *Reference) Name() string {
 	return s.Def.Name()
 }
 
-func (s *Reference) SimpleName() string {
-	return s.Def.SimpleName()
-}
-
 func (s *Reference) GoType() string {
 	return s.Def.GoType()
 }

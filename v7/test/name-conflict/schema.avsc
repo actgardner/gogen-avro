@@ -1,0 +1,25 @@
+{
+	"type": "record",
+	"name": "NameConflictTestRecord",
+	"fields": [
+	{"name": "Schema", "type": "boolean"},
+	{"name": "Serialize", "type": "boolean"},
+	{"name": "SchemaName", "type": "boolean"},
+	{"name": "MarshalJSON", "type": "boolean"},
+	{"name": "UnmarshalJSON", "type": "boolean"},
+	{"name": "AvroCRC64Fingerprint", "type": "boolean"},
+	{"name": "SetBoolean", "type": "boolean"},
+	{"name": "SetInt", "type": "boolean"},
+	{"name": "SetLong", "type": "boolean"},
+	{"name": "SetFloat", "type": "boolean"},
+	{"name": "SetDouble", "type": "boolean"},
+	{"name": "SetBytes", "type": "boolean"},
+	{"name": "SetString", "type": "boolean"},
+	{"name": "Get", "type": "boolean"},
+	{"name": "SetDefault", "type": "boolean"},
+	{"name": "AppendMap", "type": "boolean"},
+	{"name": "AppendArray", "type": "boolean"},
+	{"name": "NullField", "type": "boolean"},
+	{"name": "Finalize", "type": "boolean"}
+	]
+}

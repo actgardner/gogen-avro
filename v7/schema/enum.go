@@ -33,10 +33,6 @@ func (e *EnumDefinition) Doc() string {
 	return e.doc
 }
 
-func (e *EnumDefinition) SimpleName() string {
-	return e.name.Name
-}
-
 func (e *EnumDefinition) AvroName() QualifiedName {
 	return e.name
 }
