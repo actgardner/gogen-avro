@@ -24,40 +24,34 @@ type DatatypeUUID struct {
 
 const DatatypeUUIDAvroCRC64Fingerprint = "\xfc\xa43\x98\xee\xe0p\xe2"
 
-func NewDatatypeUUID() *DatatypeUUID {
-	return &DatatypeUUID{}
+func NewDatatypeUUID() DatatypeUUID {
+	return DatatypeUUID{}
 }
 
-func DeserializeDatatypeUUID(r io.Reader) (*DatatypeUUID, error) {
+func DeserializeDatatypeUUID(r io.Reader) (DatatypeUUID, error) {
 	t := NewDatatypeUUID()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeDatatypeUUIDFromSchema(r io.Reader, schema string) (*DatatypeUUID, error) {
+func DeserializeDatatypeUUIDFromSchema(r io.Reader, schema string) (DatatypeUUID, error) {
 	t := NewDatatypeUUID()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeDatatypeUUID(r *DatatypeUUID, w io.Writer) error {
+func writeDatatypeUUID(r DatatypeUUID, w io.Writer) error {
 	var err error
 	err = vm.WriteString(r.Uuid, w)
 	if err != nil {
@@ -66,26 +60,26 @@ func writeDatatypeUUID(r *DatatypeUUID, w io.Writer) error {
 	return err
 }
 
-func (r *DatatypeUUID) Serialize(w io.Writer) error {
+func (r DatatypeUUID) Serialize(w io.Writer) error {
 	return writeDatatypeUUID(r, w)
 }
 
-func (r *DatatypeUUID) Schema() string {
+func (r DatatypeUUID) Schema() string {
 	return "{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"bodyworks.datatype.UUID\",\"type\":\"record\"}"
 }
 
-func (r *DatatypeUUID) SchemaName() string {
+func (r DatatypeUUID) SchemaName() string {
 	return "bodyworks.datatype.UUID"
 }
 
-func (_ *DatatypeUUID) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *DatatypeUUID) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *DatatypeUUID) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *DatatypeUUID) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *DatatypeUUID) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *DatatypeUUID) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *DatatypeUUID) SetString(v string)   { panic("Unsupported operation") }
-func (_ *DatatypeUUID) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ DatatypeUUID) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ DatatypeUUID) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ DatatypeUUID) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ DatatypeUUID) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ DatatypeUUID) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ DatatypeUUID) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ DatatypeUUID) SetString(v string)   { panic("Unsupported operation") }
+func (_ DatatypeUUID) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *DatatypeUUID) Get(i int) types.Field {
 	switch i {
@@ -110,15 +104,15 @@ func (r *DatatypeUUID) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *DatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *DatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *DatatypeUUID) Finalize()                        {}
+func (_ DatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ DatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ DatatypeUUID) Finalize()                        {}
 
-func (_ *DatatypeUUID) AvroCRC64Fingerprint() []byte {
+func (_ DatatypeUUID) AvroCRC64Fingerprint() []byte {
 	return []byte(DatatypeUUIDAvroCRC64Fingerprint)
 }
 
-func (r *DatatypeUUID) MarshalJSON() ([]byte, error) {
+func (r DatatypeUUID) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["uuid"], err = json.Marshal(r.Uuid)

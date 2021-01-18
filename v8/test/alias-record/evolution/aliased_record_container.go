@@ -42,8 +42,8 @@ func NewAliasedRecordReader(r io.Reader) (*AliasedRecordReader, error) {
 	}, nil
 }
 
-func (r AliasedRecordReader) Read() (*AliasedRecord, error) {
+func (r AliasedRecordReader) Read() (AliasedRecord, error) {
 	t := NewAliasedRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

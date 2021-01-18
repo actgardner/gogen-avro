@@ -42,8 +42,8 @@ func NewNestedUnionRecordReader(r io.Reader) (*NestedUnionRecordReader, error) {
 	}, nil
 }
 
-func (r NestedUnionRecordReader) Read() (*NestedUnionRecord, error) {
+func (r NestedUnionRecordReader) Read() (NestedUnionRecord, error) {
 	t := NewNestedUnionRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

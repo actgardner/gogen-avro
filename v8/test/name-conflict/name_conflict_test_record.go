@@ -59,40 +59,34 @@ type NameConflictTestRecord struct {
 
 const NameConflictTestRecordAvroCRC64Fingerprint = "\xcesIh9\x9f&\b"
 
-func NewNameConflictTestRecord() *NameConflictTestRecord {
-	return &NameConflictTestRecord{}
+func NewNameConflictTestRecord() NameConflictTestRecord {
+	return NameConflictTestRecord{}
 }
 
-func DeserializeNameConflictTestRecord(r io.Reader) (*NameConflictTestRecord, error) {
+func DeserializeNameConflictTestRecord(r io.Reader) (NameConflictTestRecord, error) {
 	t := NewNameConflictTestRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeNameConflictTestRecordFromSchema(r io.Reader, schema string) (*NameConflictTestRecord, error) {
+func DeserializeNameConflictTestRecordFromSchema(r io.Reader, schema string) (NameConflictTestRecord, error) {
 	t := NewNameConflictTestRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeNameConflictTestRecord(r *NameConflictTestRecord, w io.Writer) error {
+func writeNameConflictTestRecord(r NameConflictTestRecord, w io.Writer) error {
 	var err error
 	err = vm.WriteBool(r.Field_Schema, w)
 	if err != nil {
@@ -173,26 +167,26 @@ func writeNameConflictTestRecord(r *NameConflictTestRecord, w io.Writer) error {
 	return err
 }
 
-func (r *NameConflictTestRecord) Serialize(w io.Writer) error {
+func (r NameConflictTestRecord) Serialize(w io.Writer) error {
 	return writeNameConflictTestRecord(r, w)
 }
 
-func (r *NameConflictTestRecord) Schema() string {
+func (r NameConflictTestRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"Schema\",\"type\":\"boolean\"},{\"name\":\"Serialize\",\"type\":\"boolean\"},{\"name\":\"SchemaName\",\"type\":\"boolean\"},{\"name\":\"MarshalJSON\",\"type\":\"boolean\"},{\"name\":\"UnmarshalJSON\",\"type\":\"boolean\"},{\"name\":\"AvroCRC64Fingerprint\",\"type\":\"boolean\"},{\"name\":\"SetBoolean\",\"type\":\"boolean\"},{\"name\":\"SetInt\",\"type\":\"boolean\"},{\"name\":\"SetLong\",\"type\":\"boolean\"},{\"name\":\"SetFloat\",\"type\":\"boolean\"},{\"name\":\"SetDouble\",\"type\":\"boolean\"},{\"name\":\"SetBytes\",\"type\":\"boolean\"},{\"name\":\"SetString\",\"type\":\"boolean\"},{\"name\":\"Get\",\"type\":\"boolean\"},{\"name\":\"SetDefault\",\"type\":\"boolean\"},{\"name\":\"AppendMap\",\"type\":\"boolean\"},{\"name\":\"AppendArray\",\"type\":\"boolean\"},{\"name\":\"NullField\",\"type\":\"boolean\"},{\"name\":\"Finalize\",\"type\":\"boolean\"}],\"name\":\"NameConflictTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *NameConflictTestRecord) SchemaName() string {
+func (r NameConflictTestRecord) SchemaName() string {
 	return "NameConflictTestRecord"
 }
 
-func (_ *NameConflictTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *NameConflictTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *NameConflictTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *NameConflictTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *NameConflictTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *NameConflictTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *NameConflictTestRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *NameConflictTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NameConflictTestRecord) Get(i int) types.Field {
 	switch i {
@@ -250,15 +244,15 @@ func (r *NameConflictTestRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *NameConflictTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NameConflictTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *NameConflictTestRecord) Finalize()                        {}
+func (_ NameConflictTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) Finalize()                        {}
 
-func (_ *NameConflictTestRecord) AvroCRC64Fingerprint() []byte {
+func (_ NameConflictTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(NameConflictTestRecordAvroCRC64Fingerprint)
 }
 
-func (r *NameConflictTestRecord) MarshalJSON() ([]byte, error) {
+func (r NameConflictTestRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["Schema"], err = json.Marshal(r.Field_Schema)

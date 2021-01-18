@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/v8/vm/types"
 )
 
-func writeArrayUnionRecordFooRecordBar(r []*UnionRecordFooRecordBar, w io.Writer) error {
+func writeArrayUnionRecordFooRecordBar(r []UnionRecordFooRecordBar, w io.Writer) error {
 	err := vm.WriteLong(int64(len(r)), w)
 	if err != nil || len(r) == 0 {
 		return err
@@ -27,7 +27,7 @@ func writeArrayUnionRecordFooRecordBar(r []*UnionRecordFooRecordBar, w io.Writer
 }
 
 type ArrayUnionRecordFooRecordBarWrapper struct {
-	Target *[]*UnionRecordFooRecordBar
+	Target *[]UnionRecordFooRecordBar
 }
 
 func (_ *ArrayUnionRecordFooRecordBarWrapper) SetBoolean(v bool)     { panic("Unsupported operation") }
@@ -49,10 +49,9 @@ func (r *ArrayUnionRecordFooRecordBarWrapper) NullField(i int) {
 }
 
 func (r *ArrayUnionRecordFooRecordBarWrapper) AppendArray() types.Field {
-	var v *UnionRecordFooRecordBar
+	var v UnionRecordFooRecordBar
 	v = NewUnionRecordFooRecordBar()
 
 	*r.Target = append(*r.Target, v)
-
-	return (*r.Target)[len(*r.Target)-1]
+	return &types.Record{Target: &(*r.Target)[len(*r.Target)-1]}
 }

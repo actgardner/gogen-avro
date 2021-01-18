@@ -57,12 +57,12 @@ func DeserializeUnionNullString(r io.Reader) (*UnionNullString, error) {
 	t := NewUnionNullString()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
@@ -71,12 +71,12 @@ func DeserializeUnionNullStringFromSchema(r io.Reader, schema string) (*UnionNul
 	t := NewUnionNullString()
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
 	err = vm.Eval(r, deser, t)
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
@@ -110,9 +110,11 @@ func (_ *UnionNullString) AppendArray() types.Field         { panic("Unsupported
 func (_ *UnionNullString) Finalize()                        {}
 
 func (r *UnionNullString) MarshalJSON() ([]byte, error) {
+
 	if r == nil {
 		return []byte("null"), nil
 	}
+
 	switch r.UnionType {
 	case UnionNullStringTypeEnumString:
 		return json.Marshal(map[string]interface{}{"string": r.String})

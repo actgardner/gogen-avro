@@ -23,40 +23,34 @@ type UnionRec struct {
 
 const UnionRecAvroCRC64Fingerprint = "1\xf9\xae\xb7W\x80#\xf9"
 
-func NewUnionRec() *UnionRec {
-	return &UnionRec{}
+func NewUnionRec() UnionRec {
+	return UnionRec{}
 }
 
-func DeserializeUnionRec(r io.Reader) (*UnionRec, error) {
+func DeserializeUnionRec(r io.Reader) (UnionRec, error) {
 	t := NewUnionRec()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeUnionRecFromSchema(r io.Reader, schema string) (*UnionRec, error) {
+func DeserializeUnionRecFromSchema(r io.Reader, schema string) (UnionRec, error) {
 	t := NewUnionRec()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeUnionRec(r *UnionRec, w io.Writer) error {
+func writeUnionRec(r UnionRec, w io.Writer) error {
 	var err error
 	err = vm.WriteInt(r.A, w)
 	if err != nil {
@@ -65,26 +59,26 @@ func writeUnionRec(r *UnionRec, w io.Writer) error {
 	return err
 }
 
-func (r *UnionRec) Serialize(w io.Writer) error {
+func (r UnionRec) Serialize(w io.Writer) error {
 	return writeUnionRec(r, w)
 }
 
-func (r *UnionRec) Schema() string {
+func (r UnionRec) Schema() string {
 	return "{\"fields\":[{\"name\":\"a\",\"type\":\"int\"}],\"name\":\"unionRec\",\"type\":\"record\"}"
 }
 
-func (r *UnionRec) SchemaName() string {
+func (r UnionRec) SchemaName() string {
 	return "unionRec"
 }
 
-func (_ *UnionRec) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *UnionRec) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *UnionRec) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *UnionRec) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *UnionRec) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *UnionRec) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *UnionRec) SetString(v string)   { panic("Unsupported operation") }
-func (_ *UnionRec) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ UnionRec) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ UnionRec) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ UnionRec) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ UnionRec) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ UnionRec) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ UnionRec) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ UnionRec) SetString(v string)   { panic("Unsupported operation") }
+func (_ UnionRec) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *UnionRec) Get(i int) types.Field {
 	switch i {
@@ -106,15 +100,15 @@ func (r *UnionRec) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *UnionRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionRec) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *UnionRec) Finalize()                        {}
+func (_ UnionRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ UnionRec) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ UnionRec) Finalize()                        {}
 
-func (_ *UnionRec) AvroCRC64Fingerprint() []byte {
+func (_ UnionRec) AvroCRC64Fingerprint() []byte {
 	return []byte(UnionRecAvroCRC64Fingerprint)
 }
 
-func (r *UnionRec) MarshalJSON() ([]byte, error) {
+func (r UnionRec) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["a"], err = json.Marshal(r.A)

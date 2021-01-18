@@ -42,8 +42,8 @@ func NewArrayTestRecordReader(r io.Reader) (*ArrayTestRecordReader, error) {
 	}, nil
 }
 
-func (r ArrayTestRecordReader) Read() (*ArrayTestRecord, error) {
+func (r ArrayTestRecordReader) Read() (ArrayTestRecord, error) {
 	t := NewArrayTestRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

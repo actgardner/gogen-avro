@@ -28,40 +28,34 @@ type AvroContainerBlock struct {
 
 const AvroContainerBlockAvroCRC64Fingerprint = "\x0e\xecj@ٔ\xe14"
 
-func NewAvroContainerBlock() *AvroContainerBlock {
-	return &AvroContainerBlock{}
+func NewAvroContainerBlock() AvroContainerBlock {
+	return AvroContainerBlock{}
 }
 
-func DeserializeAvroContainerBlock(r io.Reader) (*AvroContainerBlock, error) {
+func DeserializeAvroContainerBlock(r io.Reader) (AvroContainerBlock, error) {
 	t := NewAvroContainerBlock()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeAvroContainerBlockFromSchema(r io.Reader, schema string) (*AvroContainerBlock, error) {
+func DeserializeAvroContainerBlockFromSchema(r io.Reader, schema string) (AvroContainerBlock, error) {
 	t := NewAvroContainerBlock()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeAvroContainerBlock(r *AvroContainerBlock, w io.Writer) error {
+func writeAvroContainerBlock(r AvroContainerBlock, w io.Writer) error {
 	var err error
 	err = vm.WriteLong(r.NumRecords, w)
 	if err != nil {
@@ -78,26 +72,26 @@ func writeAvroContainerBlock(r *AvroContainerBlock, w io.Writer) error {
 	return err
 }
 
-func (r *AvroContainerBlock) Serialize(w io.Writer) error {
+func (r AvroContainerBlock) Serialize(w io.Writer) error {
 	return writeAvroContainerBlock(r, w)
 }
 
-func (r *AvroContainerBlock) Schema() string {
+func (r AvroContainerBlock) Schema() string {
 	return "{\"fields\":[{\"name\":\"numRecords\",\"type\":\"long\"},{\"name\":\"recordBytes\",\"type\":\"bytes\"},{\"name\":\"sync\",\"type\":{\"name\":\"sync\",\"size\":16,\"type\":\"fixed\"}}],\"name\":\"AvroContainerBlock\",\"type\":\"record\"}"
 }
 
-func (r *AvroContainerBlock) SchemaName() string {
+func (r AvroContainerBlock) SchemaName() string {
 	return "AvroContainerBlock"
 }
 
-func (_ *AvroContainerBlock) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetString(v string)   { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ AvroContainerBlock) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ AvroContainerBlock) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ AvroContainerBlock) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ AvroContainerBlock) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ AvroContainerBlock) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ AvroContainerBlock) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ AvroContainerBlock) SetString(v string)   { panic("Unsupported operation") }
+func (_ AvroContainerBlock) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *AvroContainerBlock) Get(i int) types.Field {
 	switch i {
@@ -123,15 +117,15 @@ func (r *AvroContainerBlock) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *AvroContainerBlock) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *AvroContainerBlock) Finalize()                        {}
+func (_ AvroContainerBlock) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ AvroContainerBlock) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ AvroContainerBlock) Finalize()                        {}
 
-func (_ *AvroContainerBlock) AvroCRC64Fingerprint() []byte {
+func (_ AvroContainerBlock) AvroCRC64Fingerprint() []byte {
 	return []byte(AvroContainerBlockAvroCRC64Fingerprint)
 }
 
-func (r *AvroContainerBlock) MarshalJSON() ([]byte, error) {
+func (r AvroContainerBlock) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["numRecords"], err = json.Marshal(r.NumRecords)

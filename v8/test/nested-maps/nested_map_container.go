@@ -42,8 +42,8 @@ func NewNestedMapReader(r io.Reader) (*NestedMapReader, error) {
 	}, nil
 }
 
-func (r NestedMapReader) Read() (*NestedMap, error) {
+func (r NestedMapReader) Read() (NestedMap, error) {
 	t := NewNestedMap()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

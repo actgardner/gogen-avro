@@ -42,8 +42,8 @@ func NewComAvroTestSampleReader(r io.Reader) (*ComAvroTestSampleReader, error) {
 	}, nil
 }
 
-func (r ComAvroTestSampleReader) Read() (*ComAvroTestSample, error) {
+func (r ComAvroTestSampleReader) Read() (ComAvroTestSample, error) {
 	t := NewComAvroTestSample()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

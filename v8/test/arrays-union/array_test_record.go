@@ -18,80 +18,74 @@ import (
 var _ = fmt.Printf
 
 type ArrayTestRecord struct {
-	IntField []*UnionNullInt `json:"IntField"`
+	IntField []*UnionInt `json:"IntField"`
 }
 
 const ArrayTestRecordAvroCRC64Fingerprint = "t\x06\x9e\xc8\u0088\xa0\xcb"
 
-func NewArrayTestRecord() *ArrayTestRecord {
-	return &ArrayTestRecord{}
+func NewArrayTestRecord() ArrayTestRecord {
+	return ArrayTestRecord{}
 }
 
-func DeserializeArrayTestRecord(r io.Reader) (*ArrayTestRecord, error) {
+func DeserializeArrayTestRecord(r io.Reader) (ArrayTestRecord, error) {
 	t := NewArrayTestRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (*ArrayTestRecord, error) {
+func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (ArrayTestRecord, error) {
 	t := NewArrayTestRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeArrayTestRecord(r *ArrayTestRecord, w io.Writer) error {
+func writeArrayTestRecord(r ArrayTestRecord, w io.Writer) error {
 	var err error
-	err = writeArrayUnionNullInt(r.IntField, w)
+	err = writeArrayUnionInt(r.IntField, w)
 	if err != nil {
 		return err
 	}
 	return err
 }
 
-func (r *ArrayTestRecord) Serialize(w io.Writer) error {
+func (r ArrayTestRecord) Serialize(w io.Writer) error {
 	return writeArrayTestRecord(r, w)
 }
 
-func (r *ArrayTestRecord) Schema() string {
+func (r ArrayTestRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":{\"items\":[\"null\",\"int\"],\"type\":\"array\"}}],\"name\":\"ArrayTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *ArrayTestRecord) SchemaName() string {
+func (r ArrayTestRecord) SchemaName() string {
 	return "ArrayTestRecord"
 }
 
-func (_ *ArrayTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ ArrayTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ ArrayTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ ArrayTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ ArrayTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ ArrayTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ ArrayTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ ArrayTestRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ ArrayTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *ArrayTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.IntField = make([]*UnionNullInt, 0)
+		r.IntField = make([]*UnionInt, 0)
 
-		return &ArrayUnionNullIntWrapper{Target: &r.IntField}
+		return &ArrayUnionIntWrapper{Target: &r.IntField}
 	}
 	panic("Unknown field index")
 }
@@ -108,15 +102,15 @@ func (r *ArrayTestRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *ArrayTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *ArrayTestRecord) Finalize()                        {}
+func (_ ArrayTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ ArrayTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ ArrayTestRecord) Finalize()                        {}
 
-func (_ *ArrayTestRecord) AvroCRC64Fingerprint() []byte {
+func (_ ArrayTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(ArrayTestRecordAvroCRC64Fingerprint)
 }
 
-func (r *ArrayTestRecord) MarshalJSON() ([]byte, error) {
+func (r ArrayTestRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["IntField"], err = json.Marshal(r.IntField)

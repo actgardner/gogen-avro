@@ -12,7 +12,7 @@ import (
 	"github.com/actgardner/gogen-avro/v8/vm/types"
 )
 
-func writeArrayChild(r []*Child, w io.Writer) error {
+func writeArrayChild(r []Child, w io.Writer) error {
 	err := vm.WriteLong(int64(len(r)), w)
 	if err != nil || len(r) == 0 {
 		return err
@@ -27,7 +27,7 @@ func writeArrayChild(r []*Child, w io.Writer) error {
 }
 
 type ArrayChildWrapper struct {
-	Target *[]*Child
+	Target *[]Child
 }
 
 func (_ *ArrayChildWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
@@ -47,10 +47,9 @@ func (r *ArrayChildWrapper) NullField(i int) {
 }
 
 func (r *ArrayChildWrapper) AppendArray() types.Field {
-	var v *Child
+	var v Child
 	v = NewChild()
 
 	*r.Target = append(*r.Target, v)
-
-	return (*r.Target)[len(*r.Target)-1]
+	return &types.Record{Target: &(*r.Target)[len(*r.Target)-1]}
 }

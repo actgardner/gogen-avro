@@ -27,40 +27,34 @@ type AliasedRecord struct {
 
 const AliasedRecordAvroCRC64Fingerprint = "\x95\xd965\xeb$\xa8\x19"
 
-func NewAliasedRecord() *AliasedRecord {
-	return &AliasedRecord{}
+func NewAliasedRecord() AliasedRecord {
+	return AliasedRecord{}
 }
 
-func DeserializeAliasedRecord(r io.Reader) (*AliasedRecord, error) {
+func DeserializeAliasedRecord(r io.Reader) (AliasedRecord, error) {
 	t := NewAliasedRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeAliasedRecordFromSchema(r io.Reader, schema string) (*AliasedRecord, error) {
+func DeserializeAliasedRecordFromSchema(r io.Reader, schema string) (AliasedRecord, error) {
 	t := NewAliasedRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeAliasedRecord(r *AliasedRecord, w io.Writer) error {
+func writeAliasedRecord(r AliasedRecord, w io.Writer) error {
 	var err error
 	err = vm.WriteString(r.StringField, w)
 	if err != nil {
@@ -77,26 +71,26 @@ func writeAliasedRecord(r *AliasedRecord, w io.Writer) error {
 	return err
 }
 
-func (r *AliasedRecord) Serialize(w io.Writer) error {
+func (r AliasedRecord) Serialize(w io.Writer) error {
 	return writeAliasedRecord(r, w)
 }
 
-func (r *AliasedRecord) Schema() string {
+func (r AliasedRecord) Schema() string {
 	return "{\"aliases\":[\"NestedRecord\"],\"fields\":[{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"aliasedRecord\",\"type\":\"record\"}"
 }
 
-func (r *AliasedRecord) SchemaName() string {
+func (r AliasedRecord) SchemaName() string {
 	return "aliasedRecord"
 }
 
-func (_ *AliasedRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *AliasedRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *AliasedRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *AliasedRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *AliasedRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *AliasedRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *AliasedRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *AliasedRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ AliasedRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ AliasedRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ AliasedRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ AliasedRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ AliasedRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ AliasedRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ AliasedRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ AliasedRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *AliasedRecord) Get(i int) types.Field {
 	switch i {
@@ -122,15 +116,15 @@ func (r *AliasedRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *AliasedRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *AliasedRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *AliasedRecord) Finalize()                        {}
+func (_ AliasedRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ AliasedRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ AliasedRecord) Finalize()                        {}
 
-func (_ *AliasedRecord) AvroCRC64Fingerprint() []byte {
+func (_ AliasedRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(AliasedRecordAvroCRC64Fingerprint)
 }
 
-func (r *AliasedRecord) MarshalJSON() ([]byte, error) {
+func (r AliasedRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["StringField"], err = json.Marshal(r.StringField)

@@ -42,8 +42,8 @@ func NewHeaderworksDatatypeUUIDReader(r io.Reader) (*HeaderworksDatatypeUUIDRead
 	}, nil
 }
 
-func (r HeaderworksDatatypeUUIDReader) Read() (*HeaderworksDatatypeUUID, error) {
+func (r HeaderworksDatatypeUUIDReader) Read() (HeaderworksDatatypeUUID, error) {
 	t := NewHeaderworksDatatypeUUID()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

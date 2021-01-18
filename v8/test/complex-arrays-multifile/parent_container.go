@@ -43,8 +43,8 @@ func NewParentReader(r io.Reader) (*ParentReader, error) {
 	}, nil
 }
 
-func (r ParentReader) Read() (*Parent, error) {
+func (r ParentReader) Read() (Parent, error) {
 	t := NewParent()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

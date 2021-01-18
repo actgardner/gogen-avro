@@ -29,40 +29,34 @@ type Event struct {
 
 const EventAvroCRC64Fingerprint = "\xebZ\xc0m\xf9OV\x97"
 
-func NewEvent() *Event {
-	return &Event{}
+func NewEvent() Event {
+	return Event{}
 }
 
-func DeserializeEvent(r io.Reader) (*Event, error) {
+func DeserializeEvent(r io.Reader) (Event, error) {
 	t := NewEvent()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeEventFromSchema(r io.Reader, schema string) (*Event, error) {
+func DeserializeEventFromSchema(r io.Reader, schema string) (Event, error) {
 	t := NewEvent()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeEvent(r *Event, w io.Writer) error {
+func writeEvent(r Event, w io.Writer) error {
 	var err error
 	err = vm.WriteString(r.Id, w)
 	if err != nil {
@@ -79,26 +73,26 @@ func writeEvent(r *Event, w io.Writer) error {
 	return err
 }
 
-func (r *Event) Serialize(w io.Writer) error {
+func (r Event) Serialize(w io.Writer) error {
 	return writeEvent(r, w)
 }
 
-func (r *Event) Schema() string {
+func (r Event) Schema() string {
 	return "{\"doc\":\"The test record\",\"fields\":[{\"doc\":\"Unique ID for this event.\",\"name\":\"id\",\"type\":\"string\"},{\"doc\":\"Start IP of this observation's IP range.\",\"name\":\"start_ip\",\"type\":{\"name\":\"ip_address\",\"size\":16,\"type\":\"fixed\"}},{\"doc\":\"End IP of this observation's IP range.\",\"name\":\"end_ip\",\"type\":\"ip_address\"}],\"name\":\"event\",\"subject\":\"event\",\"type\":\"record\"}"
 }
 
-func (r *Event) SchemaName() string {
+func (r Event) SchemaName() string {
 	return "event"
 }
 
-func (_ *Event) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *Event) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *Event) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *Event) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *Event) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *Event) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *Event) SetString(v string)   { panic("Unsupported operation") }
-func (_ *Event) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ Event) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ Event) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ Event) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ Event) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ Event) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ Event) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ Event) SetString(v string)   { panic("Unsupported operation") }
+func (_ Event) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Event) Get(i int) types.Field {
 	switch i {
@@ -124,15 +118,15 @@ func (r *Event) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *Event) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Event) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *Event) Finalize()                        {}
+func (_ Event) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ Event) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ Event) Finalize()                        {}
 
-func (_ *Event) AvroCRC64Fingerprint() []byte {
+func (_ Event) AvroCRC64Fingerprint() []byte {
 	return []byte(EventAvroCRC64Fingerprint)
 }
 
-func (r *Event) MarshalJSON() ([]byte, error) {
+func (r Event) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["id"], err = json.Marshal(r.Id)

@@ -23,40 +23,34 @@ type StructTag struct {
 
 const StructTagAvroCRC64Fingerprint = "\x92\xb7Dk\xe2\x1e\xef\xfc"
 
-func NewStructTag() *StructTag {
-	return &StructTag{}
+func NewStructTag() StructTag {
+	return StructTag{}
 }
 
-func DeserializeStructTag(r io.Reader) (*StructTag, error) {
+func DeserializeStructTag(r io.Reader) (StructTag, error) {
 	t := NewStructTag()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeStructTagFromSchema(r io.Reader, schema string) (*StructTag, error) {
+func DeserializeStructTagFromSchema(r io.Reader, schema string) (StructTag, error) {
 	t := NewStructTag()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeStructTag(r *StructTag, w io.Writer) error {
+func writeStructTag(r StructTag, w io.Writer) error {
 	var err error
 	err = vm.WriteString(r.ProductName, w)
 	if err != nil {
@@ -65,26 +59,26 @@ func writeStructTag(r *StructTag, w io.Writer) error {
 	return err
 }
 
-func (r *StructTag) Serialize(w io.Writer) error {
+func (r StructTag) Serialize(w io.Writer) error {
 	return writeStructTag(r, w)
 }
 
-func (r *StructTag) Schema() string {
+func (r StructTag) Schema() string {
 	return "{\"fields\":[{\"golang.tags\":\"validate:\\\"true\\\"\",\"name\":\"productName\",\"type\":\"string\"}],\"name\":\"StructTag\",\"type\":\"record\"}"
 }
 
-func (r *StructTag) SchemaName() string {
+func (r StructTag) SchemaName() string {
 	return "StructTag"
 }
 
-func (_ *StructTag) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *StructTag) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *StructTag) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *StructTag) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *StructTag) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *StructTag) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *StructTag) SetString(v string)   { panic("Unsupported operation") }
-func (_ *StructTag) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ StructTag) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ StructTag) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ StructTag) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ StructTag) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ StructTag) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ StructTag) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ StructTag) SetString(v string)   { panic("Unsupported operation") }
+func (_ StructTag) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *StructTag) Get(i int) types.Field {
 	switch i {
@@ -106,15 +100,15 @@ func (r *StructTag) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *StructTag) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *StructTag) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *StructTag) Finalize()                        {}
+func (_ StructTag) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ StructTag) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ StructTag) Finalize()                        {}
 
-func (_ *StructTag) AvroCRC64Fingerprint() []byte {
+func (_ StructTag) AvroCRC64Fingerprint() []byte {
 	return []byte(StructTagAvroCRC64Fingerprint)
 }
 
-func (r *StructTag) MarshalJSON() ([]byte, error) {
+func (r StructTag) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["productName"], err = json.Marshal(r.ProductName)

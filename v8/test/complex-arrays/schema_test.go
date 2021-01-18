@@ -12,6 +12,7 @@ func TestRoundTrip(t *testing.T) {
 	test.RoundTrip(t,
 		func() container.AvroRecord { return &Parent{} },
 		func(r io.Reader) (container.AvroRecord, error) {
-			return DeserializeParent(r)
+			record, err := DeserializeParent(r)
+			return &record, err
 		})
 }

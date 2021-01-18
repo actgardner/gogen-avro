@@ -3,7 +3,6 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"testing"
@@ -58,7 +57,7 @@ func LoadEvolutionFixtures() ([]EvolutionFixture, error) {
 }
 
 func GGJSONToAvroBytes(fixture json.RawMessage, fixtureType container.AvroRecord) ([]byte, error) {
-	if err := json.Unmarshal([]byte(fixture), &fixtureType); err != nil {
+	if err := json.Unmarshal([]byte(fixture), fixtureType); err != nil {
 		return nil, err
 	}
 
@@ -203,8 +202,6 @@ func RoundTripEvolution(t *testing.T, oldRecordFunc, newRecordFunc RecordFactory
 		oldRecord := oldRecordFunc()
 		oldBytes, err := GGJSONToAvroBytes(f.Data, oldRecord)
 		assert.NoError(t, err)
-
-		fmt.Printf("old: %v\n", oldBytes)
 
 		// Deserialize the Avro data with the new schema and compare to the expected JSON deserialization
 		newRecord, err := newDeserMethod(bytes.NewBuffer(oldBytes), string(oldSchema))

@@ -28,40 +28,34 @@ type AvroContainerHeader struct {
 
 const AvroContainerHeaderAvroCRC64Fingerprint = "\xc0\x12\x03\xc0wi\xf96"
 
-func NewAvroContainerHeader() *AvroContainerHeader {
-	return &AvroContainerHeader{}
+func NewAvroContainerHeader() AvroContainerHeader {
+	return AvroContainerHeader{}
 }
 
-func DeserializeAvroContainerHeader(r io.Reader) (*AvroContainerHeader, error) {
+func DeserializeAvroContainerHeader(r io.Reader) (AvroContainerHeader, error) {
 	t := NewAvroContainerHeader()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeAvroContainerHeaderFromSchema(r io.Reader, schema string) (*AvroContainerHeader, error) {
+func DeserializeAvroContainerHeaderFromSchema(r io.Reader, schema string) (AvroContainerHeader, error) {
 	t := NewAvroContainerHeader()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeAvroContainerHeader(r *AvroContainerHeader, w io.Writer) error {
+func writeAvroContainerHeader(r AvroContainerHeader, w io.Writer) error {
 	var err error
 	err = writeMagic(r.Magic, w)
 	if err != nil {
@@ -78,26 +72,26 @@ func writeAvroContainerHeader(r *AvroContainerHeader, w io.Writer) error {
 	return err
 }
 
-func (r *AvroContainerHeader) Serialize(w io.Writer) error {
+func (r AvroContainerHeader) Serialize(w io.Writer) error {
 	return writeAvroContainerHeader(r, w)
 }
 
-func (r *AvroContainerHeader) Schema() string {
+func (r AvroContainerHeader) Schema() string {
 	return "{\"fields\":[{\"name\":\"magic\",\"type\":{\"name\":\"Magic\",\"size\":4,\"type\":\"fixed\"}},{\"name\":\"meta\",\"type\":{\"type\":\"map\",\"values\":\"bytes\"}},{\"name\":\"sync\",\"type\":{\"name\":\"Sync\",\"size\":16,\"type\":\"fixed\"}}],\"name\":\"AvroContainerHeader\",\"type\":\"record\"}"
 }
 
-func (r *AvroContainerHeader) SchemaName() string {
+func (r AvroContainerHeader) SchemaName() string {
 	return "AvroContainerHeader"
 }
 
-func (_ *AvroContainerHeader) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *AvroContainerHeader) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *AvroContainerHeader) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *AvroContainerHeader) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *AvroContainerHeader) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *AvroContainerHeader) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *AvroContainerHeader) SetString(v string)   { panic("Unsupported operation") }
-func (_ *AvroContainerHeader) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ AvroContainerHeader) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ AvroContainerHeader) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ AvroContainerHeader) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ AvroContainerHeader) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ AvroContainerHeader) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ AvroContainerHeader) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ AvroContainerHeader) SetString(v string)   { panic("Unsupported operation") }
+func (_ AvroContainerHeader) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *AvroContainerHeader) Get(i int) types.Field {
 	switch i {
@@ -125,15 +119,15 @@ func (r *AvroContainerHeader) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *AvroContainerHeader) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *AvroContainerHeader) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *AvroContainerHeader) Finalize()                        {}
+func (_ AvroContainerHeader) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ AvroContainerHeader) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ AvroContainerHeader) Finalize()                        {}
 
-func (_ *AvroContainerHeader) AvroCRC64Fingerprint() []byte {
+func (_ AvroContainerHeader) AvroCRC64Fingerprint() []byte {
 	return []byte(AvroContainerHeaderAvroCRC64Fingerprint)
 }
 
-func (r *AvroContainerHeader) MarshalJSON() ([]byte, error) {
+func (r AvroContainerHeader) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["magic"], err = json.Marshal(r.Magic)

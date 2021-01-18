@@ -42,8 +42,8 @@ func NewFixedTestRecordReader(r io.Reader) (*FixedTestRecordReader, error) {
 	}, nil
 }
 
-func (r FixedTestRecordReader) Read() (*FixedTestRecord, error) {
+func (r FixedTestRecordReader) Read() (FixedTestRecord, error) {
 	t := NewFixedTestRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

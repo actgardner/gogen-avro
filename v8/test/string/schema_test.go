@@ -47,7 +47,7 @@ func TestCorruptString(t *testing.T) {
 			continue
 		}
 
-		checkEqual(testCase.input, output, t)
+		checkEqual(testCase.input, &output, t)
 	}
 }
 

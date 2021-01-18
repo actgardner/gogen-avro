@@ -42,8 +42,8 @@ func NewDemoSchemaReader(r io.Reader) (*DemoSchemaReader, error) {
 	}, nil
 }
 
-func (r DemoSchemaReader) Read() (*DemoSchema, error) {
+func (r DemoSchemaReader) Read() (DemoSchema, error) {
 	t := NewDemoSchema()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

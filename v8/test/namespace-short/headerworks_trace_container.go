@@ -42,8 +42,8 @@ func NewHeaderworksTraceReader(r io.Reader) (*HeaderworksTraceReader, error) {
 	}, nil
 }
 
-func (r HeaderworksTraceReader) Read() (*HeaderworksTrace, error) {
+func (r HeaderworksTraceReader) Read() (HeaderworksTrace, error) {
 	t := NewHeaderworksTrace()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

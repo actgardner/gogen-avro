@@ -42,8 +42,8 @@ func NewStringRecReader(r io.Reader) (*StringRecReader, error) {
 	}, nil
 }
 
-func (r StringRecReader) Read() (*StringRec, error) {
+func (r StringRecReader) Read() (StringRec, error) {
 	t := NewStringRec()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

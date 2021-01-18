@@ -13,7 +13,8 @@ func TestRoundTrip(t *testing.T) {
 	test.RoundTripExactBytes(t,
 		func() container.AvroRecord { return &UnionNestedRecordNestedTestRecord{} },
 		func(r io.Reader) (container.AvroRecord, error) {
-			return DeserializeUnionNestedRecordNestedTestRecord(r)
+			record, err := DeserializeUnionNestedRecordNestedTestRecord(r)
+			return &record, err
 		})
 }
 
@@ -22,6 +23,7 @@ func TestEvolution(t *testing.T) {
 		func() container.AvroRecord { return &UnionNestedRecordNestedTestRecord{} },
 		func() container.AvroRecord { return &evolution.UnionAliasedRecordNestedTestRecord{} },
 		func(r io.Reader, schema string) (container.AvroRecord, error) {
-			return evolution.DeserializeUnionAliasedRecordNestedTestRecordFromSchema(r, schema)
+			record, err := evolution.DeserializeUnionAliasedRecordNestedTestRecordFromSchema(r, schema)
+			return &record, err
 		})
 }

@@ -42,8 +42,8 @@ func NewRecord2Reader(r io.Reader) (*Record2Reader, error) {
 	}, nil
 }
 
-func (r Record2Reader) Read() (*Record2, error) {
+func (r Record2Reader) Read() (Record2, error) {
 	t := NewRecord2()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

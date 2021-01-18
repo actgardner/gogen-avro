@@ -40,7 +40,7 @@ func New{{ .RecordReaderTypeName }}(r io.Reader) (*{{ .RecordReaderTypeName }}, 
 
 func (r {{ .RecordReaderTypeName }}) Read() ({{ .GoType }}, error) {
 	t := {{ .ConstructorMethod }}
-        err := vm.Eval(r.r, r.p, t)
+        err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }
 `

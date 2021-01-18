@@ -42,8 +42,8 @@ func NewMapTestRecordReader(r io.Reader) (*MapTestRecordReader, error) {
 	}, nil
 }
 
-func (r MapTestRecordReader) Read() (*MapTestRecord, error) {
+func (r MapTestRecordReader) Read() (MapTestRecord, error) {
 	t := NewMapTestRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

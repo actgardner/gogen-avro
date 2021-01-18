@@ -30,12 +30,12 @@ const (
 type UnionBytesStringRecord1Record2 struct {
 	Bytes     Bytes
 	String    string
-	Record1   *Record1
-	Record2   *Record2
+	Record1   Record1
+	Record2   Record2
 	UnionType UnionBytesStringRecord1Record2TypeEnum
 }
 
-func writeUnionBytesStringRecord1Record2(r *UnionBytesStringRecord1Record2, w io.Writer) error {
+func writeUnionBytesStringRecord1Record2(r UnionBytesStringRecord1Record2, w io.Writer) error {
 
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
@@ -51,59 +51,65 @@ func writeUnionBytesStringRecord1Record2(r *UnionBytesStringRecord1Record2, w io
 	case UnionBytesStringRecord1Record2TypeEnumRecord2:
 		return writeRecord2(r.Record2, w)
 	}
-	return fmt.Errorf("invalid value for *UnionBytesStringRecord1Record2")
+	return fmt.Errorf("invalid value for UnionBytesStringRecord1Record2")
 }
 
-func NewUnionBytesStringRecord1Record2() *UnionBytesStringRecord1Record2 {
-	return &UnionBytesStringRecord1Record2{}
+func NewUnionBytesStringRecord1Record2() UnionBytesStringRecord1Record2 {
+	return UnionBytesStringRecord1Record2{}
 }
 
-func (r *UnionBytesStringRecord1Record2) Serialize(w io.Writer) error {
+func (r UnionBytesStringRecord1Record2) Serialize(w io.Writer) error {
 	return writeUnionBytesStringRecord1Record2(r, w)
 }
 
-func DeserializeUnionBytesStringRecord1Record2(r io.Reader) (*UnionBytesStringRecord1Record2, error) {
+func DeserializeUnionBytesStringRecord1Record2(r io.Reader) (UnionBytesStringRecord1Record2, error) {
 	t := NewUnionBytesStringRecord1Record2()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
+	err = vm.Eval(r, deser, &t)
+
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
 
-func DeserializeUnionBytesStringRecord1Record2FromSchema(r io.Reader, schema string) (*UnionBytesStringRecord1Record2, error) {
+func DeserializeUnionBytesStringRecord1Record2FromSchema(r io.Reader, schema string) (UnionBytesStringRecord1Record2, error) {
 	t := NewUnionBytesStringRecord1Record2()
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
+	err = vm.Eval(r, deser, &t)
+
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
 
-func (r *UnionBytesStringRecord1Record2) Schema() string {
+func (r UnionBytesStringRecord1Record2) Schema() string {
 	return "[\"bytes\",\"string\",{\"fields\":[{\"name\":\"intfield\",\"type\":\"int\"}],\"name\":\"record1\",\"type\":\"record\"},{\"fields\":[{\"name\":\"intfield\",\"type\":\"int\"}],\"name\":\"record2\",\"type\":\"record\"}]"
 }
 
-func (_ *UnionBytesStringRecord1Record2) SetBoolean(v bool)   { panic("Unsupported operation") }
-func (_ *UnionBytesStringRecord1Record2) SetInt(v int32)      { panic("Unsupported operation") }
-func (_ *UnionBytesStringRecord1Record2) SetFloat(v float32)  { panic("Unsupported operation") }
-func (_ *UnionBytesStringRecord1Record2) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *UnionBytesStringRecord1Record2) SetBytes(v []byte)   { panic("Unsupported operation") }
-func (_ *UnionBytesStringRecord1Record2) SetString(v string)  { panic("Unsupported operation") }
+func (_ UnionBytesStringRecord1Record2) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ UnionBytesStringRecord1Record2) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ UnionBytesStringRecord1Record2) SetFloat(v float32)  { panic("Unsupported operation") }
+func (_ UnionBytesStringRecord1Record2) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ UnionBytesStringRecord1Record2) SetBytes(v []byte)   { panic("Unsupported operation") }
+func (_ UnionBytesStringRecord1Record2) SetString(v string)  { panic("Unsupported operation") }
+
 func (r *UnionBytesStringRecord1Record2) SetLong(v int64) {
+
 	r.UnionType = (UnionBytesStringRecord1Record2TypeEnum)(v)
 }
+
 func (r *UnionBytesStringRecord1Record2) Get(i int) types.Field {
+
 	switch i {
 	case 0:
 		return &BytesWrapper{Target: (&r.Bytes)}
@@ -111,25 +117,23 @@ func (r *UnionBytesStringRecord1Record2) Get(i int) types.Field {
 		return &types.String{Target: (&r.String)}
 	case 2:
 		r.Record1 = NewRecord1()
-		return r.Record1
+		return &types.Record{Target: (&r.Record1)}
 	case 3:
 		r.Record2 = NewRecord2()
-		return r.Record2
+		return &types.Record{Target: (&r.Record2)}
 	}
 	panic("Unknown field index")
 }
-func (_ *UnionBytesStringRecord1Record2) NullField(i int)  { panic("Unsupported operation") }
-func (_ *UnionBytesStringRecord1Record2) SetDefault(i int) { panic("Unsupported operation") }
-func (_ *UnionBytesStringRecord1Record2) AppendMap(key string) types.Field {
+func (_ UnionBytesStringRecord1Record2) NullField(i int)  { panic("Unsupported operation") }
+func (_ UnionBytesStringRecord1Record2) SetDefault(i int) { panic("Unsupported operation") }
+func (_ UnionBytesStringRecord1Record2) AppendMap(key string) types.Field {
 	panic("Unsupported operation")
 }
-func (_ *UnionBytesStringRecord1Record2) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *UnionBytesStringRecord1Record2) Finalize()                {}
+func (_ UnionBytesStringRecord1Record2) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ UnionBytesStringRecord1Record2) Finalize()                {}
 
-func (r *UnionBytesStringRecord1Record2) MarshalJSON() ([]byte, error) {
-	if r == nil {
-		return []byte("null"), nil
-	}
+func (r UnionBytesStringRecord1Record2) MarshalJSON() ([]byte, error) {
+
 	switch r.UnionType {
 	case UnionBytesStringRecord1Record2TypeEnumBytes:
 		return json.Marshal(map[string]interface{}{"bytes": r.Bytes})
@@ -140,10 +144,11 @@ func (r *UnionBytesStringRecord1Record2) MarshalJSON() ([]byte, error) {
 	case UnionBytesStringRecord1Record2TypeEnumRecord2:
 		return json.Marshal(map[string]interface{}{"record2": r.Record2})
 	}
-	return nil, fmt.Errorf("invalid value for *UnionBytesStringRecord1Record2")
+	return nil, fmt.Errorf("invalid value for UnionBytesStringRecord1Record2")
 }
 
 func (r *UnionBytesStringRecord1Record2) UnmarshalJSON(data []byte) error {
+
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
@@ -167,5 +172,5 @@ func (r *UnionBytesStringRecord1Record2) UnmarshalJSON(data []byte) error {
 		r.UnionType = 3
 		return json.Unmarshal([]byte(value), &r.Record2)
 	}
-	return fmt.Errorf("invalid value for *UnionBytesStringRecord1Record2")
+	return fmt.Errorf("invalid value for UnionBytesStringRecord1Record2")
 }

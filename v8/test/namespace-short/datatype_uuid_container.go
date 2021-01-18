@@ -42,8 +42,8 @@ func NewDatatypeUUIDReader(r io.Reader) (*DatatypeUUIDReader, error) {
 	}, nil
 }
 
-func (r DatatypeUUIDReader) Read() (*DatatypeUUID, error) {
+func (r DatatypeUUIDReader) Read() (DatatypeUUID, error) {
 	t := NewDatatypeUUID()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

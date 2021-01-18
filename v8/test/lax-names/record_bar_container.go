@@ -42,8 +42,8 @@ func NewRecordBarReader(r io.Reader) (*RecordBarReader, error) {
 	}, nil
 }
 
-func (r RecordBarReader) Read() (*RecordBar, error) {
+func (r RecordBarReader) Read() (RecordBar, error) {
 	t := NewRecordBar()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

@@ -12,6 +12,7 @@ func TestRoundTrip(t *testing.T) {
 	test.RoundTripExactBytes(t,
 		func() container.AvroRecord { return &FixedTestRecord{} },
 		func(r io.Reader) (container.AvroRecord, error) {
-			return DeserializeFixedTestRecord(r)
+			record, err := DeserializeFixedTestRecord(r)
+			return &record, err
 		})
 }

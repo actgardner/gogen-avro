@@ -24,12 +24,12 @@ const (
 )
 
 type UnionRecordFooRecordBar struct {
-	RecordFoo *RecordFoo
-	RecordBar *RecordBar
+	RecordFoo RecordFoo
+	RecordBar RecordBar
 	UnionType UnionRecordFooRecordBarTypeEnum
 }
 
-func writeUnionRecordFooRecordBar(r *UnionRecordFooRecordBar, w io.Writer) error {
+func writeUnionRecordFooRecordBar(r UnionRecordFooRecordBar, w io.Writer) error {
 
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
@@ -41,89 +41,94 @@ func writeUnionRecordFooRecordBar(r *UnionRecordFooRecordBar, w io.Writer) error
 	case UnionRecordFooRecordBarTypeEnumRecordBar:
 		return writeRecordBar(r.RecordBar, w)
 	}
-	return fmt.Errorf("invalid value for *UnionRecordFooRecordBar")
+	return fmt.Errorf("invalid value for UnionRecordFooRecordBar")
 }
 
-func NewUnionRecordFooRecordBar() *UnionRecordFooRecordBar {
-	return &UnionRecordFooRecordBar{}
+func NewUnionRecordFooRecordBar() UnionRecordFooRecordBar {
+	return UnionRecordFooRecordBar{}
 }
 
-func (r *UnionRecordFooRecordBar) Serialize(w io.Writer) error {
+func (r UnionRecordFooRecordBar) Serialize(w io.Writer) error {
 	return writeUnionRecordFooRecordBar(r, w)
 }
 
-func DeserializeUnionRecordFooRecordBar(r io.Reader) (*UnionRecordFooRecordBar, error) {
+func DeserializeUnionRecordFooRecordBar(r io.Reader) (UnionRecordFooRecordBar, error) {
 	t := NewUnionRecordFooRecordBar()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
+	err = vm.Eval(r, deser, &t)
+
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
 
-func DeserializeUnionRecordFooRecordBarFromSchema(r io.Reader, schema string) (*UnionRecordFooRecordBar, error) {
+func DeserializeUnionRecordFooRecordBarFromSchema(r io.Reader, schema string) (UnionRecordFooRecordBar, error) {
 	t := NewUnionRecordFooRecordBar()
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
+	err = vm.Eval(r, deser, &t)
+
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
 
-func (r *UnionRecordFooRecordBar) Schema() string {
+func (r UnionRecordFooRecordBar) Schema() string {
 	return "[{\"fields\":[{\"name\":\"id\",\"type\":\"string\"}],\"name\":\"RecordFoo\",\"type\":\"record\"},{\"fields\":[{\"name\":\"id\",\"type\":\"string\"}],\"name\":\"RecordBar\",\"type\":\"record\"}]"
 }
 
-func (_ *UnionRecordFooRecordBar) SetBoolean(v bool)   { panic("Unsupported operation") }
-func (_ *UnionRecordFooRecordBar) SetInt(v int32)      { panic("Unsupported operation") }
-func (_ *UnionRecordFooRecordBar) SetFloat(v float32)  { panic("Unsupported operation") }
-func (_ *UnionRecordFooRecordBar) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *UnionRecordFooRecordBar) SetBytes(v []byte)   { panic("Unsupported operation") }
-func (_ *UnionRecordFooRecordBar) SetString(v string)  { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) SetFloat(v float32)  { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) SetBytes(v []byte)   { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) SetString(v string)  { panic("Unsupported operation") }
+
 func (r *UnionRecordFooRecordBar) SetLong(v int64) {
+
 	r.UnionType = (UnionRecordFooRecordBarTypeEnum)(v)
 }
+
 func (r *UnionRecordFooRecordBar) Get(i int) types.Field {
+
 	switch i {
 	case 0:
 		r.RecordFoo = NewRecordFoo()
-		return r.RecordFoo
+		return &types.Record{Target: (&r.RecordFoo)}
 	case 1:
 		r.RecordBar = NewRecordBar()
-		return r.RecordBar
+		return &types.Record{Target: (&r.RecordBar)}
 	}
 	panic("Unknown field index")
 }
-func (_ *UnionRecordFooRecordBar) NullField(i int)                  { panic("Unsupported operation") }
-func (_ *UnionRecordFooRecordBar) SetDefault(i int)                 { panic("Unsupported operation") }
-func (_ *UnionRecordFooRecordBar) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionRecordFooRecordBar) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *UnionRecordFooRecordBar) Finalize()                        {}
+func (_ UnionRecordFooRecordBar) NullField(i int)                  { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) SetDefault(i int)                 { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) Finalize()                        {}
 
-func (r *UnionRecordFooRecordBar) MarshalJSON() ([]byte, error) {
-	if r == nil {
-		return []byte("null"), nil
-	}
+func (r UnionRecordFooRecordBar) MarshalJSON() ([]byte, error) {
+
 	switch r.UnionType {
 	case UnionRecordFooRecordBarTypeEnumRecordFoo:
 		return json.Marshal(map[string]interface{}{"RecordFoo": r.RecordFoo})
 	case UnionRecordFooRecordBarTypeEnumRecordBar:
 		return json.Marshal(map[string]interface{}{"RecordBar": r.RecordBar})
 	}
-	return nil, fmt.Errorf("invalid value for *UnionRecordFooRecordBar")
+	return nil, fmt.Errorf("invalid value for UnionRecordFooRecordBar")
 }
 
 func (r *UnionRecordFooRecordBar) UnmarshalJSON(data []byte) error {
+
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
@@ -139,5 +144,5 @@ func (r *UnionRecordFooRecordBar) UnmarshalJSON(data []byte) error {
 		r.UnionType = 1
 		return json.Unmarshal([]byte(value), &r.RecordBar)
 	}
-	return fmt.Errorf("invalid value for *UnionRecordFooRecordBar")
+	return fmt.Errorf("invalid value for UnionRecordFooRecordBar")
 }

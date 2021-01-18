@@ -42,8 +42,8 @@ func NewBodyworksTraceReader(r io.Reader) (*BodyworksTraceReader, error) {
 	}, nil
 }
 
-func (r BodyworksTraceReader) Read() (*BodyworksTrace, error) {
+func (r BodyworksTraceReader) Read() (BodyworksTrace, error) {
 	t := NewBodyworksTrace()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

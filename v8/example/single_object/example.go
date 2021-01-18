@@ -48,7 +48,7 @@ func main() {
 		return
 	}
 
-	if !reflect.DeepEqual(*output, demoStruct) {
+	if !reflect.DeepEqual(output, demoStruct) {
 		fmt.Printf("Expected structs to match! %v %v\n", output, demoStruct)
 		return
 	}

@@ -42,8 +42,8 @@ func NewNameConflictTestRecordReader(r io.Reader) (*NameConflictTestRecordReader
 	}, nil
 }
 
-func (r NameConflictTestRecordReader) Read() (*NameConflictTestRecord, error) {
+func (r NameConflictTestRecordReader) Read() (NameConflictTestRecord, error) {
 	t := NewNameConflictTestRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

@@ -42,8 +42,8 @@ func NewChildReader(r io.Reader) (*ChildReader, error) {
 	}, nil
 }
 
-func (r ChildReader) Read() (*Child, error) {
+func (r ChildReader) Read() (Child, error) {
 	t := NewChild()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

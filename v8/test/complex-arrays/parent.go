@@ -18,45 +18,39 @@ import (
 var _ = fmt.Printf
 
 type Parent struct {
-	Children []*Child `json:"Children"`
+	Children []Child `json:"Children"`
 }
 
 const ParentAvroCRC64Fingerprint = "p\x9fn\xf8\x11i\x98\x9b"
 
-func NewParent() *Parent {
-	return &Parent{}
+func NewParent() Parent {
+	return Parent{}
 }
 
-func DeserializeParent(r io.Reader) (*Parent, error) {
+func DeserializeParent(r io.Reader) (Parent, error) {
 	t := NewParent()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeParentFromSchema(r io.Reader, schema string) (*Parent, error) {
+func DeserializeParentFromSchema(r io.Reader, schema string) (Parent, error) {
 	t := NewParent()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeParent(r *Parent, w io.Writer) error {
+func writeParent(r Parent, w io.Writer) error {
 	var err error
 	err = writeArrayChild(r.Children, w)
 	if err != nil {
@@ -65,31 +59,31 @@ func writeParent(r *Parent, w io.Writer) error {
 	return err
 }
 
-func (r *Parent) Serialize(w io.Writer) error {
+func (r Parent) Serialize(w io.Writer) error {
 	return writeParent(r, w)
 }
 
-func (r *Parent) Schema() string {
+func (r Parent) Schema() string {
 	return "{\"fields\":[{\"default\":[{\"name\":\"record1\"},{\"name\":\"record2\"}],\"name\":\"Children\",\"type\":{\"items\":{\"fields\":[{\"name\":\"name\",\"type\":\"string\"}],\"name\":\"Child\",\"type\":\"record\"},\"type\":\"array\"}}],\"name\":\"Parent\",\"type\":\"record\"}"
 }
 
-func (r *Parent) SchemaName() string {
+func (r Parent) SchemaName() string {
 	return "Parent"
 }
 
-func (_ *Parent) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *Parent) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *Parent) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *Parent) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *Parent) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *Parent) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *Parent) SetString(v string)   { panic("Unsupported operation") }
-func (_ *Parent) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ Parent) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ Parent) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ Parent) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ Parent) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ Parent) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ Parent) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ Parent) SetString(v string)   { panic("Unsupported operation") }
+func (_ Parent) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Parent) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.Children = make([]*Child, 0)
+		r.Children = make([]Child, 0)
 
 		return &ArrayChildWrapper{Target: &r.Children}
 	}
@@ -99,7 +93,7 @@ func (r *Parent) Get(i int) types.Field {
 func (r *Parent) SetDefault(i int) {
 	switch i {
 	case 0:
-		r.Children = make([]*Child, 2)
+		r.Children = make([]Child, 2)
 		r.Children[0] = NewChild()
 		r.Children[0].Name = "record1"
 
@@ -117,15 +111,15 @@ func (r *Parent) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *Parent) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Parent) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *Parent) Finalize()                        {}
+func (_ Parent) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ Parent) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ Parent) Finalize()                        {}
 
-func (_ *Parent) AvroCRC64Fingerprint() []byte {
+func (_ Parent) AvroCRC64Fingerprint() []byte {
 	return []byte(ParentAvroCRC64Fingerprint)
 }
 
-func (r *Parent) MarshalJSON() ([]byte, error) {
+func (r Parent) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["Children"], err = json.Marshal(r.Children)
@@ -154,9 +148,9 @@ func (r *Parent) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Children = make([]*Child, 0)
+		r.Children = make([]Child, 0)
 
-		r.Children = make([]*Child, 2)
+		r.Children = make([]Child, 2)
 		r.Children[0] = NewChild()
 		r.Children[0].Name = "record1"
 

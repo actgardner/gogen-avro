@@ -23,7 +23,7 @@ const (
 
 type RecursiveFieldUnion struct {
 	Null                     *types.NullVal
-	RecursiveUnionTestRecord *RecursiveUnionTestRecord
+	RecursiveUnionTestRecord RecursiveUnionTestRecord
 	UnionType                RecursiveFieldUnionTypeEnum
 }
 
@@ -57,12 +57,13 @@ func DeserializeRecursiveFieldUnion(r io.Reader) (*RecursiveFieldUnion, error) {
 	t := NewRecursiveFieldUnion()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
 	err = vm.Eval(r, deser, t)
+
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
@@ -71,12 +72,13 @@ func DeserializeRecursiveFieldUnionFromSchema(r io.Reader, schema string) (*Recu
 	t := NewRecursiveFieldUnion()
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
 	err = vm.Eval(r, deser, t)
+
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
@@ -91,16 +93,20 @@ func (_ *RecursiveFieldUnion) SetFloat(v float32)  { panic("Unsupported operatio
 func (_ *RecursiveFieldUnion) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) SetBytes(v []byte)   { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) SetString(v string)  { panic("Unsupported operation") }
+
 func (r *RecursiveFieldUnion) SetLong(v int64) {
+
 	r.UnionType = (RecursiveFieldUnionTypeEnum)(v)
 }
+
 func (r *RecursiveFieldUnion) Get(i int) types.Field {
+
 	switch i {
 	case 0:
 		return r.Null
 	case 1:
 		r.RecursiveUnionTestRecord = NewRecursiveUnionTestRecord()
-		return r.RecursiveUnionTestRecord
+		return &types.Record{Target: (&r.RecursiveUnionTestRecord)}
 	}
 	panic("Unknown field index")
 }
@@ -111,9 +117,11 @@ func (_ *RecursiveFieldUnion) AppendArray() types.Field         { panic("Unsuppo
 func (_ *RecursiveFieldUnion) Finalize()                        {}
 
 func (r *RecursiveFieldUnion) MarshalJSON() ([]byte, error) {
+
 	if r == nil {
 		return []byte("null"), nil
 	}
+
 	switch r.UnionType {
 	case RecursiveFieldUnionTypeEnumRecursiveUnionTestRecord:
 		return json.Marshal(map[string]interface{}{"RecursiveUnionTestRecord": r.RecursiveUnionTestRecord})
@@ -122,6 +130,7 @@ func (r *RecursiveFieldUnion) MarshalJSON() ([]byte, error) {
 }
 
 func (r *RecursiveFieldUnion) UnmarshalJSON(data []byte) error {
+
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err

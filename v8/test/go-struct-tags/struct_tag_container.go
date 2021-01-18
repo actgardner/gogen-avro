@@ -42,8 +42,8 @@ func NewStructTagReader(r io.Reader) (*StructTagReader, error) {
 	}, nil
 }
 
-func (r StructTagReader) Read() (*StructTag, error) {
+func (r StructTagReader) Read() (StructTag, error) {
 	t := NewStructTag()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

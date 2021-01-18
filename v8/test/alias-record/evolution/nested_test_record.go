@@ -18,45 +18,39 @@ import (
 var _ = fmt.Printf
 
 type NestedTestRecord struct {
-	OtherField *AliasedRecord `json:"OtherField"`
+	OtherField AliasedRecord `json:"OtherField"`
 }
 
 const NestedTestRecordAvroCRC64Fingerprint = "\x88\x1a\x80Q&\xb1\x16g"
 
-func NewNestedTestRecord() *NestedTestRecord {
-	return &NestedTestRecord{}
+func NewNestedTestRecord() NestedTestRecord {
+	return NestedTestRecord{}
 }
 
-func DeserializeNestedTestRecord(r io.Reader) (*NestedTestRecord, error) {
+func DeserializeNestedTestRecord(r io.Reader) (NestedTestRecord, error) {
 	t := NewNestedTestRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeNestedTestRecordFromSchema(r io.Reader, schema string) (*NestedTestRecord, error) {
+func DeserializeNestedTestRecordFromSchema(r io.Reader, schema string) (NestedTestRecord, error) {
 	t := NewNestedTestRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeNestedTestRecord(r *NestedTestRecord, w io.Writer) error {
+func writeNestedTestRecord(r NestedTestRecord, w io.Writer) error {
 	var err error
 	err = writeAliasedRecord(r.OtherField, w)
 	if err != nil {
@@ -65,33 +59,33 @@ func writeNestedTestRecord(r *NestedTestRecord, w io.Writer) error {
 	return err
 }
 
-func (r *NestedTestRecord) Serialize(w io.Writer) error {
+func (r NestedTestRecord) Serialize(w io.Writer) error {
 	return writeNestedTestRecord(r, w)
 }
 
-func (r *NestedTestRecord) Schema() string {
+func (r NestedTestRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"OtherField\",\"type\":{\"aliases\":[\"NestedRecord\"],\"fields\":[{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"aliasedRecord\",\"type\":\"record\"}}],\"name\":\"NestedTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *NestedTestRecord) SchemaName() string {
+func (r NestedTestRecord) SchemaName() string {
 	return "NestedTestRecord"
 }
 
-func (_ *NestedTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *NestedTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ NestedTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ NestedTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ NestedTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ NestedTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ NestedTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ NestedTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ NestedTestRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ NestedTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NestedTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
 		r.OtherField = NewAliasedRecord()
 
-		return r.OtherField
+		return &types.Record{Target: &r.OtherField}
 	}
 	panic("Unknown field index")
 }
@@ -108,15 +102,15 @@ func (r *NestedTestRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *NestedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NestedTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *NestedTestRecord) Finalize()                        {}
+func (_ NestedTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ NestedTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ NestedTestRecord) Finalize()                        {}
 
-func (_ *NestedTestRecord) AvroCRC64Fingerprint() []byte {
+func (_ NestedTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(NestedTestRecordAvroCRC64Fingerprint)
 }
 
-func (r *NestedTestRecord) MarshalJSON() ([]byte, error) {
+func (r NestedTestRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["OtherField"], err = json.Marshal(r.OtherField)

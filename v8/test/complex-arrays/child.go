@@ -23,40 +23,34 @@ type Child struct {
 
 const ChildAvroCRC64Fingerprint = "\xad$C\xb1bU\xc0\x12"
 
-func NewChild() *Child {
-	return &Child{}
+func NewChild() Child {
+	return Child{}
 }
 
-func DeserializeChild(r io.Reader) (*Child, error) {
+func DeserializeChild(r io.Reader) (Child, error) {
 	t := NewChild()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeChildFromSchema(r io.Reader, schema string) (*Child, error) {
+func DeserializeChildFromSchema(r io.Reader, schema string) (Child, error) {
 	t := NewChild()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeChild(r *Child, w io.Writer) error {
+func writeChild(r Child, w io.Writer) error {
 	var err error
 	err = vm.WriteString(r.Name, w)
 	if err != nil {
@@ -65,26 +59,26 @@ func writeChild(r *Child, w io.Writer) error {
 	return err
 }
 
-func (r *Child) Serialize(w io.Writer) error {
+func (r Child) Serialize(w io.Writer) error {
 	return writeChild(r, w)
 }
 
-func (r *Child) Schema() string {
+func (r Child) Schema() string {
 	return "{\"fields\":[{\"name\":\"name\",\"type\":\"string\"}],\"name\":\"Child\",\"type\":\"record\"}"
 }
 
-func (r *Child) SchemaName() string {
+func (r Child) SchemaName() string {
 	return "Child"
 }
 
-func (_ *Child) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *Child) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *Child) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *Child) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *Child) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *Child) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *Child) SetString(v string)   { panic("Unsupported operation") }
-func (_ *Child) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ Child) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ Child) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ Child) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ Child) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ Child) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ Child) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ Child) SetString(v string)   { panic("Unsupported operation") }
+func (_ Child) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *Child) Get(i int) types.Field {
 	switch i {
@@ -106,15 +100,15 @@ func (r *Child) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *Child) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *Child) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *Child) Finalize()                        {}
+func (_ Child) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ Child) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ Child) Finalize()                        {}
 
-func (_ *Child) AvroCRC64Fingerprint() []byte {
+func (_ Child) AvroCRC64Fingerprint() []byte {
 	return []byte(ChildAvroCRC64Fingerprint)
 }
 
-func (r *Child) MarshalJSON() ([]byte, error) {
+func (r Child) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["name"], err = json.Marshal(r.Name)

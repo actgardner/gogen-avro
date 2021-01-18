@@ -42,8 +42,8 @@ func NewNestedRecordReader(r io.Reader) (*NestedRecordReader, error) {
 	}, nil
 }
 
-func (r NestedRecordReader) Read() (*NestedRecord, error) {
+func (r NestedRecordReader) Read() (NestedRecord, error) {
 	t := NewNestedRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

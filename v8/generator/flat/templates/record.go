@@ -28,20 +28,17 @@ type {{ .Name }} struct {
 const {{ .Name }}AvroCRC64Fingerprint = {{ definitionFingerprint . }}
 
 func {{ .ConstructorMethod }} ({{ .GoType}}) {
-	return &{{ .Name }}{}
+	return {{ .Name }}{}
 }
 
 func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {
 	t := {{ .ConstructorMethod }}
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
@@ -50,13 +47,10 @@ func Deserialize{{ .Name }}FromSchema(r io.Reader, schema string) ({{ .GoType }}
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
@@ -92,7 +86,7 @@ func (_ {{ .GoType }}) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetString(v string) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
 
-func (r {{ .GoType }}) Get(i int) types.Field {
+func (r *{{ .GoType }}) Get(i int) types.Field {
 	switch (i) {
 	{{ range $i, $field := .Fields -}}
 	case {{ $i }}:
@@ -109,7 +103,7 @@ func (r {{ .GoType }}) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 
-func (r {{ .GoType }}) SetDefault(i int) {
+func (r *{{ .GoType }}) SetDefault(i int) {
 	switch (i) {
 	{{ range $i, $field := .Fields -}}
         {{ if .HasDefault -}}
@@ -122,7 +116,7 @@ func (r {{ .GoType }}) SetDefault(i int) {
 	panic("Unknown field index")
 }
 
-func (r {{ .GoType }}) NullField(i int) { 
+func (r *{{ .GoType }}) NullField(i int) { 
 	switch (i) {
 	{{ range $i, $field := .Fields -}}
         {{ if isNullable $field.Type -}}
@@ -156,7 +150,7 @@ func (r {{ .GoType }}) MarshalJSON() ([]byte, error) {
 	return json.Marshal(output)	
 }
 
-func (r {{ .GoType }}) UnmarshalJSON(data []byte) (error) {
+func (r *{{ .GoType }}) UnmarshalJSON(data []byte) (error) {
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err

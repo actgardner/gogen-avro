@@ -23,40 +23,34 @@ type NestedUnionRecord struct {
 
 const NestedUnionRecordAvroCRC64Fingerprint = "#\xb6\xed\xa0\x87F=\xef"
 
-func NewNestedUnionRecord() *NestedUnionRecord {
-	return &NestedUnionRecord{}
+func NewNestedUnionRecord() NestedUnionRecord {
+	return NestedUnionRecord{}
 }
 
-func DeserializeNestedUnionRecord(r io.Reader) (*NestedUnionRecord, error) {
+func DeserializeNestedUnionRecord(r io.Reader) (NestedUnionRecord, error) {
 	t := NewNestedUnionRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeNestedUnionRecordFromSchema(r io.Reader, schema string) (*NestedUnionRecord, error) {
+func DeserializeNestedUnionRecordFromSchema(r io.Reader, schema string) (NestedUnionRecord, error) {
 	t := NewNestedUnionRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeNestedUnionRecord(r *NestedUnionRecord, w io.Writer) error {
+func writeNestedUnionRecord(r NestedUnionRecord, w io.Writer) error {
 	var err error
 	err = vm.WriteInt(r.IntField, w)
 	if err != nil {
@@ -65,26 +59,26 @@ func writeNestedUnionRecord(r *NestedUnionRecord, w io.Writer) error {
 	return err
 }
 
-func (r *NestedUnionRecord) Serialize(w io.Writer) error {
+func (r NestedUnionRecord) Serialize(w io.Writer) error {
 	return writeNestedUnionRecord(r, w)
 }
 
-func (r *NestedUnionRecord) Schema() string {
+func (r NestedUnionRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"}],\"name\":\"NestedUnionRecord\",\"type\":\"record\"}"
 }
 
-func (r *NestedUnionRecord) SchemaName() string {
+func (r NestedUnionRecord) SchemaName() string {
 	return "NestedUnionRecord"
 }
 
-func (_ *NestedUnionRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *NestedUnionRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *NestedUnionRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *NestedUnionRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *NestedUnionRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *NestedUnionRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *NestedUnionRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *NestedUnionRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ NestedUnionRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ NestedUnionRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ NestedUnionRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ NestedUnionRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ NestedUnionRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ NestedUnionRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ NestedUnionRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ NestedUnionRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NestedUnionRecord) Get(i int) types.Field {
 	switch i {
@@ -106,15 +100,15 @@ func (r *NestedUnionRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *NestedUnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NestedUnionRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *NestedUnionRecord) Finalize()                        {}
+func (_ NestedUnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ NestedUnionRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ NestedUnionRecord) Finalize()                        {}
 
-func (_ *NestedUnionRecord) AvroCRC64Fingerprint() []byte {
+func (_ NestedUnionRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(NestedUnionRecordAvroCRC64Fingerprint)
 }
 
-func (r *NestedUnionRecord) MarshalJSON() ([]byte, error) {
+func (r NestedUnionRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["IntField"], err = json.Marshal(r.IntField)

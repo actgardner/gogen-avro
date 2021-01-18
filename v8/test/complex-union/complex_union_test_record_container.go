@@ -42,8 +42,8 @@ func NewComplexUnionTestRecordReader(r io.Reader) (*ComplexUnionTestRecordReader
 	}, nil
 }
 
-func (r ComplexUnionTestRecordReader) Read() (*ComplexUnionTestRecord, error) {
+func (r ComplexUnionTestRecordReader) Read() (ComplexUnionTestRecord, error) {
 	t := NewComplexUnionTestRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

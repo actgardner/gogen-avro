@@ -15,6 +15,7 @@ type AvroType interface {
 	Definition(scope map[QualifiedName]interface{}) (interface{}, error)
 	DefaultValue(lvalue string, rvalue interface{}) (string, error)
 
+	// WrapperType is the VM type to wrap this value in, if applicable
 	WrapperType() string
 	IsReadableBy(f AvroType) bool
 }

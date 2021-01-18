@@ -42,8 +42,8 @@ func NewTestSampleReader(r io.Reader) (*TestSampleReader, error) {
 	}, nil
 }
 
-func (r TestSampleReader) Read() (*TestSample, error) {
+func (r TestSampleReader) Read() (TestSample, error) {
 	t := NewTestSample()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

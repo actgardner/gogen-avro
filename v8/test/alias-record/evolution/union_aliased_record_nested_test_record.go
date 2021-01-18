@@ -24,12 +24,12 @@ const (
 )
 
 type UnionAliasedRecordNestedTestRecord struct {
-	AliasedRecord    *AliasedRecord
-	NestedTestRecord *NestedTestRecord
+	AliasedRecord    AliasedRecord
+	NestedTestRecord NestedTestRecord
 	UnionType        UnionAliasedRecordNestedTestRecordTypeEnum
 }
 
-func writeUnionAliasedRecordNestedTestRecord(r *UnionAliasedRecordNestedTestRecord, w io.Writer) error {
+func writeUnionAliasedRecordNestedTestRecord(r UnionAliasedRecordNestedTestRecord, w io.Writer) error {
 
 	err := vm.WriteLong(int64(r.UnionType), w)
 	if err != nil {
@@ -41,93 +41,96 @@ func writeUnionAliasedRecordNestedTestRecord(r *UnionAliasedRecordNestedTestReco
 	case UnionAliasedRecordNestedTestRecordTypeEnumNestedTestRecord:
 		return writeNestedTestRecord(r.NestedTestRecord, w)
 	}
-	return fmt.Errorf("invalid value for *UnionAliasedRecordNestedTestRecord")
+	return fmt.Errorf("invalid value for UnionAliasedRecordNestedTestRecord")
 }
 
-func NewUnionAliasedRecordNestedTestRecord() *UnionAliasedRecordNestedTestRecord {
-	return &UnionAliasedRecordNestedTestRecord{}
+func NewUnionAliasedRecordNestedTestRecord() UnionAliasedRecordNestedTestRecord {
+	return UnionAliasedRecordNestedTestRecord{}
 }
 
-func (r *UnionAliasedRecordNestedTestRecord) Serialize(w io.Writer) error {
+func (r UnionAliasedRecordNestedTestRecord) Serialize(w io.Writer) error {
 	return writeUnionAliasedRecordNestedTestRecord(r, w)
 }
 
-func DeserializeUnionAliasedRecordNestedTestRecord(r io.Reader) (*UnionAliasedRecordNestedTestRecord, error) {
+func DeserializeUnionAliasedRecordNestedTestRecord(r io.Reader) (UnionAliasedRecordNestedTestRecord, error) {
 	t := NewUnionAliasedRecordNestedTestRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
+	err = vm.Eval(r, deser, &t)
+
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
 
-func DeserializeUnionAliasedRecordNestedTestRecordFromSchema(r io.Reader, schema string) (*UnionAliasedRecordNestedTestRecord, error) {
+func DeserializeUnionAliasedRecordNestedTestRecordFromSchema(r io.Reader, schema string) (UnionAliasedRecordNestedTestRecord, error) {
 	t := NewUnionAliasedRecordNestedTestRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
+	err = vm.Eval(r, deser, &t)
+
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
 
-func (r *UnionAliasedRecordNestedTestRecord) Schema() string {
+func (r UnionAliasedRecordNestedTestRecord) Schema() string {
 	return "[{\"aliases\":[\"NestedRecord\"],\"fields\":[{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"aliasedRecord\",\"type\":\"record\"},{\"fields\":[{\"name\":\"OtherField\",\"type\":\"aliasedRecord\"}],\"name\":\"NestedTestRecord\",\"type\":\"record\"}]"
 }
 
-func (_ *UnionAliasedRecordNestedTestRecord) SetBoolean(v bool)   { panic("Unsupported operation") }
-func (_ *UnionAliasedRecordNestedTestRecord) SetInt(v int32)      { panic("Unsupported operation") }
-func (_ *UnionAliasedRecordNestedTestRecord) SetFloat(v float32)  { panic("Unsupported operation") }
-func (_ *UnionAliasedRecordNestedTestRecord) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *UnionAliasedRecordNestedTestRecord) SetBytes(v []byte)   { panic("Unsupported operation") }
-func (_ *UnionAliasedRecordNestedTestRecord) SetString(v string)  { panic("Unsupported operation") }
+func (_ UnionAliasedRecordNestedTestRecord) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ UnionAliasedRecordNestedTestRecord) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ UnionAliasedRecordNestedTestRecord) SetFloat(v float32)  { panic("Unsupported operation") }
+func (_ UnionAliasedRecordNestedTestRecord) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ UnionAliasedRecordNestedTestRecord) SetBytes(v []byte)   { panic("Unsupported operation") }
+func (_ UnionAliasedRecordNestedTestRecord) SetString(v string)  { panic("Unsupported operation") }
+
 func (r *UnionAliasedRecordNestedTestRecord) SetLong(v int64) {
+
 	r.UnionType = (UnionAliasedRecordNestedTestRecordTypeEnum)(v)
 }
+
 func (r *UnionAliasedRecordNestedTestRecord) Get(i int) types.Field {
+
 	switch i {
 	case 0:
 		r.AliasedRecord = NewAliasedRecord()
-		return r.AliasedRecord
+		return &types.Record{Target: (&r.AliasedRecord)}
 	case 1:
 		r.NestedTestRecord = NewNestedTestRecord()
-		return r.NestedTestRecord
+		return &types.Record{Target: (&r.NestedTestRecord)}
 	}
 	panic("Unknown field index")
 }
-func (_ *UnionAliasedRecordNestedTestRecord) NullField(i int)  { panic("Unsupported operation") }
-func (_ *UnionAliasedRecordNestedTestRecord) SetDefault(i int) { panic("Unsupported operation") }
-func (_ *UnionAliasedRecordNestedTestRecord) AppendMap(key string) types.Field {
+func (_ UnionAliasedRecordNestedTestRecord) NullField(i int)  { panic("Unsupported operation") }
+func (_ UnionAliasedRecordNestedTestRecord) SetDefault(i int) { panic("Unsupported operation") }
+func (_ UnionAliasedRecordNestedTestRecord) AppendMap(key string) types.Field {
 	panic("Unsupported operation")
 }
-func (_ *UnionAliasedRecordNestedTestRecord) AppendArray() types.Field {
-	panic("Unsupported operation")
-}
-func (_ *UnionAliasedRecordNestedTestRecord) Finalize() {}
+func (_ UnionAliasedRecordNestedTestRecord) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ UnionAliasedRecordNestedTestRecord) Finalize()                {}
 
-func (r *UnionAliasedRecordNestedTestRecord) MarshalJSON() ([]byte, error) {
-	if r == nil {
-		return []byte("null"), nil
-	}
+func (r UnionAliasedRecordNestedTestRecord) MarshalJSON() ([]byte, error) {
+
 	switch r.UnionType {
 	case UnionAliasedRecordNestedTestRecordTypeEnumAliasedRecord:
 		return json.Marshal(map[string]interface{}{"aliasedRecord": r.AliasedRecord})
 	case UnionAliasedRecordNestedTestRecordTypeEnumNestedTestRecord:
 		return json.Marshal(map[string]interface{}{"NestedTestRecord": r.NestedTestRecord})
 	}
-	return nil, fmt.Errorf("invalid value for *UnionAliasedRecordNestedTestRecord")
+	return nil, fmt.Errorf("invalid value for UnionAliasedRecordNestedTestRecord")
 }
 
 func (r *UnionAliasedRecordNestedTestRecord) UnmarshalJSON(data []byte) error {
+
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
@@ -143,5 +146,5 @@ func (r *UnionAliasedRecordNestedTestRecord) UnmarshalJSON(data []byte) error {
 		r.UnionType = 1
 		return json.Unmarshal([]byte(value), &r.NestedTestRecord)
 	}
-	return fmt.Errorf("invalid value for *UnionAliasedRecordNestedTestRecord")
+	return fmt.Errorf("invalid value for UnionAliasedRecordNestedTestRecord")
 }

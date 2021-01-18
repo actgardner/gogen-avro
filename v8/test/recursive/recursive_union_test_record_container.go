@@ -42,8 +42,8 @@ func NewRecursiveUnionTestRecordReader(r io.Reader) (*RecursiveUnionTestRecordRe
 	}, nil
 }
 
-func (r RecursiveUnionTestRecordReader) Read() (*RecursiveUnionTestRecord, error) {
+func (r RecursiveUnionTestRecordReader) Read() (RecursiveUnionTestRecord, error) {
 	t := NewRecursiveUnionTestRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

@@ -42,8 +42,8 @@ func NewEventReader(r io.Reader) (*EventReader, error) {
 	}, nil
 }
 
-func (r EventReader) Read() (*Event, error) {
+func (r EventReader) Read() (Event, error) {
 	t := NewEvent()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

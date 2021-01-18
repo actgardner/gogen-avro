@@ -42,8 +42,8 @@ func NewEnumTestRecordReader(r io.Reader) (*EnumTestRecordReader, error) {
 	}, nil
 }
 
-func (r EnumTestRecordReader) Read() (*EnumTestRecord, error) {
+func (r EnumTestRecordReader) Read() (EnumTestRecord, error) {
 	t := NewEnumTestRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

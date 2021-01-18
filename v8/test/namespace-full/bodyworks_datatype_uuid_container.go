@@ -42,8 +42,8 @@ func NewBodyworksDatatypeUUIDReader(r io.Reader) (*BodyworksDatatypeUUIDReader, 
 	}, nil
 }
 
-func (r BodyworksDatatypeUUIDReader) Read() (*BodyworksDatatypeUUID, error) {
+func (r BodyworksDatatypeUUIDReader) Read() (BodyworksDatatypeUUID, error) {
 	t := NewBodyworksDatatypeUUID()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

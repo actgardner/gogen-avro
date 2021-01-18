@@ -24,40 +24,34 @@ type HeaderworksDatatypeUUID struct {
 
 const HeaderworksDatatypeUUIDAvroCRC64Fingerprint = "\xabK\x8cN\xf4L\xb6S"
 
-func NewHeaderworksDatatypeUUID() *HeaderworksDatatypeUUID {
-	return &HeaderworksDatatypeUUID{}
+func NewHeaderworksDatatypeUUID() HeaderworksDatatypeUUID {
+	return HeaderworksDatatypeUUID{}
 }
 
-func DeserializeHeaderworksDatatypeUUID(r io.Reader) (*HeaderworksDatatypeUUID, error) {
+func DeserializeHeaderworksDatatypeUUID(r io.Reader) (HeaderworksDatatypeUUID, error) {
 	t := NewHeaderworksDatatypeUUID()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeHeaderworksDatatypeUUIDFromSchema(r io.Reader, schema string) (*HeaderworksDatatypeUUID, error) {
+func DeserializeHeaderworksDatatypeUUIDFromSchema(r io.Reader, schema string) (HeaderworksDatatypeUUID, error) {
 	t := NewHeaderworksDatatypeUUID()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeHeaderworksDatatypeUUID(r *HeaderworksDatatypeUUID, w io.Writer) error {
+func writeHeaderworksDatatypeUUID(r HeaderworksDatatypeUUID, w io.Writer) error {
 	var err error
 	err = vm.WriteString(r.Uuid, w)
 	if err != nil {
@@ -66,26 +60,26 @@ func writeHeaderworksDatatypeUUID(r *HeaderworksDatatypeUUID, w io.Writer) error
 	return err
 }
 
-func (r *HeaderworksDatatypeUUID) Serialize(w io.Writer) error {
+func (r HeaderworksDatatypeUUID) Serialize(w io.Writer) error {
 	return writeHeaderworksDatatypeUUID(r, w)
 }
 
-func (r *HeaderworksDatatypeUUID) Schema() string {
+func (r HeaderworksDatatypeUUID) Schema() string {
 	return "{\"doc\":\"A Universally Unique Identifier, in canonical form in lowercase. Example: de305d54-75b4-431b-adb2-eb6b9e546014\",\"fields\":[{\"default\":\"\",\"name\":\"uuid\",\"type\":\"string\"}],\"name\":\"headerworks.datatype.UUID\",\"type\":\"record\"}"
 }
 
-func (r *HeaderworksDatatypeUUID) SchemaName() string {
+func (r HeaderworksDatatypeUUID) SchemaName() string {
 	return "headerworks.datatype.UUID"
 }
 
-func (_ *HeaderworksDatatypeUUID) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetString(v string)   { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ HeaderworksDatatypeUUID) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ HeaderworksDatatypeUUID) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ HeaderworksDatatypeUUID) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ HeaderworksDatatypeUUID) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ HeaderworksDatatypeUUID) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ HeaderworksDatatypeUUID) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ HeaderworksDatatypeUUID) SetString(v string)   { panic("Unsupported operation") }
+func (_ HeaderworksDatatypeUUID) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *HeaderworksDatatypeUUID) Get(i int) types.Field {
 	switch i {
@@ -110,15 +104,15 @@ func (r *HeaderworksDatatypeUUID) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *HeaderworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *HeaderworksDatatypeUUID) Finalize()                        {}
+func (_ HeaderworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ HeaderworksDatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ HeaderworksDatatypeUUID) Finalize()                        {}
 
-func (_ *HeaderworksDatatypeUUID) AvroCRC64Fingerprint() []byte {
+func (_ HeaderworksDatatypeUUID) AvroCRC64Fingerprint() []byte {
 	return []byte(HeaderworksDatatypeUUIDAvroCRC64Fingerprint)
 }
 
-func (r *HeaderworksDatatypeUUID) MarshalJSON() ([]byte, error) {
+func (r HeaderworksDatatypeUUID) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["uuid"], err = json.Marshal(r.Uuid)

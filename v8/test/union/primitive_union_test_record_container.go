@@ -42,8 +42,8 @@ func NewPrimitiveUnionTestRecordReader(r io.Reader) (*PrimitiveUnionTestRecordRe
 	}, nil
 }
 
-func (r PrimitiveUnionTestRecordReader) Read() (*PrimitiveUnionTestRecord, error) {
+func (r PrimitiveUnionTestRecordReader) Read() (PrimitiveUnionTestRecord, error) {
 	t := NewPrimitiveUnionTestRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

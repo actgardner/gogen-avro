@@ -35,40 +35,34 @@ type PrimitiveTestRecord struct {
 
 const PrimitiveTestRecordAvroCRC64Fingerprint = "d\xa9\x9e\xb8\x86&\xa6\x17"
 
-func NewPrimitiveTestRecord() *PrimitiveTestRecord {
-	return &PrimitiveTestRecord{}
+func NewPrimitiveTestRecord() PrimitiveTestRecord {
+	return PrimitiveTestRecord{}
 }
 
-func DeserializePrimitiveTestRecord(r io.Reader) (*PrimitiveTestRecord, error) {
+func DeserializePrimitiveTestRecord(r io.Reader) (PrimitiveTestRecord, error) {
 	t := NewPrimitiveTestRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializePrimitiveTestRecordFromSchema(r io.Reader, schema string) (*PrimitiveTestRecord, error) {
+func DeserializePrimitiveTestRecordFromSchema(r io.Reader, schema string) (PrimitiveTestRecord, error) {
 	t := NewPrimitiveTestRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writePrimitiveTestRecord(r *PrimitiveTestRecord, w io.Writer) error {
+func writePrimitiveTestRecord(r PrimitiveTestRecord, w io.Writer) error {
 	var err error
 	err = vm.WriteLong(r.NewLongField, w)
 	if err != nil {
@@ -101,26 +95,26 @@ func writePrimitiveTestRecord(r *PrimitiveTestRecord, w io.Writer) error {
 	return err
 }
 
-func (r *PrimitiveTestRecord) Serialize(w io.Writer) error {
+func (r PrimitiveTestRecord) Serialize(w io.Writer) error {
 	return writePrimitiveTestRecord(r, w)
 }
 
-func (r *PrimitiveTestRecord) Schema() string {
+func (r PrimitiveTestRecord) Schema() string {
 	return "{\"fields\":[{\"default\":1234,\"name\":\"NewLongField\",\"type\":\"long\"},{\"default\":\"testdefault\",\"name\":\"NewStringField\",\"type\":\"string\"},{\"default\":12.34,\"name\":\"NewFloatField\",\"type\":\"float\"},{\"default\":\"\\u0000ÿ\\u0001þ\",\"name\":\"NewBytesField\",\"type\":\"bytes\"},{\"default\":56.78,\"name\":\"NewDoubleField\",\"type\":\"double\"},{\"default\":5678,\"name\":\"NewIntField\",\"type\":\"int\"},{\"default\":true,\"name\":\"NewBoolField\",\"type\":\"boolean\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *PrimitiveTestRecord) SchemaName() string {
+func (r PrimitiveTestRecord) SchemaName() string {
 	return "PrimitiveTestRecord"
 }
 
-func (_ *PrimitiveTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *PrimitiveTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *PrimitiveTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *PrimitiveTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *PrimitiveTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *PrimitiveTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *PrimitiveTestRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *PrimitiveTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ PrimitiveTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ PrimitiveTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ PrimitiveTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ PrimitiveTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ PrimitiveTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ PrimitiveTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ PrimitiveTestRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ PrimitiveTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *PrimitiveTestRecord) Get(i int) types.Field {
 	switch i {
@@ -175,15 +169,15 @@ func (r *PrimitiveTestRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *PrimitiveTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *PrimitiveTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *PrimitiveTestRecord) Finalize()                        {}
+func (_ PrimitiveTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ PrimitiveTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ PrimitiveTestRecord) Finalize()                        {}
 
-func (_ *PrimitiveTestRecord) AvroCRC64Fingerprint() []byte {
+func (_ PrimitiveTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(PrimitiveTestRecordAvroCRC64Fingerprint)
 }
 
-func (r *PrimitiveTestRecord) MarshalJSON() ([]byte, error) {
+func (r PrimitiveTestRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["NewLongField"], err = json.Marshal(r.NewLongField)

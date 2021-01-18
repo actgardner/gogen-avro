@@ -35,40 +35,34 @@ type MapTestRecord struct {
 
 const MapTestRecordAvroCRC64Fingerprint = "<?\x18\xa0\a\xdf^\x9e"
 
-func NewMapTestRecord() *MapTestRecord {
-	return &MapTestRecord{}
+func NewMapTestRecord() MapTestRecord {
+	return MapTestRecord{}
 }
 
-func DeserializeMapTestRecord(r io.Reader) (*MapTestRecord, error) {
+func DeserializeMapTestRecord(r io.Reader) (MapTestRecord, error) {
 	t := NewMapTestRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeMapTestRecordFromSchema(r io.Reader, schema string) (*MapTestRecord, error) {
+func DeserializeMapTestRecordFromSchema(r io.Reader, schema string) (MapTestRecord, error) {
 	t := NewMapTestRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeMapTestRecord(r *MapTestRecord, w io.Writer) error {
+func writeMapTestRecord(r MapTestRecord, w io.Writer) error {
 	var err error
 	err = writeMapInt(r.IntField, w)
 	if err != nil {
@@ -101,26 +95,26 @@ func writeMapTestRecord(r *MapTestRecord, w io.Writer) error {
 	return err
 }
 
-func (r *MapTestRecord) Serialize(w io.Writer) error {
+func (r MapTestRecord) Serialize(w io.Writer) error {
 	return writeMapTestRecord(r, w)
 }
 
-func (r *MapTestRecord) Schema() string {
+func (r MapTestRecord) Schema() string {
 	return "{\"fields\":[{\"default\":{\"default\":1},\"name\":\"IntField\",\"type\":{\"type\":\"map\",\"values\":\"int\"}},{\"default\":{\"default\":2},\"name\":\"LongField\",\"type\":{\"type\":\"map\",\"values\":\"long\"}},{\"default\":{\"default\":1000},\"name\":\"DoubleField\",\"type\":{\"type\":\"map\",\"values\":\"double\"}},{\"default\":{\"default\":\"defaultstring\"},\"name\":\"StringField\",\"type\":{\"type\":\"map\",\"values\":\"string\"}},{\"default\":{\"default\":236},\"name\":\"FloatField\",\"type\":{\"type\":\"map\",\"values\":\"float\"}},{\"default\":{\"default\":true},\"name\":\"BoolField\",\"type\":{\"type\":\"map\",\"values\":\"boolean\"}},{\"default\":{\"default\":\"\\u0003\\u000fÞ\"},\"name\":\"BytesField\",\"type\":{\"type\":\"map\",\"values\":\"bytes\"}}],\"name\":\"MapTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *MapTestRecord) SchemaName() string {
+func (r MapTestRecord) SchemaName() string {
 	return "MapTestRecord"
 }
 
-func (_ *MapTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *MapTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ MapTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ MapTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ MapTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ MapTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ MapTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ MapTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ MapTestRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ MapTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *MapTestRecord) Get(i int) types.Field {
 	switch i {
@@ -196,15 +190,15 @@ func (r *MapTestRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *MapTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *MapTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *MapTestRecord) Finalize()                        {}
+func (_ MapTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ MapTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ MapTestRecord) Finalize()                        {}
 
-func (_ *MapTestRecord) AvroCRC64Fingerprint() []byte {
+func (_ MapTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(MapTestRecordAvroCRC64Fingerprint)
 }
 
-func (r *MapTestRecord) MarshalJSON() ([]byte, error) {
+func (r MapTestRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["IntField"], err = json.Marshal(r.IntField)

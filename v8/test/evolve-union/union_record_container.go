@@ -42,8 +42,8 @@ func NewUnionRecordReader(r io.Reader) (*UnionRecordReader, error) {
 	}, nil
 }
 
-func (r UnionRecordReader) Read() (*UnionRecord, error) {
+func (r UnionRecordReader) Read() (UnionRecord, error) {
 	t := NewUnionRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

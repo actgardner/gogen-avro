@@ -29,40 +29,34 @@ type NumberRecord struct {
 
 const NumberRecordAvroCRC64Fingerprint = "\xf4Zu\xd5Nt'~"
 
-func NewNumberRecord() *NumberRecord {
-	return &NumberRecord{}
+func NewNumberRecord() NumberRecord {
+	return NumberRecord{}
 }
 
-func DeserializeNumberRecord(r io.Reader) (*NumberRecord, error) {
+func DeserializeNumberRecord(r io.Reader) (NumberRecord, error) {
 	t := NewNumberRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeNumberRecordFromSchema(r io.Reader, schema string) (*NumberRecord, error) {
+func DeserializeNumberRecordFromSchema(r io.Reader, schema string) (NumberRecord, error) {
 	t := NewNumberRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeNumberRecord(r *NumberRecord, w io.Writer) error {
+func writeNumberRecord(r NumberRecord, w io.Writer) error {
 	var err error
 	err = vm.WriteInt(r.IntField, w)
 	if err != nil {
@@ -83,26 +77,26 @@ func writeNumberRecord(r *NumberRecord, w io.Writer) error {
 	return err
 }
 
-func (r *NumberRecord) Serialize(w io.Writer) error {
+func (r NumberRecord) Serialize(w io.Writer) error {
 	return writeNumberRecord(r, w)
 }
 
-func (r *NumberRecord) Schema() string {
+func (r NumberRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"LongField\",\"type\":\"long\"},{\"name\":\"FloatField\",\"type\":\"float\"},{\"name\":\"DoubleField\",\"type\":\"double\"}],\"name\":\"NumberRecord\",\"type\":\"record\"}"
 }
 
-func (r *NumberRecord) SchemaName() string {
+func (r NumberRecord) SchemaName() string {
 	return "NumberRecord"
 }
 
-func (_ *NumberRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *NumberRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *NumberRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *NumberRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *NumberRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *NumberRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *NumberRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *NumberRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ NumberRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ NumberRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ NumberRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ NumberRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ NumberRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ NumberRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ NumberRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ NumberRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *NumberRecord) Get(i int) types.Field {
 	switch i {
@@ -130,15 +124,15 @@ func (r *NumberRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *NumberRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *NumberRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *NumberRecord) Finalize()                        {}
+func (_ NumberRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ NumberRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ NumberRecord) Finalize()                        {}
 
-func (_ *NumberRecord) AvroCRC64Fingerprint() []byte {
+func (_ NumberRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(NumberRecordAvroCRC64Fingerprint)
 }
 
-func (r *NumberRecord) MarshalJSON() ([]byte, error) {
+func (r NumberRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["IntField"], err = json.Marshal(r.IntField)

@@ -34,7 +34,9 @@ func NewUnionField(name string, itemType []AvroType, definition []interface{}) *
 func (s *UnionField) compositeFieldName() string {
 	var UnionFields = "Union"
 	for _, i := range s.itemType {
-		UnionFields += i.Name()
+		if i.Name() != "Null" {
+			UnionFields += i.Name()
+		}
 	}
 	return UnionFields
 }
@@ -51,6 +53,9 @@ func (s *UnionField) AvroTypes() []AvroType {
 }
 
 func (s *UnionField) GoType() string {
+	if s.nullIndex == -1 {
+		return s.Name()
+	}
 	return "*" + s.Name()
 }
 
@@ -122,6 +127,9 @@ func (s *UnionField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 }
 
 func (s *UnionField) WrapperType() string {
+	if s.NullIndex() == -1 {
+		return "types.Record"
+	}
 	return ""
 }
 
@@ -179,4 +187,8 @@ func (s *UnionField) NullIndex() int {
 
 func (s *UnionField) UnionKey() string {
 	panic("Unions within unions are not supported")
+}
+
+func (s *UnionField) GetReference() bool {
+	return s.nullIndex == -1
 }

@@ -25,40 +25,34 @@ type UnionRecord struct {
 
 const UnionRecordAvroCRC64Fingerprint = "XXv\f\x93)\xf7\xe2"
 
-func NewUnionRecord() *UnionRecord {
-	return &UnionRecord{}
+func NewUnionRecord() UnionRecord {
+	return UnionRecord{}
 }
 
-func DeserializeUnionRecord(r io.Reader) (*UnionRecord, error) {
+func DeserializeUnionRecord(r io.Reader) (UnionRecord, error) {
 	t := NewUnionRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (*UnionRecord, error) {
+func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (UnionRecord, error) {
 	t := NewUnionRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeUnionRecord(r *UnionRecord, w io.Writer) error {
+func writeUnionRecord(r UnionRecord, w io.Writer) error {
 	var err error
 	err = vm.WriteString(r.Id, w)
 	if err != nil {
@@ -71,26 +65,26 @@ func writeUnionRecord(r *UnionRecord, w io.Writer) error {
 	return err
 }
 
-func (r *UnionRecord) Serialize(w io.Writer) error {
+func (r UnionRecord) Serialize(w io.Writer) error {
 	return writeUnionRecord(r, w)
 }
 
-func (r *UnionRecord) Schema() string {
+func (r UnionRecord) Schema() string {
 	return "{\"fields\":[{\"default\":\"test_id\",\"name\":\"id\",\"type\":\"string\"},{\"default\":100,\"name\":\"age\",\"type\":\"int\"}],\"name\":\"UnionRecord\",\"type\":\"record\"}"
 }
 
-func (r *UnionRecord) SchemaName() string {
+func (r UnionRecord) SchemaName() string {
 	return "UnionRecord"
 }
 
-func (_ *UnionRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *UnionRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *UnionRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *UnionRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *UnionRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *UnionRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *UnionRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *UnionRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ UnionRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ UnionRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ UnionRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ UnionRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ UnionRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ UnionRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ UnionRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ UnionRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *UnionRecord) Get(i int) types.Field {
 	switch i {
@@ -120,15 +114,15 @@ func (r *UnionRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *UnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *UnionRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *UnionRecord) Finalize()                        {}
+func (_ UnionRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ UnionRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ UnionRecord) Finalize()                        {}
 
-func (_ *UnionRecord) AvroCRC64Fingerprint() []byte {
+func (_ UnionRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(UnionRecordAvroCRC64Fingerprint)
 }
 
-func (r *UnionRecord) MarshalJSON() ([]byte, error) {
+func (r UnionRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["id"], err = json.Marshal(r.Id)

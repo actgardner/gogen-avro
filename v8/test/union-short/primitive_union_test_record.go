@@ -18,78 +18,72 @@ import (
 var _ = fmt.Printf
 
 type PrimitiveUnionTestRecord struct {
-	UnionField *UnionIntLongFloatDoubleStringBoolNull `json:"UnionField"`
+	UnionField *UnionIntLongFloatDoubleStringBool `json:"UnionField"`
 }
 
 const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "hSK\xb5\xb2ۗ]"
 
-func NewPrimitiveUnionTestRecord() *PrimitiveUnionTestRecord {
-	return &PrimitiveUnionTestRecord{}
+func NewPrimitiveUnionTestRecord() PrimitiveUnionTestRecord {
+	return PrimitiveUnionTestRecord{}
 }
 
-func DeserializePrimitiveUnionTestRecord(r io.Reader) (*PrimitiveUnionTestRecord, error) {
+func DeserializePrimitiveUnionTestRecord(r io.Reader) (PrimitiveUnionTestRecord, error) {
 	t := NewPrimitiveUnionTestRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializePrimitiveUnionTestRecordFromSchema(r io.Reader, schema string) (*PrimitiveUnionTestRecord, error) {
+func DeserializePrimitiveUnionTestRecordFromSchema(r io.Reader, schema string) (PrimitiveUnionTestRecord, error) {
 	t := NewPrimitiveUnionTestRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writePrimitiveUnionTestRecord(r *PrimitiveUnionTestRecord, w io.Writer) error {
+func writePrimitiveUnionTestRecord(r PrimitiveUnionTestRecord, w io.Writer) error {
 	var err error
-	err = writeUnionIntLongFloatDoubleStringBoolNull(r.UnionField, w)
+	err = writeUnionIntLongFloatDoubleStringBool(r.UnionField, w)
 	if err != nil {
 		return err
 	}
 	return err
 }
 
-func (r *PrimitiveUnionTestRecord) Serialize(w io.Writer) error {
+func (r PrimitiveUnionTestRecord) Serialize(w io.Writer) error {
 	return writePrimitiveUnionTestRecord(r, w)
 }
 
-func (r *PrimitiveUnionTestRecord) Schema() string {
+func (r PrimitiveUnionTestRecord) Schema() string {
 	return "{\"fields\":[{\"default\":1234,\"name\":\"UnionField\",\"type\":[\"int\",\"long\",\"float\",\"double\",\"string\",\"boolean\",\"null\"]}],\"name\":\"PrimitiveUnionTestRecord\",\"type\":\"record\"}"
 }
 
-func (r *PrimitiveUnionTestRecord) SchemaName() string {
+func (r PrimitiveUnionTestRecord) SchemaName() string {
 	return "PrimitiveUnionTestRecord"
 }
 
-func (_ *PrimitiveUnionTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *PrimitiveUnionTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *PrimitiveUnionTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *PrimitiveUnionTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *PrimitiveUnionTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *PrimitiveUnionTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *PrimitiveUnionTestRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *PrimitiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ PrimitiveUnionTestRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ PrimitiveUnionTestRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ PrimitiveUnionTestRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ PrimitiveUnionTestRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ PrimitiveUnionTestRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ PrimitiveUnionTestRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ PrimitiveUnionTestRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ PrimitiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
+		r.UnionField = NewUnionIntLongFloatDoubleStringBool()
 
 		return r.UnionField
 	}
@@ -99,7 +93,7 @@ func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 func (r *PrimitiveUnionTestRecord) SetDefault(i int) {
 	switch i {
 	case 0:
-		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
+		r.UnionField = NewUnionIntLongFloatDoubleStringBool()
 		r.UnionField.Int = 1234
 		return
 	}
@@ -115,15 +109,15 @@ func (r *PrimitiveUnionTestRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *PrimitiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *PrimitiveUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *PrimitiveUnionTestRecord) Finalize()                        {}
+func (_ PrimitiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ PrimitiveUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ PrimitiveUnionTestRecord) Finalize()                        {}
 
-func (_ *PrimitiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
+func (_ PrimitiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(PrimitiveUnionTestRecordAvroCRC64Fingerprint)
 }
 
-func (r *PrimitiveUnionTestRecord) MarshalJSON() ([]byte, error) {
+func (r PrimitiveUnionTestRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["UnionField"], err = json.Marshal(r.UnionField)
@@ -152,9 +146,9 @@ func (r *PrimitiveUnionTestRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
+		r.UnionField = NewUnionIntLongFloatDoubleStringBool()
 
-		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
+		r.UnionField = NewUnionIntLongFloatDoubleStringBool()
 		r.UnionField.Int = 1234
 	}
 	return nil

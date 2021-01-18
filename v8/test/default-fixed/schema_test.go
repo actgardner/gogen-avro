@@ -13,5 +13,5 @@ func TestDefault(t *testing.T) {
 	expected := FixedDefaultTestRecord{
 		FixedField: [12]byte{0, 1, 18, 0, 19, 67, 0, 1, 18, 0, 19, 83},
 	}
-	assert.Equal(t, &expected, fixedDefault, "Comparing default value")
+	assert.Equal(t, expected, fixedDefault, "Comparing default value")
 }

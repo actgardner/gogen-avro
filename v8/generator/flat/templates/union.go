@@ -50,9 +50,15 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	return fmt.Errorf("invalid value for {{ .GoType }}")
 }
 
+{{ if ne .NullIndex -1 }}
 func {{ .ConstructorMethod }} {{ .GoType }} {
 	return &{{ .Name }}{}
-}
+} 
+{{ else }}
+func {{ .ConstructorMethod }} {{ .GoType }} {
+	return {{ .Name }}{}
+} 
+{{ end }}
 
 func (r {{ .GoType }}) Serialize(w io.Writer) error {
 	return {{ .SerializerMethod }}(r, w)
@@ -62,12 +68,16 @@ func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {
 	t := {{ .ConstructorMethod }}
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
+{{ if ne .NullIndex -1 }}
 	err = vm.Eval(r, deser, t)
+{{ else }}
+	err = vm.Eval(r, deser, &t)
+{{ end }}
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
@@ -76,12 +86,16 @@ func Deserialize{{ .Name }}FromSchema(r io.Reader, schema string) ({{ .GoType }}
 	t := {{ .ConstructorMethod }}
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
+{{ if ne .NullIndex -1 }}
 	err = vm.Eval(r, deser, t)
+{{ else }}
+	err = vm.Eval(r, deser, &t)
+{{ end }}
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 	return t, err
 }
@@ -96,10 +110,18 @@ func (_ {{ .GoType }}) SetFloat(v float32) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetBytes(v []byte) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetString(v string) { panic("Unsupported operation") }
+{{ if ne .NullIndex -1 }}
 func (r {{ .GoType }}) SetLong(v int64) { 
+{{ else }}
+func (r *{{ .GoType }}) SetLong(v int64) { 
+{{ end }}
 	r.UnionType = ({{ .UnionEnumType }})(v)
 }
+{{ if ne .NullIndex -1 }}
 func (r {{ .GoType }}) Get(i int) types.Field {
+{{ else }}
+func (r *{{ .GoType }}) Get(i int) types.Field {
+{{ end }}
 	switch (i) {
 	{{ range $i, $t := .ItemTypes -}}
 	case {{ $i }}:
@@ -122,9 +144,11 @@ func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation"
 func (_ {{ .GoType }}) Finalize()  { }
 
 func (r {{ .GoType }}) MarshalJSON() ([]byte, error) {
+	{{ if ne .NullIndex -1 }}
 	if r == nil {
 		return []byte("null"), nil
 	}
+	{{ end }}
 	switch r.UnionType{
 	{{ range $i, $t := .ItemTypes -}}
 	{{ if ne $i $.NullIndex -}}
@@ -136,7 +160,12 @@ func (r {{ .GoType }}) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("invalid value for {{ .GoType }}")
 }
 
+
+{{ if ne .NullIndex -1 }}
 func (r {{ .GoType }}) UnmarshalJSON(data []byte) (error) {
+{{ else }}
+func (r *{{ .GoType }}) UnmarshalJSON(data []byte) (error) {
+{{ end }}
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err

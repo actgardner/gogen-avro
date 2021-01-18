@@ -34,7 +34,7 @@ func (r *RecordDefinition) Name() string {
 }
 
 func (r *RecordDefinition) GoType() string {
-	return fmt.Sprintf("*%v", r.Name())
+	return r.Name()
 }
 
 func (r *RecordDefinition) Aliases() []QualifiedName {
@@ -126,7 +126,7 @@ func (s *RecordDefinition) IsReadableBy(d Definition) bool {
 }
 
 func (s *RecordDefinition) WrapperType() string {
-	return ""
+	return "types.Record"
 }
 
 func (s *RecordDefinition) Doc() string {
@@ -151,4 +151,8 @@ func (s *RecordDefinition) Children() []AvroType {
 		children[i] = field.Type()
 	}
 	return children
+}
+
+func (s *RecordDefinition) GetReference() bool {
+	return true
 }

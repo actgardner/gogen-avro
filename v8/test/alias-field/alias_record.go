@@ -25,40 +25,34 @@ type AliasRecord struct {
 
 const AliasRecordAvroCRC64Fingerprint = "B~_@rz\xdb\xc7"
 
-func NewAliasRecord() *AliasRecord {
-	return &AliasRecord{}
+func NewAliasRecord() AliasRecord {
+	return AliasRecord{}
 }
 
-func DeserializeAliasRecord(r io.Reader) (*AliasRecord, error) {
+func DeserializeAliasRecord(r io.Reader) (AliasRecord, error) {
 	t := NewAliasRecord()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeAliasRecordFromSchema(r io.Reader, schema string) (*AliasRecord, error) {
+func DeserializeAliasRecordFromSchema(r io.Reader, schema string) (AliasRecord, error) {
 	t := NewAliasRecord()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeAliasRecord(r *AliasRecord, w io.Writer) error {
+func writeAliasRecord(r AliasRecord, w io.Writer) error {
 	var err error
 	err = vm.WriteString(r.A, w)
 	if err != nil {
@@ -71,26 +65,26 @@ func writeAliasRecord(r *AliasRecord, w io.Writer) error {
 	return err
 }
 
-func (r *AliasRecord) Serialize(w io.Writer) error {
+func (r AliasRecord) Serialize(w io.Writer) error {
 	return writeAliasRecord(r, w)
 }
 
-func (r *AliasRecord) Schema() string {
+func (r AliasRecord) Schema() string {
 	return "{\"fields\":[{\"name\":\"a\",\"type\":\"string\"},{\"name\":\"c\",\"type\":\"string\"}],\"name\":\"AliasRecord\",\"type\":\"record\"}"
 }
 
-func (r *AliasRecord) SchemaName() string {
+func (r AliasRecord) SchemaName() string {
 	return "AliasRecord"
 }
 
-func (_ *AliasRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *AliasRecord) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *AliasRecord) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *AliasRecord) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *AliasRecord) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *AliasRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *AliasRecord) SetString(v string)   { panic("Unsupported operation") }
-func (_ *AliasRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ AliasRecord) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ AliasRecord) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ AliasRecord) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ AliasRecord) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ AliasRecord) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ AliasRecord) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ AliasRecord) SetString(v string)   { panic("Unsupported operation") }
+func (_ AliasRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *AliasRecord) Get(i int) types.Field {
 	switch i {
@@ -114,15 +108,15 @@ func (r *AliasRecord) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *AliasRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *AliasRecord) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *AliasRecord) Finalize()                        {}
+func (_ AliasRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ AliasRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ AliasRecord) Finalize()                        {}
 
-func (_ *AliasRecord) AvroCRC64Fingerprint() []byte {
+func (_ AliasRecord) AvroCRC64Fingerprint() []byte {
 	return []byte(AliasRecordAvroCRC64Fingerprint)
 }
 
-func (r *AliasRecord) MarshalJSON() ([]byte, error) {
+func (r AliasRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["a"], err = json.Marshal(r.A)

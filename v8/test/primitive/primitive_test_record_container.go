@@ -42,8 +42,8 @@ func NewPrimitiveTestRecordReader(r io.Reader) (*PrimitiveTestRecordReader, erro
 	}, nil
 }
 
-func (r PrimitiveTestRecordReader) Read() (*PrimitiveTestRecord, error) {
+func (r PrimitiveTestRecordReader) Read() (PrimitiveTestRecord, error) {
 	t := NewPrimitiveTestRecord()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

@@ -42,8 +42,8 @@ func NewHeaderworksDataReader(r io.Reader) (*HeaderworksDataReader, error) {
 	}, nil
 }
 
-func (r HeaderworksDataReader) Read() (*HeaderworksData, error) {
+func (r HeaderworksDataReader) Read() (HeaderworksData, error) {
 	t := NewHeaderworksData()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

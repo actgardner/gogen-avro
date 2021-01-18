@@ -42,8 +42,8 @@ func NewRecordSchemaReader(r io.Reader) (*RecordSchemaReader, error) {
 	}, nil
 }
 
-func (r RecordSchemaReader) Read() (*RecordSchema, error) {
+func (r RecordSchemaReader) Read() (RecordSchema, error) {
 	t := NewRecordSchema()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

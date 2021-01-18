@@ -42,8 +42,8 @@ func NewRecordFooReader(r io.Reader) (*RecordFooReader, error) {
 	}, nil
 }
 
-func (r RecordFooReader) Read() (*RecordFoo, error) {
+func (r RecordFooReader) Read() (RecordFoo, error) {
 	t := NewRecordFoo()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

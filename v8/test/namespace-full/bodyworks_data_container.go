@@ -42,8 +42,8 @@ func NewBodyworksDataReader(r io.Reader) (*BodyworksDataReader, error) {
 	}, nil
 }
 
-func (r BodyworksDataReader) Read() (*BodyworksData, error) {
+func (r BodyworksDataReader) Read() (BodyworksData, error) {
 	t := NewBodyworksData()
-	err := vm.Eval(r.r, r.p, t)
+	err := vm.Eval(r.r, r.p, &t)
 	return t, err
 }

@@ -23,40 +23,34 @@ type RecordBar struct {
 
 const RecordBarAvroCRC64Fingerprint = "0\x99\x1e\"\x92\xe1\x82{"
 
-func NewRecordBar() *RecordBar {
-	return &RecordBar{}
+func NewRecordBar() RecordBar {
+	return RecordBar{}
 }
 
-func DeserializeRecordBar(r io.Reader) (*RecordBar, error) {
+func DeserializeRecordBar(r io.Reader) (RecordBar, error) {
 	t := NewRecordBar()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeRecordBarFromSchema(r io.Reader, schema string) (*RecordBar, error) {
+func DeserializeRecordBarFromSchema(r io.Reader, schema string) (RecordBar, error) {
 	t := NewRecordBar()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeRecordBar(r *RecordBar, w io.Writer) error {
+func writeRecordBar(r RecordBar, w io.Writer) error {
 	var err error
 	err = vm.WriteString(r.Id, w)
 	if err != nil {
@@ -65,26 +59,26 @@ func writeRecordBar(r *RecordBar, w io.Writer) error {
 	return err
 }
 
-func (r *RecordBar) Serialize(w io.Writer) error {
+func (r RecordBar) Serialize(w io.Writer) error {
 	return writeRecordBar(r, w)
 }
 
-func (r *RecordBar) Schema() string {
+func (r RecordBar) Schema() string {
 	return "{\"fields\":[{\"name\":\"id\",\"type\":\"string\"}],\"name\":\"RecordBar\",\"type\":\"record\"}"
 }
 
-func (r *RecordBar) SchemaName() string {
+func (r RecordBar) SchemaName() string {
 	return "RecordBar"
 }
 
-func (_ *RecordBar) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *RecordBar) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *RecordBar) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *RecordBar) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *RecordBar) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *RecordBar) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *RecordBar) SetString(v string)   { panic("Unsupported operation") }
-func (_ *RecordBar) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ RecordBar) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ RecordBar) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ RecordBar) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ RecordBar) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ RecordBar) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ RecordBar) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ RecordBar) SetString(v string)   { panic("Unsupported operation") }
+func (_ RecordBar) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *RecordBar) Get(i int) types.Field {
 	switch i {
@@ -106,15 +100,15 @@ func (r *RecordBar) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *RecordBar) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *RecordBar) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *RecordBar) Finalize()                        {}
+func (_ RecordBar) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ RecordBar) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ RecordBar) Finalize()                        {}
 
-func (_ *RecordBar) AvroCRC64Fingerprint() []byte {
+func (_ RecordBar) AvroCRC64Fingerprint() []byte {
 	return []byte(RecordBarAvroCRC64Fingerprint)
 }
 
-func (r *RecordBar) MarshalJSON() ([]byte, error) {
+func (r RecordBar) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["id"], err = json.Marshal(r.Id)

@@ -13,7 +13,8 @@ func TestRoundTrip(t *testing.T) {
 	test.RoundTrip(t,
 		func() container.AvroRecord { return &PrimitiveTestRecord{} },
 		func(r io.Reader) (container.AvroRecord, error) {
-			return DeserializePrimitiveTestRecord(r)
+			record, err := DeserializePrimitiveTestRecord(r)
+			return &record, err
 		})
 }
 
@@ -22,6 +23,7 @@ func TestEvolution(t *testing.T) {
 		func() container.AvroRecord { return &PrimitiveTestRecord{} },
 		func() container.AvroRecord { return &evolution.PrimitiveTestRecord{} },
 		func(r io.Reader, schema string) (container.AvroRecord, error) {
-			return evolution.DeserializePrimitiveTestRecordFromSchema(r, schema)
+			record, err := evolution.DeserializePrimitiveTestRecordFromSchema(r, schema)
+			return &record, err
 		})
 }

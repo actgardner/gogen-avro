@@ -23,40 +23,34 @@ type RecordFoo struct {
 
 const RecordFooAvroCRC64Fingerprint = "\x94\f\x14v\xb3\x98ߴ"
 
-func NewRecordFoo() *RecordFoo {
-	return &RecordFoo{}
+func NewRecordFoo() RecordFoo {
+	return RecordFoo{}
 }
 
-func DeserializeRecordFoo(r io.Reader) (*RecordFoo, error) {
+func DeserializeRecordFoo(r io.Reader) (RecordFoo, error) {
 	t := NewRecordFoo()
 	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func DeserializeRecordFooFromSchema(r io.Reader, schema string) (*RecordFoo, error) {
+func DeserializeRecordFooFromSchema(r io.Reader, schema string) (RecordFoo, error) {
 	t := NewRecordFoo()
 
 	deser, err := compiler.CompileSchemaBytes([]byte(schema), []byte(t.Schema()))
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
-	err = vm.Eval(r, deser, t)
-	if err != nil {
-		return nil, err
-	}
+	err = vm.Eval(r, deser, &t)
 	return t, err
 }
 
-func writeRecordFoo(r *RecordFoo, w io.Writer) error {
+func writeRecordFoo(r RecordFoo, w io.Writer) error {
 	var err error
 	err = vm.WriteString(r.Id, w)
 	if err != nil {
@@ -65,26 +59,26 @@ func writeRecordFoo(r *RecordFoo, w io.Writer) error {
 	return err
 }
 
-func (r *RecordFoo) Serialize(w io.Writer) error {
+func (r RecordFoo) Serialize(w io.Writer) error {
 	return writeRecordFoo(r, w)
 }
 
-func (r *RecordFoo) Schema() string {
+func (r RecordFoo) Schema() string {
 	return "{\"fields\":[{\"name\":\"id\",\"type\":\"string\"}],\"name\":\"RecordFoo\",\"type\":\"record\"}"
 }
 
-func (r *RecordFoo) SchemaName() string {
+func (r RecordFoo) SchemaName() string {
 	return "RecordFoo"
 }
 
-func (_ *RecordFoo) SetBoolean(v bool)    { panic("Unsupported operation") }
-func (_ *RecordFoo) SetInt(v int32)       { panic("Unsupported operation") }
-func (_ *RecordFoo) SetLong(v int64)      { panic("Unsupported operation") }
-func (_ *RecordFoo) SetFloat(v float32)   { panic("Unsupported operation") }
-func (_ *RecordFoo) SetDouble(v float64)  { panic("Unsupported operation") }
-func (_ *RecordFoo) SetBytes(v []byte)    { panic("Unsupported operation") }
-func (_ *RecordFoo) SetString(v string)   { panic("Unsupported operation") }
-func (_ *RecordFoo) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ RecordFoo) SetBoolean(v bool)    { panic("Unsupported operation") }
+func (_ RecordFoo) SetInt(v int32)       { panic("Unsupported operation") }
+func (_ RecordFoo) SetLong(v int64)      { panic("Unsupported operation") }
+func (_ RecordFoo) SetFloat(v float32)   { panic("Unsupported operation") }
+func (_ RecordFoo) SetDouble(v float64)  { panic("Unsupported operation") }
+func (_ RecordFoo) SetBytes(v []byte)    { panic("Unsupported operation") }
+func (_ RecordFoo) SetString(v string)   { panic("Unsupported operation") }
+func (_ RecordFoo) SetUnionElem(v int64) { panic("Unsupported operation") }
 
 func (r *RecordFoo) Get(i int) types.Field {
 	switch i {
@@ -106,15 +100,15 @@ func (r *RecordFoo) NullField(i int) {
 	panic("Not a nullable field index")
 }
 
-func (_ *RecordFoo) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *RecordFoo) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *RecordFoo) Finalize()                        {}
+func (_ RecordFoo) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ RecordFoo) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ RecordFoo) Finalize()                        {}
 
-func (_ *RecordFoo) AvroCRC64Fingerprint() []byte {
+func (_ RecordFoo) AvroCRC64Fingerprint() []byte {
 	return []byte(RecordFooAvroCRC64Fingerprint)
 }
 
-func (r *RecordFoo) MarshalJSON() ([]byte, error) {
+func (r RecordFoo) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
 	output["id"], err = json.Marshal(r.Id)

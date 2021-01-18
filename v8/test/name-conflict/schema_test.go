@@ -12,6 +12,7 @@ func TestRoundTrip(t *testing.T) {
 	test.RoundTrip(t,
 		func() container.AvroRecord { return &NameConflictTestRecord{} },
 		func(r io.Reader) (container.AvroRecord, error) {
-			return DeserializeNameConflictTestRecord(r)
+			record, err := DeserializeNameConflictTestRecord(r)
+			return &record, err
 		})
 }
