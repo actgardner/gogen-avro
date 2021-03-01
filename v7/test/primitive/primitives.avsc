@@ -1,8 +1,9 @@
 {
 	"type": "record",
 	"name": "PrimitiveTestRecord",
+	"doc": "primitive\nrecord",
 	"fields": [
-		{"name": "IntField", "type": "int"},
+		{"name": "IntField", "type": "int", "doc": "int\nfield"},
 		{"name": "LongField", "type": "long"},
 		{"name": "FloatField", "type": "float"},
 		{"name": "DoubleField", "type": "double"},

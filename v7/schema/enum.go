@@ -30,7 +30,7 @@ func (e *EnumDefinition) Name() string {
 }
 
 func (e *EnumDefinition) Doc() string {
-	return e.doc
+	return strings.ReplaceAll(e.doc, "\n", " ")
 }
 
 func (e *EnumDefinition) AvroName() QualifiedName {

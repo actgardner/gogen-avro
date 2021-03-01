@@ -65,7 +65,7 @@ func (r *EnumTestRecord) Serialize(w io.Writer) error {
 }
 
 func (r *EnumTestRecord) Schema() string {
-	return "{\"fields\":[{\"default\":\"testSymbol3\",\"name\":\"EnumField\",\"type\":{\"doc\":\"Test enum\",\"name\":\"TestEnumType\",\"symbols\":[\"TestSymbol1\",\"testSymbol2\",\"testSymbol3\"],\"type\":\"enum\"}}],\"name\":\"EnumTestRecord\",\"type\":\"record\"}"
+	return "{\"fields\":[{\"default\":\"testSymbol3\",\"name\":\"EnumField\",\"type\":{\"doc\":\"Test \\nenum\",\"name\":\"TestEnumType\",\"symbols\":[\"TestSymbol1\",\"testSymbol2\",\"testSymbol3\"],\"type\":\"enum\"}}],\"name\":\"EnumTestRecord\",\"type\":\"record\"}"
 }
 
 func (r *EnumTestRecord) SchemaName() string {

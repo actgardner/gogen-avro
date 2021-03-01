@@ -7,7 +7,7 @@
 			"type": {
 				"name": "TestEnumType",
 				"type": "enum",
-				"doc": "Test enum",
+				"doc": "Test \nenum",
 				"symbols": ["TestSymbol1", "testSymbol2", "testSymbol3"]
 			},
 			"default": "testSymbol3"

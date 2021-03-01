@@ -3,6 +3,7 @@ package schema
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/actgardner/gogen-avro/v7/generator"
 )
@@ -146,7 +147,7 @@ func (s *RecordDefinition) WrapperType() string {
 }
 
 func (s *RecordDefinition) Doc() string {
-	return s.doc
+	return strings.ReplaceAll(s.doc, "\n", " ")
 }
 
 func (s *RecordDefinition) Schema() (string, error) {

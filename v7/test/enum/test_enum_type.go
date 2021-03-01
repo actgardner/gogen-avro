@@ -14,7 +14,7 @@ import (
 	"github.com/actgardner/gogen-avro/v7/vm/types"
 )
 
-// Test enum
+// Test  enum
 type TestEnumType int32
 
 const (

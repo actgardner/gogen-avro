@@ -12,7 +12,9 @@ import (
 	"io"
 )
 
+// primitive record
 type PrimitiveTestRecord struct {
+	// int field
 	IntField int32 `json:"IntField"`
 
 	LongField int64 `json:"LongField"`
@@ -101,7 +103,7 @@ func (r *PrimitiveTestRecord) Serialize(w io.Writer) error {
 }
 
 func (r *PrimitiveTestRecord) Schema() string {
-	return "{\"fields\":[{\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"LongField\",\"type\":\"long\"},{\"name\":\"FloatField\",\"type\":\"float\"},{\"name\":\"DoubleField\",\"type\":\"double\"},{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
+	return "{\"doc\":\"primitive\\nrecord\",\"fields\":[{\"doc\":\"int\\nfield\",\"name\":\"IntField\",\"type\":\"int\"},{\"name\":\"LongField\",\"type\":\"long\"},{\"name\":\"FloatField\",\"type\":\"float\"},{\"name\":\"DoubleField\",\"type\":\"double\"},{\"name\":\"StringField\",\"type\":\"string\"},{\"name\":\"BoolField\",\"type\":\"boolean\"},{\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
 }
 
 func (r *PrimitiveTestRecord) SchemaName() string {
