@@ -1,0 +1,21 @@
+[{
+	"type": "record",
+	"name": "NestedRecord",
+	"fields": [{
+		"name": "StringField",
+		"type": "string"
+	}, {
+		"name": "BoolField",
+		"type": "boolean"
+	}, {
+		"name": "BytesField",
+		"type": "bytes"
+	}]
+}, {
+	"type": "record",
+	"name": "NestedTestRecord",
+	"fields": [{
+		"name": "OtherField",
+		"type": "NestedRecord"
+	}]
+}]
