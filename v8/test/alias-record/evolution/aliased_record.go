@@ -28,7 +28,8 @@ type AliasedRecord struct {
 const AliasedRecordAvroCRC64Fingerprint = "\x95\xd965\xeb$\xa8\x19"
 
 func NewAliasedRecord() AliasedRecord {
-	return AliasedRecord{}
+	r := AliasedRecord{}
+	return r
 }
 
 func DeserializeAliasedRecord(r io.Reader) (AliasedRecord, error) {

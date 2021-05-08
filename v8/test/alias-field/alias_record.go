@@ -26,7 +26,8 @@ type AliasRecord struct {
 const AliasRecordAvroCRC64Fingerprint = "B~_@rz\xdb\xc7"
 
 func NewAliasRecord() AliasRecord {
-	return AliasRecord{}
+	r := AliasRecord{}
+	return r
 }
 
 func DeserializeAliasRecord(r io.Reader) (AliasRecord, error) {

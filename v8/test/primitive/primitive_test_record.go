@@ -36,7 +36,15 @@ type PrimitiveTestRecord struct {
 const PrimitiveTestRecordAvroCRC64Fingerprint = "۲\x16\xe9\xfet@\x13"
 
 func NewPrimitiveTestRecord() PrimitiveTestRecord {
-	return PrimitiveTestRecord{}
+	r := PrimitiveTestRecord{}
+	r.IntField = 1.2345689e+07
+	r.LongField = 2.3456789e+08
+	r.FloatField = 1e+08
+	r.DoubleField = 800000
+	r.StringField = "defaultstring"
+	r.BoolField = true
+	r.BytesField = []byte("\x04\x01\x05\xfd")
+	return r
 }
 
 func DeserializePrimitiveTestRecord(r io.Reader) (PrimitiveTestRecord, error) {

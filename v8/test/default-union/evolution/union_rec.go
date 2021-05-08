@@ -24,7 +24,8 @@ type UnionRec struct {
 const UnionRecAvroCRC64Fingerprint = "1\xf9\xae\xb7W\x80#\xf9"
 
 func NewUnionRec() UnionRec {
-	return UnionRec{}
+	r := UnionRec{}
+	return r
 }
 
 func DeserializeUnionRec(r io.Reader) (UnionRec, error) {

@@ -32,7 +32,8 @@ type DemoSchema struct {
 const DemoSchemaAvroCRC64Fingerprint = "\xc4V\xa9\x04ʛf\xad"
 
 func NewDemoSchema() DemoSchema {
-	return DemoSchema{}
+	r := DemoSchema{}
+	return r
 }
 
 func DeserializeDemoSchema(r io.Reader) (DemoSchema, error) {

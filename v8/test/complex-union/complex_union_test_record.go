@@ -24,7 +24,10 @@ type ComplexUnionTestRecord struct {
 const ComplexUnionTestRecordAvroCRC64Fingerprint = ")h\bbm{\xe0\xbe"
 
 func NewComplexUnionTestRecord() ComplexUnionTestRecord {
-	return ComplexUnionTestRecord{}
+	r := ComplexUnionTestRecord{}
+	r.UnionField = NewUnionArrayIntMapIntNestedUnionRecord()
+
+	return r
 }
 
 func DeserializeComplexUnionTestRecord(r io.Reader) (ComplexUnionTestRecord, error) {

@@ -24,7 +24,8 @@ type StringRec struct {
 const StringRecAvroCRC64Fingerprint = "w\x836\xab\x9d\xe9\x00\x15"
 
 func NewStringRec() StringRec {
-	return StringRec{}
+	r := StringRec{}
+	return r
 }
 
 func DeserializeStringRec(r io.Reader) (StringRec, error) {

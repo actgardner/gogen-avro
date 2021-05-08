@@ -29,7 +29,10 @@ type AvroContainerHeader struct {
 const AvroContainerHeaderAvroCRC64Fingerprint = "\xc0\x12\x03\xc0wi\xf96"
 
 func NewAvroContainerHeader() AvroContainerHeader {
-	return AvroContainerHeader{}
+	r := AvroContainerHeader{}
+	r.Meta = make(map[string]Bytes)
+
+	return r
 }
 
 func DeserializeAvroContainerHeader(r io.Reader) (AvroContainerHeader, error) {

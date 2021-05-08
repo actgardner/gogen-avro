@@ -28,7 +28,14 @@ type TestSample struct {
 const TestSampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
 func NewTestSample() TestSample {
-	return TestSample{}
+	r := TestSample{}
+	r.Header = NewUnionHeaderworksData()
+
+	r.Header = nil
+	r.Body = NewUnionBodyworksData()
+
+	r.Body = nil
+	return r
 }
 
 func DeserializeTestSample(r io.Reader) (TestSample, error) {

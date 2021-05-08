@@ -30,7 +30,8 @@ type NumberRecord struct {
 const NumberRecordAvroCRC64Fingerprint = "\xf4Zu\xd5Nt'~"
 
 func NewNumberRecord() NumberRecord {
-	return NumberRecord{}
+	r := NumberRecord{}
+	return r
 }
 
 func DeserializeNumberRecord(r io.Reader) (NumberRecord, error) {

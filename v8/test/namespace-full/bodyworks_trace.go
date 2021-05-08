@@ -26,7 +26,11 @@ type BodyworksTrace struct {
 const BodyworksTraceAvroCRC64Fingerprint = "\x83<\x8e\xd5T\xfc\x8d\x94"
 
 func NewBodyworksTrace() BodyworksTrace {
-	return BodyworksTrace{}
+	r := BodyworksTrace{}
+	r.TraceId = NewUnionHeaderworksDatatypeUUID()
+
+	r.TraceId = nil
+	return r
 }
 
 func DeserializeBodyworksTrace(r io.Reader) (BodyworksTrace, error) {

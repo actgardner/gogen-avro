@@ -24,7 +24,9 @@ type FixedDefaultTestRecord struct {
 const FixedDefaultTestRecordAvroCRC64Fingerprint = "\xac\xb5kw\x1eWK\xcf"
 
 func NewFixedDefaultTestRecord() FixedDefaultTestRecord {
-	return FixedDefaultTestRecord{}
+	r := FixedDefaultTestRecord{}
+	copy(r.FixedField[:], []byte("\x00\x01\x12\x00\x13C\x00\x01\x12\x00\x13S"))
+	return r
 }
 
 func DeserializeFixedDefaultTestRecord(r io.Reader) (FixedDefaultTestRecord, error) {

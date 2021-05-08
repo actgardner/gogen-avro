@@ -24,7 +24,10 @@ type ArrayTestRecord struct {
 const ArrayTestRecordAvroCRC64Fingerprint = "t\x06\x9e\xc8\u0088\xa0\xcb"
 
 func NewArrayTestRecord() ArrayTestRecord {
-	return ArrayTestRecord{}
+	r := ArrayTestRecord{}
+	r.IntField = make([]*UnionInt, 0)
+
+	return r
 }
 
 func DeserializeArrayTestRecord(r io.Reader) (ArrayTestRecord, error) {

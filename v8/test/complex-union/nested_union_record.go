@@ -24,7 +24,8 @@ type NestedUnionRecord struct {
 const NestedUnionRecordAvroCRC64Fingerprint = "#\xb6\xed\xa0\x87F=\xef"
 
 func NewNestedUnionRecord() NestedUnionRecord {
-	return NestedUnionRecord{}
+	r := NestedUnionRecord{}
+	return r
 }
 
 func DeserializeNestedUnionRecord(r io.Reader) (NestedUnionRecord, error) {

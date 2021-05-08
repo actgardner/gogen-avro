@@ -29,7 +29,8 @@ type AvroContainerBlock struct {
 const AvroContainerBlockAvroCRC64Fingerprint = "\x0e\xecj@ٔ\xe14"
 
 func NewAvroContainerBlock() AvroContainerBlock {
-	return AvroContainerBlock{}
+	r := AvroContainerBlock{}
+	return r
 }
 
 func DeserializeAvroContainerBlock(r io.Reader) (AvroContainerBlock, error) {

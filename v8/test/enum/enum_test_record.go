@@ -24,7 +24,9 @@ type EnumTestRecord struct {
 const EnumTestRecordAvroCRC64Fingerprint = "\x8e\x96\x00̛x3\xfa"
 
 func NewEnumTestRecord() EnumTestRecord {
-	return EnumTestRecord{}
+	r := EnumTestRecord{}
+	r.EnumField = TestEnumTypeTestSymbol3
+	return r
 }
 
 func DeserializeEnumTestRecord(r io.Reader) (EnumTestRecord, error) {

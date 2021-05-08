@@ -26,7 +26,8 @@ type FixedTestRecord struct {
 const FixedTestRecordAvroCRC64Fingerprint = "\xbaK\xf9~\x1f\xc0\xf1R"
 
 func NewFixedTestRecord() FixedTestRecord {
-	return FixedTestRecord{}
+	r := FixedTestRecord{}
+	return r
 }
 
 func DeserializeFixedTestRecord(r io.Reader) (FixedTestRecord, error) {

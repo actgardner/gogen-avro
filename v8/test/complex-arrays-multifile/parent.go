@@ -25,7 +25,10 @@ type Parent struct {
 const ParentAvroCRC64Fingerprint = "T\x88\xc0l-\xc3?\xca"
 
 func NewParent() Parent {
-	return Parent{}
+	r := Parent{}
+	r.Children = make([]Child, 0)
+
+	return r
 }
 
 func DeserializeParent(r io.Reader) (Parent, error) {

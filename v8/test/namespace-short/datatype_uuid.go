@@ -25,7 +25,9 @@ type DatatypeUUID struct {
 const DatatypeUUIDAvroCRC64Fingerprint = "\xfc\xa43\x98\xee\xe0p\xe2"
 
 func NewDatatypeUUID() DatatypeUUID {
-	return DatatypeUUID{}
+	r := DatatypeUUID{}
+	r.Uuid = ""
+	return r
 }
 
 func DeserializeDatatypeUUID(r io.Reader) (DatatypeUUID, error) {

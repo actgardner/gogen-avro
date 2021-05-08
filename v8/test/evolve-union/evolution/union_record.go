@@ -26,7 +26,10 @@ type UnionRecord struct {
 const UnionRecordAvroCRC64Fingerprint = "\xf1\xaa\xd1\x1b\x17fj\xae"
 
 func NewUnionRecord() UnionRecord {
-	return UnionRecord{}
+	r := UnionRecord{}
+	r.A = NewUnionString()
+
+	return r
 }
 
 func DeserializeUnionRecord(r io.Reader) (UnionRecord, error) {

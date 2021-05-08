@@ -24,7 +24,8 @@ type RecordBar struct {
 const RecordBarAvroCRC64Fingerprint = "0\x99\x1e\"\x92\xe1\x82{"
 
 func NewRecordBar() RecordBar {
-	return RecordBar{}
+	r := RecordBar{}
+	return r
 }
 
 func DeserializeRecordBar(r io.Reader) (RecordBar, error) {

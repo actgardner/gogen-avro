@@ -24,7 +24,10 @@ type NestedTestRecord struct {
 const NestedTestRecordAvroCRC64Fingerprint = "\x88\x1a\x80Q&\xb1\x16g"
 
 func NewNestedTestRecord() NestedTestRecord {
-	return NestedTestRecord{}
+	r := NestedTestRecord{}
+	r.OtherField = NewAliasedRecord()
+
+	return r
 }
 
 func DeserializeNestedTestRecord(r io.Reader) (NestedTestRecord, error) {

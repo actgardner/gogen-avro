@@ -60,7 +60,8 @@ type NameConflictTestRecord struct {
 const NameConflictTestRecordAvroCRC64Fingerprint = "\xcesIh9\x9f&\b"
 
 func NewNameConflictTestRecord() NameConflictTestRecord {
-	return NameConflictTestRecord{}
+	r := NameConflictTestRecord{}
+	return r
 }
 
 func DeserializeNameConflictTestRecord(r io.Reader) (NameConflictTestRecord, error) {

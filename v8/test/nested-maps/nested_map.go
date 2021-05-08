@@ -24,7 +24,10 @@ type NestedMap struct {
 const NestedMapAvroCRC64Fingerprint = "\xa1\x9e\x89\xd6\xc52@\xf2"
 
 func NewNestedMap() NestedMap {
-	return NestedMap{}
+	r := NestedMap{}
+	r.MapOfMaps = make(map[string]map[string][]string)
+
+	return r
 }
 
 func DeserializeNestedMap(r io.Reader) (NestedMap, error) {

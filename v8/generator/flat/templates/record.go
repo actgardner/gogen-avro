@@ -28,7 +28,16 @@ type {{ .Name }} struct {
 const {{ .Name }}AvroCRC64Fingerprint = {{ definitionFingerprint . }}
 
 func {{ .ConstructorMethod }} ({{ .GoType}}) {
-	return {{ .Name }}{}
+	r := {{ .Name }}{}
+	{{ range $i, $field := .Fields -}}
+	{{ if $.ConstructableForField $field | ne "" -}}
+		{{ $.ConstructableForField $field }}
+	{{ end -}}
+        {{ if .HasDefault -}}
+       	 	{{ $.DefaultForField $field }}
+	{{ end -}}
+	{{ end -}}
+	return r
 }
 
 func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {

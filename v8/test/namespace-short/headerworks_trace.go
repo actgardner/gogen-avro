@@ -26,7 +26,11 @@ type HeaderworksTrace struct {
 const HeaderworksTraceAvroCRC64Fingerprint = "\x8a\xdfu\xe7˻\xa6\xbc"
 
 func NewHeaderworksTrace() HeaderworksTrace {
-	return HeaderworksTrace{}
+	r := HeaderworksTrace{}
+	r.TraceId = NewUnionDatatypeUUID()
+
+	r.TraceId = nil
+	return r
 }
 
 func DeserializeHeaderworksTrace(r io.Reader) (HeaderworksTrace, error) {

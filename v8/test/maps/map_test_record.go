@@ -36,7 +36,36 @@ type MapTestRecord struct {
 const MapTestRecordAvroCRC64Fingerprint = "<?\x18\xa0\a\xdf^\x9e"
 
 func NewMapTestRecord() MapTestRecord {
-	return MapTestRecord{}
+	r := MapTestRecord{}
+	r.IntField = make(map[string]int32)
+
+	r.IntField["default"] = 1
+
+	r.LongField = make(map[string]int64)
+
+	r.LongField["default"] = 2
+
+	r.DoubleField = make(map[string]float64)
+
+	r.DoubleField["default"] = 1000
+
+	r.StringField = make(map[string]string)
+
+	r.StringField["default"] = "defaultstring"
+
+	r.FloatField = make(map[string]float32)
+
+	r.FloatField["default"] = 236
+
+	r.BoolField = make(map[string]bool)
+
+	r.BoolField["default"] = true
+
+	r.BytesField = make(map[string]Bytes)
+
+	r.BytesField["default"] = []byte("\x03\x0f\xde")
+
+	return r
 }
 
 func DeserializeMapTestRecord(r io.Reader) (MapTestRecord, error) {

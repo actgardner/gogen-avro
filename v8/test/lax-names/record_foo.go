@@ -24,7 +24,8 @@ type RecordFoo struct {
 const RecordFooAvroCRC64Fingerprint = "\x94\f\x14v\xb3\x98ߴ"
 
 func NewRecordFoo() RecordFoo {
-	return RecordFoo{}
+	r := RecordFoo{}
+	return r
 }
 
 func DeserializeRecordFoo(r io.Reader) (RecordFoo, error) {

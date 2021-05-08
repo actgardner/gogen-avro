@@ -30,7 +30,17 @@ type BodyworksData struct {
 const BodyworksDataAvroCRC64Fingerprint = "\xa5\xec\x1f\xf5k\x15\xc1!"
 
 func NewBodyworksData() BodyworksData {
-	return BodyworksData{}
+	r := BodyworksData{}
+	r.Uuid = NewUnionDatatypeUUID()
+
+	r.Uuid = nil
+	r.Hostname = NewUnionString()
+
+	r.Hostname = nil
+	r.Trace = NewUnionBodyworksTrace()
+
+	r.Trace = nil
+	return r
 }
 
 func DeserializeBodyworksData(r io.Reader) (BodyworksData, error) {

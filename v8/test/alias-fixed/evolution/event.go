@@ -30,7 +30,8 @@ type Event struct {
 const EventAvroCRC64Fingerprint = "W\xbc\xe5D\xb1l>j"
 
 func NewEvent() Event {
-	return Event{}
+	r := Event{}
+	return r
 }
 
 func DeserializeEvent(r io.Reader) (Event, error) {

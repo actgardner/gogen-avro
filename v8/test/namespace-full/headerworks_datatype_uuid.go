@@ -25,7 +25,9 @@ type HeaderworksDatatypeUUID struct {
 const HeaderworksDatatypeUUIDAvroCRC64Fingerprint = "\xabK\x8cN\xf4L\xb6S"
 
 func NewHeaderworksDatatypeUUID() HeaderworksDatatypeUUID {
-	return HeaderworksDatatypeUUID{}
+	r := HeaderworksDatatypeUUID{}
+	r.Uuid = ""
+	return r
 }
 
 func DeserializeHeaderworksDatatypeUUID(r io.Reader) (HeaderworksDatatypeUUID, error) {

@@ -28,7 +28,14 @@ type ComAvroTestSample struct {
 const ComAvroTestSampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
 func NewComAvroTestSample() ComAvroTestSample {
-	return ComAvroTestSample{}
+	r := ComAvroTestSample{}
+	r.Header = NewUnionHeaderworksData()
+
+	r.Header = nil
+	r.Body = NewUnionBodyworksData()
+
+	r.Body = nil
+	return r
 }
 
 func DeserializeComAvroTestSample(r io.Reader) (ComAvroTestSample, error) {

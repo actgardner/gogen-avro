@@ -24,7 +24,10 @@ type PrimitiveUnionTestRecord struct {
 const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "\xbd0\x82\xe0\xb8r88"
 
 func NewPrimitiveUnionTestRecord() PrimitiveUnionTestRecord {
-	return PrimitiveUnionTestRecord{}
+	r := PrimitiveUnionTestRecord{}
+	r.UnionField = NewUnionStringLongIntFloatDoubleBool()
+
+	return r
 }
 
 func DeserializePrimitiveUnionTestRecord(r io.Reader) (PrimitiveUnionTestRecord, error) {

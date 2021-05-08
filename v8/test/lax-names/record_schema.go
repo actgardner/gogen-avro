@@ -24,7 +24,10 @@ type RecordSchema struct {
 const RecordSchemaAvroCRC64Fingerprint = "\xb8\xce$\xde\v\xd5\x00<"
 
 func NewRecordSchema() RecordSchema {
-	return RecordSchema{}
+	r := RecordSchema{}
+	r.Data = make([]UnionRecordFooRecordBar, 0)
+
+	return r
 }
 
 func DeserializeRecordSchema(r io.Reader) (RecordSchema, error) {

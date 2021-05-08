@@ -28,7 +28,8 @@ type NestedRecord struct {
 const NestedRecordAvroCRC64Fingerprint = "\x81\x8d\xc3K?\xe83\xcc"
 
 func NewNestedRecord() NestedRecord {
-	return NestedRecord{}
+	r := NestedRecord{}
+	return r
 }
 
 func DeserializeNestedRecord(r io.Reader) (NestedRecord, error) {

@@ -25,7 +25,8 @@ type Child struct {
 const ChildAvroCRC64Fingerprint = "\x9c\xc0\xb2WF֤\xff"
 
 func NewChild() Child {
-	return Child{}
+	r := Child{}
+	return r
 }
 
 func DeserializeChild(r io.Reader) (Child, error) {

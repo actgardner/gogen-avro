@@ -30,7 +30,17 @@ type HeaderworksData struct {
 const HeaderworksDataAvroCRC64Fingerprint = "6<\xf6?EE\xcd\v"
 
 func NewHeaderworksData() HeaderworksData {
-	return HeaderworksData{}
+	r := HeaderworksData{}
+	r.Uuid = NewUnionHeaderworksDatatypeUUID()
+
+	r.Uuid = nil
+	r.Hostname = NewUnionString()
+
+	r.Hostname = nil
+	r.Trace = NewUnionHeaderworksTrace()
+
+	r.Trace = nil
+	return r
 }
 
 func DeserializeHeaderworksData(r io.Reader) (HeaderworksData, error) {

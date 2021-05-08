@@ -36,7 +36,54 @@ type ArrayTestRecord struct {
 const ArrayTestRecordAvroCRC64Fingerprint = "\"I\xbbnO\x1c#,"
 
 func NewArrayTestRecord() ArrayTestRecord {
-	return ArrayTestRecord{}
+	r := ArrayTestRecord{}
+	r.IntField = make([]int32, 0)
+
+	r.IntField = make([]int32, 4)
+	r.IntField[0] = 1
+	r.IntField[1] = 2
+	r.IntField[2] = 3
+	r.IntField[3] = 4
+
+	r.LongField = make([]int64, 0)
+
+	r.LongField = make([]int64, 4)
+	r.LongField[0] = 5
+	r.LongField[1] = 6
+	r.LongField[2] = 7
+	r.LongField[3] = 8
+
+	r.DoubleField = make([]float64, 0)
+
+	r.DoubleField = make([]float64, 2)
+	r.DoubleField[0] = 1.5
+	r.DoubleField[1] = 2.4
+
+	r.StringField = make([]string, 0)
+
+	r.StringField = make([]string, 2)
+	r.StringField[0] = "abc"
+	r.StringField[1] = "def"
+
+	r.FloatField = make([]float32, 0)
+
+	r.FloatField = make([]float32, 2)
+	r.FloatField[0] = 1.23
+	r.FloatField[1] = 3.45
+
+	r.BoolField = make([]bool, 0)
+
+	r.BoolField = make([]bool, 2)
+	r.BoolField[0] = true
+	r.BoolField[1] = false
+
+	r.BytesField = make([]Bytes, 0)
+
+	r.BytesField = make([]Bytes, 2)
+	r.BytesField[0] = []byte("abc")
+	r.BytesField[1] = []byte("def")
+
+	return r
 }
 
 func DeserializeArrayTestRecord(r io.Reader) (ArrayTestRecord, error) {

@@ -24,7 +24,10 @@ type RecursiveUnionTestRecord struct {
 const RecursiveUnionTestRecordAvroCRC64Fingerprint = "\xc6U)C\v\x8a\xa6\x89"
 
 func NewRecursiveUnionTestRecord() RecursiveUnionTestRecord {
-	return RecursiveUnionTestRecord{}
+	r := RecursiveUnionTestRecord{}
+	r.RecursiveField = NewUnionRecursiveUnionTestRecord()
+
+	return r
 }
 
 func DeserializeRecursiveUnionTestRecord(r io.Reader) (RecursiveUnionTestRecord, error) {

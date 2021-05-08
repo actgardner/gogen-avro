@@ -24,7 +24,10 @@ type MapTestRecord struct {
 const MapTestRecordAvroCRC64Fingerprint = "\xf7\xdb\x00\xb2n\xa8u\xbf"
 
 func NewMapTestRecord() MapTestRecord {
-	return MapTestRecord{}
+	r := MapTestRecord{}
+	r.IntField = make(map[string]*UnionInt)
+
+	return r
 }
 
 func DeserializeMapTestRecord(r io.Reader) (MapTestRecord, error) {

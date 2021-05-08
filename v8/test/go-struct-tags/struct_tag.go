@@ -24,7 +24,8 @@ type StructTag struct {
 const StructTagAvroCRC64Fingerprint = "\x92\xb7Dk\xe2\x1e\xef\xfc"
 
 func NewStructTag() StructTag {
-	return StructTag{}
+	r := StructTag{}
+	return r
 }
 
 func DeserializeStructTag(r io.Reader) (StructTag, error) {

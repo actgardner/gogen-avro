@@ -24,7 +24,8 @@ type Record2 struct {
 const Record2AvroCRC64Fingerprint = "S\n_\xab\xc7-\xf9\x9c"
 
 func NewRecord2() Record2 {
-	return Record2{}
+	r := Record2{}
+	return r
 }
 
 func DeserializeRecord2(r io.Reader) (Record2, error) {

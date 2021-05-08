@@ -25,7 +25,9 @@ type BodyworksDatatypeUUID struct {
 const BodyworksDatatypeUUIDAvroCRC64Fingerprint = "\xfc\xa43\x98\xee\xe0p\xe2"
 
 func NewBodyworksDatatypeUUID() BodyworksDatatypeUUID {
-	return BodyworksDatatypeUUID{}
+	r := BodyworksDatatypeUUID{}
+	r.Uuid = ""
+	return r
 }
 
 func DeserializeBodyworksDatatypeUUID(r io.Reader) (BodyworksDatatypeUUID, error) {
