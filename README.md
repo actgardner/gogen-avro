@@ -34,7 +34,7 @@ gogen-avro has two parts: a tool which you install on your system (usually on yo
 To generate structs, install the command-line tool (this isn't necessary for the generic package):
 
 ```
-go get github.com/actgardner/gogen-avro/v7/cmd/...
+go get github.com/actgardner/gogen-avro/v9/cmd/...
 ```
 
 This will put the `gogen-avro` binary in `$GOPATH/bin`, which should be part of your PATH.
@@ -46,7 +46,7 @@ _Note: Generic data is support is currently beta. Please report any issues or fe
 To deserialize generic Avro data into Go structs without generating code, instantiate a new `generic.Codec` with the reader and writer schemas:
 
 ```
-import "github.com/actgardner/gogen-avro/v7/generic"
+import "github.com/actgardner/gogen-avro/v9/generic"
 
 codec, err := NewCodecFromSchema(writerSchema, readerSchema) // writerSchema and readerSchema may be the same schema if you're not dealing with evolution
 datum, err := codec.Deserialize(r) // r is an io.Reader with the Avro-encoded bytes
@@ -60,7 +60,7 @@ To generate Go source files from one or more Avro schema files, run:
 gogen-avro [--containers=false] [--sources-comment=false] [--short-unions=false] [--package=<package name>] <output directory> <avro schema files>
 ```
 
-You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/blob/master/v7/test/primitive/generate.go#L3)):
+You can also use a `go:generate` directive in a source file ([example](https://github.com/actgardner/gogen-avro/blob/master/v9/test/primitive/generate.go#L3)):
 
 ```
 //go:generate $GOPATH/bin/gogen-avro . primitives.avsc
@@ -87,15 +87,15 @@ Read Avro data from the given `io.Reader` and deserialize it into the generated 
 
 ### Working with Object Container Files (OCF)
 
-An example of how to write a container file can be found in [example/container/example.go](https://github.com/actgardner/gogen-avro/blob/master/v7/example/container/example.go).
+An example of how to write a container file can be found in [example/container/example.go](https://github.com/actgardner/gogen-avro/blob/master/v9/example/container/example.go).
 
-[Godocs for the container package](https://godoc.org/github.com/actgardner/gogen-avro/v7/container)
+[Godocs for the container package](https://godoc.org/github.com/actgardner/gogen-avro/v9/container)
 
 ### Single-Object Encoding
 
-An example of how to read and write Single-Object encoded messages (for use with Kafka, for instance) can be found in [example/single_object/example.go](https://github.com/actgardner/gogen-avro/blob/master/v7/example/single_object/example.go).
+An example of how to read and write Single-Object encoded messages (for use with Kafka, for instance) can be found in [example/single_object/example.go](https://github.com/actgardner/gogen-avro/blob/master/v9/example/single_object/example.go).
 
-[Godocs for the soe package](https://godoc.org/github.com/actgardner/gogen-avro/v7/soe)
+[Godocs for the soe package](https://godoc.org/github.com/actgardner/gogen-avro/v9/soe)
 
 ### Examples
 
@@ -103,11 +103,11 @@ The `example` directory contains simple example projects with an Avro schema. On
 
 ```
 # Build the Go source files from the Avro schema using the generate directive
-go generate github.com/actgardner/gogen-avro/v7/example
+go generate github.com/actgardner/gogen-avro/v9/example
 
 # Install the example projects on the GOPATH
-go install github.com/actgardner/gogen-avro/v7/example/record
-go install github.com/actgardner/gogen-avro/v7/example/container
+go install github.com/actgardner/gogen-avro/v9/example/record
+go install github.com/actgardner/gogen-avro/v9/example/container
 ```
 
 ### Naming
@@ -181,7 +181,7 @@ When reporting issues, please include your reader and writer schemas, and the ou
 
 ```
 import (
-	"github.com/actgardner/gogen-avro/v7/compiler"
+	"github.com/actgardner/gogen-avro/v9/compiler"
 )
 
 func init() {
