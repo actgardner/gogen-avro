@@ -5,7 +5,7 @@ go:
   - "1.15"
   - tip
 
-install: go get -t -v ./v7/cmd/...
+install: go get -t -v ./v8/cmd/...
 
 script:
-  - cd v7 && bash -ex test.sh 
+  - cd v8 && bash -ex test.sh 
