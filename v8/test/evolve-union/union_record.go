@@ -20,19 +20,19 @@ var _ = fmt.Printf
 type UnionRecord struct {
 	A string `json:"a"`
 
-	Id *UnionInt `json:"id"`
+	Id *UnionNullInt `json:"id"`
 
-	Name *UnionString `json:"name"`
+	Name *UnionNullString `json:"name"`
 }
 
 const UnionRecordAvroCRC64Fingerprint = "\xfeS\x1bd\xa1\xfc͒"
 
 func NewUnionRecord() UnionRecord {
 	r := UnionRecord{}
-	r.Id = NewUnionInt()
+	r.Id = NewUnionNullInt()
 
 	r.Id = nil
-	r.Name = NewUnionString()
+	r.Name = NewUnionNullString()
 
 	r.Name = nil
 	return r
@@ -67,11 +67,11 @@ func writeUnionRecord(r UnionRecord, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	err = writeUnionInt(r.Id, w)
+	err = writeUnionNullInt(r.Id, w)
 	if err != nil {
 		return err
 	}
-	err = writeUnionString(r.Name, w)
+	err = writeUnionNullString(r.Name, w)
 	if err != nil {
 		return err
 	}
@@ -104,11 +104,11 @@ func (r *UnionRecord) Get(i int) types.Field {
 	case 0:
 		return &types.String{Target: &r.A}
 	case 1:
-		r.Id = NewUnionInt()
+		r.Id = NewUnionNullInt()
 
 		return r.Id
 	case 2:
-		r.Name = NewUnionString()
+		r.Name = NewUnionNullString()
 
 		return r.Name
 	}
@@ -198,7 +198,7 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Id = NewUnionInt()
+		r.Id = NewUnionNullInt()
 
 		r.Id = nil
 	}
@@ -214,7 +214,7 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Name = NewUnionString()
+		r.Name = NewUnionNullString()
 
 		r.Name = nil
 	}

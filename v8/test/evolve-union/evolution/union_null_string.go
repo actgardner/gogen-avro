@@ -61,6 +61,7 @@ func DeserializeUnionNullString(r io.Reader) (*UnionNullString, error) {
 	}
 
 	err = vm.Eval(r, deser, t)
+
 	if err != nil {
 		return t, err
 	}
@@ -75,6 +76,7 @@ func DeserializeUnionNullStringFromSchema(r io.Reader, schema string) (*UnionNul
 	}
 
 	err = vm.Eval(r, deser, t)
+
 	if err != nil {
 		return t, err
 	}
@@ -91,10 +93,14 @@ func (_ *UnionNullString) SetFloat(v float32)  { panic("Unsupported operation") 
 func (_ *UnionNullString) SetDouble(v float64) { panic("Unsupported operation") }
 func (_ *UnionNullString) SetBytes(v []byte)   { panic("Unsupported operation") }
 func (_ *UnionNullString) SetString(v string)  { panic("Unsupported operation") }
+
 func (r *UnionNullString) SetLong(v int64) {
+
 	r.UnionType = (UnionNullStringTypeEnum)(v)
 }
+
 func (r *UnionNullString) Get(i int) types.Field {
+
 	switch i {
 	case 0:
 		return r.Null
@@ -123,6 +129,7 @@ func (r *UnionNullString) MarshalJSON() ([]byte, error) {
 }
 
 func (r *UnionNullString) UnmarshalJSON(data []byte) error {
+
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err

@@ -18,14 +18,14 @@ import (
 var _ = fmt.Printf
 
 type PrimitiveUnionTestRecord struct {
-	UnionField *UnionStringLongIntFloatDoubleBool `json:"UnionField"`
+	UnionField *UnionStringLongIntFloatDoubleNullBool `json:"UnionField"`
 }
 
 const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "\xbd0\x82\xe0\xb8r88"
 
 func NewPrimitiveUnionTestRecord() PrimitiveUnionTestRecord {
 	r := PrimitiveUnionTestRecord{}
-	r.UnionField = NewUnionStringLongIntFloatDoubleBool()
+	r.UnionField = NewUnionStringLongIntFloatDoubleNullBool()
 
 	return r
 }
@@ -55,7 +55,7 @@ func DeserializePrimitiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 func writePrimitiveUnionTestRecord(r PrimitiveUnionTestRecord, w io.Writer) error {
 	var err error
-	err = writeUnionStringLongIntFloatDoubleBool(r.UnionField, w)
+	err = writeUnionStringLongIntFloatDoubleNullBool(r.UnionField, w)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (_ PrimitiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported ope
 func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.UnionField = NewUnionStringLongIntFloatDoubleBool()
+		r.UnionField = NewUnionStringLongIntFloatDoubleNullBool()
 
 		return r.UnionField
 	}

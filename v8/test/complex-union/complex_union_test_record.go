@@ -18,14 +18,14 @@ import (
 var _ = fmt.Printf
 
 type ComplexUnionTestRecord struct {
-	UnionField *UnionArrayIntMapIntNestedUnionRecord `json:"UnionField"`
+	UnionField *UnionNullArrayIntMapIntNestedUnionRecord `json:"UnionField"`
 }
 
 const ComplexUnionTestRecordAvroCRC64Fingerprint = ")h\bbm{\xe0\xbe"
 
 func NewComplexUnionTestRecord() ComplexUnionTestRecord {
 	r := ComplexUnionTestRecord{}
-	r.UnionField = NewUnionArrayIntMapIntNestedUnionRecord()
+	r.UnionField = NewUnionNullArrayIntMapIntNestedUnionRecord()
 
 	return r
 }
@@ -55,7 +55,7 @@ func DeserializeComplexUnionTestRecordFromSchema(r io.Reader, schema string) (Co
 
 func writeComplexUnionTestRecord(r ComplexUnionTestRecord, w io.Writer) error {
 	var err error
-	err = writeUnionArrayIntMapIntNestedUnionRecord(r.UnionField, w)
+	err = writeUnionNullArrayIntMapIntNestedUnionRecord(r.UnionField, w)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (_ ComplexUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported opera
 func (r *ComplexUnionTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.UnionField = NewUnionArrayIntMapIntNestedUnionRecord()
+		r.UnionField = NewUnionNullArrayIntMapIntNestedUnionRecord()
 
 		return r.UnionField
 	}

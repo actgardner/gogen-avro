@@ -18,14 +18,14 @@ import (
 var _ = fmt.Printf
 
 type RecursiveUnionTestRecord struct {
-	RecursiveField *UnionRecursiveUnionTestRecord `json:"RecursiveField"`
+	RecursiveField *UnionNullRecursiveUnionTestRecord `json:"RecursiveField"`
 }
 
 const RecursiveUnionTestRecordAvroCRC64Fingerprint = "\xc6U)C\v\x8a\xa6\x89"
 
 func NewRecursiveUnionTestRecord() RecursiveUnionTestRecord {
 	r := RecursiveUnionTestRecord{}
-	r.RecursiveField = NewUnionRecursiveUnionTestRecord()
+	r.RecursiveField = NewUnionNullRecursiveUnionTestRecord()
 
 	return r
 }
@@ -55,7 +55,7 @@ func DeserializeRecursiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 func writeRecursiveUnionTestRecord(r RecursiveUnionTestRecord, w io.Writer) error {
 	var err error
-	err = writeUnionRecursiveUnionTestRecord(r.RecursiveField, w)
+	err = writeUnionNullRecursiveUnionTestRecord(r.RecursiveField, w)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (_ RecursiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported ope
 func (r *RecursiveUnionTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.RecursiveField = NewUnionRecursiveUnionTestRecord()
+		r.RecursiveField = NewUnionNullRecursiveUnionTestRecord()
 
 		return r.RecursiveField
 	}

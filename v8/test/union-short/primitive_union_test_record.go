@@ -18,16 +18,16 @@ import (
 var _ = fmt.Printf
 
 type PrimitiveUnionTestRecord struct {
-	UnionField *UnionIntLongFloatDoubleStringBool `json:"UnionField"`
+	UnionField *UnionIntLongFloatDoubleStringBoolNull `json:"UnionField"`
 }
 
 const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "hSK\xb5\xb2ۗ]"
 
 func NewPrimitiveUnionTestRecord() PrimitiveUnionTestRecord {
 	r := PrimitiveUnionTestRecord{}
-	r.UnionField = NewUnionIntLongFloatDoubleStringBool()
+	r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
 
-	r.UnionField = NewUnionIntLongFloatDoubleStringBool()
+	r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
 	r.UnionField.Int = 1234
 	return r
 }
@@ -57,7 +57,7 @@ func DeserializePrimitiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 func writePrimitiveUnionTestRecord(r PrimitiveUnionTestRecord, w io.Writer) error {
 	var err error
-	err = writeUnionIntLongFloatDoubleStringBool(r.UnionField, w)
+	err = writeUnionIntLongFloatDoubleStringBoolNull(r.UnionField, w)
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (_ PrimitiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported ope
 func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.UnionField = NewUnionIntLongFloatDoubleStringBool()
+		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
 
 		return r.UnionField
 	}
@@ -98,7 +98,7 @@ func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 func (r *PrimitiveUnionTestRecord) SetDefault(i int) {
 	switch i {
 	case 0:
-		r.UnionField = NewUnionIntLongFloatDoubleStringBool()
+		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
 		r.UnionField.Int = 1234
 		return
 	}
@@ -151,9 +151,9 @@ func (r *PrimitiveUnionTestRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.UnionField = NewUnionIntLongFloatDoubleStringBool()
+		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
 
-		r.UnionField = NewUnionIntLongFloatDoubleStringBool()
+		r.UnionField = NewUnionIntLongFloatDoubleStringBoolNull()
 		r.UnionField.Int = 1234
 	}
 	return nil

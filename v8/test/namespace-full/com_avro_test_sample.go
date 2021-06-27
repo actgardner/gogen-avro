@@ -20,19 +20,19 @@ var _ = fmt.Printf
 // GoGen test
 type ComAvroTestSample struct {
 	// Core data information required for any event
-	Header *UnionHeaderworksData `json:"header"`
+	Header *UnionNullHeaderworksData `json:"header"`
 	// Core data information required for any event
-	Body *UnionBodyworksData `json:"body"`
+	Body *UnionNullBodyworksData `json:"body"`
 }
 
 const ComAvroTestSampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
 func NewComAvroTestSample() ComAvroTestSample {
 	r := ComAvroTestSample{}
-	r.Header = NewUnionHeaderworksData()
+	r.Header = NewUnionNullHeaderworksData()
 
 	r.Header = nil
-	r.Body = NewUnionBodyworksData()
+	r.Body = NewUnionNullBodyworksData()
 
 	r.Body = nil
 	return r
@@ -63,11 +63,11 @@ func DeserializeComAvroTestSampleFromSchema(r io.Reader, schema string) (ComAvro
 
 func writeComAvroTestSample(r ComAvroTestSample, w io.Writer) error {
 	var err error
-	err = writeUnionHeaderworksData(r.Header, w)
+	err = writeUnionNullHeaderworksData(r.Header, w)
 	if err != nil {
 		return err
 	}
-	err = writeUnionBodyworksData(r.Body, w)
+	err = writeUnionNullBodyworksData(r.Body, w)
 	if err != nil {
 		return err
 	}
@@ -98,11 +98,11 @@ func (_ ComAvroTestSample) SetUnionElem(v int64) { panic("Unsupported operation"
 func (r *ComAvroTestSample) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.Header = NewUnionHeaderworksData()
+		r.Header = NewUnionNullHeaderworksData()
 
 		return r.Header
 	case 1:
-		r.Body = NewUnionBodyworksData()
+		r.Body = NewUnionNullBodyworksData()
 
 		return r.Body
 	}
@@ -174,7 +174,7 @@ func (r *ComAvroTestSample) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Header = NewUnionHeaderworksData()
+		r.Header = NewUnionNullHeaderworksData()
 
 		r.Header = nil
 	}
@@ -190,7 +190,7 @@ func (r *ComAvroTestSample) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Body = NewUnionBodyworksData()
+		r.Body = NewUnionNullBodyworksData()
 
 		r.Body = nil
 	}

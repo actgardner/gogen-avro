@@ -18,14 +18,14 @@ import (
 var _ = fmt.Printf
 
 type ArrayTestRecord struct {
-	IntField []*UnionInt `json:"IntField"`
+	IntField []*UnionNullInt `json:"IntField"`
 }
 
 const ArrayTestRecordAvroCRC64Fingerprint = "t\x06\x9e\xc8\u0088\xa0\xcb"
 
 func NewArrayTestRecord() ArrayTestRecord {
 	r := ArrayTestRecord{}
-	r.IntField = make([]*UnionInt, 0)
+	r.IntField = make([]*UnionNullInt, 0)
 
 	return r
 }
@@ -55,7 +55,7 @@ func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (ArrayTest
 
 func writeArrayTestRecord(r ArrayTestRecord, w io.Writer) error {
 	var err error
-	err = writeArrayUnionInt(r.IntField, w)
+	err = writeArrayUnionNullInt(r.IntField, w)
 	if err != nil {
 		return err
 	}
@@ -86,9 +86,9 @@ func (_ ArrayTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") 
 func (r *ArrayTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.IntField = make([]*UnionInt, 0)
+		r.IntField = make([]*UnionNullInt, 0)
 
-		return &ArrayUnionIntWrapper{Target: &r.IntField}
+		return &ArrayUnionNullIntWrapper{Target: &r.IntField}
 	}
 	panic("Unknown field index")
 }

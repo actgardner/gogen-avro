@@ -18,14 +18,14 @@ import (
 var _ = fmt.Printf
 
 type MapTestRecord struct {
-	IntField map[string]*UnionInt `json:"IntField"`
+	IntField map[string]*UnionNullInt `json:"IntField"`
 }
 
 const MapTestRecordAvroCRC64Fingerprint = "\xf7\xdb\x00\xb2n\xa8u\xbf"
 
 func NewMapTestRecord() MapTestRecord {
 	r := MapTestRecord{}
-	r.IntField = make(map[string]*UnionInt)
+	r.IntField = make(map[string]*UnionNullInt)
 
 	return r
 }
@@ -55,7 +55,7 @@ func DeserializeMapTestRecordFromSchema(r io.Reader, schema string) (MapTestReco
 
 func writeMapTestRecord(r MapTestRecord, w io.Writer) error {
 	var err error
-	err = writeMapUnionInt(r.IntField, w)
+	err = writeMapUnionNullInt(r.IntField, w)
 	if err != nil {
 		return err
 	}
@@ -86,9 +86,9 @@ func (_ MapTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *MapTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.IntField = make(map[string]*UnionInt)
+		r.IntField = make(map[string]*UnionNullInt)
 
-		return &MapUnionIntWrapper{Target: &r.IntField}
+		return &MapUnionNullIntWrapper{Target: &r.IntField}
 	}
 	panic("Unknown field index")
 }

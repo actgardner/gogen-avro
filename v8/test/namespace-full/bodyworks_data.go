@@ -20,24 +20,24 @@ var _ = fmt.Printf
 // Common information related to the event which must be included in any clean event
 type BodyworksData struct {
 	// Unique identifier for the event used for de-duplication and tracing.
-	Uuid *UnionBodyworksDatatypeUUID `json:"uuid"`
+	Uuid *UnionNullBodyworksDatatypeUUID `json:"uuid"`
 	// Fully qualified name of the host that generated the event that generated the data.
-	Hostname *UnionString `json:"hostname"`
+	Hostname *UnionNullString `json:"hostname"`
 	// Trace information not redundant with this object
-	Trace *UnionBodyworksTrace `json:"trace"`
+	Trace *UnionNullBodyworksTrace `json:"trace"`
 }
 
 const BodyworksDataAvroCRC64Fingerprint = "\xa5\xec\x1f\xf5k\x15\xc1!"
 
 func NewBodyworksData() BodyworksData {
 	r := BodyworksData{}
-	r.Uuid = NewUnionBodyworksDatatypeUUID()
+	r.Uuid = NewUnionNullBodyworksDatatypeUUID()
 
 	r.Uuid = nil
-	r.Hostname = NewUnionString()
+	r.Hostname = NewUnionNullString()
 
 	r.Hostname = nil
-	r.Trace = NewUnionBodyworksTrace()
+	r.Trace = NewUnionNullBodyworksTrace()
 
 	r.Trace = nil
 	return r
@@ -68,15 +68,15 @@ func DeserializeBodyworksDataFromSchema(r io.Reader, schema string) (BodyworksDa
 
 func writeBodyworksData(r BodyworksData, w io.Writer) error {
 	var err error
-	err = writeUnionBodyworksDatatypeUUID(r.Uuid, w)
+	err = writeUnionNullBodyworksDatatypeUUID(r.Uuid, w)
 	if err != nil {
 		return err
 	}
-	err = writeUnionString(r.Hostname, w)
+	err = writeUnionNullString(r.Hostname, w)
 	if err != nil {
 		return err
 	}
-	err = writeUnionBodyworksTrace(r.Trace, w)
+	err = writeUnionNullBodyworksTrace(r.Trace, w)
 	if err != nil {
 		return err
 	}
@@ -107,15 +107,15 @@ func (_ BodyworksData) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *BodyworksData) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.Uuid = NewUnionBodyworksDatatypeUUID()
+		r.Uuid = NewUnionNullBodyworksDatatypeUUID()
 
 		return r.Uuid
 	case 1:
-		r.Hostname = NewUnionString()
+		r.Hostname = NewUnionNullString()
 
 		return r.Hostname
 	case 2:
-		r.Trace = NewUnionBodyworksTrace()
+		r.Trace = NewUnionNullBodyworksTrace()
 
 		return r.Trace
 	}
@@ -197,7 +197,7 @@ func (r *BodyworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Uuid = NewUnionBodyworksDatatypeUUID()
+		r.Uuid = NewUnionNullBodyworksDatatypeUUID()
 
 		r.Uuid = nil
 	}
@@ -213,7 +213,7 @@ func (r *BodyworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Hostname = NewUnionString()
+		r.Hostname = NewUnionNullString()
 
 		r.Hostname = nil
 	}
@@ -229,7 +229,7 @@ func (r *BodyworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Trace = NewUnionBodyworksTrace()
+		r.Trace = NewUnionNullBodyworksTrace()
 
 		r.Trace = nil
 	}

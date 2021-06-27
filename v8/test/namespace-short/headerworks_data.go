@@ -20,24 +20,24 @@ var _ = fmt.Printf
 // Common information related to the event which must be included in any clean event
 type HeaderworksData struct {
 	// Unique identifier for the event used for de-duplication and tracing.
-	Uuid *UnionDatatypeUUID `json:"uuid"`
+	Uuid *UnionNullDatatypeUUID `json:"uuid"`
 	// Fully qualified name of the host that generated the event that generated the data.
-	Hostname *UnionString `json:"hostname"`
+	Hostname *UnionNullString `json:"hostname"`
 	// Trace information not redundant with this object
-	Trace *UnionHeaderworksTrace `json:"trace"`
+	Trace *UnionNullHeaderworksTrace `json:"trace"`
 }
 
 const HeaderworksDataAvroCRC64Fingerprint = "6<\xf6?EE\xcd\v"
 
 func NewHeaderworksData() HeaderworksData {
 	r := HeaderworksData{}
-	r.Uuid = NewUnionDatatypeUUID()
+	r.Uuid = NewUnionNullDatatypeUUID()
 
 	r.Uuid = nil
-	r.Hostname = NewUnionString()
+	r.Hostname = NewUnionNullString()
 
 	r.Hostname = nil
-	r.Trace = NewUnionHeaderworksTrace()
+	r.Trace = NewUnionNullHeaderworksTrace()
 
 	r.Trace = nil
 	return r
@@ -68,15 +68,15 @@ func DeserializeHeaderworksDataFromSchema(r io.Reader, schema string) (Headerwor
 
 func writeHeaderworksData(r HeaderworksData, w io.Writer) error {
 	var err error
-	err = writeUnionDatatypeUUID(r.Uuid, w)
+	err = writeUnionNullDatatypeUUID(r.Uuid, w)
 	if err != nil {
 		return err
 	}
-	err = writeUnionString(r.Hostname, w)
+	err = writeUnionNullString(r.Hostname, w)
 	if err != nil {
 		return err
 	}
-	err = writeUnionHeaderworksTrace(r.Trace, w)
+	err = writeUnionNullHeaderworksTrace(r.Trace, w)
 	if err != nil {
 		return err
 	}
@@ -107,15 +107,15 @@ func (_ HeaderworksData) SetUnionElem(v int64) { panic("Unsupported operation") 
 func (r *HeaderworksData) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.Uuid = NewUnionDatatypeUUID()
+		r.Uuid = NewUnionNullDatatypeUUID()
 
 		return r.Uuid
 	case 1:
-		r.Hostname = NewUnionString()
+		r.Hostname = NewUnionNullString()
 
 		return r.Hostname
 	case 2:
-		r.Trace = NewUnionHeaderworksTrace()
+		r.Trace = NewUnionNullHeaderworksTrace()
 
 		return r.Trace
 	}
@@ -197,7 +197,7 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Uuid = NewUnionDatatypeUUID()
+		r.Uuid = NewUnionNullDatatypeUUID()
 
 		r.Uuid = nil
 	}
@@ -213,7 +213,7 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Hostname = NewUnionString()
+		r.Hostname = NewUnionNullString()
 
 		r.Hostname = nil
 	}
@@ -229,7 +229,7 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.Trace = NewUnionHeaderworksTrace()
+		r.Trace = NewUnionNullHeaderworksTrace()
 
 		r.Trace = nil
 	}

@@ -20,14 +20,14 @@ var _ = fmt.Printf
 // Trace
 type HeaderworksTrace struct {
 	// Trace Identifier
-	TraceId *UnionDatatypeUUID `json:"traceId"`
+	TraceId *UnionNullDatatypeUUID `json:"traceId"`
 }
 
 const HeaderworksTraceAvroCRC64Fingerprint = "\x8a\xdfu\xe7˻\xa6\xbc"
 
 func NewHeaderworksTrace() HeaderworksTrace {
 	r := HeaderworksTrace{}
-	r.TraceId = NewUnionDatatypeUUID()
+	r.TraceId = NewUnionNullDatatypeUUID()
 
 	r.TraceId = nil
 	return r
@@ -58,7 +58,7 @@ func DeserializeHeaderworksTraceFromSchema(r io.Reader, schema string) (Headerwo
 
 func writeHeaderworksTrace(r HeaderworksTrace, w io.Writer) error {
 	var err error
-	err = writeUnionDatatypeUUID(r.TraceId, w)
+	err = writeUnionNullDatatypeUUID(r.TraceId, w)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (_ HeaderworksTrace) SetUnionElem(v int64) { panic("Unsupported operation")
 func (r *HeaderworksTrace) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.TraceId = NewUnionDatatypeUUID()
+		r.TraceId = NewUnionNullDatatypeUUID()
 
 		return r.TraceId
 	}
@@ -151,7 +151,7 @@ func (r *HeaderworksTrace) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.TraceId = NewUnionDatatypeUUID()
+		r.TraceId = NewUnionNullDatatypeUUID()
 
 		r.TraceId = nil
 	}

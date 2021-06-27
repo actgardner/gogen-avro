@@ -18,7 +18,7 @@ import (
 var _ = fmt.Printf
 
 type UnionRecord struct {
-	A *UnionString `json:"a"`
+	A *UnionNullString `json:"a"`
 
 	Name string `json:"name"`
 }
@@ -27,7 +27,7 @@ const UnionRecordAvroCRC64Fingerprint = "\xf1\xaa\xd1\x1b\x17fj\xae"
 
 func NewUnionRecord() UnionRecord {
 	r := UnionRecord{}
-	r.A = NewUnionString()
+	r.A = NewUnionNullString()
 
 	return r
 }
@@ -57,7 +57,7 @@ func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (UnionRecord, 
 
 func writeUnionRecord(r UnionRecord, w io.Writer) error {
 	var err error
-	err = writeUnionString(r.A, w)
+	err = writeUnionNullString(r.A, w)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (_ UnionRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *UnionRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.A = NewUnionString()
+		r.A = NewUnionNullString()
 
 		return r.A
 	case 1:

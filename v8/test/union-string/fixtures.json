@@ -1,0 +1,10 @@
+[
+    {
+        "foo": {
+            "string": "foo_string"
+        },
+        "bar": {
+            "string": "bar_string"
+        }
+    }
+]

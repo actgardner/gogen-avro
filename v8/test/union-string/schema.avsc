@@ -1,0 +1,20 @@
+{
+	"type": "record",
+	"name": "record_v1",
+	"fields": [
+		{
+			"name": "foo",
+			"type": [
+				"null",
+				"string"
+			]
+		},
+		{
+			"name": "bar",
+			"type": [
+				"string",
+				"null"
+			]
+		}
+	]
+}

@@ -20,7 +20,7 @@ var _ = fmt.Printf
 type UnionRecord struct {
 	Id string `json:"id"`
 
-	UnionNull *UnionString `json:"unionNull"`
+	UnionNull *UnionNullString `json:"unionNull"`
 
 	UnionString UnionStringInt `json:"unionString"`
 
@@ -32,7 +32,7 @@ const UnionRecordAvroCRC64Fingerprint = "q\x867|8\xab\u070f"
 func NewUnionRecord() UnionRecord {
 	r := UnionRecord{}
 	r.Id = "test_id"
-	r.UnionNull = NewUnionString()
+	r.UnionNull = NewUnionNullString()
 
 	r.UnionNull = nil
 	r.UnionString = NewUnionStringInt()
@@ -77,7 +77,7 @@ func writeUnionRecord(r UnionRecord, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	err = writeUnionString(r.UnionNull, w)
+	err = writeUnionNullString(r.UnionNull, w)
 	if err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func (r *UnionRecord) Get(i int) types.Field {
 	case 0:
 		return &types.String{Target: &r.Id}
 	case 1:
-		r.UnionNull = NewUnionString()
+		r.UnionNull = NewUnionNullString()
 
 		return r.UnionNull
 	case 2:
@@ -227,7 +227,7 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.UnionNull = NewUnionString()
+		r.UnionNull = NewUnionNullString()
 
 		r.UnionNull = nil
 	}

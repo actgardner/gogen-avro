@@ -20,14 +20,14 @@ var _ = fmt.Printf
 // Trace
 type BodyworksTrace struct {
 	// Trace Identifier
-	TraceId *UnionDatatypeUUID `json:"traceId"`
+	TraceId *UnionNullDatatypeUUID `json:"traceId"`
 }
 
 const BodyworksTraceAvroCRC64Fingerprint = "\x83<\x8e\xd5T\xfc\x8d\x94"
 
 func NewBodyworksTrace() BodyworksTrace {
 	r := BodyworksTrace{}
-	r.TraceId = NewUnionDatatypeUUID()
+	r.TraceId = NewUnionNullDatatypeUUID()
 
 	r.TraceId = nil
 	return r
@@ -58,7 +58,7 @@ func DeserializeBodyworksTraceFromSchema(r io.Reader, schema string) (BodyworksT
 
 func writeBodyworksTrace(r BodyworksTrace, w io.Writer) error {
 	var err error
-	err = writeUnionDatatypeUUID(r.TraceId, w)
+	err = writeUnionNullDatatypeUUID(r.TraceId, w)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (_ BodyworksTrace) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *BodyworksTrace) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.TraceId = NewUnionDatatypeUUID()
+		r.TraceId = NewUnionNullDatatypeUUID()
 
 		return r.TraceId
 	}
@@ -151,7 +151,7 @@ func (r *BodyworksTrace) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		r.TraceId = NewUnionDatatypeUUID()
+		r.TraceId = NewUnionNullDatatypeUUID()
 
 		r.TraceId = nil
 	}
