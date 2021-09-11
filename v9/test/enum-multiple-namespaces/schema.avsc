@@ -1,0 +1,50 @@
+{
+	"type": "record",
+	"name": "SomeType",
+	"namespace": "com.company.team",
+	"fields": [
+		{
+			"name": "fieldOne",
+			"type": {
+				"name": "TypeOne",
+				"type": "record",
+				"namespace": "com.company.team",
+				"fields": [
+					{
+						"name": "type",
+						"type": {
+							"type": "enum",
+							"name": "SomeEnum",
+							"symbols": [
+								"A",
+								"B",
+								"C"
+							]
+						}
+					}
+				]
+			}
+		},
+		{
+			"name": "fieldTwo",
+			"type": {
+				"name": "TypeTwo",
+				"type": "record",
+				"namespace": "com.company.shared",
+				"fields": [
+					{
+						"name": "type",
+						"type": {
+							"type": "enum",
+							"name": "SomeEnum",
+							"symbols": [
+								"X",
+								"Y"
+							]
+						}
+					}
+				]
+			}
+		}
+	]
+}

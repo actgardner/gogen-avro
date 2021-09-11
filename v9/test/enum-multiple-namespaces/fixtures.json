@@ -1,0 +1,18 @@
+[
+  {
+    "fieldOne": {
+      "type": "A"
+    },
+    "fieldTwo": {
+      "type": "X"
+    }
+  },
+  {
+    "fieldOne": {
+      "type": "B"
+    },
+    "fieldTwo": {
+      "type": "Y"
+    }
+  }
+]

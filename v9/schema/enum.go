@@ -50,7 +50,7 @@ func (e *EnumDefinition) SymbolName(symbol string) string {
 }
 
 func (e *EnumDefinition) GoType() string {
-	return generator.ToPublicName(e.name.Name)
+	return generator.ToPublicName(e.name.String())
 }
 
 func (e *EnumDefinition) SerializerMethod() string {
