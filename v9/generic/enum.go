@@ -21,9 +21,11 @@ func (r *enumDatum) Datum() interface{} {
 }
 
 func (r *enumDatum) SetBoolean(v bool) { panic("") }
-func (r *enumDatum) SetInt(v int32)    { panic("") }
-func (r *enumDatum) SetLong(v int64) {
+func (r *enumDatum) SetInt(v int32) {
 	r.value = r.symbols[v]
+}
+func (r *enumDatum) SetLong(v int64) {
+	panic("")
 }
 func (r *enumDatum) SetFloat(v float32)               { panic("") }
 func (r *enumDatum) SetDouble(v float64)              { panic("") }

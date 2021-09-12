@@ -99,6 +99,33 @@ func TestUnion(t *testing.T) {
 }
 
 func TestEnum(t *testing.T) {
+	s := []byte(`
+{
+	"type": "enum",
+	"name": "testenum",
+	"symbols": [
+		"ONE",
+		"TWO",
+		"THREE"
+	]
+}
+`)
+	codec, err := NewCodecFromSchema(s, s)
+	assert.NoError(t, err)
+
+	for _, f := range []struct {
+		data     []byte
+		expected interface{}
+	}{
+		{data: []byte{2}, expected: "TWO"},
+		{data: []byte{4}, expected: "THREE"},
+	} {
+		r := bytes.NewBuffer(f.data)
+		datum, err := codec.Deserialize(r)
+		assert.NoError(t, err)
+
+		assert.Equal(t, f.expected, datum)
+	}
 }
 
 func TestLinkedList(t *testing.T) {
