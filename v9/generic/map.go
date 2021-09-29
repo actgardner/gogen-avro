@@ -27,7 +27,7 @@ func (r *mapDatum) SetDouble(v float64) {}
 func (r *mapDatum) SetBytes(v []byte)   {}
 func (r *mapDatum) SetString(v string)  {}
 
-func (r *mapDatum) Get(i int) types.Field { panic("") }
+func (r *mapDatum) Get(i int) types.Field { panic("cannot Get on generic map") }
 func (r *mapDatum) SetDefault(i int)      {}
 
 func (r *mapDatum) AppendMap(key string) types.Field {
@@ -39,7 +39,7 @@ func (r *mapDatum) AppendMap(key string) types.Field {
 	return d
 }
 
-func (r *mapDatum) AppendArray() types.Field { panic("") }
+func (r *mapDatum) AppendArray() types.Field { panic("cannot AppendArray on generic map") }
 
 func (r *mapDatum) NullField(t int) {}
 func (r *mapDatum) Finalize()       {}

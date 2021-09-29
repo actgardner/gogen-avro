@@ -34,12 +34,14 @@ func (r *primitiveDatum) SetBytes(v []byte) {
 func (r *primitiveDatum) SetString(v string) {
 	r.value = v
 }
-func (r *primitiveDatum) Get(i int) types.Field { panic("") }
+func (r *primitiveDatum) Get(i int) types.Field { panic("cannot Get on generic datum") }
 func (r *primitiveDatum) SetDefault(i int)      {}
 
-func (r *primitiveDatum) AppendMap(key string) types.Field { panic("") }
+func (r *primitiveDatum) AppendMap(key string) types.Field {
+	panic("cannot AppendMap on generic datum")
+}
 
-func (r *primitiveDatum) AppendArray() types.Field { panic("") }
+func (r *primitiveDatum) AppendArray() types.Field { panic("cannot AppendArray on generic datum") }
 
 func (r *primitiveDatum) NullField(t int) {}
 func (r *primitiveDatum) Finalize()       {}

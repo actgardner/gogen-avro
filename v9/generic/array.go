@@ -27,10 +27,10 @@ func (r *arrayDatum) SetDouble(v float64) {}
 func (r *arrayDatum) SetBytes(v []byte)   {}
 func (r *arrayDatum) SetString(v string)  {}
 
-func (r *arrayDatum) Get(i int) types.Field { panic("") }
+func (r *arrayDatum) Get(i int) types.Field { panic("cannot Get on generic array") }
 func (r *arrayDatum) SetDefault(i int)      {}
 
-func (r *arrayDatum) AppendMap(key string) types.Field { panic("") }
+func (r *arrayDatum) AppendMap(key string) types.Field { panic("cannot AppendMap on generic array") }
 
 func (r *arrayDatum) AppendArray() types.Field {
 	d := DatumForType(r.itemType)
