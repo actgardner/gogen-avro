@@ -1,0 +1,14 @@
+{
+"type" : "record",
+"name" : "AliasRecord",
+"fields" : [ 
+  {
+    "name": "a",
+    "type": "string"
+  },
+  {
+    "name": "c",
+    "type": "string"
+  }
+]
+}

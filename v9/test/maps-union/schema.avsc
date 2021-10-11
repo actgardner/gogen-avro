@@ -1,7 +1,0 @@
-{
-	"type": "record",
-	"name": "MapTestRecord",
-	"fields": [
-		{"name": "IntField", "type": {"type": "map", "values": ["null", "int"]}}
-	]
-}

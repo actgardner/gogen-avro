@@ -1,7 +1,0 @@
-{
-	"type": "record",
-	"name": "ArrayTestRecord",
-	"fields": [
-		{"name": "IntField", "type": {"type": "array", "items": ["null", "int"]}}
-	]
-}

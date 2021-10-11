@@ -1,0 +1,20 @@
+{
+	"type": "record",
+	"name": "NestedMap",
+	"fields": [
+		{
+		    "name": "MapOfMaps",
+		    "type":
+		    {
+		        "type": "map",
+		        "values": {
+		            "type": "map",
+		            "values": {
+		                "type": "array",
+		                "items": "string"
+		            }
+		        }
+		    }
+		}
+	]
+}

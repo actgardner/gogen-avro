@@ -1,0 +1,20 @@
+{
+	"type": "record",
+	"name": "MapTestRecord",
+	"fields": [
+                {
+			"name": "text",
+			"type": "string"
+		},
+		{
+			"name": "RecursiveField", 
+			"type": {
+				"type": "map", 
+				"values": {
+					"type": "array",
+					"items": "MapTestRecord"
+				}
+			}
+		}
+	]
+}

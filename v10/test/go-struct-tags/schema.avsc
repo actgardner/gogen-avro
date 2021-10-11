@@ -1,0 +1,11 @@
+{
+  "name" : "StructTag",
+  "type" : "record",
+  "fields" : [
+    {
+      "name" : "productName",
+      "type" : "string",
+      "golang.tags": "validate:\"true\""
+    }
+  ]
+}

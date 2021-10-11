@@ -1,0 +1,30 @@
+[
+  {
+    "UnionField": null
+  },
+  {
+    "UnionField": {
+      "array": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "UnionField": {
+      "map": {
+        "a": 1,
+        "b": 3,
+        "c": 5
+      }
+    }
+  },
+  {
+    "UnionField": {
+      "NestedUnionRecord": {
+        "IntField": 789
+      }
+    }
+  }
+]
