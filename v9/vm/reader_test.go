@@ -6,8 +6,9 @@ import (
 )
 
 func BenchmarkReadBool(b *testing.B) {
+	buf := make([]byte, 8)
 	for i := 0; i < b.N; i++ {
 		r := bytes.NewBuffer([]byte{1})
-		readBool(r)
+		readBool(r, buf)
 	}
 }
