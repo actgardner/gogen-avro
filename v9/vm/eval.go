@@ -27,11 +27,12 @@ func Eval(r io.Reader, program *Program, target types.Field) (err error) {
 		}
 	}()
 
-	_, err = evalInner(r, program, target, &pc)
+	buf := make([]byte, 8)
+	_, err = evalInner(r, program, target, &pc, buf)
 	return err
 }
 
-func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (setToNil bool, err error) {
+func evalInner(r io.Reader, program *Program, target types.Field, pc *int, buf []byte) (setToNil bool, err error) {
 	var loop int64
 	var exitAndNull bool
 
@@ -43,21 +44,21 @@ func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (setT
 			switch inst.Operand {
 			case Null:
 			case Boolean:
-				frame.Boolean, err = readBool(r)
+				frame.Boolean, err = readBool(r, buf)
 			case Int:
-				frame.Int, err = readInt(r)
+				frame.Int, err = readInt(r, buf)
 			case Long:
-				frame.Long, err = readLong(r)
+				frame.Long, err = readLong(r, buf)
 			case UnusedLong:
-				_, err = readLong(r)
+				_, err = readLong(r, buf)
 			case Float:
-				frame.Float, err = readFloat(r)
+				frame.Float, err = readFloat(r, buf)
 			case Double:
-				frame.Double, err = readDouble(r)
+				frame.Double, err = readDouble(r, buf)
 			case Bytes:
-				frame.Bytes, err = readBytes(r)
+				frame.Bytes, err = readBytes(r, buf)
 			case String:
-				frame.String, err = readString(r)
+				frame.String, err = readString(r, buf)
 			default:
 				frame.Bytes, err = readFixed(r, inst.Operand-11)
 			}
@@ -83,7 +84,7 @@ func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (setT
 			target.SetDefault(inst.Operand)
 		case Enter:
 			*pc += 1
-			setToNil, err = evalInner(r, program, target.Get(inst.Operand), pc)
+			setToNil, err = evalInner(r, program, target.Get(inst.Operand), pc, buf)
 			if setToNil {
 				target.NullField(inst.Operand)
 			}
@@ -94,14 +95,14 @@ func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (setT
 			exitAndNull = true
 		case AppendArray:
 			*pc += 1
-			setToNil, err = evalInner(r, program, target.AppendArray(), pc)
+			setToNil, err = evalInner(r, program, target.AppendArray(), pc, buf)
 			// NullField on an array nils the last appended element
 			if setToNil {
 				target.NullField(-1)
 			}
 		case AppendMap:
 			*pc += 1
-			setToNil, err = evalInner(r, program, target.AppendMap(frame.String), pc)
+			setToNil, err = evalInner(r, program, target.AppendMap(frame.String), pc, buf)
 			// NullField on a map nils the last appended element
 			if setToNil {
 				target.NullField(-1)
@@ -109,7 +110,7 @@ func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (setT
 		case Call:
 			curr := *pc
 			*pc = inst.Operand
-			_, err = evalInner(r, program, target, pc)
+			_, err = evalInner(r, program, target, pc, buf)
 			*pc = curr
 		case Return:
 			return false, nil
@@ -132,7 +133,7 @@ func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (setT
 		case PushLoop:
 			loop = frame.Long
 			*pc += 1
-			_, err = evalInner(r, program, target, pc)
+			_, err = evalInner(r, program, target, pc, buf)
 			frame.Long = loop
 		case PopLoop:
 			return false, nil

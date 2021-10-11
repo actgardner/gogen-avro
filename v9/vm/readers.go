@@ -11,13 +11,13 @@ type ByteReader interface {
 	ReadByte() (byte, error)
 }
 
-func readBool(r io.Reader) (bool, error) {
+func readBool(r io.Reader, buf []byte) (bool, error) {
 	var b byte
 	var err error
 	if br, ok := r.(ByteReader); ok {
 		b, err = br.ReadByte()
 	} else {
-		bs := make([]byte, 1)
+		bs := buf[0:1]
 		_, err = io.ReadFull(r, bs)
 		if err != nil {
 			return false, err
@@ -27,8 +27,8 @@ func readBool(r io.Reader) (bool, error) {
 	return b == 1, nil
 }
 
-func readBytes(r io.Reader) ([]byte, error) {
-	size, err := readLong(r)
+func readBytes(r io.Reader, buf []byte) ([]byte, error) {
+	size, err := readLong(r, buf)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +48,8 @@ func readBytes(r io.Reader) ([]byte, error) {
 	return bb, err
 }
 
-func readDouble(r io.Reader) (float64, error) {
-	buf := make([]byte, 8)
+func readDouble(r io.Reader, buf []byte) (float64, error) {
+	buf = buf[0:8]
 	_, err := io.ReadFull(r, buf)
 	if err != nil {
 		return 0, err
@@ -59,8 +59,8 @@ func readDouble(r io.Reader) (float64, error) {
 	return val, nil
 }
 
-func readFloat(r io.Reader) (float32, error) {
-	buf := make([]byte, 4)
+func readFloat(r io.Reader, buf []byte) (float32, error) {
+	buf = buf[0:4]
 	_, err := io.ReadFull(r, buf)
 	if err != nil {
 		return 0, err
@@ -70,7 +70,7 @@ func readFloat(r io.Reader) (float32, error) {
 	return val, nil
 }
 
-func readInt(r io.Reader) (int32, error) {
+func readInt(r io.Reader, buf []byte) (int32, error) {
 	var v int
 	var b byte
 	var err error
@@ -85,7 +85,7 @@ func readInt(r io.Reader) (int32, error) {
 			}
 		}
 	} else {
-		buf := make([]byte, 1)
+		buf := buf[0:1]
 		for shift := uint(0); ; shift += 7 {
 			if _, err := io.ReadFull(r, buf); err != nil {
 				return 0, err
@@ -101,7 +101,7 @@ func readInt(r io.Reader) (int32, error) {
 	return datum, nil
 }
 
-func readLong(r io.Reader) (int64, error) {
+func readLong(r io.Reader, buf []byte) (int64, error) {
 	var v uint64
 	var b byte
 	var err error
@@ -116,7 +116,7 @@ func readLong(r io.Reader) (int64, error) {
 			}
 		}
 	} else {
-		buf := make([]byte, 1)
+		buf := buf[0:1]
 		for shift := uint(0); ; shift += 7 {
 			if _, err = io.ReadFull(r, buf); err != nil {
 				return 0, err
@@ -132,8 +132,8 @@ func readLong(r io.Reader) (int64, error) {
 	return datum, nil
 }
 
-func readString(r io.Reader) (string, error) {
-	len, err := readLong(r)
+func readString(r io.Reader, buf []byte) (string, error) {
+	len, err := readLong(r, buf)
 	if err != nil {
 		return "", err
 	}
