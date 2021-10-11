@@ -96,11 +96,17 @@ func (r *ComCompanyTeamSomeType) Get(i int) types.Field {
 	case 0:
 		r.FieldOne = NewComCompanyTeamTypeOne()
 
-		return &types.Record{Target: &r.FieldOne}
+		w := types.Record{Target: &r.FieldOne}
+
+		return w
+
 	case 1:
 		r.FieldTwo = NewComCompanySharedTypeTwo()
 
-		return &types.Record{Target: &r.FieldTwo}
+		w := types.Record{Target: &r.FieldTwo}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

@@ -86,7 +86,10 @@ func (_ HeaderworksDatatypeUUID) SetUnionElem(v int64) { panic("Unsupported oper
 func (r *HeaderworksDatatypeUUID) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.String{Target: &r.Uuid}
+		w := types.String{Target: &r.Uuid}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

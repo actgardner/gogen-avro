@@ -88,7 +88,10 @@ func (r *NestedMap) Get(i int) types.Field {
 	case 0:
 		r.MapOfMaps = make(map[string]map[string][]string)
 
-		return &MapMapArrayStringWrapper{Target: &r.MapOfMaps}
+		w := MapMapArrayStringWrapper{Target: &r.MapOfMaps}
+
+		return &w
+
 	}
 	panic("Unknown field index")
 }

@@ -28,24 +28,24 @@ type {{ .WrapperType }} struct {
 	Target *{{ .GoType }}
 }
 
-func (_ *{{ .WrapperType }}) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetDouble(v float64) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetBytes(v []byte) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetString(v string) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) Finalize() { }
-func (_ *{{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
-func (r *{{ .WrapperType }}) HintSize(s int) {
+func (_ {{ .WrapperType }}) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetInt(v int32) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetLong(v int64) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetDouble(v float64) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetBytes(v []byte) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetString(v string) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) Finalize() { }
+func (_ {{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
+func (r {{ .WrapperType }}) HintSize(s int) {
 	if len(*r.Target) == 0 {
 		*r.Target = make({{ .GoType }}, 0, s)
 	}
 }
-func (r *{{ .WrapperType }}) NullField(i int) { 
+func (r {{ .WrapperType }}) NullField(i int) { 
 	{{ if isNullable .ItemType -}}
 		(*r.Target)[len(*r.Target)-1] = nil		
 	{{ else -}}
@@ -53,7 +53,7 @@ func (r *{{ .WrapperType }}) NullField(i int) {
 	{{ end -}}
 }
 
-func (r *{{ .WrapperType }}) AppendArray() types.Field {
+func (r {{ .WrapperType }}) AppendArray() types.Field {
 	var v {{ .ItemType.GoType }}
 	{{ if .ItemConstructable -}}
 	{{ .ItemConstructable }}

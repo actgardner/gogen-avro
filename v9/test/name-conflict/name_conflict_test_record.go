@@ -192,43 +192,100 @@ func (_ NameConflictTestRecord) SetUnionElem(v int64) { panic("Unsupported opera
 func (r *NameConflictTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.Boolean{Target: &r.Field_Schema}
+		w := types.Boolean{Target: &r.Field_Schema}
+
+		return w
+
 	case 1:
-		return &types.Boolean{Target: &r.Field_Serialize}
+		w := types.Boolean{Target: &r.Field_Serialize}
+
+		return w
+
 	case 2:
-		return &types.Boolean{Target: &r.Field_SchemaName}
+		w := types.Boolean{Target: &r.Field_SchemaName}
+
+		return w
+
 	case 3:
-		return &types.Boolean{Target: &r.Field_MarshalJSON}
+		w := types.Boolean{Target: &r.Field_MarshalJSON}
+
+		return w
+
 	case 4:
-		return &types.Boolean{Target: &r.Field_UnmarshalJSON}
+		w := types.Boolean{Target: &r.Field_UnmarshalJSON}
+
+		return w
+
 	case 5:
-		return &types.Boolean{Target: &r.Field_AvroCRC64Fingerprint}
+		w := types.Boolean{Target: &r.Field_AvroCRC64Fingerprint}
+
+		return w
+
 	case 6:
-		return &types.Boolean{Target: &r.Field_SetBoolean}
+		w := types.Boolean{Target: &r.Field_SetBoolean}
+
+		return w
+
 	case 7:
-		return &types.Boolean{Target: &r.Field_SetInt}
+		w := types.Boolean{Target: &r.Field_SetInt}
+
+		return w
+
 	case 8:
-		return &types.Boolean{Target: &r.Field_SetLong}
+		w := types.Boolean{Target: &r.Field_SetLong}
+
+		return w
+
 	case 9:
-		return &types.Boolean{Target: &r.Field_SetFloat}
+		w := types.Boolean{Target: &r.Field_SetFloat}
+
+		return w
+
 	case 10:
-		return &types.Boolean{Target: &r.Field_SetDouble}
+		w := types.Boolean{Target: &r.Field_SetDouble}
+
+		return w
+
 	case 11:
-		return &types.Boolean{Target: &r.Field_SetBytes}
+		w := types.Boolean{Target: &r.Field_SetBytes}
+
+		return w
+
 	case 12:
-		return &types.Boolean{Target: &r.Field_SetString}
+		w := types.Boolean{Target: &r.Field_SetString}
+
+		return w
+
 	case 13:
-		return &types.Boolean{Target: &r.Field_Get}
+		w := types.Boolean{Target: &r.Field_Get}
+
+		return w
+
 	case 14:
-		return &types.Boolean{Target: &r.Field_SetDefault}
+		w := types.Boolean{Target: &r.Field_SetDefault}
+
+		return w
+
 	case 15:
-		return &types.Boolean{Target: &r.Field_AppendMap}
+		w := types.Boolean{Target: &r.Field_AppendMap}
+
+		return w
+
 	case 16:
-		return &types.Boolean{Target: &r.Field_AppendArray}
+		w := types.Boolean{Target: &r.Field_AppendArray}
+
+		return w
+
 	case 17:
-		return &types.Boolean{Target: &r.Field_NullField}
+		w := types.Boolean{Target: &r.Field_NullField}
+
+		return w
+
 	case 18:
-		return &types.Boolean{Target: &r.Field_Finalize}
+		w := types.Boolean{Target: &r.Field_Finalize}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

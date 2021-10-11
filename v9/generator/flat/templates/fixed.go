@@ -34,22 +34,22 @@ func (b {{ .GoType }}) MarshalJSON() ([]byte, error) {
 	return []byte(util.EncodeByteString(b[:])), nil
 }
 
-func (_ *{{ .WrapperType }}) SetBoolean(v bool) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetInt(v int32) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetLong(v int64) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetFloat(v float32) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetDouble(v float64) { panic("Unsupported operation") }
-func (r *{{ .WrapperType }}) SetBytes(v []byte) { 
+func (_ {{ .WrapperType }}) SetBoolean(v bool) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetInt(v int32) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetLong(v int64) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetFloat(v float32) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetDouble(v float64) { panic("Unsupported operation") }
+func (r {{ .WrapperType }}) SetBytes(v []byte) { 
 	copy((*r.Target)[:], v)
 }
-func (_ *{{ .WrapperType }}) SetString(v string) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) NullField(int) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) HintSize(int) { panic("Unsupported operation") }
-func (_ *{{ .WrapperType }}) Finalize() { }
-func (_ *{{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetString(v string) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) SetUnionElem(v int64) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) NullField(int) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) HintSize(int) { panic("Unsupported operation") }
+func (_ {{ .WrapperType }}) Finalize() { }
+func (_ {{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
 
 `

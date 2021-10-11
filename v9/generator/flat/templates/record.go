@@ -103,7 +103,12 @@ func (r *{{ .GoType }}) Get(i int) types.Field {
 			{{ $.ConstructableForField $field }}
 		{{ end -}}
 		{{ if ne $field.Type.WrapperType "" -}}
-			return &{{ $field.Type.WrapperType }}{Target: &r.{{ $field.GoName }}}
+			w := {{ $field.Type.WrapperType }}{Target: &r.{{ $field.GoName }}}
+			{{ if $field.Type.WrapperPointer }}
+			return &w
+			{{ else }}
+			return w
+			{{ end }}
 		{{ else -}}
 			return r.{{ $field.GoName }}
 		{{ end -}}

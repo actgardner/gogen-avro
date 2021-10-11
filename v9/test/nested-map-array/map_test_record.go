@@ -92,11 +92,17 @@ func (_ MapTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *MapTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.String{Target: &r.Text}
+		w := types.String{Target: &r.Text}
+
+		return w
+
 	case 1:
 		r.RecursiveField = make(map[string][]MapTestRecord)
 
-		return &MapArrayMapTestRecordWrapper{Target: &r.RecursiveField}
+		w := MapArrayMapTestRecordWrapper{Target: &r.RecursiveField}
+
+		return &w
+
 	}
 	panic("Unknown field index")
 }

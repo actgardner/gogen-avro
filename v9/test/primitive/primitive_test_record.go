@@ -127,19 +127,40 @@ func (_ PrimitiveTestRecord) SetUnionElem(v int64) { panic("Unsupported operatio
 func (r *PrimitiveTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.Int{Target: &r.IntField}
+		w := types.Int{Target: &r.IntField}
+
+		return w
+
 	case 1:
-		return &types.Long{Target: &r.LongField}
+		w := types.Long{Target: &r.LongField}
+
+		return w
+
 	case 2:
-		return &types.Float{Target: &r.FloatField}
+		w := types.Float{Target: &r.FloatField}
+
+		return w
+
 	case 3:
-		return &types.Double{Target: &r.DoubleField}
+		w := types.Double{Target: &r.DoubleField}
+
+		return w
+
 	case 4:
-		return &types.String{Target: &r.StringField}
+		w := types.String{Target: &r.StringField}
+
+		return w
+
 	case 5:
-		return &types.Boolean{Target: &r.BoolField}
+		w := types.Boolean{Target: &r.BoolField}
+
+		return w
+
 	case 6:
-		return &BytesWrapper{Target: &r.BytesField}
+		w := BytesWrapper{Target: &r.BytesField}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

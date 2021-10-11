@@ -82,6 +82,10 @@ func (s *ArrayField) WrapperType() string {
 	return fmt.Sprintf("%vWrapper", s.Name())
 }
 
+func (s *ArrayField) WrapperPointer() bool {
+	return false
+}
+
 func (s *ArrayField) IsReadableBy(f AvroType) bool {
 	if union, ok := f.(*UnionField); ok {
 		for _, t := range union.AvroTypes() {

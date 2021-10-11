@@ -102,13 +102,25 @@ func (_ NumberRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *NumberRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.Int{Target: &r.IntField}
+		w := types.Int{Target: &r.IntField}
+
+		return w
+
 	case 1:
-		return &types.Long{Target: &r.LongField}
+		w := types.Long{Target: &r.LongField}
+
+		return w
+
 	case 2:
-		return &types.Float{Target: &r.FloatField}
+		w := types.Float{Target: &r.FloatField}
+
+		return w
+
 	case 3:
-		return &types.Double{Target: &r.DoubleField}
+		w := types.Double{Target: &r.DoubleField}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

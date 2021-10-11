@@ -37,3 +37,5 @@ func (s *PrimitiveField) Children() []AvroType {
 func (s *PrimitiveField) UnionKey() string {
 	return s.unionKey
 }
+
+func (s *PrimitiveField) WrapperPointer() bool { return false }

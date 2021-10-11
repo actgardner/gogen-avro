@@ -116,7 +116,10 @@ func (_ UnionRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *UnionRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.String{Target: &r.Id}
+		w := types.String{Target: &r.Id}
+
+		return w
+
 	case 1:
 		r.UnionNull = NewUnionNullString()
 
@@ -124,11 +127,17 @@ func (r *UnionRecord) Get(i int) types.Field {
 	case 2:
 		r.UnionString = NewUnionStringInt()
 
-		return &types.Record{Target: &r.UnionString}
+		w := types.Record{Target: &r.UnionString}
+
+		return w
+
 	case 3:
 		r.UnionRecord = NewUnionUnionRecString()
 
-		return &types.Record{Target: &r.UnionRecord}
+		w := types.Record{Target: &r.UnionRecord}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

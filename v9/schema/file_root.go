@@ -49,3 +49,5 @@ func (f *FileRoot) IsReadableBy(_ Definition) bool {
 func (f *FileRoot) WrapperType() string {
 	return ""
 }
+
+func (f *FileRoot) WrapperPointer() bool { return false }

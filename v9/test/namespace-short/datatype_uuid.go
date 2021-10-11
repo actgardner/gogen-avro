@@ -86,7 +86,10 @@ func (_ DatatypeUUID) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *DatatypeUUID) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.String{Target: &r.Uuid}
+		w := types.String{Target: &r.Uuid}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

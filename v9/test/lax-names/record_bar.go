@@ -84,7 +84,10 @@ func (_ RecordBar) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *RecordBar) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.String{Target: &r.Id}
+		w := types.String{Target: &r.Id}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

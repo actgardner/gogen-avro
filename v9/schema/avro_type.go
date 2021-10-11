@@ -17,5 +17,7 @@ type AvroType interface {
 
 	// WrapperType is the VM type to wrap this value in, if applicable
 	WrapperType() string
+	// WrapperPointer is whether the VM wrapper type needs to be a pointer
+	WrapperPointer() bool
 	IsReadableBy(f AvroType) bool
 }

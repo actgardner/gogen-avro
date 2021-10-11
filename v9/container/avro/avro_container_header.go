@@ -99,13 +99,22 @@ func (_ AvroContainerHeader) SetUnionElem(v int64) { panic("Unsupported operatio
 func (r *AvroContainerHeader) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &MagicWrapper{Target: &r.Magic}
+		w := MagicWrapper{Target: &r.Magic}
+
+		return w
+
 	case 1:
 		r.Meta = make(map[string]Bytes)
 
-		return &MapBytesWrapper{Target: &r.Meta}
+		w := MapBytesWrapper{Target: &r.Meta}
+
+		return &w
+
 	case 2:
-		return &SyncWrapper{Target: &r.Sync}
+		w := SyncWrapper{Target: &r.Sync}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

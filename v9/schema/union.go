@@ -131,6 +131,10 @@ func (s *UnionField) WrapperType() string {
 	return ""
 }
 
+func (s *UnionField) WrapperPointer() bool {
+	return false
+}
+
 func (s *UnionField) IsReadableBy(f AvroType) bool {
 	// Report if *any* writer type could be deserialized by the reader
 	for _, t := range s.AvroTypes() {

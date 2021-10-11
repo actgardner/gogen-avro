@@ -70,60 +70,60 @@ type ComCompanyTeamSomeEnumWrapper struct {
 	Target *ComCompanyTeamSomeEnum
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) SetBoolean(v bool) {
+func (b ComCompanyTeamSomeEnumWrapper) SetBoolean(v bool) {
 	panic("Unable to assign boolean to int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) SetInt(v int32) {
+func (b ComCompanyTeamSomeEnumWrapper) SetInt(v int32) {
 	*(b.Target) = ComCompanyTeamSomeEnum(v)
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) SetLong(v int64) {
+func (b ComCompanyTeamSomeEnumWrapper) SetLong(v int64) {
 	panic("Unable to assign long to int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) SetFloat(v float32) {
+func (b ComCompanyTeamSomeEnumWrapper) SetFloat(v float32) {
 	panic("Unable to assign float to int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) SetUnionElem(v int64) {
+func (b ComCompanyTeamSomeEnumWrapper) SetUnionElem(v int64) {
 	panic("Unable to assign union elem to int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) SetDouble(v float64) {
+func (b ComCompanyTeamSomeEnumWrapper) SetDouble(v float64) {
 	panic("Unable to assign double to int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) SetBytes(v []byte) {
+func (b ComCompanyTeamSomeEnumWrapper) SetBytes(v []byte) {
 	panic("Unable to assign bytes to int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) SetString(v string) {
+func (b ComCompanyTeamSomeEnumWrapper) SetString(v string) {
 	panic("Unable to assign string to int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) Get(i int) types.Field {
+func (b ComCompanyTeamSomeEnumWrapper) Get(i int) types.Field {
 	panic("Unable to get field from int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) SetDefault(i int) {
+func (b ComCompanyTeamSomeEnumWrapper) SetDefault(i int) {
 	panic("Unable to set default on int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) AppendMap(key string) types.Field {
+func (b ComCompanyTeamSomeEnumWrapper) AppendMap(key string) types.Field {
 	panic("Unable to append map key to from int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) AppendArray() types.Field {
+func (b ComCompanyTeamSomeEnumWrapper) AppendArray() types.Field {
 	panic("Unable to append array element to from int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) NullField(int) {
+func (b ComCompanyTeamSomeEnumWrapper) NullField(int) {
 	panic("Unable to null field in int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) HintSize(int) {
+func (b ComCompanyTeamSomeEnumWrapper) HintSize(int) {
 	panic("Unable to hint size in int field")
 }
 
-func (b *ComCompanyTeamSomeEnumWrapper) Finalize() {}
+func (b ComCompanyTeamSomeEnumWrapper) Finalize() {}

@@ -65,60 +65,60 @@ type ComCompanySharedSomeEnumWrapper struct {
 	Target *ComCompanySharedSomeEnum
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) SetBoolean(v bool) {
+func (b ComCompanySharedSomeEnumWrapper) SetBoolean(v bool) {
 	panic("Unable to assign boolean to int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) SetInt(v int32) {
+func (b ComCompanySharedSomeEnumWrapper) SetInt(v int32) {
 	*(b.Target) = ComCompanySharedSomeEnum(v)
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) SetLong(v int64) {
+func (b ComCompanySharedSomeEnumWrapper) SetLong(v int64) {
 	panic("Unable to assign long to int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) SetFloat(v float32) {
+func (b ComCompanySharedSomeEnumWrapper) SetFloat(v float32) {
 	panic("Unable to assign float to int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) SetUnionElem(v int64) {
+func (b ComCompanySharedSomeEnumWrapper) SetUnionElem(v int64) {
 	panic("Unable to assign union elem to int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) SetDouble(v float64) {
+func (b ComCompanySharedSomeEnumWrapper) SetDouble(v float64) {
 	panic("Unable to assign double to int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) SetBytes(v []byte) {
+func (b ComCompanySharedSomeEnumWrapper) SetBytes(v []byte) {
 	panic("Unable to assign bytes to int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) SetString(v string) {
+func (b ComCompanySharedSomeEnumWrapper) SetString(v string) {
 	panic("Unable to assign string to int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) Get(i int) types.Field {
+func (b ComCompanySharedSomeEnumWrapper) Get(i int) types.Field {
 	panic("Unable to get field from int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) SetDefault(i int) {
+func (b ComCompanySharedSomeEnumWrapper) SetDefault(i int) {
 	panic("Unable to set default on int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) AppendMap(key string) types.Field {
+func (b ComCompanySharedSomeEnumWrapper) AppendMap(key string) types.Field {
 	panic("Unable to append map key to from int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) AppendArray() types.Field {
+func (b ComCompanySharedSomeEnumWrapper) AppendArray() types.Field {
 	panic("Unable to append array element to from int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) NullField(int) {
+func (b ComCompanySharedSomeEnumWrapper) NullField(int) {
 	panic("Unable to null field in int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) HintSize(int) {
+func (b ComCompanySharedSomeEnumWrapper) HintSize(int) {
 	panic("Unable to hint size in int field")
 }
 
-func (b *ComCompanySharedSomeEnumWrapper) Finalize() {}
+func (b ComCompanySharedSomeEnumWrapper) Finalize() {}

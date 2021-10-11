@@ -38,22 +38,22 @@ func (b TestFixedDefaultType) MarshalJSON() ([]byte, error) {
 	return []byte(util.EncodeByteString(b[:])), nil
 }
 
-func (_ *TestFixedDefaultTypeWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) SetInt(v int32)      { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) SetLong(v int64)     { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) SetFloat(v float32)  { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (r *TestFixedDefaultTypeWrapper) SetBytes(v []byte) {
+func (_ TestFixedDefaultTypeWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) SetLong(v int64)     { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) SetFloat(v float32)  { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) SetDouble(v float64) { panic("Unsupported operation") }
+func (r TestFixedDefaultTypeWrapper) SetBytes(v []byte) {
 	copy((*r.Target)[:], v)
 }
-func (_ *TestFixedDefaultTypeWrapper) SetString(v string)    { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) SetUnionElem(v int64)  { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) AppendMap(key string) types.Field {
+func (_ TestFixedDefaultTypeWrapper) SetString(v string)    { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) SetUnionElem(v int64)  { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) AppendMap(key string) types.Field {
 	panic("Unsupported operation")
 }
-func (_ *TestFixedDefaultTypeWrapper) AppendArray() types.Field { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) NullField(int)            { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) HintSize(int)             { panic("Unsupported operation") }
-func (_ *TestFixedDefaultTypeWrapper) Finalize()                {}
-func (_ *TestFixedDefaultTypeWrapper) SetDefault(i int)         { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) NullField(int)            { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) HintSize(int)             { panic("Unsupported operation") }
+func (_ TestFixedDefaultTypeWrapper) Finalize()                {}
+func (_ TestFixedDefaultTypeWrapper) SetDefault(i int)         { panic("Unsupported operation") }

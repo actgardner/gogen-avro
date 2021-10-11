@@ -88,7 +88,10 @@ func (r *RecordSchema) Get(i int) types.Field {
 	case 0:
 		r.Data = make([]UnionRecordFooRecordBar, 0)
 
-		return &ArrayUnionRecordFooRecordBarWrapper{Target: &r.Data}
+		w := ArrayUnionRecordFooRecordBarWrapper{Target: &r.Data}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

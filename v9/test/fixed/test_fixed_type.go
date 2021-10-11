@@ -38,20 +38,20 @@ func (b TestFixedType) MarshalJSON() ([]byte, error) {
 	return []byte(util.EncodeByteString(b[:])), nil
 }
 
-func (_ *TestFixedTypeWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) SetInt(v int32)      { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) SetLong(v int64)     { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) SetFloat(v float32)  { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) SetDouble(v float64) { panic("Unsupported operation") }
-func (r *TestFixedTypeWrapper) SetBytes(v []byte) {
+func (_ TestFixedTypeWrapper) SetBoolean(v bool)   { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) SetInt(v int32)      { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) SetLong(v int64)     { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) SetFloat(v float32)  { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) SetDouble(v float64) { panic("Unsupported operation") }
+func (r TestFixedTypeWrapper) SetBytes(v []byte) {
 	copy((*r.Target)[:], v)
 }
-func (_ *TestFixedTypeWrapper) SetString(v string)               { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) AppendArray() types.Field         { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) NullField(int)                    { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) HintSize(int)                     { panic("Unsupported operation") }
-func (_ *TestFixedTypeWrapper) Finalize()                        {}
-func (_ *TestFixedTypeWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) SetString(v string)               { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) NullField(int)                    { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) HintSize(int)                     { panic("Unsupported operation") }
+func (_ TestFixedTypeWrapper) Finalize()                        {}
+func (_ TestFixedTypeWrapper) SetDefault(i int)                 { panic("Unsupported operation") }

@@ -30,30 +30,30 @@ type ArrayUnionRecordFooRecordBarWrapper struct {
 	Target *[]UnionRecordFooRecordBar
 }
 
-func (_ *ArrayUnionRecordFooRecordBarWrapper) SetBoolean(v bool)     { panic("Unsupported operation") }
-func (_ *ArrayUnionRecordFooRecordBarWrapper) SetInt(v int32)        { panic("Unsupported operation") }
-func (_ *ArrayUnionRecordFooRecordBarWrapper) SetLong(v int64)       { panic("Unsupported operation") }
-func (_ *ArrayUnionRecordFooRecordBarWrapper) SetFloat(v float32)    { panic("Unsupported operation") }
-func (_ *ArrayUnionRecordFooRecordBarWrapper) SetDouble(v float64)   { panic("Unsupported operation") }
-func (_ *ArrayUnionRecordFooRecordBarWrapper) SetBytes(v []byte)     { panic("Unsupported operation") }
-func (_ *ArrayUnionRecordFooRecordBarWrapper) SetString(v string)    { panic("Unsupported operation") }
-func (_ *ArrayUnionRecordFooRecordBarWrapper) SetUnionElem(v int64)  { panic("Unsupported operation") }
-func (_ *ArrayUnionRecordFooRecordBarWrapper) Get(i int) types.Field { panic("Unsupported operation") }
-func (_ *ArrayUnionRecordFooRecordBarWrapper) AppendMap(key string) types.Field {
+func (_ ArrayUnionRecordFooRecordBarWrapper) SetBoolean(v bool)     { panic("Unsupported operation") }
+func (_ ArrayUnionRecordFooRecordBarWrapper) SetInt(v int32)        { panic("Unsupported operation") }
+func (_ ArrayUnionRecordFooRecordBarWrapper) SetLong(v int64)       { panic("Unsupported operation") }
+func (_ ArrayUnionRecordFooRecordBarWrapper) SetFloat(v float32)    { panic("Unsupported operation") }
+func (_ ArrayUnionRecordFooRecordBarWrapper) SetDouble(v float64)   { panic("Unsupported operation") }
+func (_ ArrayUnionRecordFooRecordBarWrapper) SetBytes(v []byte)     { panic("Unsupported operation") }
+func (_ ArrayUnionRecordFooRecordBarWrapper) SetString(v string)    { panic("Unsupported operation") }
+func (_ ArrayUnionRecordFooRecordBarWrapper) SetUnionElem(v int64)  { panic("Unsupported operation") }
+func (_ ArrayUnionRecordFooRecordBarWrapper) Get(i int) types.Field { panic("Unsupported operation") }
+func (_ ArrayUnionRecordFooRecordBarWrapper) AppendMap(key string) types.Field {
 	panic("Unsupported operation")
 }
-func (_ *ArrayUnionRecordFooRecordBarWrapper) Finalize()        {}
-func (_ *ArrayUnionRecordFooRecordBarWrapper) SetDefault(i int) { panic("Unsupported operation") }
-func (r *ArrayUnionRecordFooRecordBarWrapper) HintSize(s int) {
+func (_ ArrayUnionRecordFooRecordBarWrapper) Finalize()        {}
+func (_ ArrayUnionRecordFooRecordBarWrapper) SetDefault(i int) { panic("Unsupported operation") }
+func (r ArrayUnionRecordFooRecordBarWrapper) HintSize(s int) {
 	if len(*r.Target) == 0 {
 		*r.Target = make([]UnionRecordFooRecordBar, 0, s)
 	}
 }
-func (r *ArrayUnionRecordFooRecordBarWrapper) NullField(i int) {
+func (r ArrayUnionRecordFooRecordBarWrapper) NullField(i int) {
 	panic("Unsupported operation")
 }
 
-func (r *ArrayUnionRecordFooRecordBarWrapper) AppendArray() types.Field {
+func (r ArrayUnionRecordFooRecordBarWrapper) AppendArray() types.Field {
 	var v UnionRecordFooRecordBar
 	v = NewUnionRecordFooRecordBar()
 

@@ -84,7 +84,10 @@ func (_ ComCompanySharedTypeTwo) SetUnionElem(v int64) { panic("Unsupported oper
 func (r *ComCompanySharedTypeTwo) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &ComCompanySharedSomeEnumWrapper{Target: &r.Type}
+		w := ComCompanySharedSomeEnumWrapper{Target: &r.Type}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

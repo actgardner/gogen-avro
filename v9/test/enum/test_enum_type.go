@@ -71,60 +71,60 @@ type TestEnumTypeWrapper struct {
 	Target *TestEnumType
 }
 
-func (b *TestEnumTypeWrapper) SetBoolean(v bool) {
+func (b TestEnumTypeWrapper) SetBoolean(v bool) {
 	panic("Unable to assign boolean to int field")
 }
 
-func (b *TestEnumTypeWrapper) SetInt(v int32) {
+func (b TestEnumTypeWrapper) SetInt(v int32) {
 	*(b.Target) = TestEnumType(v)
 }
 
-func (b *TestEnumTypeWrapper) SetLong(v int64) {
+func (b TestEnumTypeWrapper) SetLong(v int64) {
 	panic("Unable to assign long to int field")
 }
 
-func (b *TestEnumTypeWrapper) SetFloat(v float32) {
+func (b TestEnumTypeWrapper) SetFloat(v float32) {
 	panic("Unable to assign float to int field")
 }
 
-func (b *TestEnumTypeWrapper) SetUnionElem(v int64) {
+func (b TestEnumTypeWrapper) SetUnionElem(v int64) {
 	panic("Unable to assign union elem to int field")
 }
 
-func (b *TestEnumTypeWrapper) SetDouble(v float64) {
+func (b TestEnumTypeWrapper) SetDouble(v float64) {
 	panic("Unable to assign double to int field")
 }
 
-func (b *TestEnumTypeWrapper) SetBytes(v []byte) {
+func (b TestEnumTypeWrapper) SetBytes(v []byte) {
 	panic("Unable to assign bytes to int field")
 }
 
-func (b *TestEnumTypeWrapper) SetString(v string) {
+func (b TestEnumTypeWrapper) SetString(v string) {
 	panic("Unable to assign string to int field")
 }
 
-func (b *TestEnumTypeWrapper) Get(i int) types.Field {
+func (b TestEnumTypeWrapper) Get(i int) types.Field {
 	panic("Unable to get field from int field")
 }
 
-func (b *TestEnumTypeWrapper) SetDefault(i int) {
+func (b TestEnumTypeWrapper) SetDefault(i int) {
 	panic("Unable to set default on int field")
 }
 
-func (b *TestEnumTypeWrapper) AppendMap(key string) types.Field {
+func (b TestEnumTypeWrapper) AppendMap(key string) types.Field {
 	panic("Unable to append map key to from int field")
 }
 
-func (b *TestEnumTypeWrapper) AppendArray() types.Field {
+func (b TestEnumTypeWrapper) AppendArray() types.Field {
 	panic("Unable to append array element to from int field")
 }
 
-func (b *TestEnumTypeWrapper) NullField(int) {
+func (b TestEnumTypeWrapper) NullField(int) {
 	panic("Unable to null field in int field")
 }
 
-func (b *TestEnumTypeWrapper) HintSize(int) {
+func (b TestEnumTypeWrapper) HintSize(int) {
 	panic("Unable to hint size in int field")
 }
 
-func (b *TestEnumTypeWrapper) Finalize() {}
+func (b TestEnumTypeWrapper) Finalize() {}

@@ -30,28 +30,28 @@ type ArrayFloatWrapper struct {
 	Target *[]float32
 }
 
-func (_ *ArrayFloatWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetString(v string)               { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayFloatWrapper) Finalize()                        {}
-func (_ *ArrayFloatWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
-func (r *ArrayFloatWrapper) HintSize(s int) {
+func (_ ArrayFloatWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
+func (_ ArrayFloatWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
+func (_ ArrayFloatWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
+func (_ ArrayFloatWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
+func (_ ArrayFloatWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
+func (_ ArrayFloatWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
+func (_ ArrayFloatWrapper) SetString(v string)               { panic("Unsupported operation") }
+func (_ ArrayFloatWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
+func (_ ArrayFloatWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
+func (_ ArrayFloatWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ ArrayFloatWrapper) Finalize()                        {}
+func (_ ArrayFloatWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (r ArrayFloatWrapper) HintSize(s int) {
 	if len(*r.Target) == 0 {
 		*r.Target = make([]float32, 0, s)
 	}
 }
-func (r *ArrayFloatWrapper) NullField(i int) {
+func (r ArrayFloatWrapper) NullField(i int) {
 	panic("Unsupported operation")
 }
 
-func (r *ArrayFloatWrapper) AppendArray() types.Field {
+func (r ArrayFloatWrapper) AppendArray() types.Field {
 	var v float32
 
 	*r.Target = append(*r.Target, v)

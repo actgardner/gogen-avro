@@ -88,7 +88,10 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 0:
 		r.IntField = make(map[string]*UnionNullInt)
 
-		return &MapUnionNullIntWrapper{Target: &r.IntField}
+		w := MapUnionNullIntWrapper{Target: &r.IntField}
+
+		return &w
+
 	}
 	panic("Unknown field index")
 }

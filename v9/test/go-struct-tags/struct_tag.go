@@ -84,7 +84,10 @@ func (_ StructTag) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *StructTag) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.String{Target: &r.ProductName}
+		w := types.String{Target: &r.ProductName}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

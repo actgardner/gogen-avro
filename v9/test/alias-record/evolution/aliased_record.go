@@ -96,11 +96,20 @@ func (_ AliasedRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *AliasedRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.String{Target: &r.StringField}
+		w := types.String{Target: &r.StringField}
+
+		return w
+
 	case 1:
-		return &types.Boolean{Target: &r.BoolField}
+		w := types.Boolean{Target: &r.BoolField}
+
+		return w
+
 	case 2:
-		return &BytesWrapper{Target: &r.BytesField}
+		w := BytesWrapper{Target: &r.BytesField}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

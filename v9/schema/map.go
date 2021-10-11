@@ -77,6 +77,10 @@ func (s *MapField) WrapperType() string {
 	return fmt.Sprintf("%vWrapper", s.Name())
 }
 
+func (s *MapField) WrapperPointer() bool {
+	return true
+}
+
 func (s *MapField) IsReadableBy(f AvroType) bool {
 	if union, ok := f.(*UnionField); ok {
 		for _, t := range union.AvroTypes() {

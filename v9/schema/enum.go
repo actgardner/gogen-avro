@@ -94,6 +94,8 @@ func (s *EnumDefinition) WrapperType() string {
 	return fmt.Sprintf("%vWrapper", s.GoType())
 }
 
+func (s *EnumDefinition) WrapperPointer() bool { return false }
+
 func (s *EnumDefinition) Children() []AvroType {
 	return []AvroType{}
 }

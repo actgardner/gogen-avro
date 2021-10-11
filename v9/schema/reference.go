@@ -40,6 +40,10 @@ func (s *Reference) WrapperType() string {
 	return s.Def.WrapperType()
 }
 
+func (s *Reference) WrapperPointer() bool {
+	return false
+}
+
 func (s *Reference) IsReadableBy(f AvroType) bool {
 	if union, ok := f.(*UnionField); ok {
 		for _, t := range union.AvroTypes() {

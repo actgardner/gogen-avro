@@ -130,6 +130,10 @@ func (s *RecordDefinition) WrapperType() string {
 	return "types.Record"
 }
 
+func (s *RecordDefinition) WrapperPointer() bool {
+	return false
+}
+
 func (s *RecordDefinition) Doc() string {
 	return strings.ReplaceAll(s.doc, "\n", " ")
 }

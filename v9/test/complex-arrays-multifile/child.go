@@ -85,7 +85,10 @@ func (_ Child) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *Child) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.String{Target: &r.Name}
+		w := types.String{Target: &r.Name}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

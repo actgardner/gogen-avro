@@ -84,7 +84,10 @@ func (_ ComCompanyTeamTypeOne) SetUnionElem(v int64) { panic("Unsupported operat
 func (r *ComCompanyTeamTypeOne) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &ComCompanyTeamSomeEnumWrapper{Target: &r.Type}
+		w := ComCompanyTeamSomeEnumWrapper{Target: &r.Type}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

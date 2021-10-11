@@ -96,7 +96,10 @@ func (r *UnionRecord) Get(i int) types.Field {
 
 		return r.A
 	case 1:
-		return &types.String{Target: &r.Name}
+		w := types.String{Target: &r.Name}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

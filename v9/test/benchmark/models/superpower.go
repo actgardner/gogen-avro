@@ -108,15 +108,30 @@ func (_ Superpower) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *Superpower) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.Int{Target: &r.Id}
+		w := types.Int{Target: &r.Id}
+
+		return w
+
 	case 1:
-		return &types.String{Target: &r.Name}
+		w := types.String{Target: &r.Name}
+
+		return w
+
 	case 2:
-		return &types.Float{Target: &r.Damage}
+		w := types.Float{Target: &r.Damage}
+
+		return w
+
 	case 3:
-		return &types.Float{Target: &r.Energy}
+		w := types.Float{Target: &r.Energy}
+
+		return w
+
 	case 4:
-		return &types.Boolean{Target: &r.Passive}
+		w := types.Boolean{Target: &r.Passive}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

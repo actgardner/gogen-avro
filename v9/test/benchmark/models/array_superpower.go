@@ -30,28 +30,28 @@ type ArraySuperpowerWrapper struct {
 	Target *[]Superpower
 }
 
-func (_ *ArraySuperpowerWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
-func (_ *ArraySuperpowerWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
-func (_ *ArraySuperpowerWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
-func (_ *ArraySuperpowerWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
-func (_ *ArraySuperpowerWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
-func (_ *ArraySuperpowerWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
-func (_ *ArraySuperpowerWrapper) SetString(v string)               { panic("Unsupported operation") }
-func (_ *ArraySuperpowerWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
-func (_ *ArraySuperpowerWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
-func (_ *ArraySuperpowerWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArraySuperpowerWrapper) Finalize()                        {}
-func (_ *ArraySuperpowerWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
-func (r *ArraySuperpowerWrapper) HintSize(s int) {
+func (_ ArraySuperpowerWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
+func (_ ArraySuperpowerWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
+func (_ ArraySuperpowerWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
+func (_ ArraySuperpowerWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
+func (_ ArraySuperpowerWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
+func (_ ArraySuperpowerWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
+func (_ ArraySuperpowerWrapper) SetString(v string)               { panic("Unsupported operation") }
+func (_ ArraySuperpowerWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
+func (_ ArraySuperpowerWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
+func (_ ArraySuperpowerWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ ArraySuperpowerWrapper) Finalize()                        {}
+func (_ ArraySuperpowerWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (r ArraySuperpowerWrapper) HintSize(s int) {
 	if len(*r.Target) == 0 {
 		*r.Target = make([]Superpower, 0, s)
 	}
 }
-func (r *ArraySuperpowerWrapper) NullField(i int) {
+func (r ArraySuperpowerWrapper) NullField(i int) {
 	panic("Unsupported operation")
 }
 
-func (r *ArraySuperpowerWrapper) AppendArray() types.Field {
+func (r ArraySuperpowerWrapper) AppendArray() types.Field {
 	var v Superpower
 	v = NewSuperpower()
 

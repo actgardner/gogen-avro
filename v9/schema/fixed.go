@@ -81,6 +81,8 @@ func (s *FixedDefinition) WrapperType() string {
 	return fmt.Sprintf("%vWrapper", s.GoType())
 }
 
+func (s *FixedDefinition) WrapperPointer() bool { return false }
+
 func (s *FixedDefinition) Children() []AvroType {
 	return []AvroType{}
 }

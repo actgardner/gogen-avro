@@ -30,28 +30,28 @@ type ArrayMapTestRecordWrapper struct {
 	Target *[]MapTestRecord
 }
 
-func (_ *ArrayMapTestRecordWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
-func (_ *ArrayMapTestRecordWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
-func (_ *ArrayMapTestRecordWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
-func (_ *ArrayMapTestRecordWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
-func (_ *ArrayMapTestRecordWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
-func (_ *ArrayMapTestRecordWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
-func (_ *ArrayMapTestRecordWrapper) SetString(v string)               { panic("Unsupported operation") }
-func (_ *ArrayMapTestRecordWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
-func (_ *ArrayMapTestRecordWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
-func (_ *ArrayMapTestRecordWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayMapTestRecordWrapper) Finalize()                        {}
-func (_ *ArrayMapTestRecordWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
-func (r *ArrayMapTestRecordWrapper) HintSize(s int) {
+func (_ ArrayMapTestRecordWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
+func (_ ArrayMapTestRecordWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
+func (_ ArrayMapTestRecordWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
+func (_ ArrayMapTestRecordWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
+func (_ ArrayMapTestRecordWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
+func (_ ArrayMapTestRecordWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
+func (_ ArrayMapTestRecordWrapper) SetString(v string)               { panic("Unsupported operation") }
+func (_ ArrayMapTestRecordWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
+func (_ ArrayMapTestRecordWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
+func (_ ArrayMapTestRecordWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ ArrayMapTestRecordWrapper) Finalize()                        {}
+func (_ ArrayMapTestRecordWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (r ArrayMapTestRecordWrapper) HintSize(s int) {
 	if len(*r.Target) == 0 {
 		*r.Target = make([]MapTestRecord, 0, s)
 	}
 }
-func (r *ArrayMapTestRecordWrapper) NullField(i int) {
+func (r ArrayMapTestRecordWrapper) NullField(i int) {
 	panic("Unsupported operation")
 }
 
-func (r *ArrayMapTestRecordWrapper) AppendArray() types.Field {
+func (r ArrayMapTestRecordWrapper) AppendArray() types.Field {
 	var v MapTestRecord
 	v = NewMapTestRecord()
 

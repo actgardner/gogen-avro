@@ -96,11 +96,17 @@ func (r *NestedTestRecord) Get(i int) types.Field {
 	case 0:
 		r.NumberField = NewNumberRecord()
 
-		return &types.Record{Target: &r.NumberField}
+		w := types.Record{Target: &r.NumberField}
+
+		return w
+
 	case 1:
 		r.OtherField = NewNestedRecord()
 
-		return &types.Record{Target: &r.OtherField}
+		w := types.Record{Target: &r.OtherField}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

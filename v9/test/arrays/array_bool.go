@@ -30,28 +30,28 @@ type ArrayBoolWrapper struct {
 	Target *[]bool
 }
 
-func (_ *ArrayBoolWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetString(v string)               { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
-func (_ *ArrayBoolWrapper) Finalize()                        {}
-func (_ *ArrayBoolWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
-func (r *ArrayBoolWrapper) HintSize(s int) {
+func (_ ArrayBoolWrapper) SetBoolean(v bool)                { panic("Unsupported operation") }
+func (_ ArrayBoolWrapper) SetInt(v int32)                   { panic("Unsupported operation") }
+func (_ ArrayBoolWrapper) SetLong(v int64)                  { panic("Unsupported operation") }
+func (_ ArrayBoolWrapper) SetFloat(v float32)               { panic("Unsupported operation") }
+func (_ ArrayBoolWrapper) SetDouble(v float64)              { panic("Unsupported operation") }
+func (_ ArrayBoolWrapper) SetBytes(v []byte)                { panic("Unsupported operation") }
+func (_ ArrayBoolWrapper) SetString(v string)               { panic("Unsupported operation") }
+func (_ ArrayBoolWrapper) SetUnionElem(v int64)             { panic("Unsupported operation") }
+func (_ ArrayBoolWrapper) Get(i int) types.Field            { panic("Unsupported operation") }
+func (_ ArrayBoolWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
+func (_ ArrayBoolWrapper) Finalize()                        {}
+func (_ ArrayBoolWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (r ArrayBoolWrapper) HintSize(s int) {
 	if len(*r.Target) == 0 {
 		*r.Target = make([]bool, 0, s)
 	}
 }
-func (r *ArrayBoolWrapper) NullField(i int) {
+func (r ArrayBoolWrapper) NullField(i int) {
 	panic("Unsupported operation")
 }
 
-func (r *ArrayBoolWrapper) AppendArray() types.Field {
+func (r ArrayBoolWrapper) AppendArray() types.Field {
 	var v bool
 
 	*r.Target = append(*r.Target, v)

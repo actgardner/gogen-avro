@@ -84,7 +84,10 @@ func (_ NestedUnionRecord) SetUnionElem(v int64) { panic("Unsupported operation"
 func (r *NestedUnionRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &types.Int{Target: &r.IntField}
+		w := types.Int{Target: &r.IntField}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

@@ -168,31 +168,52 @@ func (r *ArrayTestRecord) Get(i int) types.Field {
 	case 0:
 		r.IntField = make([]int32, 0)
 
-		return &ArrayIntWrapper{Target: &r.IntField}
+		w := ArrayIntWrapper{Target: &r.IntField}
+
+		return w
+
 	case 1:
 		r.LongField = make([]int64, 0)
 
-		return &ArrayLongWrapper{Target: &r.LongField}
+		w := ArrayLongWrapper{Target: &r.LongField}
+
+		return w
+
 	case 2:
 		r.DoubleField = make([]float64, 0)
 
-		return &ArrayDoubleWrapper{Target: &r.DoubleField}
+		w := ArrayDoubleWrapper{Target: &r.DoubleField}
+
+		return w
+
 	case 3:
 		r.StringField = make([]string, 0)
 
-		return &ArrayStringWrapper{Target: &r.StringField}
+		w := ArrayStringWrapper{Target: &r.StringField}
+
+		return w
+
 	case 4:
 		r.FloatField = make([]float32, 0)
 
-		return &ArrayFloatWrapper{Target: &r.FloatField}
+		w := ArrayFloatWrapper{Target: &r.FloatField}
+
+		return w
+
 	case 5:
 		r.BoolField = make([]bool, 0)
 
-		return &ArrayBoolWrapper{Target: &r.BoolField}
+		w := ArrayBoolWrapper{Target: &r.BoolField}
+
+		return w
+
 	case 6:
 		r.BytesField = make([]Bytes, 0)
 
-		return &ArrayBytesWrapper{Target: &r.BytesField}
+		w := ArrayBytesWrapper{Target: &r.BytesField}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

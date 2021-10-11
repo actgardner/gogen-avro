@@ -4,60 +4,60 @@ type Float struct {
 	Target *float32
 }
 
-func (b *Float) SetBoolean(v bool) {
+func (b Float) SetBoolean(v bool) {
 	panic("Unable to assign boolean to float field")
 }
 
-func (b *Float) SetInt(v int32) {
+func (b Float) SetInt(v int32) {
 	*(b.Target) = float32(v)
 }
 
-func (b *Float) SetLong(v int64) {
+func (b Float) SetLong(v int64) {
 	*(b.Target) = float32(v)
 }
 
-func (b *Float) SetFloat(v float32) {
+func (b Float) SetFloat(v float32) {
 	*(b.Target) = v
 }
 
-func (b *Float) SetUnionElem(v int64) {
+func (b Float) SetUnionElem(v int64) {
 	panic("Unable to assign union elem to float field")
 }
 
-func (b *Float) SetDouble(v float64) {
+func (b Float) SetDouble(v float64) {
 	panic("Unable to assign double to float field")
 }
 
-func (b *Float) SetBytes(v []byte) {
+func (b Float) SetBytes(v []byte) {
 	panic("Unable to assign double to float field")
 }
 
-func (b *Float) SetString(v string) {
+func (b Float) SetString(v string) {
 	panic("Unable to assign double to float field")
 }
 
-func (b *Float) Get(i int) Field {
+func (b Float) Get(i int) Field {
 	panic("Unable to get field from float field")
 }
 
-func (b *Float) SetDefault(i int) {
+func (b Float) SetDefault(i int) {
 	panic("Unable to set default on float field")
 }
 
-func (b *Float) AppendMap(key string) Field {
+func (b Float) AppendMap(key string) Field {
 	panic("Unable to append map key to from float field")
 }
 
-func (b *Float) AppendArray() Field {
+func (b Float) AppendArray() Field {
 	panic("Unable to append array element to from float field")
 }
 
-func (b *Float) NullField(int) {
+func (b Float) NullField(int) {
 	panic("Unable to null field in float field")
 }
 
-func (b *Float) HintSize(int) {
+func (b Float) HintSize(int) {
 	panic("Unable to hint size in float field")
 }
 
-func (b *Float) Finalize() {}
+func (b Float) Finalize() {}

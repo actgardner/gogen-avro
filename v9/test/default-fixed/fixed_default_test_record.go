@@ -85,7 +85,10 @@ func (_ FixedDefaultTestRecord) SetUnionElem(v int64) { panic("Unsupported opera
 func (r *FixedDefaultTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		return &TestFixedDefaultTypeWrapper{Target: &r.FixedField}
+		w := TestFixedDefaultTypeWrapper{Target: &r.FixedField}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

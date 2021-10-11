@@ -88,7 +88,10 @@ func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 	case 0:
 		r.UnionField = NewUnionBytesStringRecord1Record2()
 
-		return &types.Record{Target: &r.UnionField}
+		w := types.Record{Target: &r.UnionField}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }

@@ -150,31 +150,52 @@ func (r *MapTestRecord) Get(i int) types.Field {
 	case 0:
 		r.IntField = make(map[string]int32)
 
-		return &MapIntWrapper{Target: &r.IntField}
+		w := MapIntWrapper{Target: &r.IntField}
+
+		return &w
+
 	case 1:
 		r.LongField = make(map[string]int64)
 
-		return &MapLongWrapper{Target: &r.LongField}
+		w := MapLongWrapper{Target: &r.LongField}
+
+		return &w
+
 	case 2:
 		r.DoubleField = make(map[string]float64)
 
-		return &MapDoubleWrapper{Target: &r.DoubleField}
+		w := MapDoubleWrapper{Target: &r.DoubleField}
+
+		return &w
+
 	case 3:
 		r.StringField = make(map[string]string)
 
-		return &MapStringWrapper{Target: &r.StringField}
+		w := MapStringWrapper{Target: &r.StringField}
+
+		return &w
+
 	case 4:
 		r.FloatField = make(map[string]float32)
 
-		return &MapFloatWrapper{Target: &r.FloatField}
+		w := MapFloatWrapper{Target: &r.FloatField}
+
+		return &w
+
 	case 5:
 		r.BoolField = make(map[string]bool)
 
-		return &MapBoolWrapper{Target: &r.BoolField}
+		w := MapBoolWrapper{Target: &r.BoolField}
+
+		return &w
+
 	case 6:
 		r.BytesField = make(map[string]Bytes)
 
-		return &MapBytesWrapper{Target: &r.BytesField}
+		w := MapBytesWrapper{Target: &r.BytesField}
+
+		return &w
+
 	}
 	panic("Unknown field index")
 }
