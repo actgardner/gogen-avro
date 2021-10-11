@@ -193,6 +193,12 @@ The logs will be printed on stdout.
 
 ### Alternatives
 
-This project is designed to generate type-safe code from Avro schemas. In cases where the application logic is tied to the Avro schema this makes developing code easier and less error-prone by removing run-time type casting.
-There are cases where generated code may not be appropriate - if you need to handle many different schemas in a generic way, or if the schema data isn't available at compile-time. 
-In these cases the [goavro library](https://github.com/linkedin/goavro) is a flexible, comprehensive alternative.
+This project is designed to generate type-safe code from Avro schemas, and to handle schema evolution according to the Avro specification. In cases where the application logic is tied to the Avro schema this makes developing code easier and less error-prone by removing run-time type casting.
+
+There are cases where code generation may not be appropriate - if you need to handle many different schemas in a generic way, or if the schema data isn't available at compile-time. 
+
+[goavro library](https://github.com/linkedin/goavro) is an alternative library that lacks support for evolution, but provides a comprehensive interface for generic data.
+
+[hamba/avro](https://github.com/hamba/avro]) is another library oriented towards high performance for generic data.
+
+[nrwiersma/avro-benchmarks](https://github.com/nrwiersma/avro-benchmarks) provides benchmarks of several alternative Avro libraries.
