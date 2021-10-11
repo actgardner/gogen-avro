@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"unsafe"
 )
 
 type ByteReader interface {
@@ -153,7 +154,7 @@ func readString(r io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(bb), nil
+	return *(*string)(unsafe.Pointer(&bb)), nil
 }
 
 func readFixed(r io.Reader, size int) ([]byte, error) {
