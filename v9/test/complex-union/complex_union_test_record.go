@@ -110,6 +110,7 @@ func (r *ComplexUnionTestRecord) NullField(i int) {
 
 func (_ ComplexUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ ComplexUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ ComplexUnionTestRecord) HintSize(int)                     { panic("Unsupported operation") }
 func (_ ComplexUnionTestRecord) Finalize()                        {}
 
 func (_ ComplexUnionTestRecord) AvroCRC64Fingerprint() []byte {

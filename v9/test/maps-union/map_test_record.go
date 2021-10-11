@@ -107,6 +107,7 @@ func (r *MapTestRecord) NullField(i int) {
 
 func (_ MapTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ MapTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ MapTestRecord) HintSize(int)                     { panic("Unsupported operation") }
 func (_ MapTestRecord) Finalize()                        {}
 
 func (_ MapTestRecord) AvroCRC64Fingerprint() []byte {

@@ -54,5 +54,6 @@ func (_ *TestFixedDefaultTypeWrapper) AppendMap(key string) types.Field {
 }
 func (_ *TestFixedDefaultTypeWrapper) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *TestFixedDefaultTypeWrapper) NullField(int)            { panic("Unsupported operation") }
+func (_ *TestFixedDefaultTypeWrapper) HintSize(int)             { panic("Unsupported operation") }
 func (_ *TestFixedDefaultTypeWrapper) Finalize()                {}
 func (_ *TestFixedDefaultTypeWrapper) SetDefault(i int)         { panic("Unsupported operation") }

@@ -46,6 +46,13 @@ func (_ *MapMapArrayStringWrapper) SetUnionElem(v int64)  { panic("Unsupported o
 func (_ *MapMapArrayStringWrapper) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *MapMapArrayStringWrapper) SetDefault(i int)      { panic("Unsupported operation") }
 
+func (r *MapMapArrayStringWrapper) HintSize(s int) {
+	if r.keys == nil {
+		r.keys = make([]string, 0, s)
+		r.values = make([]map[string][]string, 0, s)
+	}
+}
+
 func (r *MapMapArrayStringWrapper) NullField(_ int) {
 	panic("Unsupported operation")
 }

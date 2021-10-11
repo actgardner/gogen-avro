@@ -42,6 +42,11 @@ func (_ *ArrayDoubleWrapper) Get(i int) types.Field            { panic("Unsuppor
 func (_ *ArrayDoubleWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ArrayDoubleWrapper) Finalize()                        {}
 func (_ *ArrayDoubleWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (r *ArrayDoubleWrapper) HintSize(s int) {
+	if len(*r.Target) == 0 {
+		*r.Target = make([]float64, 0, s)
+	}
+}
 func (r *ArrayDoubleWrapper) NullField(i int) {
 	panic("Unsupported operation")
 }

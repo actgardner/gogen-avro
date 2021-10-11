@@ -111,6 +111,7 @@ func (r *UnionNullRecursiveUnionTestRecord) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ *UnionNullRecursiveUnionTestRecord) NullField(i int)  { panic("Unsupported operation") }
+func (_ *UnionNullRecursiveUnionTestRecord) HintSize(i int)   { panic("Unsupported operation") }
 func (_ *UnionNullRecursiveUnionTestRecord) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullRecursiveUnionTestRecord) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

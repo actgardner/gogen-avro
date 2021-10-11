@@ -34,4 +34,5 @@ func (r *enumDatum) SetDefault(i int)                 {}
 func (r *enumDatum) AppendMap(key string) types.Field { panic("cannot AppendMap on generic enum") }
 func (r *enumDatum) AppendArray() types.Field         { panic("cannot AppendArray on generic enum") }
 func (r *enumDatum) NullField(t int)                  { panic("cannot NullField on generic enum") }
+func (r *enumDatum) HintSize(t int)                   { panic("cannot HintSize on generic enum") }
 func (r *enumDatum) Finalize()                        {}

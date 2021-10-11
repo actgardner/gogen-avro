@@ -47,6 +47,13 @@ func (_ *MapBytesWrapper) SetUnionElem(v int64)  { panic("Unsupported operation"
 func (_ *MapBytesWrapper) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *MapBytesWrapper) SetDefault(i int)      { panic("Unsupported operation") }
 
+func (r *MapBytesWrapper) HintSize(s int) {
+	if r.keys == nil {
+		r.keys = make([]string, 0, s)
+		r.values = make([]Bytes, 0, s)
+	}
+}
+
 func (r *MapBytesWrapper) NullField(_ int) {
 	panic("Unsupported operation")
 }

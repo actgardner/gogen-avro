@@ -103,6 +103,7 @@ func (r *StructTag) NullField(i int) {
 
 func (_ StructTag) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ StructTag) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ StructTag) HintSize(int)                     { panic("Unsupported operation") }
 func (_ StructTag) Finalize()                        {}
 
 func (_ StructTag) AvroCRC64Fingerprint() []byte {

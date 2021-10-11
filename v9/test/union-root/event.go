@@ -120,6 +120,7 @@ func (r *Event) NullField(i int) {
 
 func (_ Event) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ Event) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ Event) HintSize(int)                     { panic("Unsupported operation") }
 func (_ Event) Finalize()                        {}
 
 func (_ Event) AvroCRC64Fingerprint() []byte {

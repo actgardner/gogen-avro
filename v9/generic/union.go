@@ -29,4 +29,5 @@ func (r *unionDatum) SetDefault(i int)                 {}
 func (r *unionDatum) AppendMap(key string) types.Field { panic("cannot AppendMap on generic union") }
 func (r *unionDatum) AppendArray() types.Field         { panic("cannot AppendArray on generic union") }
 func (r *unionDatum) NullField(t int)                  { panic("cannot NullField on generic union") }
+func (r *unionDatum) HintSize(t int)                   { panic("cannot HintSize on generic union") }
 func (r *unionDatum) Finalize()                        {}

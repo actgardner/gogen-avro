@@ -110,6 +110,7 @@ func (r *UnionUnionRecString) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ UnionUnionRecString) NullField(i int)                  { panic("Unsupported operation") }
+func (_ UnionUnionRecString) HintSize(i int)                   { panic("Unsupported operation") }
 func (_ UnionUnionRecString) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ UnionUnionRecString) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ UnionUnionRecString) AppendArray() types.Field         { panic("Unsupported operation") }

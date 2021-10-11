@@ -119,6 +119,7 @@ func (r *ComCompanyTeamSomeType) NullField(i int) {
 
 func (_ ComCompanyTeamSomeType) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ ComCompanyTeamSomeType) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ ComCompanyTeamSomeType) HintSize(int)                     { panic("Unsupported operation") }
 func (_ ComCompanyTeamSomeType) Finalize()                        {}
 
 func (_ ComCompanyTeamSomeType) AvroCRC64Fingerprint() []byte {

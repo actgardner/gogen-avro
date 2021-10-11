@@ -42,6 +42,11 @@ func (_ *ArrayBytesWrapper) Get(i int) types.Field            { panic("Unsupport
 func (_ *ArrayBytesWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ArrayBytesWrapper) Finalize()                        {}
 func (_ *ArrayBytesWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (r *ArrayBytesWrapper) HintSize(s int) {
+	if len(*r.Target) == 0 {
+		*r.Target = make([]Bytes, 0, s)
+	}
+}
 func (r *ArrayBytesWrapper) NullField(i int) {
 	panic("Unsupported operation")
 }

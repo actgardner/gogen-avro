@@ -140,6 +140,7 @@ func (r *{{ .GoType }}) NullField(i int) {
 
 func (_ {{ .GoType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }
+func (_ {{ .GoType }}) HintSize(int) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) Finalize() { }
 
 

@@ -122,4 +122,8 @@ func (b *ComCompanyTeamSomeEnumWrapper) NullField(int) {
 	panic("Unable to null field in int field")
 }
 
+func (b *ComCompanyTeamSomeEnumWrapper) HintSize(int) {
+	panic("Unable to hint size in int field")
+}
+
 func (b *ComCompanyTeamSomeEnumWrapper) Finalize() {}

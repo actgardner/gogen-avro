@@ -40,6 +40,11 @@ func (_ *{{ .WrapperType }}) Get(i int) types.Field { panic("Unsupported operati
 func (_ *{{ .WrapperType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) Finalize() { }
 func (_ *{{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
+func (r *{{ .WrapperType }}) HintSize(s int) {
+	if len(*r.Target) == 0 {
+		*r.Target = make({{ .GoType }}, 0, s)
+	}
+}
 func (r *{{ .WrapperType }}) NullField(i int) { 
 	{{ if isNullable .ItemType -}}
 		(*r.Target)[len(*r.Target)-1] = nil		

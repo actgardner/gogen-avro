@@ -56,4 +56,8 @@ func (b *Double) NullField(int) {
 	panic("Unable to null field in double field")
 }
 
+func (b *Double) HintSize(int) {
+	panic("Unable to hint size in double field")
+}
+
 func (b *Double) Finalize() {}

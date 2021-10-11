@@ -110,6 +110,7 @@ func (r *UnionIp_addressEvent) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ UnionIp_addressEvent) NullField(i int)                  { panic("Unsupported operation") }
+func (_ UnionIp_addressEvent) HintSize(i int)                   { panic("Unsupported operation") }
 func (_ UnionIp_addressEvent) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ UnionIp_addressEvent) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ UnionIp_addressEvent) AppendArray() types.Field         { panic("Unsupported operation") }

@@ -46,6 +46,13 @@ func (_ *MapFloatWrapper) SetUnionElem(v int64)  { panic("Unsupported operation"
 func (_ *MapFloatWrapper) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *MapFloatWrapper) SetDefault(i int)      { panic("Unsupported operation") }
 
+func (r *MapFloatWrapper) HintSize(s int) {
+	if r.keys == nil {
+		r.keys = make([]string, 0, s)
+		r.values = make([]float32, 0, s)
+	}
+}
+
 func (r *MapFloatWrapper) NullField(_ int) {
 	panic("Unsupported operation")
 }

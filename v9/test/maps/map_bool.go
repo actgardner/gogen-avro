@@ -46,6 +46,13 @@ func (_ *MapBoolWrapper) SetUnionElem(v int64)  { panic("Unsupported operation")
 func (_ *MapBoolWrapper) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *MapBoolWrapper) SetDefault(i int)      { panic("Unsupported operation") }
 
+func (r *MapBoolWrapper) HintSize(s int) {
+	if r.keys == nil {
+		r.keys = make([]string, 0, s)
+		r.values = make([]bool, 0, s)
+	}
+}
+
 func (r *MapBoolWrapper) NullField(_ int) {
 	panic("Unsupported operation")
 }

@@ -42,6 +42,11 @@ func (_ *ArrayUnionNullIntWrapper) Get(i int) types.Field            { panic("Un
 func (_ *ArrayUnionNullIntWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ArrayUnionNullIntWrapper) Finalize()                        {}
 func (_ *ArrayUnionNullIntWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (r *ArrayUnionNullIntWrapper) HintSize(s int) {
+	if len(*r.Target) == 0 {
+		*r.Target = make([]*UnionNullInt, 0, s)
+	}
+}
 func (r *ArrayUnionNullIntWrapper) NullField(i int) {
 	(*r.Target)[len(*r.Target)-1] = nil
 }

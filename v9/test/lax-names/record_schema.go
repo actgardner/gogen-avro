@@ -107,6 +107,7 @@ func (r *RecordSchema) NullField(i int) {
 
 func (_ RecordSchema) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ RecordSchema) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ RecordSchema) HintSize(int)                     { panic("Unsupported operation") }
 func (_ RecordSchema) Finalize()                        {}
 
 func (_ RecordSchema) AvroCRC64Fingerprint() []byte {

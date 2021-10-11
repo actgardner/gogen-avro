@@ -257,6 +257,7 @@ func (r *ArrayTestRecord) NullField(i int) {
 
 func (_ ArrayTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ ArrayTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ ArrayTestRecord) HintSize(int)                     { panic("Unsupported operation") }
 func (_ ArrayTestRecord) Finalize()                        {}
 
 func (_ ArrayTestRecord) AvroCRC64Fingerprint() []byte {

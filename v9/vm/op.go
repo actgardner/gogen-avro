@@ -66,6 +66,8 @@ const (
 
 	// Set the field with the target index to nil
 	NullField
+
+	HintSize
 )
 
 func (o Op) String() string {

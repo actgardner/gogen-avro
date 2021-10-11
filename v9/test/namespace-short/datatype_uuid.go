@@ -108,6 +108,7 @@ func (r *DatatypeUUID) NullField(i int) {
 
 func (_ DatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ DatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ DatatypeUUID) HintSize(int)                     { panic("Unsupported operation") }
 func (_ DatatypeUUID) Finalize()                        {}
 
 func (_ DatatypeUUID) AvroCRC64Fingerprint() []byte {

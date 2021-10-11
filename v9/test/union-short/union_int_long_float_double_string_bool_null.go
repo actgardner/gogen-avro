@@ -145,6 +145,7 @@ func (r *UnionIntLongFloatDoubleStringBoolNull) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ *UnionIntLongFloatDoubleStringBoolNull) NullField(i int)  { panic("Unsupported operation") }
+func (_ *UnionIntLongFloatDoubleStringBoolNull) HintSize(i int)   { panic("Unsupported operation") }
 func (_ *UnionIntLongFloatDoubleStringBoolNull) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionIntLongFloatDoubleStringBoolNull) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

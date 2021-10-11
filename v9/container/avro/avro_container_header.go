@@ -124,6 +124,7 @@ func (r *AvroContainerHeader) NullField(i int) {
 
 func (_ AvroContainerHeader) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ AvroContainerHeader) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ AvroContainerHeader) HintSize(int)                     { panic("Unsupported operation") }
 func (_ AvroContainerHeader) Finalize()                        {}
 
 func (_ AvroContainerHeader) AvroCRC64Fingerprint() []byte {

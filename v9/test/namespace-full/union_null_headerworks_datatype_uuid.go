@@ -111,6 +111,7 @@ func (r *UnionNullHeaderworksDatatypeUUID) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ *UnionNullHeaderworksDatatypeUUID) NullField(i int)  { panic("Unsupported operation") }
+func (_ *UnionNullHeaderworksDatatypeUUID) HintSize(i int)   { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksDatatypeUUID) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullHeaderworksDatatypeUUID) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

@@ -135,6 +135,7 @@ func (r *DemoSchema) NullField(i int) {
 
 func (_ DemoSchema) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ DemoSchema) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ DemoSchema) HintSize(int)                     { panic("Unsupported operation") }
 func (_ DemoSchema) Finalize()                        {}
 
 func (_ DemoSchema) AvroCRC64Fingerprint() []byte {

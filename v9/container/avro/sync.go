@@ -53,5 +53,6 @@ func (_ *SyncWrapper) Get(i int) types.Field            { panic("Unsupported ope
 func (_ *SyncWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *SyncWrapper) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *SyncWrapper) NullField(int)                    { panic("Unsupported operation") }
+func (_ *SyncWrapper) HintSize(int)                     { panic("Unsupported operation") }
 func (_ *SyncWrapper) Finalize()                        {}
 func (_ *SyncWrapper) SetDefault(i int)                 { panic("Unsupported operation") }

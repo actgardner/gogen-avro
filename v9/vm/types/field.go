@@ -25,6 +25,9 @@ type Field interface {
 	// Set the target field to null
 	NullField(t int)
 
+	// Hint at the final size of a map or array, for performance
+	HintSize(s int)
+
 	// Finalize a field if necessary
 	Finalize()
 }

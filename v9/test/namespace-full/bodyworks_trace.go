@@ -116,6 +116,7 @@ func (r *BodyworksTrace) NullField(i int) {
 
 func (_ BodyworksTrace) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ BodyworksTrace) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ BodyworksTrace) HintSize(int)                     { panic("Unsupported operation") }
 func (_ BodyworksTrace) Finalize()                        {}
 
 func (_ BodyworksTrace) AvroCRC64Fingerprint() []byte {

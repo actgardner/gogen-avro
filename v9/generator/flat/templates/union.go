@@ -138,6 +138,7 @@ func (r *{{ .GoType }}) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ {{ .GoType }}) NullField(i int) { panic("Unsupported operation") }
+func (_ {{ .GoType }}) HintSize(i int) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) SetDefault(i int) { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ {{ .GoType }}) AppendArray() types.Field { panic("Unsupported operation") }

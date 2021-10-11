@@ -84,4 +84,8 @@ func (b BytesWrapper) NullField(int) {
 	panic("Unable to null field in bytes field")
 }
 
+func (b BytesWrapper) HintSize(int) {
+	panic("Unable to hint size in bytes field")
+}
+
 func (b BytesWrapper) Finalize() {}

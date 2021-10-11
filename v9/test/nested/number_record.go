@@ -127,6 +127,7 @@ func (r *NumberRecord) NullField(i int) {
 
 func (_ NumberRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ NumberRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ NumberRecord) HintSize(int)                     { panic("Unsupported operation") }
 func (_ NumberRecord) Finalize()                        {}
 
 func (_ NumberRecord) AvroCRC64Fingerprint() []byte {

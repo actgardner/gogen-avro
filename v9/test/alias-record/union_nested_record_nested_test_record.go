@@ -111,6 +111,7 @@ func (r *UnionNestedRecordNestedTestRecord) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ UnionNestedRecordNestedTestRecord) NullField(i int)  { panic("Unsupported operation") }
+func (_ UnionNestedRecordNestedTestRecord) HintSize(i int)   { panic("Unsupported operation") }
 func (_ UnionNestedRecordNestedTestRecord) SetDefault(i int) { panic("Unsupported operation") }
 func (_ UnionNestedRecordNestedTestRecord) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

@@ -120,6 +120,7 @@ func (r *AvroContainerBlock) NullField(i int) {
 
 func (_ AvroContainerBlock) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ AvroContainerBlock) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ AvroContainerBlock) HintSize(int)                     { panic("Unsupported operation") }
 func (_ AvroContainerBlock) Finalize()                        {}
 
 func (_ AvroContainerBlock) AvroCRC64Fingerprint() []byte {

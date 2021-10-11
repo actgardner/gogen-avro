@@ -135,6 +135,7 @@ func (r *TestSample) NullField(i int) {
 
 func (_ TestSample) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ TestSample) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ TestSample) HintSize(int)                     { panic("Unsupported operation") }
 func (_ TestSample) Finalize()                        {}
 
 func (_ TestSample) AvroCRC64Fingerprint() []byte {

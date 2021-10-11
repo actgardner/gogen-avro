@@ -123,4 +123,8 @@ func (b *TestEnumTypeWrapper) NullField(int) {
 	panic("Unable to null field in int field")
 }
 
+func (b *TestEnumTypeWrapper) HintSize(int) {
+	panic("Unable to hint size in int field")
+}
+
 func (b *TestEnumTypeWrapper) Finalize() {}

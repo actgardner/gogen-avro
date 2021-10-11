@@ -39,4 +39,9 @@ func (r *arrayDatum) AppendArray() types.Field {
 }
 
 func (r *arrayDatum) NullField(t int) {}
-func (r *arrayDatum) Finalize()       {}
+func (r *arrayDatum) HintSize(s int) {
+	if r.items == nil {
+		r.items = make([]Datum, 0, s)
+	}
+}
+func (r *arrayDatum) Finalize() {}

@@ -42,6 +42,13 @@ func (_ *{{ .WrapperType }}) SetUnionElem(v int64) { panic("Unsupported operatio
 func (_ *{{ .WrapperType }}) Get(i int) types.Field { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
 
+func (r *{{ .WrapperType }}) HintSize(s int) {
+	if r.keys == nil {
+		r.keys = make([]string, 0, s)
+		r.values= make([]{{ .ItemType.GoType }}, 0, s)
+	}
+}
+
 func (r *{{ .WrapperType }}) NullField(_ int) { 
 	{{ if isNullable .ItemType -}}
 		r.values[len(r.values)-1] = nil		

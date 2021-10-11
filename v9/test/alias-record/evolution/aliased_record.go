@@ -119,6 +119,7 @@ func (r *AliasedRecord) NullField(i int) {
 
 func (_ AliasedRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ AliasedRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ AliasedRecord) HintSize(int)                     { panic("Unsupported operation") }
 func (_ AliasedRecord) Finalize()                        {}
 
 func (_ AliasedRecord) AvroCRC64Fingerprint() []byte {

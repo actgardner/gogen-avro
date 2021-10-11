@@ -44,4 +44,5 @@ func (r *primitiveDatum) AppendMap(key string) types.Field {
 func (r *primitiveDatum) AppendArray() types.Field { panic("cannot AppendArray on generic datum") }
 
 func (r *primitiveDatum) NullField(t int) {}
+func (r *primitiveDatum) HintSize(t int)  { panic("cannot HintSize on generic datum") }
 func (r *primitiveDatum) Finalize()       {}

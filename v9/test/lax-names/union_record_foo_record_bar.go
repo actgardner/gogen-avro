@@ -111,6 +111,7 @@ func (r *UnionRecordFooRecordBar) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ UnionRecordFooRecordBar) NullField(i int)                  { panic("Unsupported operation") }
+func (_ UnionRecordFooRecordBar) HintSize(i int)                   { panic("Unsupported operation") }
 func (_ UnionRecordFooRecordBar) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ UnionRecordFooRecordBar) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ UnionRecordFooRecordBar) AppendArray() types.Field         { panic("Unsupported operation") }

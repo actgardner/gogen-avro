@@ -103,6 +103,7 @@ func (r *UnionRec) NullField(i int) {
 
 func (_ UnionRec) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ UnionRec) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ UnionRec) HintSize(int)                     { panic("Unsupported operation") }
 func (_ UnionRec) Finalize()                        {}
 
 func (_ UnionRec) AvroCRC64Fingerprint() []byte {

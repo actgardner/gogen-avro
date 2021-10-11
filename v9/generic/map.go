@@ -42,4 +42,5 @@ func (r *mapDatum) AppendMap(key string) types.Field {
 func (r *mapDatum) AppendArray() types.Field { panic("cannot AppendArray on generic map") }
 
 func (r *mapDatum) NullField(t int) {}
+func (r *mapDatum) HintSize(t int)  {}
 func (r *mapDatum) Finalize()       {}

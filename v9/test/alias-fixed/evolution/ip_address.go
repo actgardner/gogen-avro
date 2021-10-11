@@ -52,5 +52,6 @@ func (_ *IPAddressWrapper) Get(i int) types.Field            { panic("Unsupporte
 func (_ *IPAddressWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *IPAddressWrapper) AppendArray() types.Field         { panic("Unsupported operation") }
 func (_ *IPAddressWrapper) NullField(int)                    { panic("Unsupported operation") }
+func (_ *IPAddressWrapper) HintSize(int)                     { panic("Unsupported operation") }
 func (_ *IPAddressWrapper) Finalize()                        {}
 func (_ *IPAddressWrapper) SetDefault(i int)                 { panic("Unsupported operation") }

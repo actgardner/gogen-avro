@@ -116,5 +116,9 @@ func (b *{{ .WrapperType }}) NullField(int) {
 	panic("Unable to null field in int field")
 }
 
+func (b *{{ .WrapperType }}) HintSize(int) {
+	panic("Unable to hint size in int field")
+}
+
 func (b *{{ .WrapperType }}) Finalize() {}
 `

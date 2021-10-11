@@ -43,6 +43,7 @@ func (r *recordDatum) SetDefault(i int) {
 }
 func (r *recordDatum) AppendMap(key string) types.Field { panic("cannot AppendMap on generic record") }
 func (r *recordDatum) AppendArray() types.Field         { panic("cannot AppendArray on generic record") }
+func (r *recordDatum) HintSize(t int)                   { panic("cannot HintSize on generic record") }
 func (r *recordDatum) NullField(t int) {
 	r.fields[t] = &primitiveDatum{nil}
 }

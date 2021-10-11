@@ -107,6 +107,7 @@ func (r *NestedMap) NullField(i int) {
 
 func (_ NestedMap) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ NestedMap) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ NestedMap) HintSize(int)                     { panic("Unsupported operation") }
 func (_ NestedMap) Finalize()                        {}
 
 func (_ NestedMap) AvroCRC64Fingerprint() []byte {

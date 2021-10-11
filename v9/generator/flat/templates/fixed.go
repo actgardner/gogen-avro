@@ -48,6 +48,7 @@ func (_ *{{ .WrapperType }}) Get(i int) types.Field { panic("Unsupported operati
 func (_ *{{ .WrapperType }}) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) AppendArray() types.Field { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) NullField(int) { panic("Unsupported operation") }
+func (_ *{{ .WrapperType }}) HintSize(int) { panic("Unsupported operation") }
 func (_ *{{ .WrapperType }}) Finalize() { }
 func (_ *{{ .WrapperType }}) SetDefault(i int) { panic("Unsupported operation") }
 

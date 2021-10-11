@@ -111,6 +111,7 @@ func (r *RecursiveFieldUnion) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ *RecursiveFieldUnion) NullField(i int)                  { panic("Unsupported operation") }
+func (_ *RecursiveFieldUnion) HintSize(i int)                   { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *RecursiveFieldUnion) AppendArray() types.Field         { panic("Unsupported operation") }

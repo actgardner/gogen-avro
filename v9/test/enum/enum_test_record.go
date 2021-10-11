@@ -107,6 +107,7 @@ func (r *EnumTestRecord) NullField(i int) {
 
 func (_ EnumTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ EnumTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ EnumTestRecord) HintSize(int)                     { panic("Unsupported operation") }
 func (_ EnumTestRecord) Finalize()                        {}
 
 func (_ EnumTestRecord) AvroCRC64Fingerprint() []byte {

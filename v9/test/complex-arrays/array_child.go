@@ -42,6 +42,11 @@ func (_ *ArrayChildWrapper) Get(i int) types.Field            { panic("Unsupport
 func (_ *ArrayChildWrapper) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *ArrayChildWrapper) Finalize()                        {}
 func (_ *ArrayChildWrapper) SetDefault(i int)                 { panic("Unsupported operation") }
+func (r *ArrayChildWrapper) HintSize(s int) {
+	if len(*r.Target) == 0 {
+		*r.Target = make([]Child, 0, s)
+	}
+}
 func (r *ArrayChildWrapper) NullField(i int) {
 	panic("Unsupported operation")
 }

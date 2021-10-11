@@ -44,6 +44,11 @@ func (_ *ArrayUnionRecordFooRecordBarWrapper) AppendMap(key string) types.Field 
 }
 func (_ *ArrayUnionRecordFooRecordBarWrapper) Finalize()        {}
 func (_ *ArrayUnionRecordFooRecordBarWrapper) SetDefault(i int) { panic("Unsupported operation") }
+func (r *ArrayUnionRecordFooRecordBarWrapper) HintSize(s int) {
+	if len(*r.Target) == 0 {
+		*r.Target = make([]UnionRecordFooRecordBar, 0, s)
+	}
+}
 func (r *ArrayUnionRecordFooRecordBarWrapper) NullField(i int) {
 	panic("Unsupported operation")
 }

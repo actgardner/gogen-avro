@@ -154,6 +154,7 @@ func (r *HeaderworksData) NullField(i int) {
 
 func (_ HeaderworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ HeaderworksData) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ HeaderworksData) HintSize(int)                     { panic("Unsupported operation") }
 func (_ HeaderworksData) Finalize()                        {}
 
 func (_ HeaderworksData) AvroCRC64Fingerprint() []byte {

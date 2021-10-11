@@ -52,6 +52,10 @@ func (b *Record) NullField(v int) {
 	b.Target.NullField(v)
 }
 
+func (b *Record) HintSize(v int) {
+	b.Target.HintSize(v)
+}
+
 func (b *Record) Finalize() {
 	b.Target.Finalize()
 }

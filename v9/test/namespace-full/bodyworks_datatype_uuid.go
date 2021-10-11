@@ -108,6 +108,7 @@ func (r *BodyworksDatatypeUUID) NullField(i int) {
 
 func (_ BodyworksDatatypeUUID) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ BodyworksDatatypeUUID) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ BodyworksDatatypeUUID) HintSize(int)                     { panic("Unsupported operation") }
 func (_ BodyworksDatatypeUUID) Finalize()                        {}
 
 func (_ BodyworksDatatypeUUID) AvroCRC64Fingerprint() []byte {

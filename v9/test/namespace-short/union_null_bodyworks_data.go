@@ -111,6 +111,7 @@ func (r *UnionNullBodyworksData) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ *UnionNullBodyworksData) NullField(i int)                  { panic("Unsupported operation") }
+func (_ *UnionNullBodyworksData) HintSize(i int)                   { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksData) SetDefault(i int)                 { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksData) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ *UnionNullBodyworksData) AppendArray() types.Field         { panic("Unsupported operation") }

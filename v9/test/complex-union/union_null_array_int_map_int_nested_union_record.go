@@ -133,6 +133,7 @@ func (r *UnionNullArrayIntMapIntNestedUnionRecord) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) NullField(i int)  { panic("Unsupported operation") }
+func (_ *UnionNullArrayIntMapIntNestedUnionRecord) HintSize(i int)   { panic("Unsupported operation") }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) SetDefault(i int) { panic("Unsupported operation") }
 func (_ *UnionNullArrayIntMapIntNestedUnionRecord) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

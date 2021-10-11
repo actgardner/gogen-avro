@@ -129,6 +129,8 @@ func evalInner(r io.Reader, program *Program, target types.Field, pc *int) (setT
 			frame.Long = int64(inst.Operand)
 		case MultLong:
 			frame.Long *= int64(inst.Operand)
+		case HintSize:
+			target.HintSize(int(frame.Long))
 		case PushLoop:
 			loop = frame.Long
 			*pc += 1

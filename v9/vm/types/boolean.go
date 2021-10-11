@@ -56,4 +56,8 @@ func (b *Boolean) NullField(int) {
 	panic("Unable to null field in boolean field")
 }
 
+func (b *Boolean) HintSize(int) {
+	panic("Unable to hint size in boolean field")
+}
+
 func (b *Boolean) Finalize() {}

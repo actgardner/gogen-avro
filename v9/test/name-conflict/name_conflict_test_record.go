@@ -247,6 +247,7 @@ func (r *NameConflictTestRecord) NullField(i int) {
 
 func (_ NameConflictTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ NameConflictTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ NameConflictTestRecord) HintSize(int)                     { panic("Unsupported operation") }
 func (_ NameConflictTestRecord) Finalize()                        {}
 
 func (_ NameConflictTestRecord) AvroCRC64Fingerprint() []byte {

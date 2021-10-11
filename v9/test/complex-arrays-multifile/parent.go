@@ -108,6 +108,7 @@ func (r *Parent) NullField(i int) {
 
 func (_ Parent) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ Parent) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ Parent) HintSize(int)                     { panic("Unsupported operation") }
 func (_ Parent) Finalize()                        {}
 
 func (_ Parent) AvroCRC64Fingerprint() []byte {

@@ -125,6 +125,7 @@ func (r *UnionBytesStringRecord1Record2) Get(i int) types.Field {
 	panic("Unknown field index")
 }
 func (_ UnionBytesStringRecord1Record2) NullField(i int)  { panic("Unsupported operation") }
+func (_ UnionBytesStringRecord1Record2) HintSize(i int)   { panic("Unsupported operation") }
 func (_ UnionBytesStringRecord1Record2) SetDefault(i int) { panic("Unsupported operation") }
 func (_ UnionBytesStringRecord1Record2) AppendMap(key string) types.Field {
 	panic("Unsupported operation")

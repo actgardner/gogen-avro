@@ -107,6 +107,7 @@ func (r *FixedDefaultTestRecord) NullField(i int) {
 
 func (_ FixedDefaultTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ FixedDefaultTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ FixedDefaultTestRecord) HintSize(int)                     { panic("Unsupported operation") }
 func (_ FixedDefaultTestRecord) Finalize()                        {}
 
 func (_ FixedDefaultTestRecord) AvroCRC64Fingerprint() []byte {

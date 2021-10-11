@@ -44,7 +44,7 @@ type blockStartIRInstruction struct {
 }
 
 func (b *blockStartIRInstruction) VMLength() int {
-	return 8
+	return 9
 }
 
 // At the beginning of a block, read the length into the Long register
@@ -61,6 +61,7 @@ func (b *blockStartIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, e
 		vm.Instruction{vm.CondJump, block.start + 7},
 		vm.Instruction{vm.Read, vm.UnusedLong},
 		vm.Instruction{vm.MultLong, -1},
+		vm.Instruction{vm.HintSize, vm.UnusedLong},
 		vm.Instruction{vm.PushLoop, 0},
 	}, nil
 }
@@ -82,7 +83,7 @@ func (b *blockEndIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, err
 		vm.Instruction{vm.AddLong, -1},
 		vm.Instruction{vm.EvalEqual, 0},
 		vm.Instruction{vm.CondJump, block.start},
-		vm.Instruction{vm.Jump, block.start + 7},
+		vm.Instruction{vm.Jump, block.start + 8},
 	}, nil
 }
 

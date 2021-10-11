@@ -119,6 +119,7 @@ func (r *NestedRecord) NullField(i int) {
 
 func (_ NestedRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ NestedRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ NestedRecord) HintSize(int)                     { panic("Unsupported operation") }
 func (_ NestedRecord) Finalize()                        {}
 
 func (_ NestedRecord) AvroCRC64Fingerprint() []byte {

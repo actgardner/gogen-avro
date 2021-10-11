@@ -110,6 +110,7 @@ func (r *RecursiveUnionTestRecord) NullField(i int) {
 
 func (_ RecursiveUnionTestRecord) AppendMap(key string) types.Field { panic("Unsupported operation") }
 func (_ RecursiveUnionTestRecord) AppendArray() types.Field         { panic("Unsupported operation") }
+func (_ RecursiveUnionTestRecord) HintSize(int)                     { panic("Unsupported operation") }
 func (_ RecursiveUnionTestRecord) Finalize()                        {}
 
 func (_ RecursiveUnionTestRecord) AvroCRC64Fingerprint() []byte {

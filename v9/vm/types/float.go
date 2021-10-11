@@ -56,4 +56,8 @@ func (b *Float) NullField(int) {
 	panic("Unable to null field in float field")
 }
 
+func (b *Float) HintSize(int) {
+	panic("Unable to hint size in float field")
+}
+
 func (b *Float) Finalize() {}

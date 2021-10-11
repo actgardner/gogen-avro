@@ -56,4 +56,8 @@ func (b *String) NullField(int) {
 	panic("Unable to null field in string field")
 }
 
+func (b *String) HintSize(int) {
+	panic("Unable to hint size in string field")
+}
+
 func (b *String) Finalize() {}
