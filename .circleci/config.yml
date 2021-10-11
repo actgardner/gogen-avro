@@ -10,7 +10,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            cd v9
+            cd v10
             go install -v ./cmd/...
             bash -ex test.sh
 
