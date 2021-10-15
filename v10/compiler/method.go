@@ -291,10 +291,30 @@ func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error 
 
 func (p *irMethod) compileEnum(writer, reader *schema.EnumDefinition) error {
 	log("compileEnum()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	p.addLiteral(vm.Read, vm.Int)
+	p.addLiteral(vm.Read, vm.Long)
+	errId := p.addError("Unexpected value for enum")
+	switchId := p.addSwitchStart(len(writer.Symbols()), errId)
 	if reader != nil {
-		p.addLiteral(vm.Set, vm.Int)
+		for i, wSymbol := range writer.Symbols() {
+			p.addSwitchCase(switchId, i, -1)
+			rIdx := reader.SymbolIndex(wSymbol)
+			if rIdx > -1 {
+				p.addLiteral(vm.SetInt, rIdx)
+				p.addLiteral(vm.Set, vm.Int)
+			} else if reader.Default() != "" {
+				rIdx = reader.SymbolIndex(reader.Default())
+				if rIdx == -1 {
+					return fmt.Errorf("Reader schema has invalid default symbol %q", reader.Default())
+				}
+				p.addLiteral(vm.SetInt, rIdx)
+				p.addLiteral(vm.Set, vm.Int)
+			} else {
+				typedErrId := p.addError(fmt.Sprintf("Reader schema has no value for symbol %q in enum", wSymbol))
+				p.addLiteral(vm.Halt, typedErrId)
+			}
+		}
 	}
+	p.addSwitchEnd(switchId)
 	return nil
 }
 
@@ -323,7 +343,7 @@ writer:
 				return err
 			}
 		} else if unionReader, ok := reader.(*schema.UnionField); ok {
-			// Always try to find an extact match by name before trying to handle evolution
+			// Always try to find an exact match by name before trying to handle evolution
 			for readerIndex, r := range unionReader.AvroTypes() {
 				if r.Name() == t.Name() {
 					log("Union types have exact match by name: %q %q", r.Name(), t.Name())

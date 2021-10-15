@@ -1,0 +1,18 @@
+[
+  {
+    "data": {
+      "EnumField": "TestSymbol2"
+    },
+    "expected": {
+      "EnumField": "TestSymbol1"
+    }
+  },
+  {
+    "data": {
+      "EnumField": "TestSymbol3"
+    },
+    "expected": {
+      "EnumField": "TestSymbol3"
+    }
+  }
+]

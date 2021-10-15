@@ -213,6 +213,14 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 		return nil, err
 	}
 
+	var defaultStr string
+	if dv, ok := schemaMap["default"]; ok {
+		defaultStr, ok = dv.(string)
+		if !ok {
+			return nil, NewWrongMapValueTypeError("default", "string", dv)
+		}
+	}
+
 	symbolStr, ok := interfaceSliceToStringSlice(symbolSlice)
 	if !ok {
 		return nil, fmt.Errorf("'symbols' must be an array of strings")
@@ -230,7 +238,7 @@ func (n *Namespace) decodeEnumDefinition(namespace string, schemaMap map[string]
 		}
 	}
 
-	return avro.NewEnumDefinition(name, aliases, symbolStr, docString, schemaMap), nil
+	return avro.NewEnumDefinition(name, aliases, symbolStr, docString, defaultStr, schemaMap), nil
 }
 
 // decodeFixedDefinition accepts a namespace and a map representing a fixed definition,

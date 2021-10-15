@@ -14,6 +14,8 @@ import (
 	"github.com/actgardner/gogen-avro/v10/vm/types"
 )
 
+var _ = fmt.Printf
+
 type ComCompanyTeamSomeEnum int32
 
 const (
@@ -49,6 +51,7 @@ func NewComCompanyTeamSomeEnumValue(raw string) (r ComCompanyTeamSomeEnum, err e
 	}
 
 	return -1, fmt.Errorf("invalid value for ComCompanyTeamSomeEnum: '%s'", raw)
+
 }
 
 func (b ComCompanyTeamSomeEnum) MarshalJSON() ([]byte, error) {

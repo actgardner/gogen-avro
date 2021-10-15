@@ -1,0 +1,15 @@
+{
+	"type": "record",
+	"name": "EnumTestRecord",
+	"fields": [
+		{
+			"name": "EnumField", 
+			"type": {
+				"name": "TestEnumType",
+				"type": "enum",
+				"doc": "Test \nenum",
+				"symbols": ["TestSymbol1", "TestSymbol2", "TestSymbol3"]
+			}
+		}
+	]
+}

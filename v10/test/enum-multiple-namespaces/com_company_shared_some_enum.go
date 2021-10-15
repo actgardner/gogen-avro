@@ -14,6 +14,8 @@ import (
 	"github.com/actgardner/gogen-avro/v10/vm/types"
 )
 
+var _ = fmt.Printf
+
 type ComCompanySharedSomeEnum int32
 
 const (
@@ -44,6 +46,7 @@ func NewComCompanySharedSomeEnumValue(raw string) (r ComCompanySharedSomeEnum, e
 	}
 
 	return -1, fmt.Errorf("invalid value for ComCompanySharedSomeEnum: '%s'", raw)
+
 }
 
 func (b ComCompanySharedSomeEnum) MarshalJSON() ([]byte, error) {

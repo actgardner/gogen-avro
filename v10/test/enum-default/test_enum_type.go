@@ -30,9 +30,9 @@ func (e TestEnumType) String() string {
 	case TestEnumTypeTestSymbol1:
 		return "TestSymbol1"
 	case TestEnumTypeTestSymbol2:
-		return "testSymbol2"
+		return "TestSymbol2"
 	case TestEnumTypeTestSymbol3:
-		return "testSymbol3"
+		return "TestSymbol3"
 	}
 	return "unknown"
 }
@@ -45,9 +45,9 @@ func NewTestEnumTypeValue(raw string) (r TestEnumType, err error) {
 	switch raw {
 	case "TestSymbol1":
 		return TestEnumTypeTestSymbol1, nil
-	case "testSymbol2":
+	case "TestSymbol2":
 		return TestEnumTypeTestSymbol2, nil
-	case "testSymbol3":
+	case "TestSymbol3":
 		return TestEnumTypeTestSymbol3, nil
 	}
 

@@ -10,6 +10,8 @@ import (
 	"github.com/actgardner/gogen-avro/v10/vm"
 )
 
+var _ = fmt.Printf
+
 {{ if ne .Doc "" }}// {{ .Doc}}{{ end }}  
 type {{ .GoType }} int32
 
@@ -41,7 +43,11 @@ func {{ .FromStringMethod }}(raw string) (r {{ .GoType }}, err error) {
 {{ end -}}
 	}
 
+{{ if ne .Default "" }} 
+	return {{ $.SymbolName .Default }}, nil
+{{ else }}
 	return -1, fmt.Errorf("invalid value for {{ $.GoType }}: '%s'", raw)
+{{ end }}
 }
 
 func (b {{ .GoType }}) MarshalJSON() ([]byte, error) {
