@@ -120,6 +120,15 @@ func (avroWriter *Writer) WriteRecord(record AvroRecord) error {
 //  Write the current block to the file if it has been filled.  It is
 //  best-practise to always call this before the underlying io.Writer is closed.
 func (avroWriter *Writer) Flush() error {
+	// Lazily write the header if it hasn't been written yet
+	if !avroWriter.wroteHeader {
+		err := avroWriter.writeHeader(avroWriter.schema)
+		if err != nil {
+			return err
+		}
+		avroWriter.wroteHeader = true
+	}
+
 	if avroWriter.nextBlockRecords == 0 {
 		return nil
 	}
