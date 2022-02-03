@@ -70,9 +70,11 @@ const (
 	// Set the field with the target index to nil
 	NullField
 
+	// Hint at the final size of a map or an array for performance
 	HintSize
 )
 
+// String implements Stringer interface.
 func (o Op) String() string {
 	switch o {
 	case Read:
@@ -117,6 +119,10 @@ func (o Op) String() string {
 		return "set_long"
 	case SetInt:
 		return "set_int"
+	case NullField:
+		return "null_field"
+	case HintSize:
+		return "hint_size"
 	}
 	return "Unknown"
 }
