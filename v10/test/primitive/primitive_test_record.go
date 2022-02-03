@@ -17,7 +17,9 @@ import (
 
 var _ = fmt.Printf
 
+// primitive record
 type PrimitiveTestRecord struct {
+	// int field
 	IntField int32 `json:"IntField"`
 
 	LongField int64 `json:"LongField"`
@@ -108,7 +110,7 @@ func (r PrimitiveTestRecord) Serialize(w io.Writer) error {
 }
 
 func (r PrimitiveTestRecord) Schema() string {
-	return "{\"fields\":[{\"default\":12345689,\"name\":\"IntField\",\"type\":\"int\"},{\"default\":234567890,\"name\":\"LongField\",\"type\":\"long\"},{\"default\":100000000,\"name\":\"FloatField\",\"type\":\"float\"},{\"default\":800000,\"name\":\"DoubleField\",\"type\":\"double\"},{\"default\":\"defaultstring\",\"name\":\"StringField\",\"type\":\"string\"},{\"default\":true,\"name\":\"BoolField\",\"type\":\"boolean\"},{\"default\":\"\\u0004\\u0001\\u0005ý\",\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
+	return "{\"doc\":\"primitive\\nrecord\",\"fields\":[{\"default\":12345689,\"doc\":\"int\\nfield\",\"name\":\"IntField\",\"type\":\"int\"},{\"default\":234567890,\"name\":\"LongField\",\"type\":\"long\"},{\"default\":100000000,\"name\":\"FloatField\",\"type\":\"float\"},{\"default\":800000,\"name\":\"DoubleField\",\"type\":\"double\"},{\"default\":\"defaultstring\",\"name\":\"StringField\",\"type\":\"string\"},{\"default\":true,\"name\":\"BoolField\",\"type\":\"boolean\"},{\"default\":\"\\u0004\\u0001\\u0005ý\",\"name\":\"BytesField\",\"type\":\"bytes\"}],\"name\":\"PrimitiveTestRecord\",\"type\":\"record\"}"
 }
 
 func (r PrimitiveTestRecord) SchemaName() string {

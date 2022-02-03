@@ -3,6 +3,7 @@ package schema
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/actgardner/gogen-avro/v10/generator"
 )
@@ -66,7 +67,7 @@ func (f *Field) Index() int {
 }
 
 func (f *Field) Doc() string {
-	return f.doc
+	return strings.ReplaceAll(f.doc, "\n", " ")
 }
 
 // Tags returns a field go struct tags if defined.
