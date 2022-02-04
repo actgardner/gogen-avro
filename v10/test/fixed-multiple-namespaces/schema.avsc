@@ -1,0 +1,24 @@
+{
+  "type": "record",
+  "name": "ConflictingNamespaceFixedTestRecord",
+  "fields": [
+    {
+      "name": "fixedFieldOne",
+      "type": {
+        "type": "fixed",
+        "name": "ConflictingFixedType",
+        "namespace": "com.company.team",
+        "size": 1
+      }
+    },
+    {
+      "name": "fixedFieldTwo",
+      "type": {
+        "type": "fixed",
+        "name": "ConflictingFixedType",
+        "namespace": "com.company.shared",
+        "size": 2
+      }
+    }
+  ]
+}
