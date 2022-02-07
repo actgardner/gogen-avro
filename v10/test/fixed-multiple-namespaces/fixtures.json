@@ -1,0 +1,14 @@
+[
+  {
+    "fixedFieldOne": "\u0000",
+    "fixedFieldTwo": "\u00ff\u00ff"
+  },
+  {
+    "fixedFieldOne": "\u00ff",
+    "fixedFieldTwo": "\u0000\u0000"
+  },
+  {
+    "fixedFieldOne": "\u0000",
+    "fixedFieldTwo": "\u00ff\u00ff"
+  }
+]

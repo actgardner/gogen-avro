@@ -35,7 +35,7 @@ func (s *FixedDefinition) Aliases() []QualifiedName {
 }
 
 func (s *FixedDefinition) GoType() string {
-	return generator.ToPublicName(s.name.Name)
+	return generator.ToPublicName(s.name.String())
 }
 
 func (s *FixedDefinition) SizeBytes() int {
