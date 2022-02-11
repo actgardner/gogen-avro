@@ -18,15 +18,14 @@ import (
 var _ = fmt.Printf
 
 type PrimitiveUnionTestRecord struct {
-	UnionField *UnionStringLongIntFloatDoubleNullBool `json:"UnionField"`
+	UnionField *UnionNullStringLongIntFloatDoubleBool `json:"UnionField"`
 }
 
-const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "\xbd0\x82\xe0\xb8r88"
+const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "k\xbb\x01A\xbdb\b\xd4"
 
 func NewPrimitiveUnionTestRecord() PrimitiveUnionTestRecord {
 	r := PrimitiveUnionTestRecord{}
-	r.UnionField = NewUnionStringLongIntFloatDoubleNullBool()
-
+	r.UnionField = nil
 	return r
 }
 
@@ -55,7 +54,7 @@ func DeserializePrimitiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 func writePrimitiveUnionTestRecord(r PrimitiveUnionTestRecord, w io.Writer) error {
 	var err error
-	err = writeUnionStringLongIntFloatDoubleNullBool(r.UnionField, w)
+	err = writeUnionNullStringLongIntFloatDoubleBool(r.UnionField, w)
 	if err != nil {
 		return err
 	}
@@ -67,7 +66,7 @@ func (r PrimitiveUnionTestRecord) Serialize(w io.Writer) error {
 }
 
 func (r PrimitiveUnionTestRecord) Schema() string {
-	return "{\"fields\":[{\"name\":\"UnionField\",\"type\":[\"string\",\"long\",\"int\",\"float\",\"double\",\"null\",\"boolean\"]}],\"name\":\"PrimitiveUnionTestRecord\",\"type\":\"record\"}"
+	return "{\"fields\":[{\"default\":null,\"name\":\"UnionField\",\"type\":[\"null\",\"string\",\"long\",\"int\",\"float\",\"double\",\"boolean\"]}],\"name\":\"PrimitiveUnionTestRecord\",\"type\":\"record\"}"
 }
 
 func (r PrimitiveUnionTestRecord) SchemaName() string {
@@ -86,7 +85,7 @@ func (_ PrimitiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported ope
 func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.UnionField = NewUnionStringLongIntFloatDoubleNullBool()
+		r.UnionField = NewUnionNullStringLongIntFloatDoubleBool()
 
 		return r.UnionField
 	}
@@ -95,6 +94,9 @@ func (r *PrimitiveUnionTestRecord) Get(i int) types.Field {
 
 func (r *PrimitiveUnionTestRecord) SetDefault(i int) {
 	switch i {
+	case 0:
+		r.UnionField = nil
+		return
 	}
 	panic("Unknown field index")
 }
@@ -146,7 +148,9 @@ func (r *PrimitiveUnionTestRecord) UnmarshalJSON(data []byte) error {
 			return err
 		}
 	} else {
-		return fmt.Errorf("no value specified for UnionField")
+		r.UnionField = NewUnionNullStringLongIntFloatDoubleBool()
+
+		r.UnionField = nil
 	}
 	return nil
 }

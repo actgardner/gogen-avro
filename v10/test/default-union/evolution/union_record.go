@@ -32,8 +32,6 @@ const UnionRecordAvroCRC64Fingerprint = "q\x867|8\xab\u070f"
 func NewUnionRecord() UnionRecord {
 	r := UnionRecord{}
 	r.Id = "test_id"
-	r.UnionNull = NewUnionNullString()
-
 	r.UnionNull = nil
 	r.UnionString = NewUnionStringInt()
 

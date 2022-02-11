@@ -31,7 +31,9 @@ func {{ .ConstructorMethod }} ({{ .GoType}}) {
 	r := {{ .Name }}{}
 	{{ range $i, $field := .Fields -}}
 	{{ if $.ConstructableForField $field | ne "" -}}
+                {{ if not (hasNullDefault $field.Type) -}}
 		{{ $.ConstructableForField $field }}
+                {{ end -}}
 	{{ end -}}
         {{ if .HasDefault -}}
        	 	{{ $.DefaultForField $field }}

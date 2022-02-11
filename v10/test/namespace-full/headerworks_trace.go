@@ -27,8 +27,6 @@ const HeaderworksTraceAvroCRC64Fingerprint = "\x8a\xdfu\xe7˻\xa6\xbc"
 
 func NewHeaderworksTrace() HeaderworksTrace {
 	r := HeaderworksTrace{}
-	r.TraceId = NewUnionNullHeaderworksDatatypeUUID()
-
 	r.TraceId = nil
 	return r
 }

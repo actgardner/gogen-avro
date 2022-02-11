@@ -27,8 +27,6 @@ const BodyworksTraceAvroCRC64Fingerprint = "\x83<\x8e\xd5T\xfc\x8d\x94"
 
 func NewBodyworksTrace() BodyworksTrace {
 	r := BodyworksTrace{}
-	r.TraceId = NewUnionNullDatatypeUUID()
-
 	r.TraceId = nil
 	return r
 }

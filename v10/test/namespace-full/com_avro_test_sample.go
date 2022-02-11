@@ -29,11 +29,7 @@ const ComAvroTestSampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
 func NewComAvroTestSample() ComAvroTestSample {
 	r := ComAvroTestSample{}
-	r.Header = NewUnionNullHeaderworksData()
-
 	r.Header = nil
-	r.Body = NewUnionNullBodyworksData()
-
 	r.Body = nil
 	return r
 }

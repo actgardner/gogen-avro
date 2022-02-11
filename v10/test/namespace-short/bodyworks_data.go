@@ -31,14 +31,8 @@ const BodyworksDataAvroCRC64Fingerprint = "\xa5\xec\x1f\xf5k\x15\xc1!"
 
 func NewBodyworksData() BodyworksData {
 	r := BodyworksData{}
-	r.Uuid = NewUnionNullDatatypeUUID()
-
 	r.Uuid = nil
-	r.Hostname = NewUnionNullString()
-
 	r.Hostname = nil
-	r.Trace = NewUnionNullBodyworksTrace()
-
 	r.Trace = nil
 	return r
 }

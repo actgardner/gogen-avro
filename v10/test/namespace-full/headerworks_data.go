@@ -31,14 +31,8 @@ const HeaderworksDataAvroCRC64Fingerprint = "6<\xf6?EE\xcd\v"
 
 func NewHeaderworksData() HeaderworksData {
 	r := HeaderworksData{}
-	r.Uuid = NewUnionNullHeaderworksDatatypeUUID()
-
 	r.Uuid = nil
-	r.Hostname = NewUnionNullString()
-
 	r.Hostname = nil
-	r.Trace = NewUnionNullHeaderworksTrace()
-
 	r.Trace = nil
 	return r
 }

@@ -25,8 +25,6 @@ const ComplexUnionTestRecordAvroCRC64Fingerprint = ")h\bbm{\xe0\xbe"
 
 func NewComplexUnionTestRecord() ComplexUnionTestRecord {
 	r := ComplexUnionTestRecord{}
-	r.UnionField = NewUnionNullArrayIntMapIntNestedUnionRecord()
-
 	return r
 }
 

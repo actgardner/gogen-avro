@@ -48,7 +48,8 @@ func Evaluate(templateStr string, obj interface{}) (string, error) {
 
 			return convertByteToInitForm(fingerprint), err
 		},
-		"isNullable": isNullable,
+		"isNullable":     isNullable,
+		"hasNullDefault": hasNullDefault,
 	}).Parse(templateStr)
 	if err != nil {
 		return "", err
@@ -69,6 +70,13 @@ func convertByteToInitForm(b []byte) string {
 func isNullable(t avro.AvroType) bool {
 	if union, ok := t.(*avro.UnionField); ok {
 		return union.NullIndex() >= 0
+	}
+	return false
+}
+
+func hasNullDefault(t avro.AvroType) bool {
+	if union, ok := t.(*avro.UnionField); ok {
+		return union.NullIndex() == 0
 	}
 	return false
 }

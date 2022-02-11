@@ -25,8 +25,6 @@ const RecursiveUnionTestRecordAvroCRC64Fingerprint = "\xc6U)C\v\x8a\xa6\x89"
 
 func NewRecursiveUnionTestRecord() RecursiveUnionTestRecord {
 	r := RecursiveUnionTestRecord{}
-	r.RecursiveField = NewUnionNullRecursiveUnionTestRecord()
-
 	return r
 }
 

@@ -27,8 +27,6 @@ const Record_v1AvroCRC64Fingerprint = "\x85|\xeb\u007f9\xf7J\x15"
 
 func NewRecord_v1() Record_v1 {
 	r := Record_v1{}
-	r.Foo = NewUnionNullString()
-
 	r.Bar = NewUnionStringNull()
 
 	return r

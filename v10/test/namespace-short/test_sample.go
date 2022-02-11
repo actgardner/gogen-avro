@@ -29,11 +29,7 @@ const TestSampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
 func NewTestSample() TestSample {
 	r := TestSample{}
-	r.Header = NewUnionNullHeaderworksData()
-
 	r.Header = nil
-	r.Body = NewUnionNullBodyworksData()
-
 	r.Body = nil
 	return r
 }
