@@ -1,0 +1,10 @@
+{
+	"type": "record",
+	"name": "EnumTestRecord",
+	"fields": [
+		{
+			"name": "stringField", 
+			"type": "string"
+		}
+	]
+}

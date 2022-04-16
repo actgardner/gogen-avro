@@ -292,9 +292,9 @@ func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error 
 func (p *irMethod) compileEnum(writer, reader *schema.EnumDefinition) error {
 	log("compileEnum()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
 	p.addLiteral(vm.Read, vm.Long)
-	errId := p.addError("Unexpected value for enum")
-	switchId := p.addSwitchStart(len(writer.Symbols()), errId)
 	if reader != nil {
+		errId := p.addError("Unexpected value for enum")
+		switchId := p.addSwitchStart(len(writer.Symbols()), errId)
 		for i, wSymbol := range writer.Symbols() {
 			p.addSwitchCase(switchId, i, -1)
 			rIdx := reader.SymbolIndex(wSymbol)
@@ -313,8 +313,8 @@ func (p *irMethod) compileEnum(writer, reader *schema.EnumDefinition) error {
 				p.addLiteral(vm.Halt, typedErrId)
 			}
 		}
+		p.addSwitchEnd(switchId)
 	}
-	p.addSwitchEnd(switchId)
 	return nil
 }
 

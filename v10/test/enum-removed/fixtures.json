@@ -1,0 +1,10 @@
+[
+  {
+    "stringField": "someString",
+    "EnumField": "TestSymbol1"
+  },
+  {
+    "stringField": "sameStrong",
+    "EnumField": "testSymbol2"
+  }
+]

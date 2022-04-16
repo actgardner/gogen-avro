@@ -1,0 +1,11 @@
+[
+  {
+    "data": {
+      "stringField": "testString",
+      "EnumField": "testSymbol2"
+    },
+    "expected": {
+      "stringField": "testString"
+    }
+  }
+]
