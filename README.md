@@ -199,6 +199,6 @@ There are cases where code generation may not be appropriate - if you need to ha
 
 [goavro library](https://github.com/linkedin/goavro) is an alternative library that lacks support for evolution, but provides a comprehensive interface for generic data.
 
-[hamba/avro](https://github.com/hamba/avro]) is another library oriented towards high performance for generic data.
+[hamba/avro](https://github.com/hamba/avro) is another library oriented towards high performance for generic data.
 
 [nrwiersma/avro-benchmarks](https://github.com/nrwiersma/avro-benchmarks) provides benchmarks of several alternative Avro libraries.
