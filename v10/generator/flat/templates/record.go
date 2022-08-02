@@ -157,16 +157,26 @@ func (_ {{ .GoType}}) AvroCRC64Fingerprint() []byte {
 
 func (r {{ .GoType }}) MarshalJSON() ([]byte, error) {
 	var err error
+	var out, key []byte
+	out = append(out, '{')
 	output := make(map[string]json.RawMessage)
 	{{ range $i, $field := .Fields -}}
 	output[{{ printf "%q" $field.Name }}], err = json.Marshal(r.{{ $field.GoName}})
 	if err != nil {
-		return nil, err
-	}
+    	return nil, err
+    }
+	key, err = json.Marshal({{ printf "%q" $field.Name }})
+	if err != nil {
+    	return nil, err
+    }
+	out = append(out, key...)
+	out = append(out, ':')
+	out = append(out, output[{{ printf "%q" $field.Name }}]...)
+	out = append(out, ',')
 	{{ end -}}
-	return json.Marshal(output)	
+	out[len(out)-1] = '}'
+	return out, nil
 }
-
 func (r *{{ .GoType }}) UnmarshalJSON(data []byte) (error) {
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(data, &fields); err != nil {
