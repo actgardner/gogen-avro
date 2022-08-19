@@ -16,3 +16,16 @@ func TestRoundTrip(t *testing.T) {
 			return &record, err
 		})
 }
+
+func TestRoundTripString(t *testing.T) {
+  test.RoundTripExactBytes(t,
+    func() container.AvroRecord {
+			return &Record_v1{
+				Foo: NewUnionNullStringString("MyFooValue"),
+			}
+		},
+    func(r io.Reader) (container.AvroRecord, error) {
+      record, err := DeserializeRecord_v1(r)
+      return &record, err
+    })
+}

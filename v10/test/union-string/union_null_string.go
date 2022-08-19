@@ -49,6 +49,13 @@ func NewUnionNullString() *UnionNullString {
 	return &UnionNullString{}
 }
 
+func NewUnionNullStringString(v string) *UnionNullString {
+	return &UnionNullString{
+		String:    v,
+		UnionType: UnionNullStringTypeEnumString,
+	}
+}
+
 func (r *UnionNullString) Serialize(w io.Writer) error {
 	return writeUnionNullString(r, w)
 }
