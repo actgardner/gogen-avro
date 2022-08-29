@@ -14,7 +14,26 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 		return err
 	}
 	for _, e := range r {
+		{{ if $.IsSimpleNullUnion -}}
+		err := vm.WriteLong(int64(len(r)), w)
+		if err != nil || len(r) == 0 {
+			return err
+		}
+		if e == nil {
+			err = vm.WriteLong({{ $.SimpleNullUnionNullIndex }}, w)
+			if err != nil {
+				return err
+			}
+		} else {
+			err = vm.WriteLong(int64({{ $.SimpleNullUnionNonNullIndex }}), w)
+			if err != nil {
+				return err
+			}
+			err = vm.Write{{ $.SimpleNullUnionItemType }}( *e, w)
+		}
+		{{ else -}}
 		err = {{ .ItemType.SerializerMethod }}(e, w)
+		{{ end -}}
 		if err != nil {
 			return err
 		}
@@ -54,15 +73,21 @@ func (r {{ .WrapperType }}) NullField(i int) {
 }
 
 func (r {{ .WrapperType }}) AppendArray() types.Field {
-	var v {{ .ItemType.GoType }}
-	{{ if .ItemConstructable -}}
-	{{ .ItemConstructable }}
- 	{{- end }}
-	*r.Target = append(*r.Target, v)
-        {{ if .ItemType.WrapperType -}} 
-        return &{{ .ItemType.WrapperType }}{Target: &(*r.Target)[len(*r.Target)-1]}
-        {{- else }}
-        return (*r.Target)[len(*r.Target)-1]
-        {{- end }}
+	{{ if $.IsSimpleNullUnion -}}
+		var v {{slice .ItemType.GoType 1 }}
+		*r.Target = append(*r.Target, &v)
+		return &{{ .ItemType.WrapperType }}{Target: *&(*r.Target)[len(*r.Target)-1]}
+	{{ else -}}
+		var v {{ .ItemType.GoType }}
+		{{ if .ItemConstructable -}}
+		{{ .ItemConstructable }}
+		{{- end }}
+		*r.Target = append(*r.Target, v)
+		{{ if .ItemType.WrapperType -}}
+		return &{{ .ItemType.WrapperType }}{Target: &(*r.Target)[len(*r.Target)-1]}
+		{{- else }}
+		return (*r.Target)[len(*r.Target)-1]
+		{{- end }}
+	{{ end -}}
 }
 `

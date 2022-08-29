@@ -15,6 +15,22 @@
 				"string",
 				"null"
 			]
+		},
+		{
+			"name": "baz",
+			"type": [
+				"null",
+				"string"
+			],
+			"default": null
+		},
+		{
+			"name": "bat",
+			"type": [
+				"string",
+				"null"
+			],
+			"default": "defaultBatValue"
 		}
 	]
 }

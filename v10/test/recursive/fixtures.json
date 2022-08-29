@@ -1,8 +1,5 @@
 [
   {
-    "RecursiveField": null
-  },
-  {
     "RecursiveField": {
       "RecursiveUnionTestRecord": {
         "RecursiveField": null

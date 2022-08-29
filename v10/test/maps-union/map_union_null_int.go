@@ -11,7 +11,7 @@ import (
 	"io"
 )
 
-func writeMapUnionNullInt(r map[string]*UnionNullInt, w io.Writer) error {
+func writeMapUnionNullInt(r map[string]*int32, w io.Writer) error {
 	err := vm.WriteLong(int64(len(r)), w)
 	if err != nil || len(r) == 0 {
 		return err
@@ -21,7 +21,22 @@ func writeMapUnionNullInt(r map[string]*UnionNullInt, w io.Writer) error {
 		if err != nil {
 			return err
 		}
-		err = writeUnionNullInt(e, w)
+		err := vm.WriteLong(int64(len(r)), w)
+		if err != nil || len(r) == 0 {
+			return err
+		}
+		if e == nil {
+			err = vm.WriteLong(0, w)
+			if err != nil {
+				return err
+			}
+		} else {
+			err = vm.WriteLong(int64(-1), w)
+			if err != nil {
+				return err
+			}
+			err = vm.WriteInt(*e, w)
+		}
 		if err != nil {
 			return err
 		}
@@ -30,9 +45,9 @@ func writeMapUnionNullInt(r map[string]*UnionNullInt, w io.Writer) error {
 }
 
 type MapUnionNullIntWrapper struct {
-	Target *map[string]*UnionNullInt
+	Target *map[string]*int32
 	keys   []string
-	values []*UnionNullInt
+	values []*int32
 }
 
 func (_ *MapUnionNullIntWrapper) SetBoolean(v bool)     { panic("Unsupported operation") }
@@ -49,7 +64,7 @@ func (_ *MapUnionNullIntWrapper) SetDefault(i int)      { panic("Unsupported ope
 func (r *MapUnionNullIntWrapper) HintSize(s int) {
 	if r.keys == nil {
 		r.keys = make([]string, 0, s)
-		r.values = make([]*UnionNullInt, 0, s)
+		r.values = make([]*int32, 0, s)
 	}
 }
 
@@ -65,11 +80,9 @@ func (r *MapUnionNullIntWrapper) Finalize() {
 
 func (r *MapUnionNullIntWrapper) AppendMap(key string) types.Field {
 	r.keys = append(r.keys, key)
-	var v *UnionNullInt
-	v = NewUnionNullInt()
-
-	r.values = append(r.values, v)
-	return r.values[len(r.values)-1]
+	var v int32
+	r.values = append(r.values, &v)
+	return &types.Int{Target: r.values[len(r.values)-1]}
 }
 
 func (_ *MapUnionNullIntWrapper) AppendArray() types.Field { panic("Unsupported operation") }

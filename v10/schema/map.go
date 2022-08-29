@@ -109,3 +109,31 @@ func (s *MapField) Children() []AvroType {
 func (s *MapField) UnionKey() string {
 	return "map"
 }
+
+func (s *MapField) IsPrimitive() bool { return false }
+
+func (s *MapField) IsSimpleNullUnion() bool {
+	unionField, ok := s.itemType.(*UnionField)
+	return ok && unionField.IsSimpleNullUnion()
+}
+
+func (s *MapField) SimpleNullUnionNullIndex() int {
+	if unionField, ok := s.itemType.(*UnionField); ok {
+		return unionField.NullIndex()
+	}
+	return -1
+}
+
+func (s *MapField) SimpleNullUnionNonNullIndex() int {
+	if unionField, ok := s.itemType.(*UnionField); ok {
+		unionField.NonNullIndex()
+	}
+	return -1
+}
+
+func (s *MapField) SimpleNullUnionItemType() string {
+	if unionField, ok := s.itemType.(*UnionField); ok {
+		return unionField.itemType[unionField.NonNullIndex()].Name()
+	}
+	return ""
+}

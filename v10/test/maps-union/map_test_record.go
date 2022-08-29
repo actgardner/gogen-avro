@@ -18,14 +18,14 @@ import (
 var _ = fmt.Printf
 
 type MapTestRecord struct {
-	IntField map[string]*UnionNullInt `json:"IntField"`
+	IntField map[string]*int32 `json:"IntField"`
 }
 
 const MapTestRecordAvroCRC64Fingerprint = "\xf7\xdb\x00\xb2n\xa8u\xbf"
 
 func NewMapTestRecord() MapTestRecord {
 	r := MapTestRecord{}
-	r.IntField = make(map[string]*UnionNullInt)
+	r.IntField = make(map[string]*int32)
 
 	return r
 }
@@ -86,7 +86,7 @@ func (_ MapTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *MapTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.IntField = make(map[string]*UnionNullInt)
+		r.IntField = make(map[string]*int32)
 
 		w := MapUnionNullIntWrapper{Target: &r.IntField}
 
@@ -120,11 +120,44 @@ func (_ MapTestRecord) AvroCRC64Fingerprint() []byte {
 func (r MapTestRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
-	output["IntField"], err = json.Marshal(r.IntField)
+	if r.IntField != nil {
+		y := make(map[string]*map[string]int32, len(r.IntField))
+		for k, v := range r.IntField {
+			if v == nil {
+				y[k] = nil
+			} else {
+				tmp := map[string]int32{"int": *v}
+				y[k] = &tmp
+			}
+		}
+		output["IntField"], err = json.Marshal(y)
+	}
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(output)
+}
+
+func (r *MapTestRecord) UnmarshalIntFieldJSON(data []byte) error {
+	y := make(map[string]*map[string]*int32, 0)
+
+	if err := json.Unmarshal(data, &y); err != nil {
+		return nil
+	}
+
+	length := len(y)
+	r.IntField = make(map[string]*int32, length)
+
+	for i, e := range y {
+		if e == nil {
+			r.IntField[i] = nil
+		} else {
+			tmp := (*e)["int"]
+			r.IntField[i] = tmp
+		}
+	}
+
+	return nil
 }
 
 func (r *MapTestRecord) UnmarshalJSON(data []byte) error {
@@ -142,7 +175,7 @@ func (r *MapTestRecord) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.IntField); err != nil {
+		if err := r.UnmarshalIntFieldJSON(val); err != nil {
 			return err
 		}
 	} else {

@@ -18,17 +18,21 @@ import (
 var _ = fmt.Printf
 
 type Record_v1 struct {
-	Foo *UnionNullString `json:"foo"`
+	Foo *string `json:"foo"`
 
-	Bar *UnionStringNull `json:"bar"`
+	Bar *string `json:"bar"`
+
+	Baz *string `json:"baz"`
+
+	Bat *string `json:"bat"`
 }
 
-const Record_v1AvroCRC64Fingerprint = "\x85|\xeb\u007f9\xf7J\x15"
+const Record_v1AvroCRC64Fingerprint = "\xfa\x8d}}\xe9\u0378\xc1"
 
 func NewRecord_v1() Record_v1 {
 	r := Record_v1{}
-	r.Bar = NewUnionStringNull()
-
+	var bat = "defaultBatValue"
+	r.Bat = &bat
 	return r
 }
 
@@ -57,13 +61,57 @@ func DeserializeRecord_v1FromSchema(r io.Reader, schema string) (Record_v1, erro
 
 func writeRecord_v1(r Record_v1, w io.Writer) error {
 	var err error
-	err = writeUnionNullString(r.Foo, w)
-	if err != nil {
-		return err
+	if r.Foo == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = vm.WriteString(*r.Foo, w)
 	}
-	err = writeUnionStringNull(r.Bar, w)
-	if err != nil {
-		return err
+	if r.Bar == nil {
+		err = vm.WriteLong(1, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(0), w)
+		if err != nil {
+			return err
+		}
+
+		err = vm.WriteString(*r.Bar, w)
+	}
+	if r.Baz == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = vm.WriteString(*r.Baz, w)
+	}
+	if r.Bat == nil {
+		err = vm.WriteLong(1, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(0), w)
+		if err != nil {
+			return err
+		}
+
+		err = vm.WriteString(*r.Bat, w)
 	}
 	return err
 }
@@ -73,7 +121,7 @@ func (r Record_v1) Serialize(w io.Writer) error {
 }
 
 func (r Record_v1) Schema() string {
-	return "{\"fields\":[{\"name\":\"foo\",\"type\":[\"null\",\"string\"]},{\"name\":\"bar\",\"type\":[\"string\",\"null\"]}],\"name\":\"record_v1\",\"type\":\"record\"}"
+	return "{\"fields\":[{\"name\":\"foo\",\"type\":[\"null\",\"string\"]},{\"name\":\"bar\",\"type\":[\"string\",\"null\"]},{\"default\":null,\"name\":\"baz\",\"type\":[\"null\",\"string\"]},{\"default\":\"defaultBatValue\",\"name\":\"bat\",\"type\":[\"string\",\"null\"]}],\"name\":\"record_v1\",\"type\":\"record\"}"
 }
 
 func (r Record_v1) SchemaName() string {
@@ -92,19 +140,54 @@ func (_ Record_v1) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *Record_v1) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.Foo = NewUnionNullString()
+		if r.Foo == nil {
+			var Foo = new(string)
+			r.Foo = Foo
+		}
+		w := types.String{Target: r.Foo}
 
-		return r.Foo
+		return w
+
 	case 1:
-		r.Bar = NewUnionStringNull()
+		if r.Bar == nil {
+			var Bar = new(string)
+			r.Bar = Bar
+		}
+		w := types.String{Target: r.Bar}
 
-		return r.Bar
+		return w
+
+	case 2:
+		if r.Baz == nil {
+			var Baz = new(string)
+			r.Baz = Baz
+		}
+		w := types.String{Target: r.Baz}
+
+		return w
+
+	case 3:
+		if r.Bat == nil {
+			var Bat = new(string)
+			r.Bat = Bat
+		}
+		w := types.String{Target: r.Bat}
+
+		return w
+
 	}
 	panic("Unknown field index")
 }
 
 func (r *Record_v1) SetDefault(i int) {
 	switch i {
+	case 2:
+		r.Baz = nil
+		return
+	case 3:
+		var bat = "defaultBatValue"
+		r.Bat = &bat
+		return
 	}
 	panic("Unknown field index")
 }
@@ -116,6 +199,12 @@ func (r *Record_v1) NullField(i int) {
 		return
 	case 1:
 		r.Bar = nil
+		return
+	case 2:
+		r.Baz = nil
+		return
+	case 3:
+		r.Bat = nil
 		return
 	}
 	panic("Not a nullable field index")
@@ -133,15 +222,116 @@ func (_ Record_v1) AvroCRC64Fingerprint() []byte {
 func (r Record_v1) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
-	output["foo"], err = json.Marshal(r.Foo)
+	if r.Foo == nil {
+		output["foo"], err = []byte("null"), nil
+	} else {
+		output["foo"], err = json.Marshal(map[string]interface{}{
+			"string": *r.Foo,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
-	output["bar"], err = json.Marshal(r.Bar)
+	if r.Bar == nil {
+		output["bar"], err = []byte("null"), nil
+	} else {
+		output["bar"], err = json.Marshal(map[string]interface{}{
+			"string": *r.Bar,
+		})
+	}
+	if err != nil {
+		return nil, err
+	}
+	if r.Baz == nil {
+		output["baz"], err = []byte("null"), nil
+	} else {
+		output["baz"], err = json.Marshal(map[string]interface{}{
+			"string": *r.Baz,
+		})
+	}
+	if err != nil {
+		return nil, err
+	}
+	if r.Bat == nil {
+		output["bat"], err = []byte("null"), nil
+	} else {
+		output["bat"], err = json.Marshal(map[string]interface{}{
+			"string": *r.Bat,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(output)
+}
+
+func (r *Record_v1) UnmarshalfooJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["string"]; ok {
+		r.Foo = new(string)
+		json.Unmarshal(v, r.Foo)
+	}
+
+	return nil
+}
+func (r *Record_v1) UnmarshalbarJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["string"]; ok {
+		r.Bar = new(string)
+		json.Unmarshal(v, r.Bar)
+	}
+
+	return nil
+}
+func (r *Record_v1) UnmarshalbazJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["string"]; ok {
+		r.Baz = new(string)
+		json.Unmarshal(v, r.Baz)
+	}
+
+	return nil
+}
+func (r *Record_v1) UnmarshalbatJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["string"]; ok {
+		r.Bat = new(string)
+		json.Unmarshal(v, r.Bat)
+	}
+
+	return nil
 }
 
 func (r *Record_v1) UnmarshalJSON(data []byte) error {
@@ -159,7 +349,7 @@ func (r *Record_v1) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Foo); err != nil {
+		if err := r.UnmarshalfooJSON(val); err != nil {
 			return err
 		}
 	} else {
@@ -173,11 +363,40 @@ func (r *Record_v1) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Bar); err != nil {
+		if err := r.UnmarshalbarJSON(val); err != nil {
 			return err
 		}
 	} else {
 		return fmt.Errorf("no value specified for bar")
+	}
+	val = func() json.RawMessage {
+		if v, ok := fields["baz"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
+		if err := r.UnmarshalbazJSON(val); err != nil {
+			return err
+		}
+	} else {
+		r.Baz = nil
+	}
+	val = func() json.RawMessage {
+		if v, ok := fields["bat"]; ok {
+			return v
+		}
+		return nil
+	}()
+
+	if val != nil {
+		if err := r.UnmarshalbatJSON(val); err != nil {
+			return err
+		}
+	} else {
+		var bat = "defaultBatValue"
+		r.Bat = &bat
 	}
 	return nil
 }

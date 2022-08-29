@@ -7,3 +7,9 @@ func AllowLaxNames() Option {
 		program.allowLaxNames = true
 	}
 }
+
+func GenericMode() Option {
+	return func(program *irProgram) {
+		program.genericMode = true
+	}
+}

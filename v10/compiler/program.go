@@ -18,6 +18,7 @@ type irProgram struct {
 	switches      []*irSwitch
 	errors        []string
 	allowLaxNames bool
+	genericMode   bool
 }
 
 type irBlock struct {

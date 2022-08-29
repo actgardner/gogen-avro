@@ -25,7 +25,7 @@ func TestEvolution(t *testing.T) {
 	err = vm.Eval(bytes.NewReader(buf.Bytes()), deser, &newUnionRecord)
 	assert.Nil(t, err)
 
-	assert.Equal(t, (*evolution.UnionNullString)(nil), newUnionRecord.UnionNull)
+	assert.Nil(t, nil, newUnionRecord.UnionNull)
 	assert.Equal(t, evolution.UnionStringIntTypeEnumString, newUnionRecord.UnionString.UnionType)
 	assert.Equal(t, "hello", newUnionRecord.UnionString.String)
 	assert.Equal(t, evolution.UnionUnionRecStringTypeEnumUnionRec, newUnionRecord.UnionRecord.UnionType)

@@ -20,14 +20,13 @@ var _ = fmt.Printf
 // Trace
 type BodyworksTrace struct {
 	// Trace Identifier
-	TraceId *UnionNullDatatypeUUID `json:"traceId"`
+	TraceId *DatatypeUUID `json:"traceId"`
 }
 
 const BodyworksTraceAvroCRC64Fingerprint = "\x83<\x8e\xd5T\xfc\x8d\x94"
 
 func NewBodyworksTrace() BodyworksTrace {
 	r := BodyworksTrace{}
-	r.TraceId = nil
 	return r
 }
 
@@ -56,9 +55,18 @@ func DeserializeBodyworksTraceFromSchema(r io.Reader, schema string) (BodyworksT
 
 func writeBodyworksTrace(r BodyworksTrace, w io.Writer) error {
 	var err error
-	err = writeUnionNullDatatypeUUID(r.TraceId, w)
-	if err != nil {
-		return err
+	if r.TraceId == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = writeDatatypeUUID(*r.TraceId, w)
 	}
 	return err
 }
@@ -87,9 +95,14 @@ func (_ BodyworksTrace) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *BodyworksTrace) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.TraceId = NewUnionNullDatatypeUUID()
+		if r.TraceId == nil {
+			var TraceId = new(DatatypeUUID)
+			r.TraceId = TraceId
+		}
+		w := r.TraceId
 
-		return r.TraceId
+		return w
+
 	}
 	panic("Unknown field index")
 }
@@ -124,11 +137,35 @@ func (_ BodyworksTrace) AvroCRC64Fingerprint() []byte {
 func (r BodyworksTrace) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
-	output["traceId"], err = json.Marshal(r.TraceId)
+	if r.TraceId == nil {
+		output["traceId"], err = []byte("null"), nil
+	} else {
+		output["traceId"], err = json.Marshal(map[string]interface{}{
+			"headerworks.datatype.UUID": r.TraceId,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(output)
+}
+
+func (r *BodyworksTrace) UnmarshaltraceIdJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["headerworks.datatype.UUID"]; ok {
+		r.TraceId = new(DatatypeUUID)
+		json.Unmarshal(v, r.TraceId)
+	}
+
+	return nil
 }
 
 func (r *BodyworksTrace) UnmarshalJSON(data []byte) error {
@@ -146,12 +183,10 @@ func (r *BodyworksTrace) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.TraceId); err != nil {
+		if err := r.UnmarshaltraceIdJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.TraceId = NewUnionNullDatatypeUUID()
-
 		r.TraceId = nil
 	}
 	return nil

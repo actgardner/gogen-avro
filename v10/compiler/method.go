@@ -77,14 +77,18 @@ func (p *irMethod) compileType(writer, reader schema.AvroType) error {
 		if readerUnion, ok := reader.(*schema.UnionField); ok {
 			for readerIndex, r := range readerUnion.AvroTypes() {
 				if writer.IsReadableBy(r) {
-					p.addLiteral(vm.SetLong, readerIndex)
-					p.addLiteral(vm.Set, vm.Long)
-					p.addLiteral(vm.Enter, readerIndex)
+					if !p.program.genericMode && !readerUnion.IsSimpleNullUnion() {
+						p.addLiteral(vm.SetLong, readerIndex)
+						p.addLiteral(vm.Set, vm.Long)
+						p.addLiteral(vm.Enter, readerIndex)
+					}
 					err := p.compileType(writer, r)
 					if err != nil {
 						return err
 					}
-					p.addLiteral(vm.Exit, vm.NoopField)
+					if !p.program.genericMode && !readerUnion.IsSimpleNullUnion() {
+						p.addLiteral(vm.Exit, vm.NoopField)
+					}
 					return nil
 				}
 			}
@@ -347,19 +351,31 @@ writer:
 			for readerIndex, r := range unionReader.AvroTypes() {
 				if r.Name() == t.Name() {
 					log("Union types have exact match by name: %q %q", r.Name(), t.Name())
-					p.addSwitchCase(switchId, i, readerIndex)
-					if _, ok := t.(*schema.NullField); ok {
-						p.addLiteral(vm.SetExitNull, vm.NoopField)
+					if !p.program.genericMode && unionReader.IsSimpleNullUnion() {
+						p.addSwitchCase(switchId, i, -1)
+						if _, ok := t.(*schema.NullField); ok {
+							p.addLiteral(vm.SetExitNull, vm.NoopField)
+						} else {
+							err := p.compileType(t, reader.Children()[readerIndex])
+							if err != nil {
+								return err
+							}
+						}
 					} else {
 						p.addSwitchCase(switchId, i, readerIndex)
-						p.addLiteral(vm.SetLong, readerIndex)
-						p.addLiteral(vm.Set, vm.Long)
-						p.addLiteral(vm.Enter, readerIndex)
-						err := p.compileType(t, r)
-						if err != nil {
-							return err
+						if _, ok := t.(*schema.NullField); ok {
+							p.addLiteral(vm.SetExitNull, vm.NoopField)
+						} else {
+							p.addSwitchCase(switchId, i, readerIndex)
+							p.addLiteral(vm.SetLong, readerIndex)
+							p.addLiteral(vm.Set, vm.Long)
+							p.addLiteral(vm.Enter, readerIndex)
+							err := p.compileType(t, r)
+							if err != nil {
+								return err
+							}
+							p.addLiteral(vm.Exit, vm.NoopField)
 						}
-						p.addLiteral(vm.Exit, vm.NoopField)
 					}
 					continue writer
 				}
@@ -372,12 +388,19 @@ writer:
 					if _, ok := t.(*schema.NullField); ok {
 						p.addLiteral(vm.SetExitNull, vm.NoopField)
 					} else {
-						p.addLiteral(vm.SetLong, readerIndex)
-						p.addLiteral(vm.Set, vm.Long)
-						p.addLiteral(vm.Enter, readerIndex)
-						err := p.compileType(t, r)
-						if err != nil {
-							return err
+						if !p.program.genericMode && unionReader.IsSimpleNullUnion() {
+							err := p.compileType(t, reader.Children()[readerIndex])
+							if err != nil {
+								return err
+							}
+						} else {
+							p.addLiteral(vm.SetLong, readerIndex)
+							p.addLiteral(vm.Set, vm.Long)
+							p.addLiteral(vm.Enter, readerIndex)
+							err := p.compileType(t, r)
+							if err != nil {
+								return err
+							}
 						}
 						p.addLiteral(vm.Exit, vm.NoopField)
 					}

@@ -3,15 +3,17 @@ package schema
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/actgardner/gogen-avro/v10/generator"
 )
 
 type UnionField struct {
-	name       string
-	itemType   []AvroType
-	definition []interface{}
-	nullIndex  int
+	name              string
+	itemType          []AvroType
+	definition        []interface{}
+	nullIndex         int
+	isSimpleNullUnion bool
 }
 
 func NewUnionField(name string, itemType []AvroType, definition []interface{}) *UnionField {
@@ -24,10 +26,11 @@ func NewUnionField(name string, itemType []AvroType, definition []interface{}) *
 	}
 
 	return &UnionField{
-		name:       name,
-		itemType:   itemType,
-		definition: definition,
-		nullIndex:  nullIndex,
+		name:              name,
+		itemType:          itemType,
+		definition:        definition,
+		nullIndex:         nullIndex,
+		isSimpleNullUnion: len(itemType) == 2 && nullIndex != -1,
 	}
 }
 
@@ -53,6 +56,9 @@ func (s *UnionField) AvroTypes() []AvroType {
 func (s *UnionField) GoType() string {
 	if s.nullIndex == -1 {
 		return s.Name()
+	}
+	if s.isSimpleNullUnion {
+		return "*" + s.AvroTypes()[s.NonNullIndex()].GoType()
 	}
 	return "*" + s.Name()
 }
@@ -114,6 +120,15 @@ func (s *UnionField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 	if _, ok := defaultType.(*NullField); ok {
 		return fmt.Sprintf("%v = nil", lvalue), nil
 	}
+	if s.isSimpleNullUnion {
+		localVarLvalue := ToLowerCase(lvalue[2:])
+		localVarAssignment, err := defaultType.DefaultValue(localVarLvalue, rvalue)
+		if err != nil {
+			return "", err
+		}
+		structFieldAssignment := fmt.Sprintf("%v = &%v", lvalue, localVarLvalue)
+		return "var " + localVarAssignment + "\n" + structFieldAssignment, nil
+	}
 	init := fmt.Sprintf("%v = %v\n", lvalue, s.ConstructorMethod())
 	lvalue = fmt.Sprintf("%v.%v", lvalue, defaultType.Name())
 	constructorCall := ""
@@ -127,6 +142,9 @@ func (s *UnionField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 func (s *UnionField) WrapperType() string {
 	if s.NullIndex() == -1 {
 		return "types.Record"
+	}
+	if s.IsSimpleNullUnion() {
+		return "types." + s.itemType[s.NonNullIndex()].Name()
 	}
 	return ""
 }
@@ -187,10 +205,39 @@ func (s *UnionField) NullIndex() int {
 	return s.nullIndex
 }
 
+func (s *UnionField) IsSimpleNullUnion() bool {
+	return s.isSimpleNullUnion
+}
+
 func (s *UnionField) UnionKey() string {
 	panic("Unions within unions are not supported")
 }
 
 func (s *UnionField) GetReference() bool {
 	return s.nullIndex == -1
+}
+
+func (s *UnionField) IsPrimitive() bool { return false }
+
+func (s *UnionField) NonNullIndex() int {
+	if s.isSimpleNullUnion {
+		var idx = 0
+		if s.nullIndex == 0 {
+			idx = 1
+		}
+		return idx
+	}
+
+	return -1
+}
+
+func ToLowerCase(str string) string {
+
+	var b strings.Builder
+
+	b.WriteString(strings.ToLower(string(str[0])))
+	b.WriteString(str[1:])
+
+	return b.String()
+
 }

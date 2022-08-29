@@ -39,3 +39,5 @@ func (s *PrimitiveField) UnionKey() string {
 }
 
 func (s *PrimitiveField) WrapperPointer() bool { return false }
+
+func (s *PrimitiveField) IsPrimitive() bool { return true }

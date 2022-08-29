@@ -83,6 +83,12 @@ func (r *RecordDefinition) DefaultForField(f *Field) (string, error) {
 
 func (r *RecordDefinition) ConstructableForField(f *Field) string {
 	if constructor, ok := getConstructableForType(f.Type()); ok {
+		if readerUnion, ok := f.avroType.(*UnionField); ok {
+			if readerUnion.IsSimpleNullUnion() {
+				// short-circuit to not bother generating Union Golang classes for single-typed nullable unions
+				return ""
+			}
+		}
 		return fmt.Sprintf("r.%v = %v\n", f.GoName(), constructor.ConstructorMethod())
 	}
 	return ""
@@ -160,4 +166,130 @@ func (s *RecordDefinition) Children() []AvroType {
 
 func (s *RecordDefinition) GetReference() bool {
 	return true
+}
+
+func (s *RecordDefinition) IsSimpleNullUnion(f Field) bool {
+	unionField, ok := f.avroType.(*UnionField)
+	return ok && unionField.IsSimpleNullUnion()
+}
+
+func (s *RecordDefinition) IsSimpleNullUnionOfPrimitive(f Field) bool {
+	if unionField, ok := f.avroType.(*UnionField); ok {
+		var idx = 0
+		if unionField.nullIndex == 0 {
+			idx = 1
+		}
+		return unionField.itemType[idx].IsPrimitive()
+
+	}
+	return false
+}
+
+func (s *RecordDefinition) SimpleNullUnionNullIndex(f Field) int {
+	if unionField, ok := f.avroType.(*UnionField); ok {
+		return unionField.NullIndex()
+	}
+	return -1
+}
+
+func (s *RecordDefinition) SimpleNullUnionNonNullIndex(f Field) int {
+	if unionField, ok := f.avroType.(*UnionField); ok {
+		var idx = 0
+		if unionField.nullIndex == 0 {
+			idx = 1
+		}
+		return idx
+	}
+	return -1
+}
+
+func (s *RecordDefinition) SimpleNullUnionItemType(f Field) string {
+	idx := s.SimpleNullUnionNonNullIndex(f)
+	if unionField, ok := f.avroType.(*UnionField); ok {
+		return unionField.itemType[idx].Name()
+	}
+	return ""
+}
+
+func (s *RecordDefinition) SimpleNullUnionKey(f Field) string {
+	idx := s.SimpleNullUnionNonNullIndex(f)
+	if unionField, ok := f.avroType.(*UnionField); ok {
+		return unionField.itemType[idx].UnionKey()
+	}
+	return ""
+}
+
+func (s *RecordDefinition) IsArrayOfSimpleNullUnion(f Field) bool {
+	if arrayField, isArrayField := f.avroType.(*ArrayField); isArrayField {
+		if unionField, isUnionField := arrayField.Children()[0].(*UnionField); isUnionField {
+			return unionField.IsSimpleNullUnion()
+		}
+	}
+	return false
+}
+
+func (s *RecordDefinition) ArraySimpleNullUnionNonNullIndex(f Field) int {
+	if arrayField, isArrayField := f.avroType.(*ArrayField); isArrayField {
+		if unionField, isUnionField := arrayField.Children()[0].(*UnionField); isUnionField {
+			var idx = 0
+			if unionField.nullIndex == 0 {
+				idx = 1
+			}
+			return idx
+		}
+	}
+	return -1
+}
+
+func (s *RecordDefinition) ArraySimpleNullUnionItemType(f Field) string {
+	if arrayField, isArrayField := f.avroType.(*ArrayField); isArrayField {
+		if unionField, isUnionField := arrayField.Children()[0].(*UnionField); isUnionField {
+			var idx = 0
+			if unionField.nullIndex == 0 {
+				idx = 1
+			}
+			return unionField.itemType[idx].Name()
+		}
+	}
+
+	return ""
+}
+
+func (s *RecordDefinition) ArraySimpleNullUnionNonNullUnionKey(f Field) string {
+	if arrayField, isArrayField := f.avroType.(*ArrayField); isArrayField {
+		if unionField, isUnionField := arrayField.Children()[0].(*UnionField); isUnionField {
+			var idx = 0
+			if unionField.nullIndex == 0 {
+				idx = 1
+			}
+			return unionField.Children()[idx].UnionKey()
+		}
+	}
+	return ""
+}
+
+func (s *RecordDefinition) IsMapOfSimpleNullUnion(f Field) bool {
+	if arrayField, isArrayField := f.avroType.(*MapField); isArrayField {
+		if unionField, isUnionField := arrayField.Children()[0].(*UnionField); isUnionField {
+			return unionField.IsSimpleNullUnion()
+		}
+	}
+	return false
+}
+
+func (s *RecordDefinition) MapSimpleNullUnionNonNullUnionKey(f Field) string {
+	if arrayField, isArrayField := f.avroType.(*MapField); isArrayField {
+		if unionField, isUnionField := arrayField.Children()[0].(*UnionField); isUnionField {
+			var idx = 0
+			if unionField.nullIndex == 0 {
+				idx = 1
+			}
+			return unionField.Children()[idx].UnionKey()
+		}
+	}
+	return ""
+}
+
+func (s *RecordDefinition) HasInlinedCustomUnmarshalMethod(f Field) bool {
+	return s.IsSimpleNullUnion(f) || s.IsArrayOfSimpleNullUnion(f) || s.IsMapOfSimpleNullUnion(f)
 }
