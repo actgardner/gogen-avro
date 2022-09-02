@@ -74,7 +74,7 @@ func (r *RecordDefinition) Definition(scope map[QualifiedName]interface{}) (inte
 }
 
 func (r *RecordDefinition) ConstructorMethod() string {
-	return fmt.Sprintf("New%v()", r.Name())
+	return fmt.Sprintf("New%vObject()", r.Name())
 }
 
 func (r *RecordDefinition) DefaultForField(f *Field) (string, error) {
