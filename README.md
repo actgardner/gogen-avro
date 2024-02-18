@@ -7,6 +7,12 @@
 Generates type-safe Go code based on your Avro schemas, including serializers and deserializers that support Avro's schema evolution rules.
 Also supports deserializing generic Avro data (in beta).
 
+### This project is on a (possibly permanent) break 
+
+Due to life circumstances I do not have the time or energy to develop new features for this project, or debug issues with people's Avro schemas.
+
+I may be able to review PRs that fix bugs, or features (like adding support for logical types). These PRs should have tests and work with all existing features (JSON, generic data types, etc.)
+
 ### Table of contents
 
 <!--ts-->
