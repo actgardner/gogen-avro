@@ -18,14 +18,14 @@ import (
 var _ = fmt.Printf
 
 type ArrayTestRecord struct {
-	IntField []*UnionNullInt `json:"IntField"`
+	IntField []*int32 `json:"IntField"`
 }
 
 const ArrayTestRecordAvroCRC64Fingerprint = "t\x06\x9e\xc8\u0088\xa0\xcb"
 
 func NewArrayTestRecord() ArrayTestRecord {
 	r := ArrayTestRecord{}
-	r.IntField = make([]*UnionNullInt, 0)
+	r.IntField = make([]*int32, 0)
 
 	return r
 }
@@ -55,9 +55,21 @@ func DeserializeArrayTestRecordFromSchema(r io.Reader, schema string) (ArrayTest
 
 func writeArrayTestRecord(r ArrayTestRecord, w io.Writer) error {
 	var err error
-	err = writeArrayUnionNullInt(r.IntField, w)
+	err = vm.WriteLong(int64(len(r.IntField)), w)
 	if err != nil {
 		return err
+	}
+	if len(r.IntField) != 0 {
+		for _, e := range r.IntField {
+			if e == nil {
+				return nil
+			}
+			err = vm.WriteInt(*e, w)
+			if err != nil {
+				return err
+			}
+		}
+		err = vm.WriteLong(0, w)
 	}
 	return err
 }
@@ -86,9 +98,9 @@ func (_ ArrayTestRecord) SetUnionElem(v int64) { panic("Unsupported operation") 
 func (r *ArrayTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.IntField = make([]*UnionNullInt, 0)
+		r.IntField = make([]*int32, 0)
 
-		w := ArrayUnionNullIntWrapper{Target: &r.IntField}
+		w := types.ArrayOfNullableIntUnion{Target: &r.IntField}
 
 		return w
 
@@ -120,11 +132,44 @@ func (_ ArrayTestRecord) AvroCRC64Fingerprint() []byte {
 func (r ArrayTestRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
-	output["IntField"], err = json.Marshal(r.IntField)
+	if r.IntField != nil {
+		y := make([]*map[string]int32, len(r.IntField))
+		for i, e := range r.IntField {
+			if e == nil {
+				y[i] = nil
+			} else {
+				tmp := map[string]int32{"int": *e}
+				y[i] = &tmp
+			}
+		}
+		output["IntField"], err = json.Marshal(y)
+	}
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(output)
+}
+
+func (r *ArrayTestRecord) UnmarshalIntFieldJSON(data []byte) error {
+	y := make([]*map[string]int32, 0)
+
+	if err := json.Unmarshal(data, &y); err != nil {
+		return nil
+	}
+
+	length := len(y)
+	r.IntField = make([]*int32, length)
+
+	for i, e := range y {
+		if e == nil {
+			r.IntField[i] = nil
+		} else {
+			tmp := (*e)["int"]
+			r.IntField[i] = &tmp
+		}
+	}
+
+	return nil
 }
 
 func (r *ArrayTestRecord) UnmarshalJSON(data []byte) error {
@@ -142,7 +187,7 @@ func (r *ArrayTestRecord) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.IntField); err != nil {
+		if err := r.UnmarshalIntFieldJSON(val); err != nil {
 			return err
 		}
 	} else {

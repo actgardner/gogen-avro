@@ -20,17 +20,15 @@ var _ = fmt.Printf
 // GoGen test
 type TestSample struct {
 	// Core data information required for any event
-	Header *UnionNullHeaderworksData `json:"header"`
+	Header *HeaderworksData `json:"header"`
 	// Core data information required for any event
-	Body *UnionNullBodyworksData `json:"body"`
+	Body *BodyworksData `json:"body"`
 }
 
 const TestSampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
 func NewTestSample() TestSample {
 	r := TestSample{}
-	r.Header = nil
-	r.Body = nil
 	return r
 }
 
@@ -59,13 +57,31 @@ func DeserializeTestSampleFromSchema(r io.Reader, schema string) (TestSample, er
 
 func writeTestSample(r TestSample, w io.Writer) error {
 	var err error
-	err = writeUnionNullHeaderworksData(r.Header, w)
-	if err != nil {
-		return err
+	if r.Header == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = writeHeaderworksData(*r.Header, w)
 	}
-	err = writeUnionNullBodyworksData(r.Body, w)
-	if err != nil {
-		return err
+	if r.Body == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = writeBodyworksData(*r.Body, w)
 	}
 	return err
 }
@@ -94,13 +110,23 @@ func (_ TestSample) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *TestSample) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.Header = NewUnionNullHeaderworksData()
+		if r.Header == nil {
+			var Header = new(HeaderworksData)
+			r.Header = Header
+		}
+		w := r.Header
 
-		return r.Header
+		return w
+
 	case 1:
-		r.Body = NewUnionNullBodyworksData()
+		if r.Body == nil {
+			var Body = new(BodyworksData)
+			r.Body = Body
+		}
+		w := r.Body
 
-		return r.Body
+		return w
+
 	}
 	panic("Unknown field index")
 }
@@ -141,15 +167,62 @@ func (_ TestSample) AvroCRC64Fingerprint() []byte {
 func (r TestSample) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
-	output["header"], err = json.Marshal(r.Header)
+	if r.Header == nil {
+		output["header"], err = []byte("null"), nil
+	} else {
+		output["header"], err = json.Marshal(map[string]interface{}{
+			"headerworks.Data": r.Header,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
-	output["body"], err = json.Marshal(r.Body)
+	if r.Body == nil {
+		output["body"], err = []byte("null"), nil
+	} else {
+		output["body"], err = json.Marshal(map[string]interface{}{
+			"bodyworks.Data": r.Body,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(output)
+}
+
+func (r *TestSample) UnmarshalheaderJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["headerworks.Data"]; ok {
+		r.Header = new(HeaderworksData)
+		json.Unmarshal(v, r.Header)
+	}
+
+	return nil
+}
+func (r *TestSample) UnmarshalbodyJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["bodyworks.Data"]; ok {
+		r.Body = new(BodyworksData)
+		json.Unmarshal(v, r.Body)
+	}
+
+	return nil
 }
 
 func (r *TestSample) UnmarshalJSON(data []byte) error {
@@ -167,12 +240,10 @@ func (r *TestSample) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Header); err != nil {
+		if err := r.UnmarshalheaderJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.Header = NewUnionNullHeaderworksData()
-
 		r.Header = nil
 	}
 	val = func() json.RawMessage {
@@ -183,12 +254,10 @@ func (r *TestSample) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Body); err != nil {
+		if err := r.UnmarshalbodyJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.Body = NewUnionNullBodyworksData()
-
 		r.Body = nil
 	}
 	return nil

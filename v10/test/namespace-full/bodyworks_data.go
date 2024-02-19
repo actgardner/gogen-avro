@@ -20,20 +20,17 @@ var _ = fmt.Printf
 // Common information related to the event which must be included in any clean event
 type BodyworksData struct {
 	// Unique identifier for the event used for de-duplication and tracing.
-	Uuid *UnionNullBodyworksDatatypeUUID `json:"uuid"`
+	Uuid *BodyworksDatatypeUUID `json:"uuid"`
 	// Fully qualified name of the host that generated the event that generated the data.
-	Hostname *UnionNullString `json:"hostname"`
+	Hostname *string `json:"hostname"`
 	// Trace information not redundant with this object
-	Trace *UnionNullBodyworksTrace `json:"trace"`
+	Trace *BodyworksTrace `json:"trace"`
 }
 
 const BodyworksDataAvroCRC64Fingerprint = "\xa5\xec\x1f\xf5k\x15\xc1!"
 
 func NewBodyworksData() BodyworksData {
 	r := BodyworksData{}
-	r.Uuid = nil
-	r.Hostname = nil
-	r.Trace = nil
 	return r
 }
 
@@ -62,17 +59,44 @@ func DeserializeBodyworksDataFromSchema(r io.Reader, schema string) (BodyworksDa
 
 func writeBodyworksData(r BodyworksData, w io.Writer) error {
 	var err error
-	err = writeUnionNullBodyworksDatatypeUUID(r.Uuid, w)
-	if err != nil {
-		return err
+	if r.Uuid == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = writeBodyworksDatatypeUUID(*r.Uuid, w)
 	}
-	err = writeUnionNullString(r.Hostname, w)
-	if err != nil {
-		return err
+	if r.Hostname == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = vm.WriteString(*r.Hostname, w)
 	}
-	err = writeUnionNullBodyworksTrace(r.Trace, w)
-	if err != nil {
-		return err
+	if r.Trace == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = writeBodyworksTrace(*r.Trace, w)
 	}
 	return err
 }
@@ -101,17 +125,32 @@ func (_ BodyworksData) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *BodyworksData) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.Uuid = NewUnionNullBodyworksDatatypeUUID()
+		if r.Uuid == nil {
+			var Uuid = new(BodyworksDatatypeUUID)
+			r.Uuid = Uuid
+		}
+		w := r.Uuid
 
-		return r.Uuid
+		return w
+
 	case 1:
-		r.Hostname = NewUnionNullString()
+		if r.Hostname == nil {
+			var Hostname = new(string)
+			r.Hostname = Hostname
+		}
+		w := types.String{Target: r.Hostname}
 
-		return r.Hostname
+		return w
+
 	case 2:
-		r.Trace = NewUnionNullBodyworksTrace()
+		if r.Trace == nil {
+			var Trace = new(BodyworksTrace)
+			r.Trace = Trace
+		}
+		w := r.Trace
 
-		return r.Trace
+		return w
+
 	}
 	panic("Unknown field index")
 }
@@ -158,19 +197,89 @@ func (_ BodyworksData) AvroCRC64Fingerprint() []byte {
 func (r BodyworksData) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
-	output["uuid"], err = json.Marshal(r.Uuid)
+	if r.Uuid == nil {
+		output["uuid"], err = []byte("null"), nil
+	} else {
+		output["uuid"], err = json.Marshal(map[string]interface{}{
+			"bodyworks.datatype.UUID": r.Uuid,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
-	output["hostname"], err = json.Marshal(r.Hostname)
+	if r.Hostname == nil {
+		output["hostname"], err = []byte("null"), nil
+	} else {
+		output["hostname"], err = json.Marshal(map[string]interface{}{
+			"string": *r.Hostname,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
-	output["trace"], err = json.Marshal(r.Trace)
+	if r.Trace == nil {
+		output["trace"], err = []byte("null"), nil
+	} else {
+		output["trace"], err = json.Marshal(map[string]interface{}{
+			"bodyworks.Trace": r.Trace,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(output)
+}
+
+func (r *BodyworksData) UnmarshaluuidJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["bodyworks.datatype.UUID"]; ok {
+		r.Uuid = new(BodyworksDatatypeUUID)
+		json.Unmarshal(v, r.Uuid)
+	}
+
+	return nil
+}
+func (r *BodyworksData) UnmarshalhostnameJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["string"]; ok {
+		r.Hostname = new(string)
+		json.Unmarshal(v, r.Hostname)
+	}
+
+	return nil
+}
+func (r *BodyworksData) UnmarshaltraceJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["bodyworks.Trace"]; ok {
+		r.Trace = new(BodyworksTrace)
+		json.Unmarshal(v, r.Trace)
+	}
+
+	return nil
 }
 
 func (r *BodyworksData) UnmarshalJSON(data []byte) error {
@@ -188,12 +297,10 @@ func (r *BodyworksData) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Uuid); err != nil {
+		if err := r.UnmarshaluuidJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.Uuid = NewUnionNullBodyworksDatatypeUUID()
-
 		r.Uuid = nil
 	}
 	val = func() json.RawMessage {
@@ -204,12 +311,10 @@ func (r *BodyworksData) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Hostname); err != nil {
+		if err := r.UnmarshalhostnameJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.Hostname = NewUnionNullString()
-
 		r.Hostname = nil
 	}
 	val = func() json.RawMessage {
@@ -220,12 +325,10 @@ func (r *BodyworksData) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Trace); err != nil {
+		if err := r.UnmarshaltraceJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.Trace = NewUnionNullBodyworksTrace()
-
 		r.Trace = nil
 	}
 	return nil

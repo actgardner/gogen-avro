@@ -16,12 +16,26 @@ func Template(t avro.Node) (string, error) {
 	var templateDef string
 	switch t.(type) {
 	case *avro.ArrayField:
+		if readerArray, ok := t.(*avro.ArrayField); ok {
+			if readerUnion, ok := readerArray.Children()[0].(*avro.UnionField); ok {
+				if readerUnion.IsSimpleNullUnion() {
+					// short-circuit to not bother generating Union Golang classes for single-typed nullable unions
+					return "", NoTemplateForType
+				}
+			}
+		}
 		templateDef = ArrayTemplate
 	case *avro.BytesField:
 		templateDef = BytesTemplate
 	case *avro.MapField:
 		templateDef = MapTemplate
 	case *avro.UnionField:
+		if readerUnion, ok := t.(*avro.UnionField); ok {
+			if readerUnion.IsSimpleNullUnion() {
+				// short-circuit to not bother generating Union Golang classes for single-typed nullable unions
+				return "", NoTemplateForType
+			}
+		}
 		templateDef = UnionTemplate
 	case *avro.EnumDefinition:
 		templateDef = EnumTemplate

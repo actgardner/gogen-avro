@@ -25,7 +25,6 @@ const PrimitiveUnionTestRecordAvroCRC64Fingerprint = "k\xbb\x01A\xbdb\b\xd4"
 
 func NewPrimitiveUnionTestRecord() PrimitiveUnionTestRecord {
 	r := PrimitiveUnionTestRecord{}
-	r.UnionField = nil
 	return r
 }
 

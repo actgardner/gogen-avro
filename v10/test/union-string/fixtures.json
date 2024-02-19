@@ -5,6 +5,9 @@
         },
         "bar": {
             "string": "bar_string"
+        },
+        "bat": {
+            "string": "myBatValue"
         }
     }
 ]

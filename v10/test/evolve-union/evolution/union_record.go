@@ -18,7 +18,7 @@ import (
 var _ = fmt.Printf
 
 type UnionRecord struct {
-	A *UnionNullString `json:"a"`
+	A *string `json:"a"`
 
 	Name string `json:"name"`
 }
@@ -55,9 +55,18 @@ func DeserializeUnionRecordFromSchema(r io.Reader, schema string) (UnionRecord, 
 
 func writeUnionRecord(r UnionRecord, w io.Writer) error {
 	var err error
-	err = writeUnionNullString(r.A, w)
-	if err != nil {
-		return err
+	if r.A == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = vm.WriteString(*r.A, w)
 	}
 	err = vm.WriteString(r.Name, w)
 	if err != nil {
@@ -90,9 +99,14 @@ func (_ UnionRecord) SetUnionElem(v int64) { panic("Unsupported operation") }
 func (r *UnionRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.A = NewUnionNullString()
+		if r.A == nil {
+			var A = new(string)
+			r.A = A
+		}
+		w := types.String{Target: r.A}
 
-		return r.A
+		return w
+
 	case 1:
 		w := types.String{Target: &r.Name}
 
@@ -129,7 +143,13 @@ func (_ UnionRecord) AvroCRC64Fingerprint() []byte {
 func (r UnionRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
-	output["a"], err = json.Marshal(r.A)
+	if r.A == nil {
+		output["a"], err = []byte("null"), nil
+	} else {
+		output["a"], err = json.Marshal(map[string]interface{}{
+			"string": *r.A,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -138,6 +158,24 @@ func (r UnionRecord) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	return json.Marshal(output)
+}
+
+func (r *UnionRecord) UnmarshalaJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["string"]; ok {
+		r.A = new(string)
+		json.Unmarshal(v, r.A)
+	}
+
+	return nil
 }
 
 func (r *UnionRecord) UnmarshalJSON(data []byte) error {
@@ -155,7 +193,7 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.A); err != nil {
+		if err := r.UnmarshalaJSON(val); err != nil {
 			return err
 		}
 	} else {

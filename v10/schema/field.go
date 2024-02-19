@@ -130,3 +130,5 @@ func (f *Field) Definition(scope map[QualifiedName]interface{}) (map[string]inte
 	}
 	return def, nil
 }
+
+func (s *Field) IsPrimitive() bool { return false }

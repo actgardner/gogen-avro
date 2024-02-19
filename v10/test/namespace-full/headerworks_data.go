@@ -20,20 +20,17 @@ var _ = fmt.Printf
 // Common information related to the event which must be included in any clean event
 type HeaderworksData struct {
 	// Unique identifier for the event used for de-duplication and tracing.
-	Uuid *UnionNullHeaderworksDatatypeUUID `json:"uuid"`
+	Uuid *HeaderworksDatatypeUUID `json:"uuid"`
 	// Fully qualified name of the host that generated the event that generated the data.
-	Hostname *UnionNullString `json:"hostname"`
+	Hostname *string `json:"hostname"`
 	// Trace information not redundant with this object
-	Trace *UnionNullHeaderworksTrace `json:"trace"`
+	Trace *HeaderworksTrace `json:"trace"`
 }
 
 const HeaderworksDataAvroCRC64Fingerprint = "6<\xf6?EE\xcd\v"
 
 func NewHeaderworksData() HeaderworksData {
 	r := HeaderworksData{}
-	r.Uuid = nil
-	r.Hostname = nil
-	r.Trace = nil
 	return r
 }
 
@@ -62,17 +59,44 @@ func DeserializeHeaderworksDataFromSchema(r io.Reader, schema string) (Headerwor
 
 func writeHeaderworksData(r HeaderworksData, w io.Writer) error {
 	var err error
-	err = writeUnionNullHeaderworksDatatypeUUID(r.Uuid, w)
-	if err != nil {
-		return err
+	if r.Uuid == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = writeHeaderworksDatatypeUUID(*r.Uuid, w)
 	}
-	err = writeUnionNullString(r.Hostname, w)
-	if err != nil {
-		return err
+	if r.Hostname == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = vm.WriteString(*r.Hostname, w)
 	}
-	err = writeUnionNullHeaderworksTrace(r.Trace, w)
-	if err != nil {
-		return err
+	if r.Trace == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = writeHeaderworksTrace(*r.Trace, w)
 	}
 	return err
 }
@@ -101,17 +125,32 @@ func (_ HeaderworksData) SetUnionElem(v int64) { panic("Unsupported operation") 
 func (r *HeaderworksData) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.Uuid = NewUnionNullHeaderworksDatatypeUUID()
+		if r.Uuid == nil {
+			var Uuid = new(HeaderworksDatatypeUUID)
+			r.Uuid = Uuid
+		}
+		w := r.Uuid
 
-		return r.Uuid
+		return w
+
 	case 1:
-		r.Hostname = NewUnionNullString()
+		if r.Hostname == nil {
+			var Hostname = new(string)
+			r.Hostname = Hostname
+		}
+		w := types.String{Target: r.Hostname}
 
-		return r.Hostname
+		return w
+
 	case 2:
-		r.Trace = NewUnionNullHeaderworksTrace()
+		if r.Trace == nil {
+			var Trace = new(HeaderworksTrace)
+			r.Trace = Trace
+		}
+		w := r.Trace
 
-		return r.Trace
+		return w
+
 	}
 	panic("Unknown field index")
 }
@@ -158,19 +197,89 @@ func (_ HeaderworksData) AvroCRC64Fingerprint() []byte {
 func (r HeaderworksData) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
-	output["uuid"], err = json.Marshal(r.Uuid)
+	if r.Uuid == nil {
+		output["uuid"], err = []byte("null"), nil
+	} else {
+		output["uuid"], err = json.Marshal(map[string]interface{}{
+			"headerworks.datatype.UUID": r.Uuid,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
-	output["hostname"], err = json.Marshal(r.Hostname)
+	if r.Hostname == nil {
+		output["hostname"], err = []byte("null"), nil
+	} else {
+		output["hostname"], err = json.Marshal(map[string]interface{}{
+			"string": *r.Hostname,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
-	output["trace"], err = json.Marshal(r.Trace)
+	if r.Trace == nil {
+		output["trace"], err = []byte("null"), nil
+	} else {
+		output["trace"], err = json.Marshal(map[string]interface{}{
+			"headerworks.Trace": r.Trace,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(output)
+}
+
+func (r *HeaderworksData) UnmarshaluuidJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["headerworks.datatype.UUID"]; ok {
+		r.Uuid = new(HeaderworksDatatypeUUID)
+		json.Unmarshal(v, r.Uuid)
+	}
+
+	return nil
+}
+func (r *HeaderworksData) UnmarshalhostnameJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["string"]; ok {
+		r.Hostname = new(string)
+		json.Unmarshal(v, r.Hostname)
+	}
+
+	return nil
+}
+func (r *HeaderworksData) UnmarshaltraceJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["headerworks.Trace"]; ok {
+		r.Trace = new(HeaderworksTrace)
+		json.Unmarshal(v, r.Trace)
+	}
+
+	return nil
 }
 
 func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
@@ -188,12 +297,10 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Uuid); err != nil {
+		if err := r.UnmarshaluuidJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.Uuid = NewUnionNullHeaderworksDatatypeUUID()
-
 		r.Uuid = nil
 	}
 	val = func() json.RawMessage {
@@ -204,12 +311,10 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Hostname); err != nil {
+		if err := r.UnmarshalhostnameJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.Hostname = NewUnionNullString()
-
 		r.Hostname = nil
 	}
 	val = func() json.RawMessage {
@@ -220,12 +325,10 @@ func (r *HeaderworksData) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Trace); err != nil {
+		if err := r.UnmarshaltraceJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.Trace = NewUnionNullHeaderworksTrace()
-
 		r.Trace = nil
 	}
 	return nil

@@ -66,3 +66,5 @@ func (s *Reference) Children() []AvroType {
 func (s *Reference) UnionKey() string {
 	return s.Def.AvroName().String()
 }
+
+func (s *Reference) IsPrimitive() bool { return false }

@@ -31,12 +31,12 @@ func {{ .ConstructorMethod }} ({{ .GoType}}) {
 	r := {{ .Name }}{}
 	{{ range $i, $field := .Fields -}}
 	{{ if $.ConstructableForField $field | ne "" -}}
-                {{ if not (hasNullDefault $field.Type) -}}
-		{{ $.ConstructableForField $field }}
-                {{ end -}}
+		{{ if not (hasNullDefault $field.Type) -}}
+			{{ $.ConstructableForField $field }}
+		{{ end -}}
 	{{ end -}}
-        {{ if .HasDefault -}}
-       	 	{{ $.DefaultForField $field }}
+	{{ if and .HasDefault (not (hasNullDefault $field.Type)) -}}
+		{{ $.DefaultForField $field }}
 	{{ end -}}
 	{{ end -}}
 	return r
@@ -68,10 +68,47 @@ func Deserialize{{ .Name }}FromSchema(r io.Reader, schema string) ({{ .GoType }}
 func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 	var err error
 	{{ range $i, $field := .Fields -}}
+    {{ if $.IsSimpleNullUnion $field -}}
+	if r.{{ .GoName }} == nil {
+		err = vm.WriteLong({{ $.SimpleNullUnionNullIndex $field }}, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64({{ $.SimpleNullUnionNonNullIndex $field }}), w)
+		if err != nil {
+			return err
+		}
+
+		{{ if $.IsSimpleNullUnionOfPrimitive $field -}}
+			err = vm.Write{{ $.SimpleNullUnionItemType $field }}( *r.{{ .GoName }}, w)
+		{{ else -}}
+			err = write{{ $.SimpleNullUnionItemType $field }}( *r.{{ .GoName }}, w)
+		{{ end -}}
+	}
+	{{ else if  $.IsArrayOfSimpleNullUnion $field -}}
+	err = vm.WriteLong(int64(len(r.{{ .GoName }})), w)
+	if err != nil {
+		return err
+	}
+	if (len(r.{{ .GoName }}) != 0) {
+		for _, e := range r.{{ .GoName }} {
+			if e == nil {
+				return nil
+			}
+			err = vm.Write{{ $.ArraySimpleNullUnionItemType $field }}(*e, w)
+			if err != nil {
+				return err
+			}
+		}
+		err = vm.WriteLong(0, w)
+	}
+	{{ else -}}
 	err = {{ .Type.SerializerMethod }}( r.{{ .GoName }}, w)
 	if err != nil {
 		return err
 	}
+	{{ end -}}
 	{{ end -}}
 	return err
 }
@@ -105,7 +142,21 @@ func (r *{{ .GoType }}) Get(i int) types.Field {
 			{{ $.ConstructableForField $field }}
 		{{ end -}}
 		{{ if ne $field.Type.WrapperType "" -}}
+			{{ if $.IsSimpleNullUnion $field -}}
+			if r.{{ $field.GoName }} == nil {
+				var {{ $field.GoName }} = new({{slice .Type.GoType 1 }})
+				r.{{ $field.GoName }} = {{ $field.GoName }}
+			}
+			{{ if $.IsSimpleNullUnionOfPrimitive $field -}}
+			w := {{ $field.Type.WrapperType }}{Target: r.{{ $field.GoName }}}
+			{{ else -}}
+			w := r.{{ $field.GoName }}
+			{{ end -}}
+			{{ else if  $.IsArrayOfSimpleNullUnion $field -}}
+			w := types.ArrayOfNullable{{ $.ArraySimpleNullUnionItemType $field }}Union{Target: &r.{{ $field.GoName }}}
+			{{ else -}}
 			w := {{ $field.Type.WrapperType }}{Target: &r.{{ $field.GoName }}}
+			{{ end -}}
 			{{ if $field.Type.WrapperPointer }}
 			return &w
 			{{ else }}
@@ -161,13 +212,119 @@ func (r {{ .GoType }}) MarshalJSON() ([]byte, error) {
 	{{ end -}}
 	output := make(map[string]json.RawMessage)
 	{{ range $i, $field := .Fields -}}
+	{{ if $.IsSimpleNullUnion $field -}}
+		if r.{{ $field.GoName }} == nil {
+			output[{{ printf "%q" $field.Name }}], err = []byte("null"), nil
+		} else {
+			output[{{ printf "%q" $field.Name }}], err = json.Marshal(map[string]interface{}{
+				{{ if $.IsSimpleNullUnionOfPrimitive $field -}}
+					"{{slice .Type.GoType 1 }}": *r.{{ .GoName }},
+				{{ else -}}
+					"{{ $.SimpleNullUnionKey $field }}": r.{{ .GoName }},
+				{{ end -}}
+			})
+		}
+    {{ else if  $.IsArrayOfSimpleNullUnion $field -}}
+		if r.{{ $field.GoName }} != nil {
+			y := make([]*map[string]{{ slice .Type.GoType 3 }}, len(r.{{ $field.GoName }}))
+			for i, e := range r.{{ $field.GoName }} {
+			if e == nil {
+					y[i] = nil
+				} else {
+					tmp := map[string]{{ slice .Type.GoType 3 }}{"{{ $.ArraySimpleNullUnionNonNullUnionKey $field }}" : *e}
+					y[i] = &tmp
+				}
+			}
+			output[{{ printf "%q" $field.Name }}], err = json.Marshal(y)
+		}
+	{{ else if  $.IsMapOfSimpleNullUnion $field -}}
+		if r.{{ $field.GoName }} != nil {
+			y := make(map[string]*map[string]{{ slice .Type.GoType 12 }}, len(r.{{ $field.GoName }}))
+			for k, v := range r.IntField {
+				if v == nil {
+					y[k] = nil
+				} else {
+					tmp := map[string]{{ slice .Type.GoType 12 }}{"{{ $.MapSimpleNullUnionNonNullUnionKey $field }}" : *v}
+					y[k] = &tmp
+				}
+			}
+			output["IntField"], err = json.Marshal(y)
+		}
+	{{ else -}}
 	output[{{ printf "%q" $field.Name }}], err = json.Marshal(r.{{ $field.GoName}})
+    {{ end -}}
 	if err != nil {
 		return nil, err
 	}
 	{{ end -}}
 	return json.Marshal(output)	
 }
+
+{{ range $i, $field := .Fields -}}
+{{ if  $.IsArrayOfSimpleNullUnion $field -}}
+func (r *{{ $.GoType }}) Unmarshal{{ .Name -}}JSON(data []byte) (error) {
+	y := make([]*map[string]{{ slice .Type.GoType 3 }}, 0)
+
+	if err := json.Unmarshal(data, &y); err != nil {
+		return nil
+	}
+
+	length := len(y)
+	r.{{ .Name -}} = make([]{{ slice .Type.GoType 2 }}, length)
+
+	for i, e := range y {
+		if (e == nil) {
+			r.{{ .Name -}}[i] = nil
+		} else {
+			tmp := (*e)["{{ $.ArraySimpleNullUnionNonNullUnionKey $field }}"]
+			r.{{ .Name -}}[i] = &tmp
+		}
+	}
+
+	return nil
+}
+{{ else if $.IsSimpleNullUnion $field -}}
+func (r *{{ $.GoType }}) Unmarshal{{ .Name -}}JSON(data []byte) (error) {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["{{ $.SimpleNullUnionKey $field }}"]; ok {
+		r.{{ .GoName -}} = new({{slice .Type.GoType 1 }})
+		json.Unmarshal(v, r.{{ .GoName -}})
+	}
+
+	return nil
+}
+{{ else if $.IsMapOfSimpleNullUnion $field -}}
+func (r *{{ $.GoType }}) Unmarshal{{ .Name -}}JSON(data []byte) (error) {
+  y := make(map[string]*{{ .Type.GoType }}, 0)
+
+	if err := json.Unmarshal(data, &y); err != nil {
+		return nil
+	}
+
+	length := len(y)
+	r.{{ .Name -}} = make({{ .Type.GoType }}, length)
+
+	for i, e := range y {
+		if (e == nil) {
+			r.{{ .Name -}}[i] = nil
+		} else {
+			tmp := (*e)["{{ $.MapSimpleNullUnionNonNullUnionKey $field }}"]
+			r.{{ .Name -}}[i] = tmp
+		}
+	}
+
+	return nil
+}
+{{ end -}}
+{{ end }}
 
 func (r *{{ .GoType }}) UnmarshalJSON(data []byte) (error) {
 	var fields map[string]json.RawMessage
@@ -179,33 +336,39 @@ func (r *{{ .GoType }}) UnmarshalJSON(data []byte) (error) {
 	var val json.RawMessage
 	{{ end -}}
 	{{ range $i, $field := .Fields -}}
-	val = func() json.RawMessage {
-		if v, ok := fields[{{ printf "%q" $field.Name }}]; ok {
-			return v
-		}
-		{{ range $j, $alias := $field.Aliases -}}
-		if v, ok := fields[{{ printf "%q" $alias }}]; ok {
-			return v
-		}
-		{{ end -}}
-		return nil
-	}()
+		val = func() json.RawMessage {
+			if v, ok := fields[{{ printf "%q" $field.Name }}]; ok {
+				return v
+			}
+			{{ range $j, $alias := $field.Aliases -}}
+			if v, ok := fields[{{ printf "%q" $alias }}]; ok {
+				return v
+			}
+			{{ end -}}
+			return nil
+		}()
 
-	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.{{ $field.GoName}}); err != nil {
-			return err
+		if val != nil {
+			{{ if $.HasInlinedCustomUnmarshalMethod $field -}}
+			if err := r.Unmarshal{{ .Name -}}JSON(val); err != nil {
+				return err
+			}
+			{{ else -}}
+			if err := json.Unmarshal([]byte(val), &r.{{ .GoName}}); err != nil {
+				return err
+			}
+			{{ end -}}
+		} else {
+				{{ if .HasDefault -}}
+			{{ if $.ConstructableForField $field | ne "" -}}
+			{{ $.ConstructableForField $field }}
+			{{ end -}}
+				{{ $.DefaultForField $field }}
+			{{ else -}}
+			return fmt.Errorf("no value specified for {{ $field.Name }}")
+			{{ end -}}
 		}
-	} else {
-        	{{ if .HasDefault -}}
-		{{ if $.ConstructableForField $field | ne "" -}}
-		{{ $.ConstructableForField $field }}
 		{{ end -}}
-       	 	{{ $.DefaultForField $field }}
-		{{ else -}}
-		return fmt.Errorf("no value specified for {{ $field.Name }}")
-		{{ end -}}
-	}
-	{{ end -}}
 	return nil
 }
 `

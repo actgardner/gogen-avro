@@ -18,7 +18,7 @@ import (
 var _ = fmt.Printf
 
 type RecursiveUnionTestRecord struct {
-	RecursiveField *RecursiveFieldUnion `json:"RecursiveField"`
+	RecursiveField *RecursiveUnionTestRecord `json:"RecursiveField"`
 }
 
 const RecursiveUnionTestRecordAvroCRC64Fingerprint = "\xc6U)C\v\x8a\xa6\x89"
@@ -53,9 +53,18 @@ func DeserializeRecursiveUnionTestRecordFromSchema(r io.Reader, schema string) (
 
 func writeRecursiveUnionTestRecord(r RecursiveUnionTestRecord, w io.Writer) error {
 	var err error
-	err = writeRecursiveFieldUnion(r.RecursiveField, w)
-	if err != nil {
-		return err
+	if r.RecursiveField == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = writeRecursiveUnionTestRecord(*r.RecursiveField, w)
 	}
 	return err
 }
@@ -84,9 +93,14 @@ func (_ RecursiveUnionTestRecord) SetUnionElem(v int64) { panic("Unsupported ope
 func (r *RecursiveUnionTestRecord) Get(i int) types.Field {
 	switch i {
 	case 0:
-		r.RecursiveField = NewRecursiveFieldUnion()
+		if r.RecursiveField == nil {
+			var RecursiveField = new(RecursiveUnionTestRecord)
+			r.RecursiveField = RecursiveField
+		}
+		w := r.RecursiveField
 
-		return r.RecursiveField
+		return w
+
 	}
 	panic("Unknown field index")
 }
@@ -118,11 +132,35 @@ func (_ RecursiveUnionTestRecord) AvroCRC64Fingerprint() []byte {
 func (r RecursiveUnionTestRecord) MarshalJSON() ([]byte, error) {
 	var err error
 	output := make(map[string]json.RawMessage)
-	output["RecursiveField"], err = json.Marshal(r.RecursiveField)
+	if r.RecursiveField == nil {
+		output["RecursiveField"], err = []byte("null"), nil
+	} else {
+		output["RecursiveField"], err = json.Marshal(map[string]interface{}{
+			"RecursiveUnionTestRecord": r.RecursiveField,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(output)
+}
+
+func (r *RecursiveUnionTestRecord) UnmarshalRecursiveFieldJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["RecursiveUnionTestRecord"]; ok {
+		r.RecursiveField = new(RecursiveUnionTestRecord)
+		json.Unmarshal(v, r.RecursiveField)
+	}
+
+	return nil
 }
 
 func (r *RecursiveUnionTestRecord) UnmarshalJSON(data []byte) error {
@@ -140,7 +178,7 @@ func (r *RecursiveUnionTestRecord) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.RecursiveField); err != nil {
+		if err := r.UnmarshalRecursiveFieldJSON(val); err != nil {
 			return err
 		}
 	} else {

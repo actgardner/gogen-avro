@@ -20,17 +20,15 @@ var _ = fmt.Printf
 type UnionRecord struct {
 	A string `json:"a"`
 
-	Id *UnionNullInt `json:"id"`
+	Id *int32 `json:"id"`
 
-	Name *UnionNullString `json:"name"`
+	Name *string `json:"name"`
 }
 
 const UnionRecordAvroCRC64Fingerprint = "\xfeS\x1bd\xa1\xfc͒"
 
 func NewUnionRecord() UnionRecord {
 	r := UnionRecord{}
-	r.Id = nil
-	r.Name = nil
 	return r
 }
 
@@ -63,13 +61,31 @@ func writeUnionRecord(r UnionRecord, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	err = writeUnionNullInt(r.Id, w)
-	if err != nil {
-		return err
+	if r.Id == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = vm.WriteInt(*r.Id, w)
 	}
-	err = writeUnionNullString(r.Name, w)
-	if err != nil {
-		return err
+	if r.Name == nil {
+		err = vm.WriteLong(0, w)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = vm.WriteLong(int64(1), w)
+		if err != nil {
+			return err
+		}
+
+		err = vm.WriteString(*r.Name, w)
 	}
 	return err
 }
@@ -103,13 +119,23 @@ func (r *UnionRecord) Get(i int) types.Field {
 		return w
 
 	case 1:
-		r.Id = NewUnionNullInt()
+		if r.Id == nil {
+			var Id = new(int32)
+			r.Id = Id
+		}
+		w := types.Int{Target: r.Id}
 
-		return r.Id
+		return w
+
 	case 2:
-		r.Name = NewUnionNullString()
+		if r.Name == nil {
+			var Name = new(string)
+			r.Name = Name
+		}
+		w := types.String{Target: r.Name}
 
-		return r.Name
+		return w
+
 	}
 	panic("Unknown field index")
 }
@@ -154,15 +180,62 @@ func (r UnionRecord) MarshalJSON() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	output["id"], err = json.Marshal(r.Id)
+	if r.Id == nil {
+		output["id"], err = []byte("null"), nil
+	} else {
+		output["id"], err = json.Marshal(map[string]interface{}{
+			"int32": *r.Id,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
-	output["name"], err = json.Marshal(r.Name)
+	if r.Name == nil {
+		output["name"], err = []byte("null"), nil
+	} else {
+		output["name"], err = json.Marshal(map[string]interface{}{
+			"string": *r.Name,
+		})
+	}
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(output)
+}
+
+func (r *UnionRecord) UnmarshalidJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["int"]; ok {
+		r.Id = new(int32)
+		json.Unmarshal(v, r.Id)
+	}
+
+	return nil
+}
+func (r *UnionRecord) UnmarshalnameJSON(data []byte) error {
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	if len(fields) > 1 {
+		return fmt.Errorf("more than one type supplied for union")
+	}
+
+	if v, ok := fields["string"]; ok {
+		r.Name = new(string)
+		json.Unmarshal(v, r.Name)
+	}
+
+	return nil
 }
 
 func (r *UnionRecord) UnmarshalJSON(data []byte) error {
@@ -194,12 +267,10 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Id); err != nil {
+		if err := r.UnmarshalidJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.Id = NewUnionNullInt()
-
 		r.Id = nil
 	}
 	val = func() json.RawMessage {
@@ -210,12 +281,10 @@ func (r *UnionRecord) UnmarshalJSON(data []byte) error {
 	}()
 
 	if val != nil {
-		if err := json.Unmarshal([]byte(val), &r.Name); err != nil {
+		if err := r.UnmarshalnameJSON(val); err != nil {
 			return err
 		}
 	} else {
-		r.Name = NewUnionNullString()
-
 		r.Name = nil
 	}
 	return nil

@@ -28,7 +28,7 @@ func NewCodecFromSchema(writer, reader []byte) (*Codec, error) {
 }
 
 func NewCodec(writer, reader schema.AvroType) (*Codec, error) {
-	prog, err := compiler.Compile(writer, reader)
+	prog, err := compiler.Compile(writer, reader, compiler.GenericMode())
 	if err != nil {
 		return nil, err
 	}

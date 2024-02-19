@@ -2,7 +2,6 @@ package schema
 
 import (
 	"fmt"
-
 	"github.com/actgardner/gogen-avro/v10/generator"
 )
 
@@ -79,6 +78,12 @@ func (s *ArrayField) DefaultValue(lvalue string, rvalue interface{}) (string, er
 }
 
 func (s *ArrayField) WrapperType() string {
+	if union, ok := s.itemType.(*UnionField); ok {
+		if union.IsSimpleNullUnion() && s.itemType.IsPrimitive() {
+			return fmt.Sprintf("ArrayOfNullable%vUnion", union.itemType[union.NonNullIndex()].Name())
+		}
+	}
+
 	return fmt.Sprintf("%vWrapper", s.Name())
 }
 
@@ -114,4 +119,32 @@ func (s *ArrayField) Children() []AvroType {
 
 func (s *ArrayField) UnionKey() string {
 	return "array"
+}
+
+func (s *ArrayField) IsPrimitive() bool { return false }
+
+func (s *ArrayField) IsSimpleNullUnion() bool {
+	unionField, ok := s.itemType.(*UnionField)
+	return ok && unionField.IsSimpleNullUnion()
+}
+
+func (s *ArrayField) SimpleNullUnionNullIndex() int {
+	if unionField, ok := s.itemType.(*UnionField); ok {
+		return unionField.NullIndex()
+	}
+	return -1
+}
+
+func (s *ArrayField) SimpleNullUnionNonNullIndex() int {
+	if unionField, ok := s.itemType.(*UnionField); ok {
+		return unionField.NonNullIndex()
+	}
+	return -1
+}
+
+func (s *ArrayField) SimpleNullUnionItemType() string {
+	if unionField, ok := s.itemType.(*UnionField); ok {
+		return unionField.itemType[unionField.NonNullIndex()].Name()
+	}
+	return ""
 }
