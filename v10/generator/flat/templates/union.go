@@ -54,10 +54,29 @@ func {{ .SerializerMethod }}(r {{ .GoType }}, w io.Writer) error {
 func {{ .ConstructorMethod }} {{ .GoType }} {
 	return &{{ .Name }}{}
 } 
+{{ range $i, $t := .ItemTypes -}}
+{{ if ne $i $.NullIndex }}
+func New{{ $.Name }}{{ .Name }} (v {{ .GoType }}) {{ $.GoType }} {
+	return &{{ slice $.GoType 1 }} {
+		{{ .Name }}: v,
+        UnionType: {{ $.ItemName $t }},
+	}
+}
+{{ end -}}
+{{ end -}}
 {{ else }}
 func {{ .ConstructorMethod }} {{ .GoType }} {
 	return {{ .Name }}{}
-} 
+}
+{{ range $i, $t := .ItemTypes -}}
+
+func New{{ $.Name }}{{ .Name }} (v {{ .GoType }}) {{ $.GoType }} {
+	return {{ $.GoType }} {
+		{{ .Name }}: v,
+        UnionType: {{ $.ItemName $t }},
+	}
+}
+{{ end -}}
 {{ end }}
 
 func (r {{ .GoType }}) Serialize(w io.Writer) error {
