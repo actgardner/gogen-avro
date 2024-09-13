@@ -40,11 +40,19 @@ func (b *methodCallIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, e
 }
 
 type blockStartIRInstruction struct {
-	blockId int
+	blockId   int
+	hasTarget bool
 }
 
 func (b *blockStartIRInstruction) VMLength() int {
-	return 9
+	return blockJumpOffset(b.hasTarget) + 1
+}
+
+func blockJumpOffset(withTarget bool) int {
+	if withTarget {
+		return 8
+	}
+	return 7
 }
 
 // At the beginning of a block, read the length into the Long register
@@ -53,21 +61,27 @@ func (b *blockStartIRInstruction) VMLength() int {
 // Once we've figured out the number of iterations, push the loop length onto the loop stack
 func (b *blockStartIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	block := p.blocks[b.blockId]
-	return []vm.Instruction{
-		vm.Instruction{vm.Read, vm.Long},
-		vm.Instruction{vm.EvalEqual, 0},
-		vm.Instruction{vm.CondJump, block.end + 5},
-		vm.Instruction{vm.EvalGreater, 0},
-		vm.Instruction{vm.CondJump, block.start + 7},
-		vm.Instruction{vm.Read, vm.UnusedLong},
-		vm.Instruction{vm.MultLong, -1},
-		vm.Instruction{vm.HintSize, vm.UnusedLong},
-		vm.Instruction{vm.PushLoop, 0},
-	}, nil
+
+	instructions := []vm.Instruction{
+		{vm.Read, vm.Long},
+		{vm.EvalEqual, 0},
+		{vm.CondJump, block.end + 5},
+		{vm.EvalGreater, 0},
+		{vm.CondJump, block.start + blockJumpOffset(b.hasTarget)},
+		{vm.Read, vm.UnusedLong},
+		{vm.MultLong, -1},
+	}
+
+	if b.hasTarget {
+		instructions = append(instructions, vm.Instruction{vm.HintSize, vm.UnusedLong})
+	}
+
+	return append(instructions, vm.Instruction{vm.PushLoop, 0}), nil
 }
 
 type blockEndIRInstruction struct {
-	blockId int
+	blockId   int
+	hasTarget bool
 }
 
 func (b *blockEndIRInstruction) VMLength() int {
@@ -78,12 +92,13 @@ func (b *blockEndIRInstruction) VMLength() int {
 // top to read a new block. otherwise jump to start + 7, which pushes the value back on the loop stack
 func (b *blockEndIRInstruction) CompileToVM(p *irProgram) ([]vm.Instruction, error) {
 	block := p.blocks[b.blockId]
+
 	return []vm.Instruction{
-		vm.Instruction{vm.PopLoop, 0},
-		vm.Instruction{vm.AddLong, -1},
-		vm.Instruction{vm.EvalEqual, 0},
-		vm.Instruction{vm.CondJump, block.start},
-		vm.Instruction{vm.Jump, block.start + 8},
+		{vm.PopLoop, 0},
+		{vm.AddLong, -1},
+		{vm.EvalEqual, 0},
+		{vm.CondJump, block.start},
+		{vm.Jump, block.start + blockJumpOffset(b.hasTarget)},
 	}, nil
 }
 

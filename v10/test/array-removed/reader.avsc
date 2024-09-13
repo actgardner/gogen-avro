@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "escid.esdp.Foo",
+  "fields": [
+    {
+      "name": "f2",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    }
+  ]
+}

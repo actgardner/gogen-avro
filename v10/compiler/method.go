@@ -30,15 +30,24 @@ func (p *irMethod) addMethodCall(method string) {
 	p.body = append(p.body, &methodCallIRInstruction{method})
 }
 
-func (p *irMethod) addBlockStart() int {
+func (p *irMethod) addBlockStart(skip bool) int {
 	id := len(p.program.blocks)
 	p.program.blocks = append(p.program.blocks, &irBlock{})
-	p.body = append(p.body, &blockStartIRInstruction{id})
+	p.body = append(p.body, &blockStartIRInstruction{id, skip})
 	return id
 }
 
-func (p *irMethod) addBlockEnd(id int) {
-	p.body = append(p.body, &blockEndIRInstruction{id})
+func (p *irMethod) inBlock(skip bool, fn func(p *irMethod) error) error {
+	blockId := p.addBlockStart(skip)
+	if err := fn(p); err != nil {
+		return err
+	}
+	p.addBlockEnd(blockId, skip)
+	return nil
+}
+
+func (p *irMethod) addBlockEnd(id int, skip bool) {
+	p.body = append(p.body, &blockEndIRInstruction{id, skip})
 }
 
 func (p *irMethod) addSwitchStart(size, errorId int) int {
@@ -209,41 +218,41 @@ func (p *irMethod) compileRef(writer, reader *schema.Reference) error {
 
 func (p *irMethod) compileMap(writer, reader *schema.MapField) error {
 	log("compileMap()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	blockId := p.addBlockStart()
-	p.addLiteral(vm.Read, vm.String)
-	var readerType schema.AvroType
-	if reader != nil {
-		p.addLiteral(vm.AppendMap, vm.Unused)
-		readerType = reader.ItemType()
-	}
-	err := p.compileType(writer.ItemType(), readerType)
-	if err != nil {
-		return err
-	}
-	if reader != nil {
-		p.addLiteral(vm.Exit, vm.Unused)
-	}
-	p.addBlockEnd(blockId)
-	return nil
+	return p.inBlock(reader != nil, func(p *irMethod) error {
+		p.addLiteral(vm.Read, vm.String)
+		var readerType schema.AvroType
+		if reader != nil {
+			p.addLiteral(vm.AppendMap, vm.Unused)
+			readerType = reader.ItemType()
+		}
+		err := p.compileType(writer.ItemType(), readerType)
+		if err != nil {
+			return err
+		}
+		if reader != nil {
+			p.addLiteral(vm.Exit, vm.Unused)
+		}
+		return nil
+	})
 }
 
 func (p *irMethod) compileArray(writer, reader *schema.ArrayField) error {
 	log("compileArray()\n writer:\n %v\n---\nreader: %v\n---\n", writer, reader)
-	blockId := p.addBlockStart()
-	var readerType schema.AvroType
-	if reader != nil {
-		p.addLiteral(vm.AppendArray, vm.Unused)
-		readerType = reader.ItemType()
-	}
-	err := p.compileType(writer.ItemType(), readerType)
-	if err != nil {
-		return err
-	}
-	if reader != nil {
-		p.addLiteral(vm.Exit, vm.Unused)
-	}
-	p.addBlockEnd(blockId)
-	return nil
+	return p.inBlock(reader != nil, func(p *irMethod) error {
+		var readerType schema.AvroType
+		if reader != nil {
+			p.addLiteral(vm.AppendArray, vm.Unused)
+			readerType = reader.ItemType()
+		}
+		err := p.compileType(writer.ItemType(), readerType)
+		if err != nil {
+			return err
+		}
+		if reader != nil {
+			p.addLiteral(vm.Exit, vm.Unused)
+		}
+		return nil
+	})
 }
 
 func (p *irMethod) compileRecord(writer, reader *schema.RecordDefinition) error {

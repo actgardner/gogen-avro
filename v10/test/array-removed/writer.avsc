@@ -1,0 +1,36 @@
+{
+  "type": "record",
+  "name": "escid.esdp.Foo",
+  "fields": [
+    {
+      "name": "f0",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "escid.esdp.Bar",
+          "fields": [
+            {
+              "name": "x",
+              "type": "int"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "f1",
+      "type": {
+        "type": "array",
+        "items": "int"
+      }
+    },
+    {
+      "name": "f2",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    }
+  ]
+}
