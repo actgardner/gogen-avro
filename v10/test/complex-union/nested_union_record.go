@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -23,6 +24,12 @@ type NestedUnionRecord struct {
 
 const NestedUnionRecordAvroCRC64Fingerprint = "#\xb6\xed\xa0\x87F=\xef"
 
+var (
+	nestedUnionRecordDeserOnce    sync.Once
+	nestedUnionRecordDeserProgram *vm.Program
+	nestedUnionRecordDeserProgErr error
+)
+
 func NewNestedUnionRecord() NestedUnionRecord {
 	r := NestedUnionRecord{}
 	return r
@@ -30,12 +37,14 @@ func NewNestedUnionRecord() NestedUnionRecord {
 
 func DeserializeNestedUnionRecord(r io.Reader) (NestedUnionRecord, error) {
 	t := NewNestedUnionRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	nestedUnionRecordDeserOnce.Do(func() {
+		nestedUnionRecordDeserProgram, nestedUnionRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if nestedUnionRecordDeserProgErr != nil {
+		return t, nestedUnionRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, nestedUnionRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -128,7 +137,6 @@ func (r *NestedUnionRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["IntField"]; ok {

@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -53,18 +54,24 @@ func (r *UnionNullBodyworksTrace) Serialize(w io.Writer) error {
 	return writeUnionNullBodyworksTrace(r, w)
 }
 
+var (
+	unionNullBodyworksTraceDeserOnce    sync.Once
+	unionNullBodyworksTraceDeserProgram *vm.Program
+	unionNullBodyworksTraceDeserProgErr error
+)
+
 func DeserializeUnionNullBodyworksTrace(r io.Reader) (*UnionNullBodyworksTrace, error) {
 	t := NewUnionNullBodyworksTrace()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	unionNullBodyworksTraceDeserOnce.Do(func() {
+		unionNullBodyworksTraceDeserProgram, unionNullBodyworksTraceDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if unionNullBodyworksTraceDeserProgErr != nil {
+		return t, unionNullBodyworksTraceDeserProgErr
 	}
 
-	err = vm.Eval(r, deser, t)
+	err := vm.Eval(r, unionNullBodyworksTraceDeserProgram, t)
 
-	if err != nil {
-		return t, err
-	}
 	return t, err
 }
 

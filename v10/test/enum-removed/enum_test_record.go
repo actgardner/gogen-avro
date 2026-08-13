@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -25,6 +26,12 @@ type EnumTestRecord struct {
 
 const EnumTestRecordAvroCRC64Fingerprint = "\xb9\x836\xc5\x18\xd3\xf2\xb3"
 
+var (
+	enumTestRecordDeserOnce    sync.Once
+	enumTestRecordDeserProgram *vm.Program
+	enumTestRecordDeserProgErr error
+)
+
 func NewEnumTestRecord() EnumTestRecord {
 	r := EnumTestRecord{}
 	r.EnumField = TestEnumTypeTestSymbol3
@@ -33,12 +40,14 @@ func NewEnumTestRecord() EnumTestRecord {
 
 func DeserializeEnumTestRecord(r io.Reader) (EnumTestRecord, error) {
 	t := NewEnumTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	enumTestRecordDeserOnce.Do(func() {
+		enumTestRecordDeserProgram, enumTestRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if enumTestRecordDeserProgErr != nil {
+		return t, enumTestRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, enumTestRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -147,7 +156,6 @@ func (r *EnumTestRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["stringField"]; ok {

@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -23,6 +24,12 @@ type RecordBar struct {
 
 const RecordBarAvroCRC64Fingerprint = "0\x99\x1e\"\x92\xe1\x82{"
 
+var (
+	recordBarDeserOnce    sync.Once
+	recordBarDeserProgram *vm.Program
+	recordBarDeserProgErr error
+)
+
 func NewRecordBar() RecordBar {
 	r := RecordBar{}
 	return r
@@ -30,12 +37,14 @@ func NewRecordBar() RecordBar {
 
 func DeserializeRecordBar(r io.Reader) (RecordBar, error) {
 	t := NewRecordBar()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	recordBarDeserOnce.Do(func() {
+		recordBarDeserProgram, recordBarDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if recordBarDeserProgErr != nil {
+		return t, recordBarDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, recordBarDeserProgram, &t)
 	return t, err
 }
 
@@ -128,7 +137,6 @@ func (r *RecordBar) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["id"]; ok {

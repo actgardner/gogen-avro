@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -29,6 +30,12 @@ type Event struct {
 
 const EventAvroCRC64Fingerprint = "\xebZ\xc0m\xf9OV\x97"
 
+var (
+	eventDeserOnce    sync.Once
+	eventDeserProgram *vm.Program
+	eventDeserProgErr error
+)
+
 func NewEvent() Event {
 	r := Event{}
 	return r
@@ -36,12 +43,14 @@ func NewEvent() Event {
 
 func DeserializeEvent(r io.Reader) (Event, error) {
 	t := NewEvent()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	eventDeserOnce.Do(func() {
+		eventDeserProgram, eventDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if eventDeserProgErr != nil {
+		return t, eventDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, eventDeserProgram, &t)
 	return t, err
 }
 
@@ -160,7 +169,6 @@ func (r *Event) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["id"]; ok {

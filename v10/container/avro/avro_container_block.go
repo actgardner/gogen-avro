@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -28,6 +29,12 @@ type AvroContainerBlock struct {
 
 const AvroContainerBlockAvroCRC64Fingerprint = "\x0e\xecj@ٔ\xe14"
 
+var (
+	avroContainerBlockDeserOnce    sync.Once
+	avroContainerBlockDeserProgram *vm.Program
+	avroContainerBlockDeserProgErr error
+)
+
 func NewAvroContainerBlock() AvroContainerBlock {
 	r := AvroContainerBlock{}
 	return r
@@ -35,12 +42,14 @@ func NewAvroContainerBlock() AvroContainerBlock {
 
 func DeserializeAvroContainerBlock(r io.Reader) (AvroContainerBlock, error) {
 	t := NewAvroContainerBlock()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	avroContainerBlockDeserOnce.Do(func() {
+		avroContainerBlockDeserProgram, avroContainerBlockDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if avroContainerBlockDeserProgErr != nil {
+		return t, avroContainerBlockDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, avroContainerBlockDeserProgram, &t)
 	return t, err
 }
 
@@ -159,7 +168,6 @@ func (r *AvroContainerBlock) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["numRecords"]; ok {

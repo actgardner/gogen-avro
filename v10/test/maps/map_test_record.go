@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -34,6 +35,12 @@ type MapTestRecord struct {
 }
 
 const MapTestRecordAvroCRC64Fingerprint = "<?\x18\xa0\a\xdf^\x9e"
+
+var (
+	mapTestRecordDeserOnce    sync.Once
+	mapTestRecordDeserProgram *vm.Program
+	mapTestRecordDeserProgErr error
+)
 
 func NewMapTestRecord() MapTestRecord {
 	r := MapTestRecord{}
@@ -70,12 +77,14 @@ func NewMapTestRecord() MapTestRecord {
 
 func DeserializeMapTestRecord(r io.Reader) (MapTestRecord, error) {
 	t := NewMapTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	mapTestRecordDeserOnce.Do(func() {
+		mapTestRecordDeserProgram, mapTestRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if mapTestRecordDeserProgErr != nil {
+		return t, mapTestRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, mapTestRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -288,7 +297,6 @@ func (r *MapTestRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["IntField"]; ok {

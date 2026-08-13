@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -53,18 +54,24 @@ func (r *UnionStringNull) Serialize(w io.Writer) error {
 	return writeUnionStringNull(r, w)
 }
 
+var (
+	unionStringNullDeserOnce    sync.Once
+	unionStringNullDeserProgram *vm.Program
+	unionStringNullDeserProgErr error
+)
+
 func DeserializeUnionStringNull(r io.Reader) (*UnionStringNull, error) {
 	t := NewUnionStringNull()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	unionStringNullDeserOnce.Do(func() {
+		unionStringNullDeserProgram, unionStringNullDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if unionStringNullDeserProgErr != nil {
+		return t, unionStringNullDeserProgErr
 	}
 
-	err = vm.Eval(r, deser, t)
+	err := vm.Eval(r, unionStringNullDeserProgram, t)
 
-	if err != nil {
-		return t, err
-	}
 	return t, err
 }
 

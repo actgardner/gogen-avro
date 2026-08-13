@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -25,6 +26,12 @@ type ConflictingNamespaceFixedTestRecord struct {
 
 const ConflictingNamespaceFixedTestRecordAvroCRC64Fingerprint = "\xac\xa49=o\x88\x9d\xde"
 
+var (
+	conflictingNamespaceFixedTestRecordDeserOnce    sync.Once
+	conflictingNamespaceFixedTestRecordDeserProgram *vm.Program
+	conflictingNamespaceFixedTestRecordDeserProgErr error
+)
+
 func NewConflictingNamespaceFixedTestRecord() ConflictingNamespaceFixedTestRecord {
 	r := ConflictingNamespaceFixedTestRecord{}
 	return r
@@ -32,12 +39,14 @@ func NewConflictingNamespaceFixedTestRecord() ConflictingNamespaceFixedTestRecor
 
 func DeserializeConflictingNamespaceFixedTestRecord(r io.Reader) (ConflictingNamespaceFixedTestRecord, error) {
 	t := NewConflictingNamespaceFixedTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	conflictingNamespaceFixedTestRecordDeserOnce.Do(func() {
+		conflictingNamespaceFixedTestRecordDeserProgram, conflictingNamespaceFixedTestRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if conflictingNamespaceFixedTestRecordDeserProgErr != nil {
+		return t, conflictingNamespaceFixedTestRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, conflictingNamespaceFixedTestRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -147,7 +156,6 @@ func (r *ConflictingNamespaceFixedTestRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["fixedFieldOne"]; ok {

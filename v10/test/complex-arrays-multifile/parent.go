@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -24,6 +25,12 @@ type Parent struct {
 
 const ParentAvroCRC64Fingerprint = "T\x88\xc0l-\xc3?\xca"
 
+var (
+	parentDeserOnce    sync.Once
+	parentDeserProgram *vm.Program
+	parentDeserProgErr error
+)
+
 func NewParent() Parent {
 	r := Parent{}
 	r.Children = make([]Child, 0)
@@ -33,12 +40,14 @@ func NewParent() Parent {
 
 func DeserializeParent(r io.Reader) (Parent, error) {
 	t := NewParent()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	parentDeserOnce.Do(func() {
+		parentDeserProgram, parentDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if parentDeserProgErr != nil {
+		return t, parentDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, parentDeserProgram, &t)
 	return t, err
 }
 
@@ -133,7 +142,6 @@ func (r *Parent) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["Children"]; ok {

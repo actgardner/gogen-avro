@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -23,6 +24,12 @@ type NestedMap struct {
 
 const NestedMapAvroCRC64Fingerprint = "\xa1\x9e\x89\xd6\xc52@\xf2"
 
+var (
+	nestedMapDeserOnce    sync.Once
+	nestedMapDeserProgram *vm.Program
+	nestedMapDeserProgErr error
+)
+
 func NewNestedMap() NestedMap {
 	r := NestedMap{}
 	r.MapOfMaps = make(map[string]map[string][]string)
@@ -32,12 +39,14 @@ func NewNestedMap() NestedMap {
 
 func DeserializeNestedMap(r io.Reader) (NestedMap, error) {
 	t := NewNestedMap()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	nestedMapDeserOnce.Do(func() {
+		nestedMapDeserProgram, nestedMapDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if nestedMapDeserProgErr != nil {
+		return t, nestedMapDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, nestedMapDeserProgram, &t)
 	return t, err
 }
 
@@ -132,7 +141,6 @@ func (r *NestedMap) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["MapOfMaps"]; ok {

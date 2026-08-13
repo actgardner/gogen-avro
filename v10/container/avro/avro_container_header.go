@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -28,6 +29,12 @@ type AvroContainerHeader struct {
 
 const AvroContainerHeaderAvroCRC64Fingerprint = "\xc0\x12\x03\xc0wi\xf96"
 
+var (
+	avroContainerHeaderDeserOnce    sync.Once
+	avroContainerHeaderDeserProgram *vm.Program
+	avroContainerHeaderDeserProgErr error
+)
+
 func NewAvroContainerHeader() AvroContainerHeader {
 	r := AvroContainerHeader{}
 	r.Meta = make(map[string]Bytes)
@@ -37,12 +44,14 @@ func NewAvroContainerHeader() AvroContainerHeader {
 
 func DeserializeAvroContainerHeader(r io.Reader) (AvroContainerHeader, error) {
 	t := NewAvroContainerHeader()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	avroContainerHeaderDeserOnce.Do(func() {
+		avroContainerHeaderDeserProgram, avroContainerHeaderDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if avroContainerHeaderDeserProgErr != nil {
+		return t, avroContainerHeaderDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, avroContainerHeaderDeserProgram, &t)
 	return t, err
 }
 
@@ -163,7 +172,6 @@ func (r *AvroContainerHeader) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["magic"]; ok {

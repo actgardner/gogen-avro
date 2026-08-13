@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -25,6 +26,12 @@ type AliasRecord struct {
 
 const AliasRecordAvroCRC64Fingerprint = "\xe1\xea\xa47\xf7\x00\xf78"
 
+var (
+	aliasRecordDeserOnce    sync.Once
+	aliasRecordDeserProgram *vm.Program
+	aliasRecordDeserProgErr error
+)
+
 func NewAliasRecord() AliasRecord {
 	r := AliasRecord{}
 	return r
@@ -32,12 +39,14 @@ func NewAliasRecord() AliasRecord {
 
 func DeserializeAliasRecord(r io.Reader) (AliasRecord, error) {
 	t := NewAliasRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	aliasRecordDeserOnce.Do(func() {
+		aliasRecordDeserProgram, aliasRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if aliasRecordDeserProgErr != nil {
+		return t, aliasRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, aliasRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -143,7 +152,6 @@ func (r *AliasRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["b"]; ok {

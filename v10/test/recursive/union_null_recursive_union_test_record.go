@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -53,18 +54,24 @@ func (r *UnionNullRecursiveUnionTestRecord) Serialize(w io.Writer) error {
 	return writeUnionNullRecursiveUnionTestRecord(r, w)
 }
 
+var (
+	unionNullRecursiveUnionTestRecordDeserOnce    sync.Once
+	unionNullRecursiveUnionTestRecordDeserProgram *vm.Program
+	unionNullRecursiveUnionTestRecordDeserProgErr error
+)
+
 func DeserializeUnionNullRecursiveUnionTestRecord(r io.Reader) (*UnionNullRecursiveUnionTestRecord, error) {
 	t := NewUnionNullRecursiveUnionTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	unionNullRecursiveUnionTestRecordDeserOnce.Do(func() {
+		unionNullRecursiveUnionTestRecordDeserProgram, unionNullRecursiveUnionTestRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if unionNullRecursiveUnionTestRecordDeserProgErr != nil {
+		return t, unionNullRecursiveUnionTestRecordDeserProgErr
 	}
 
-	err = vm.Eval(r, deser, t)
+	err := vm.Eval(r, unionNullRecursiveUnionTestRecordDeserProgram, t)
 
-	if err != nil {
-		return t, err
-	}
 	return t, err
 }
 

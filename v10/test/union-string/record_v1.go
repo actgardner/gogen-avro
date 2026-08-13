@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -23,7 +24,13 @@ type Record_v1 struct {
 	Bar *UnionStringNull `json:"bar"`
 }
 
-const Record_v1AvroCRC64Fingerprint = "\x85|\xeb\u007f9\xf7J\x15"
+const Record_v1AvroCRC64Fingerprint = "\x85|\xeb\x7f9\xf7J\x15"
+
+var (
+	record_v1DeserOnce    sync.Once
+	record_v1DeserProgram *vm.Program
+	record_v1DeserProgErr error
+)
 
 func NewRecord_v1() Record_v1 {
 	r := Record_v1{}
@@ -34,12 +41,14 @@ func NewRecord_v1() Record_v1 {
 
 func DeserializeRecord_v1(r io.Reader) (Record_v1, error) {
 	t := NewRecord_v1()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	record_v1DeserOnce.Do(func() {
+		record_v1DeserProgram, record_v1DeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if record_v1DeserProgErr != nil {
+		return t, record_v1DeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, record_v1DeserProgram, &t)
 	return t, err
 }
 
@@ -149,7 +158,6 @@ func (r *Record_v1) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["foo"]; ok {

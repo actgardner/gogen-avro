@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -24,6 +25,12 @@ type Child struct {
 
 const ChildAvroCRC64Fingerprint = "\x9c\xc0\xb2WF֤\xff"
 
+var (
+	childDeserOnce    sync.Once
+	childDeserProgram *vm.Program
+	childDeserProgErr error
+)
+
 func NewChild() Child {
 	r := Child{}
 	return r
@@ -31,12 +38,14 @@ func NewChild() Child {
 
 func DeserializeChild(r io.Reader) (Child, error) {
 	t := NewChild()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	childDeserOnce.Do(func() {
+		childDeserProgram, childDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if childDeserProgErr != nil {
+		return t, childDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, childDeserProgram, &t)
 	return t, err
 }
 
@@ -129,7 +138,6 @@ func (r *Child) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["name"]; ok {

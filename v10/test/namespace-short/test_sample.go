@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -27,6 +28,12 @@ type TestSample struct {
 
 const TestSampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
+var (
+	testSampleDeserOnce    sync.Once
+	testSampleDeserProgram *vm.Program
+	testSampleDeserProgErr error
+)
+
 func NewTestSample() TestSample {
 	r := TestSample{}
 	r.Header = nil
@@ -36,12 +43,14 @@ func NewTestSample() TestSample {
 
 func DeserializeTestSample(r io.Reader) (TestSample, error) {
 	t := NewTestSample()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	testSampleDeserOnce.Do(func() {
+		testSampleDeserProgram, testSampleDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if testSampleDeserProgErr != nil {
+		return t, testSampleDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, testSampleDeserProgram, &t)
 	return t, err
 }
 
@@ -157,7 +166,6 @@ func (r *TestSample) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["header"]; ok {

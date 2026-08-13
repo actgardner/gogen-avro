@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -23,6 +24,12 @@ type StructTag struct {
 
 const StructTagAvroCRC64Fingerprint = "\x92\xb7Dk\xe2\x1e\xef\xfc"
 
+var (
+	structTagDeserOnce    sync.Once
+	structTagDeserProgram *vm.Program
+	structTagDeserProgErr error
+)
+
 func NewStructTag() StructTag {
 	r := StructTag{}
 	return r
@@ -30,12 +37,14 @@ func NewStructTag() StructTag {
 
 func DeserializeStructTag(r io.Reader) (StructTag, error) {
 	t := NewStructTag()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	structTagDeserOnce.Do(func() {
+		structTagDeserProgram, structTagDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if structTagDeserProgErr != nil {
+		return t, structTagDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, structTagDeserProgram, &t)
 	return t, err
 }
 
@@ -128,7 +137,6 @@ func (r *StructTag) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["productName"]; ok {
