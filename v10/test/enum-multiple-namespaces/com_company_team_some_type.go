@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -25,6 +26,12 @@ type ComCompanyTeamSomeType struct {
 
 const ComCompanyTeamSomeTypeAvroCRC64Fingerprint = "0\xc0\xc0\xb60N\xc0\xf6"
 
+var (
+	comCompanyTeamSomeTypeDeserOnce    sync.Once
+	comCompanyTeamSomeTypeDeserProgram *vm.Program
+	comCompanyTeamSomeTypeDeserProgErr error
+)
+
 func NewComCompanyTeamSomeType() ComCompanyTeamSomeType {
 	r := ComCompanyTeamSomeType{}
 	r.FieldOne = NewComCompanyTeamTypeOne()
@@ -36,12 +43,14 @@ func NewComCompanyTeamSomeType() ComCompanyTeamSomeType {
 
 func DeserializeComCompanyTeamSomeType(r io.Reader) (ComCompanyTeamSomeType, error) {
 	t := NewComCompanyTeamSomeType()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	comCompanyTeamSomeTypeDeserOnce.Do(func() {
+		comCompanyTeamSomeTypeDeserProgram, comCompanyTeamSomeTypeDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if comCompanyTeamSomeTypeDeserProgErr != nil {
+		return t, comCompanyTeamSomeTypeDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, comCompanyTeamSomeTypeDeserProgram, &t)
 	return t, err
 }
 
@@ -151,7 +160,6 @@ func (r *ComCompanyTeamSomeType) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["fieldOne"]; ok {

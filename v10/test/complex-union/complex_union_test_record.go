@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -23,6 +24,12 @@ type ComplexUnionTestRecord struct {
 
 const ComplexUnionTestRecordAvroCRC64Fingerprint = ")h\bbm{\xe0\xbe"
 
+var (
+	complexUnionTestRecordDeserOnce    sync.Once
+	complexUnionTestRecordDeserProgram *vm.Program
+	complexUnionTestRecordDeserProgErr error
+)
+
 func NewComplexUnionTestRecord() ComplexUnionTestRecord {
 	r := ComplexUnionTestRecord{}
 	return r
@@ -30,12 +37,14 @@ func NewComplexUnionTestRecord() ComplexUnionTestRecord {
 
 func DeserializeComplexUnionTestRecord(r io.Reader) (ComplexUnionTestRecord, error) {
 	t := NewComplexUnionTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	complexUnionTestRecordDeserOnce.Do(func() {
+		complexUnionTestRecordDeserProgram, complexUnionTestRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if complexUnionTestRecordDeserProgErr != nil {
+		return t, complexUnionTestRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, complexUnionTestRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -130,7 +139,6 @@ func (r *ComplexUnionTestRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["UnionField"]; ok {

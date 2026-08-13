@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -78,18 +79,24 @@ func (r *UnionIntLongFloatDoubleStringBoolNull) Serialize(w io.Writer) error {
 	return writeUnionIntLongFloatDoubleStringBoolNull(r, w)
 }
 
+var (
+	unionIntLongFloatDoubleStringBoolNullDeserOnce    sync.Once
+	unionIntLongFloatDoubleStringBoolNullDeserProgram *vm.Program
+	unionIntLongFloatDoubleStringBoolNullDeserProgErr error
+)
+
 func DeserializeUnionIntLongFloatDoubleStringBoolNull(r io.Reader) (*UnionIntLongFloatDoubleStringBoolNull, error) {
 	t := NewUnionIntLongFloatDoubleStringBoolNull()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	unionIntLongFloatDoubleStringBoolNullDeserOnce.Do(func() {
+		unionIntLongFloatDoubleStringBoolNullDeserProgram, unionIntLongFloatDoubleStringBoolNullDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if unionIntLongFloatDoubleStringBoolNullDeserProgErr != nil {
+		return t, unionIntLongFloatDoubleStringBoolNullDeserProgErr
 	}
 
-	err = vm.Eval(r, deser, t)
+	err := vm.Eval(r, unionIntLongFloatDoubleStringBoolNullDeserProgram, t)
 
-	if err != nil {
-		return t, err
-	}
 	return t, err
 }
 

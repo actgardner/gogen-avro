@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -23,6 +24,12 @@ type StringRec struct {
 
 const StringRecAvroCRC64Fingerprint = "w\x836\xab\x9d\xe9\x00\x15"
 
+var (
+	stringRecDeserOnce    sync.Once
+	stringRecDeserProgram *vm.Program
+	stringRecDeserProgErr error
+)
+
 func NewStringRec() StringRec {
 	r := StringRec{}
 	return r
@@ -30,12 +37,14 @@ func NewStringRec() StringRec {
 
 func DeserializeStringRec(r io.Reader) (StringRec, error) {
 	t := NewStringRec()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	stringRecDeserOnce.Do(func() {
+		stringRecDeserProgram, stringRecDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if stringRecDeserProgErr != nil {
+		return t, stringRecDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, stringRecDeserProgram, &t)
 	return t, err
 }
 
@@ -128,7 +137,6 @@ func (r *StringRec) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["productName"]; ok {

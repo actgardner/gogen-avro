@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -59,6 +60,12 @@ type NameConflictTestRecord struct {
 
 const NameConflictTestRecordAvroCRC64Fingerprint = "\xcesIh9\x9f&\b"
 
+var (
+	nameConflictTestRecordDeserOnce    sync.Once
+	nameConflictTestRecordDeserProgram *vm.Program
+	nameConflictTestRecordDeserProgErr error
+)
+
 func NewNameConflictTestRecord() NameConflictTestRecord {
 	r := NameConflictTestRecord{}
 	return r
@@ -66,12 +73,14 @@ func NewNameConflictTestRecord() NameConflictTestRecord {
 
 func DeserializeNameConflictTestRecord(r io.Reader) (NameConflictTestRecord, error) {
 	t := NewNameConflictTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	nameConflictTestRecordDeserOnce.Do(func() {
+		nameConflictTestRecordDeserProgram, nameConflictTestRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if nameConflictTestRecordDeserProgErr != nil {
+		return t, nameConflictTestRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, nameConflictTestRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -398,7 +407,6 @@ func (r *NameConflictTestRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["Schema"]; ok {

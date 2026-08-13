@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -27,6 +28,12 @@ type ComAvroTestSample struct {
 
 const ComAvroTestSampleAvroCRC64Fingerprint = "\xdf}\x93 \x19f\x18\n"
 
+var (
+	comAvroTestSampleDeserOnce    sync.Once
+	comAvroTestSampleDeserProgram *vm.Program
+	comAvroTestSampleDeserProgErr error
+)
+
 func NewComAvroTestSample() ComAvroTestSample {
 	r := ComAvroTestSample{}
 	r.Header = nil
@@ -36,12 +43,14 @@ func NewComAvroTestSample() ComAvroTestSample {
 
 func DeserializeComAvroTestSample(r io.Reader) (ComAvroTestSample, error) {
 	t := NewComAvroTestSample()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	comAvroTestSampleDeserOnce.Do(func() {
+		comAvroTestSampleDeserProgram, comAvroTestSampleDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if comAvroTestSampleDeserProgErr != nil {
+		return t, comAvroTestSampleDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, comAvroTestSampleDeserProgram, &t)
 	return t, err
 }
 
@@ -157,7 +166,6 @@ func (r *ComAvroTestSample) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["header"]; ok {

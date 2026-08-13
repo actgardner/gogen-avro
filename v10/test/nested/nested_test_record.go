@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -25,6 +26,12 @@ type NestedTestRecord struct {
 
 const NestedTestRecordAvroCRC64Fingerprint = "b{m\\D\xbe\xaa\x96"
 
+var (
+	nestedTestRecordDeserOnce    sync.Once
+	nestedTestRecordDeserProgram *vm.Program
+	nestedTestRecordDeserProgErr error
+)
+
 func NewNestedTestRecord() NestedTestRecord {
 	r := NestedTestRecord{}
 	r.NumberField = NewNumberRecord()
@@ -36,12 +43,14 @@ func NewNestedTestRecord() NestedTestRecord {
 
 func DeserializeNestedTestRecord(r io.Reader) (NestedTestRecord, error) {
 	t := NewNestedTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	nestedTestRecordDeserOnce.Do(func() {
+		nestedTestRecordDeserProgram, nestedTestRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if nestedTestRecordDeserProgErr != nil {
+		return t, nestedTestRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, nestedTestRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -151,7 +160,6 @@ func (r *NestedTestRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["NumberField"]; ok {

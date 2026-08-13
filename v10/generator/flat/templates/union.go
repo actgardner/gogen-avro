@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/vm"
 	"github.com/actgardner/gogen-avro/v10/compiler"
@@ -64,21 +65,26 @@ func (r {{ .GoType }}) Serialize(w io.Writer) error {
 	return {{ .SerializerMethod }}(r, w)
 }
 
+var (
+	{{ lowerFirst .Name }}DeserOnce    sync.Once
+	{{ lowerFirst .Name }}DeserProgram *vm.Program
+	{{ lowerFirst .Name }}DeserProgErr error
+)
+
 func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {
 	t := {{ .ConstructorMethod }}
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	{{ lowerFirst .Name }}DeserOnce.Do(func() {
+		{{ lowerFirst .Name }}DeserProgram, {{ lowerFirst .Name }}DeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if {{ lowerFirst .Name }}DeserProgErr != nil {
+		return t, {{ lowerFirst .Name }}DeserProgErr
 	}
-
 {{ if ne .NullIndex -1 }}
-	err = vm.Eval(r, deser, t)
+	err := vm.Eval(r, {{ lowerFirst .Name }}DeserProgram, t)
 {{ else }}
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, {{ lowerFirst .Name }}DeserProgram, &t)
 {{ end }}
-	if err != nil {
-		return t, err
-	}
 	return t, err
 }
 

@@ -57,9 +57,10 @@ func ParseAvroName(enclosing, name string) avro.QualifiedName {
 }
 
 // TypeForSchema accepts an Avro schema as a JSON string, decode it and return the AvroType defined at the top level:
-//    - a single record definition (JSON map)
-//    - a union of multiple types (JSON array)
-//    - an already-defined type (JSON string)
+//   - a single record definition (JSON map)
+//   - a union of multiple types (JSON array)
+//   - an already-defined type (JSON string)
+//
 // The Avro type defined at the top level and all the type definitions beneath it will also be added to this Namespace.
 func (n *Namespace) TypeForSchema(schemaJson []byte) (avro.AvroType, error) {
 	var schema interface{}

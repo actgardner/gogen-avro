@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -24,6 +25,12 @@ type DatatypeUUID struct {
 
 const DatatypeUUIDAvroCRC64Fingerprint = "\xfc\xa43\x98\xee\xe0p\xe2"
 
+var (
+	datatypeUUIDDeserOnce    sync.Once
+	datatypeUUIDDeserProgram *vm.Program
+	datatypeUUIDDeserProgErr error
+)
+
 func NewDatatypeUUID() DatatypeUUID {
 	r := DatatypeUUID{}
 	r.Uuid = ""
@@ -32,12 +39,14 @@ func NewDatatypeUUID() DatatypeUUID {
 
 func DeserializeDatatypeUUID(r io.Reader) (DatatypeUUID, error) {
 	t := NewDatatypeUUID()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	datatypeUUIDDeserOnce.Do(func() {
+		datatypeUUIDDeserProgram, datatypeUUIDDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if datatypeUUIDDeserProgErr != nil {
+		return t, datatypeUUIDDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, datatypeUUIDDeserProgram, &t)
 	return t, err
 }
 
@@ -133,7 +142,6 @@ func (r *DatatypeUUID) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["uuid"]; ok {

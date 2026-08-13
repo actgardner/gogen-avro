@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/vm/types"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -27,6 +28,12 @@ type {{ .Name }} struct {
 
 const {{ .Name }}AvroCRC64Fingerprint = {{ definitionFingerprint . }}
 
+var (
+	{{ lowerFirst .Name }}DeserOnce    sync.Once
+	{{ lowerFirst .Name }}DeserProgram *vm.Program
+	{{ lowerFirst .Name }}DeserProgErr error
+)
+
 func {{ .ConstructorMethod }} ({{ .GoType}}) {
 	r := {{ .Name }}{}
 	{{ range $i, $field := .Fields -}}
@@ -44,12 +51,14 @@ func {{ .ConstructorMethod }} ({{ .GoType}}) {
 
 func Deserialize{{ .Name }}(r io.Reader) ({{ .GoType }}, error) {
 	t := {{ .ConstructorMethod }}
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	{{ lowerFirst .Name }}DeserOnce.Do(func() {
+		{{ lowerFirst .Name }}DeserProgram, {{ lowerFirst .Name }}DeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if {{ lowerFirst .Name }}DeserProgErr != nil {
+		return t, {{ lowerFirst .Name }}DeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, {{ lowerFirst .Name }}DeserProgram, &t)
 	return t, err
 }
 

@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -53,18 +54,24 @@ func (r *RecursiveFieldUnion) Serialize(w io.Writer) error {
 	return writeRecursiveFieldUnion(r, w)
 }
 
+var (
+	recursiveFieldUnionDeserOnce    sync.Once
+	recursiveFieldUnionDeserProgram *vm.Program
+	recursiveFieldUnionDeserProgErr error
+)
+
 func DeserializeRecursiveFieldUnion(r io.Reader) (*RecursiveFieldUnion, error) {
 	t := NewRecursiveFieldUnion()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	recursiveFieldUnionDeserOnce.Do(func() {
+		recursiveFieldUnionDeserProgram, recursiveFieldUnionDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if recursiveFieldUnionDeserProgErr != nil {
+		return t, recursiveFieldUnionDeserProgErr
 	}
 
-	err = vm.Eval(r, deser, t)
+	err := vm.Eval(r, recursiveFieldUnionDeserProgram, t)
 
-	if err != nil {
-		return t, err
-	}
 	return t, err
 }
 

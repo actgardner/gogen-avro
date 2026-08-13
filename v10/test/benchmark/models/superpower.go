@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -31,6 +32,12 @@ type Superpower struct {
 
 const SuperpowerAvroCRC64Fingerprint = "\r+\x84\x8ee\xc6a\n"
 
+var (
+	superpowerDeserOnce    sync.Once
+	superpowerDeserProgram *vm.Program
+	superpowerDeserProgErr error
+)
+
 func NewSuperpower() Superpower {
 	r := Superpower{}
 	return r
@@ -38,12 +45,14 @@ func NewSuperpower() Superpower {
 
 func DeserializeSuperpower(r io.Reader) (Superpower, error) {
 	t := NewSuperpower()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	superpowerDeserOnce.Do(func() {
+		superpowerDeserProgram, superpowerDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if superpowerDeserProgErr != nil {
+		return t, superpowerDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, superpowerDeserProgram, &t)
 	return t, err
 }
 
@@ -188,7 +197,6 @@ func (r *Superpower) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["id"]; ok {

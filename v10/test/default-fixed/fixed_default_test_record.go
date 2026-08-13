@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -23,6 +24,12 @@ type FixedDefaultTestRecord struct {
 
 const FixedDefaultTestRecordAvroCRC64Fingerprint = "\xac\xb5kw\x1eWK\xcf"
 
+var (
+	fixedDefaultTestRecordDeserOnce    sync.Once
+	fixedDefaultTestRecordDeserProgram *vm.Program
+	fixedDefaultTestRecordDeserProgErr error
+)
+
 func NewFixedDefaultTestRecord() FixedDefaultTestRecord {
 	r := FixedDefaultTestRecord{}
 	copy(r.FixedField[:], []byte("\x00\x01\x12\x00\x13C\x00\x01\x12\x00\x13S"))
@@ -31,12 +38,14 @@ func NewFixedDefaultTestRecord() FixedDefaultTestRecord {
 
 func DeserializeFixedDefaultTestRecord(r io.Reader) (FixedDefaultTestRecord, error) {
 	t := NewFixedDefaultTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	fixedDefaultTestRecordDeserOnce.Do(func() {
+		fixedDefaultTestRecordDeserProgram, fixedDefaultTestRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if fixedDefaultTestRecordDeserProgErr != nil {
+		return t, fixedDefaultTestRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, fixedDefaultTestRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -132,7 +141,6 @@ func (r *FixedDefaultTestRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["FixedField"]; ok {

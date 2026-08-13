@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -35,6 +36,12 @@ type PrimitiveTestRecord struct {
 
 const PrimitiveTestRecordAvroCRC64Fingerprint = "d\xa9\x9e\xb8\x86&\xa6\x17"
 
+var (
+	primitiveTestRecordDeserOnce    sync.Once
+	primitiveTestRecordDeserProgram *vm.Program
+	primitiveTestRecordDeserProgErr error
+)
+
 func NewPrimitiveTestRecord() PrimitiveTestRecord {
 	r := PrimitiveTestRecord{}
 	r.NewLongField = 1234
@@ -49,12 +56,14 @@ func NewPrimitiveTestRecord() PrimitiveTestRecord {
 
 func DeserializePrimitiveTestRecord(r io.Reader) (PrimitiveTestRecord, error) {
 	t := NewPrimitiveTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	primitiveTestRecordDeserOnce.Do(func() {
+		primitiveTestRecordDeserProgram, primitiveTestRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if primitiveTestRecordDeserProgErr != nil {
+		return t, primitiveTestRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, primitiveTestRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -246,7 +255,6 @@ func (r *PrimitiveTestRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["NewLongField"]; ok {

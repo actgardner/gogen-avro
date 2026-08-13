@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"text/template"
 
 	avro "github.com/actgardner/gogen-avro/v10/schema"
@@ -50,6 +51,12 @@ func Evaluate(templateStr string, obj interface{}) (string, error) {
 		},
 		"isNullable":     isNullable,
 		"hasNullDefault": hasNullDefault,
+		"lowerFirst": func(s string) string {
+			if s == "" {
+				return s
+			}
+			return strings.ToLower(s[:1]) + s[1:]
+		},
 	}).Parse(templateStr)
 	if err != nil {
 		return "", err

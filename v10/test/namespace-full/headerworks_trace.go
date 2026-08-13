@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -25,6 +26,12 @@ type HeaderworksTrace struct {
 
 const HeaderworksTraceAvroCRC64Fingerprint = "\x8a\xdfu\xe7˻\xa6\xbc"
 
+var (
+	headerworksTraceDeserOnce    sync.Once
+	headerworksTraceDeserProgram *vm.Program
+	headerworksTraceDeserProgErr error
+)
+
 func NewHeaderworksTrace() HeaderworksTrace {
 	r := HeaderworksTrace{}
 	r.TraceId = nil
@@ -33,12 +40,14 @@ func NewHeaderworksTrace() HeaderworksTrace {
 
 func DeserializeHeaderworksTrace(r io.Reader) (HeaderworksTrace, error) {
 	t := NewHeaderworksTrace()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	headerworksTraceDeserOnce.Do(func() {
+		headerworksTraceDeserProgram, headerworksTraceDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if headerworksTraceDeserProgErr != nil {
+		return t, headerworksTraceDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, headerworksTraceDeserProgram, &t)
 	return t, err
 }
 
@@ -136,7 +145,6 @@ func (r *HeaderworksTrace) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["traceId"]; ok {

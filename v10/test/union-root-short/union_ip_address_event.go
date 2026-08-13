@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -52,18 +53,24 @@ func (r UnionIp_addressEvent) Serialize(w io.Writer) error {
 	return writeUnionIp_addressEvent(r, w)
 }
 
+var (
+	unionIp_addressEventDeserOnce    sync.Once
+	unionIp_addressEventDeserProgram *vm.Program
+	unionIp_addressEventDeserProgErr error
+)
+
 func DeserializeUnionIp_addressEvent(r io.Reader) (UnionIp_addressEvent, error) {
 	t := NewUnionIp_addressEvent()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	unionIp_addressEventDeserOnce.Do(func() {
+		unionIp_addressEventDeserProgram, unionIp_addressEventDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if unionIp_addressEventDeserProgErr != nil {
+		return t, unionIp_addressEventDeserProgErr
 	}
 
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, unionIp_addressEventDeserProgram, &t)
 
-	if err != nil {
-		return t, err
-	}
 	return t, err
 }
 

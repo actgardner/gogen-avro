@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -25,6 +26,12 @@ type BodyworksTrace struct {
 
 const BodyworksTraceAvroCRC64Fingerprint = "\x83<\x8e\xd5T\xfc\x8d\x94"
 
+var (
+	bodyworksTraceDeserOnce    sync.Once
+	bodyworksTraceDeserProgram *vm.Program
+	bodyworksTraceDeserProgErr error
+)
+
 func NewBodyworksTrace() BodyworksTrace {
 	r := BodyworksTrace{}
 	r.TraceId = nil
@@ -33,12 +40,14 @@ func NewBodyworksTrace() BodyworksTrace {
 
 func DeserializeBodyworksTrace(r io.Reader) (BodyworksTrace, error) {
 	t := NewBodyworksTrace()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	bodyworksTraceDeserOnce.Do(func() {
+		bodyworksTraceDeserProgram, bodyworksTraceDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if bodyworksTraceDeserProgErr != nil {
+		return t, bodyworksTraceDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, bodyworksTraceDeserProgram, &t)
 	return t, err
 }
 
@@ -136,7 +145,6 @@ func (r *BodyworksTrace) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["traceId"]; ok {

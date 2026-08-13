@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -29,6 +30,12 @@ type BodyworksData struct {
 
 const BodyworksDataAvroCRC64Fingerprint = "\xa5\xec\x1f\xf5k\x15\xc1!"
 
+var (
+	bodyworksDataDeserOnce    sync.Once
+	bodyworksDataDeserProgram *vm.Program
+	bodyworksDataDeserProgErr error
+)
+
 func NewBodyworksData() BodyworksData {
 	r := BodyworksData{}
 	r.Uuid = nil
@@ -39,12 +46,14 @@ func NewBodyworksData() BodyworksData {
 
 func DeserializeBodyworksData(r io.Reader) (BodyworksData, error) {
 	t := NewBodyworksData()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	bodyworksDataDeserOnce.Do(func() {
+		bodyworksDataDeserProgram, bodyworksDataDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if bodyworksDataDeserProgErr != nil {
+		return t, bodyworksDataDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, bodyworksDataDeserProgram, &t)
 	return t, err
 }
 
@@ -178,7 +187,6 @@ func (r *BodyworksData) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["uuid"]; ok {

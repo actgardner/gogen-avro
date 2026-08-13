@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -33,6 +34,12 @@ type Superhero struct {
 
 const SuperheroAvroCRC64Fingerprint = "\x1e\x8e\x9cj\xdbGd\xaf"
 
+var (
+	superheroDeserOnce    sync.Once
+	superheroDeserProgram *vm.Program
+	superheroDeserProgErr error
+)
+
 func NewSuperhero() Superhero {
 	r := Superhero{}
 	r.Powers = make([]Superpower, 0)
@@ -42,12 +49,14 @@ func NewSuperhero() Superhero {
 
 func DeserializeSuperhero(r io.Reader) (Superhero, error) {
 	t := NewSuperhero()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	superheroDeserOnce.Do(func() {
+		superheroDeserProgram, superheroDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if superheroDeserProgErr != nil {
+		return t, superheroDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, superheroDeserProgram, &t)
 	return t, err
 }
 
@@ -207,7 +216,6 @@ func (r *Superhero) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["id"]; ok {

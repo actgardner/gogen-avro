@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/actgardner/gogen-avro/v10/compiler"
 	"github.com/actgardner/gogen-avro/v10/vm"
@@ -23,6 +24,12 @@ type RecursiveUnionTestRecord struct {
 
 const RecursiveUnionTestRecordAvroCRC64Fingerprint = "\xc6U)C\v\x8a\xa6\x89"
 
+var (
+	recursiveUnionTestRecordDeserOnce    sync.Once
+	recursiveUnionTestRecordDeserProgram *vm.Program
+	recursiveUnionTestRecordDeserProgErr error
+)
+
 func NewRecursiveUnionTestRecord() RecursiveUnionTestRecord {
 	r := RecursiveUnionTestRecord{}
 	return r
@@ -30,12 +37,14 @@ func NewRecursiveUnionTestRecord() RecursiveUnionTestRecord {
 
 func DeserializeRecursiveUnionTestRecord(r io.Reader) (RecursiveUnionTestRecord, error) {
 	t := NewRecursiveUnionTestRecord()
-	deser, err := compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
-	if err != nil {
-		return t, err
+	recursiveUnionTestRecordDeserOnce.Do(func() {
+		recursiveUnionTestRecordDeserProgram, recursiveUnionTestRecordDeserProgErr =
+			compiler.CompileSchemaBytes([]byte(t.Schema()), []byte(t.Schema()))
+	})
+	if recursiveUnionTestRecordDeserProgErr != nil {
+		return t, recursiveUnionTestRecordDeserProgErr
 	}
-
-	err = vm.Eval(r, deser, &t)
+	err := vm.Eval(r, recursiveUnionTestRecordDeserProgram, &t)
 	return t, err
 }
 
@@ -130,7 +139,6 @@ func (r *RecursiveUnionTestRecord) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
-
 	var val json.RawMessage
 	val = func() json.RawMessage {
 		if v, ok := fields["RecursiveField"]; ok {
